@@ -10,12 +10,19 @@ semester of the MSc Softwaretechnik.
 
 
 ## Knowledge and Experiences
-
+* I know Scrum
+    * not at all
+    * a bit
+    * somehow
+    * quite a lot
+    * a lot
 * My fluency of Java is:
     * basic
     * average
     * good
     * very good
+* Other programming languages I know:
+
 * I have written an Android app:
     * yes
     * no
