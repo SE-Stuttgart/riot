@@ -5,17 +5,21 @@ This is the charter of the development project *Internet of Things* of the MSc S
 ## Puropose
 
 ### Vision
-The product enables a number of realistic Internet of Things scenarios which can be studied and extended easily. We will have a simulation of the Internet of Things focusing on the communication between smartphones and different devices directly and over the cloud. For example, we will simulate a car computer unit and house electronic devices communicating and being controlled by a mobile applications.
+The product enables a number of realistic Internet of Things scenarios which can be studied and extended easily. We want to be able to investigate how new scenarios can be added to the Internet of Things (IoT). We will have an IoT  environment which can work with simulated and actual devices focusing on the communication between smartphones and different devices directly and over the cloud. For example, we will simulate a car computer unit and house electronic devices. Devices communicate and control each other in a secure and safe way. A mobile application and a web site are main controllers.
 
 ### Mission
-For the software engineering research community, in particular the Software Engineering group at the University of Stuttgart, the IoT project will develop, deploy and make available as open source a hight-quality and easily extendible software system to simulate an Internet of Things including at least a mobile application, a cloud service with Web interface and interface to a car and house simulator. No such simulator does exist today.
+For the software engineering research community, in particular the Software Engineering group at the University of Stuttgart, the IoT project will develop and deploy an IoT platform. It will be made available as open source. The platform should be of high-quality and easily extendible. It should include at least a mobile application, a cloud service with Web interface and interfaces to a car and house electronics (simulator).
 
 
 ### Mission Tests
 
-* Integrating a new, simple scenario does not take more than a person-week of effort.
-* Clone Coverage over the whole code is < 10%
-* The simulation will be used in research work that is published within a year.
+* For a new developer, understanding the platform and integrating a new, simple scenario does not take more than two person-weeks of effort.
+* The communication is encrypted.
+* A non-authorised user cannot access data in the platform.
+* Clone Coverage over the whole code is < 10%.
+* The statement test coverage will be > 70%.
+* 4 scenarios implemented as integration tests run successfully.
+* The IoT platform will be used in research work that is published within a year.
 * Another research group uses the simulation environment within a year.
 
 
@@ -23,14 +27,32 @@ For the software engineering research community, in particular the Software Engi
 
 ### Values and Principles
 
-#### Quality
-Do not compromise on our quality standards in any step of the process.
+#### Teamwork
+We solve problems together.
 
-#### Innovation
-Advocate the exploration of tools, technologies and processes around the Internet of Things.
+#### Communication
+We communicate openly and regularly and give constructive feedback.
+
+#### Simplicity
+We keep it small and simple.
+
+#### Flexibility
+We stay flexible and open regarding the goals, requirements and technologies of the project.
 
 ### Core Team Members
 
+* Dirk Braunschweiger
+* Philipp Keck
+* Christian Bäumlisberger
+* Sven Schnaible
+* Christoph Ebbers
+* Jonas Tangermann
+* Florian Gänßlen
+* Rocco Schulz
+* Marcel Lehwald
+* Benedikt Giesel
+* Niklas Schnabel
+* Ana Franco da Silva
 * Asim Abdulkhaleq (Product Owner)
 * Prof. Dr. Stefan Wagner (Scrum Master and Sponsor)
 
@@ -39,10 +61,17 @@ Advocate the exploration of tools, technologies and processes around the Interne
 ### Working Agreements
 
 * We define *Done* for our stories as:
-* We hold (bi-)weekly standup meetings on ... from ...--...
-* We hold monthly story-writing sessions and backlog grooming on ... from ... to ...
-* We run an Agile Release Train (ART) to synchronise the work of the teams in the project with one dedicated architecture team.
+  * Every artefact is reviewed by 1-3 team members.
+  * Code is tested.
+  * Code is documented.
+  * Acceptance criteria are fulfilled.
+* We hold weekly standup meetings on Monday or Thursday. The exact date and time will be found by a Doodle (Stefan Wagner will set it up). During the semester, everyone has to attend in person. During the holidays, Skype is also acceptable. The meeting is no longer than 30 minutes. The whole core team is present.
+* We hold planning meetings for story-writing sessions, team creation and backlog grooming.
+* We use Gitlab as versioning system and Jenkins as CI. We communicate using a mailing list. We might use Teamscale and Jira.
 * We write all textual documents in Markdown.
+* The sprint length is four weeks.
+* The students work 40% of their available time on the project.
+* Subteams decide for their assigned tasks; others may give input.
 
 
 
@@ -54,14 +83,22 @@ Advocate the exploration of tools, technologies and processes around the Interne
 * Prof. Dr. Michael Weyrich (IAS)
 * Herr Jazdi (IAS)
 * Herr Faul (IAS)
+* Horst Vöhringer (SE system administrator)
+* Kornelia Kuhle (PS/SE secretary)
 
 ### Project Community
 
+![Project Community](project-community.jpg)
 
 ### Commited Resources
 
 * 360 hours of work per student over about 18 weeks (is roughly 50% of the time)
 * At least weakly access to product owner
+* Server
+* Access to the lab
+* Printing on larger scale, if necessary
 
 
 ### Prospective
+
+![Prospective Chart](prospective-chart.jpg)
