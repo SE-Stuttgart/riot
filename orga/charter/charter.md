@@ -65,7 +65,9 @@ We stay flexible and open regarding the goals, requirements and technologies of 
   * Code is tested.
   * Code is documented.
   * Acceptance criteria are fulfilled.
-* We hold weekly standup meetings on Monday or Thursday. The exact date and time will be found by a Doodle (Stefan Wagner will set it up). During the semester, everyone has to attend in person. During the holidays, Skype is also acceptable. The meeting is no longer than 30 minutes. The whole core team is present.
+* We hold weekly standup meetings on Monday 10:30-11:00. During the semester, everyone has to attend in person. During the holidays, Skype is also acceptable. The meeting is no longer than 30 minutes. The whole core team is present.
+* We have a sprint planning meeting on the first Monday of a sprint from 8:30-11-30.
+* We hold our reviews and retrospectives on the last Friday of a sprint 10:00-11:00.
 * We hold planning meetings for story-writing sessions, team creation and backlog grooming.
 * We use Gitlab as versioning system and Jenkins as CI. We communicate using a mailing list. We might use Teamscale and Jira.
 * We write all textual documents in Markdown.
