@@ -10,15 +10,16 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("example")
 public class ExampleResource {
-	
-	/**
-	 * @return a plain string message
-	 */
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getHello() {
-		return "a plaintext response.";
-	}
 
+    /**
+     * Returns a plain string message.
+     * 
+     * @return a plain string message
+     */
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getHello() {
+        return "a plaintext response.";
+    }
 
 }
