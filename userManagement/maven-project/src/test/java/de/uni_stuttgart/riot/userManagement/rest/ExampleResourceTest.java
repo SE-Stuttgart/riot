@@ -9,6 +9,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.userManagement.application.UserManagementApplication;
+
 /**
  * An exemplary test class which uses the Jersey Test Framework.
  * @see https://jersey.java.net/documentation/latest/test-framework.html
@@ -19,8 +21,8 @@ public class ExampleResourceTest extends JerseyTest {
  	 * @see org.glassfish.jersey.test.JerseyTest#configure()
  	 */
  	@Override
-	 protected Application configure() {
-		 return new Application();
+	 protected UserManagementApplication configure() {
+		 return new UserManagementApplication();
 	 }
 	 
  	/* (non-Javadoc)

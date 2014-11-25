@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.userManagement.rest;
+package de.uni_stuttgart.riot.userManagement.application;
 
 import javax.ws.rs.ApplicationPath;
 
@@ -13,12 +13,12 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @see https://jersey.java.net/documentation/latest/deployment.html
  */
 @ApplicationPath("/api/v1/*")
-public class Application extends ResourceConfig {
+public class UserManagementApplication extends ResourceConfig {
 	
 	/**
 	 * Configures the application.
 	 */
-	public Application() {
-		packages("de.uni_stuttgart.riot.userManagement.rest;");
+	public UserManagementApplication() {
+		packages("de.uni_stuttgart.riot.userManagement;");
 	}
 }
