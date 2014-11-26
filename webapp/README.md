@@ -17,6 +17,7 @@ Install the following plugins from the eclipse marketplace if not installed alre
 
 - maven integration for Eclipse
 - Glassfish Tools plugin
+- Checkstyle Plug-in
 
 ### Import the Maven project
 - make sure the JDK8 is configured in the *installed JREs* section of the Eclipse preferences
@@ -34,3 +35,14 @@ Install the following plugins from the eclipse marketplace if not installed alre
 - click *finish*
 - select `run as->run on server` in the context menu of the project and choose the Glassfish server
 - open http://localhost:4848 to check if the application was started on the server
+
+### Configure Checkstyle
+- Windows -> Preference -> Checkstyle -> New
+  - Type: External Configuration File
+  - Name: IoT
+  - Location: Browse -> webapp\src\main\resources\checkstyle\conventions.xml
+- Select new configuration as default
+- Windows -> Preferences -> Java -> Code Style -> Formatter
+  - Import -> webapp\src\main\resources\checkstyle\formatter.xml
+  - Check that the imported formatter is selected in the project specific settings
+- Windows -> Preferences -> Java -> Editor -> Save Actions -> Perform all selected actions on save
