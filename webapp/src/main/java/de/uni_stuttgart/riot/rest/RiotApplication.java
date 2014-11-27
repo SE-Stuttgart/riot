@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.rest;
 
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -16,13 +17,13 @@ import org.glassfish.jersey.server.ResourceConfig;
  * @see https://jersey.java.net/documentation/latest/deployment.html
  */
 @ApplicationPath("/api/v1/*")
-public class Application extends ResourceConfig {
+public class RiotApplication extends ResourceConfig {
 
     /**
      * Configures the application.
      */
-    public Application() {
-        packages("de.uni_stuttgart.riot.rest;");
+    public RiotApplication() {
+        packages("de.uni_stuttgart.riot.rest;de.uni_stuttgart.riot.calendar;");
     }
 
 }

@@ -33,6 +33,8 @@ public abstract class BaseResource<E extends ResourceModel> {
 
     /** The page size. */
     protected int pageSize = 20;
+    
+    protected static String URI_PATH;
 
     /** The model manager for read/write operations. */
     protected ModelManager<E> modelManager;
