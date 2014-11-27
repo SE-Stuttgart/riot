@@ -3,8 +3,7 @@ package de.uni_stuttgart.riot.rest;
 import java.util.Collection;
 
 /**
- * The ModelManager bridges the persistence layer and the 
- * client facing REST API.
+ * The ModelManager bridges the persistence layer and the client facing REST API.
  *
  * @param <E>
  *            Each model manager should manage one ResourceModel.
@@ -30,7 +29,8 @@ public interface ModelManager<E extends ResourceModel> {
     /**
      * Creates a new model if the provided object is valid.
      *
-     * @param model the model to be created
+     * @param model
+     *            the model to be created
      * @return the newly created model (including its set id)
      */
     E create(E model);

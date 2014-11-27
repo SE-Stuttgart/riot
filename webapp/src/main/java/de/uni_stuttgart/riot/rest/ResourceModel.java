@@ -1,11 +1,9 @@
 package de.uni_stuttgart.riot.rest;
 
 /**
- * ResourceModels are simple data objects which are used for
- * serialization and deserialization in the REST API.
+ * ResourceModels are simple data objects which are used for serialization and deserialization in the REST API.
  * 
- * All resource models must have an id field, so that resource models
- * can be identified uniquely via URIs.
+ * All resource models must have an id field, so that resource models can be identified uniquely via URIs.
  */
 public interface ResourceModel {
 
