@@ -22,8 +22,8 @@ public class ExampleResourceTest extends JerseyTest {
      * @see org.glassfish.jersey.test.JerseyTest#configure()
      */
     @Override
-    protected Application configure() {
-        return new Application();
+    protected RiotApplication configure() {
+        return new RiotApplication();
     }
 
     /*
