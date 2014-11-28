@@ -1,9 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    tools:context=".MainActivity" >
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -25,10 +28,20 @@
             android:id="@+id/scrollView"
             android:layout_gravity="center" >
 
-            <ExpandableListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/expandableListView" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" 
+                android:id="@+id/asd">
+
+                <ExpandableListView
+                    android:id="@+id/expandableListView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="394dp" >
+                </ExpandableListView>
+
+            </LinearLayout>
+
         </ScrollView>
 
         <TextView
@@ -43,8 +56,9 @@
             android:id="@+id/imageButton"
             android:layout_width="56dp"
             android:layout_height="69dp"
-            android:layout_gravity="right|top"
-            android:background="@drawable/ic_launcher" />
+            android:layout_gravity="right|top"            
+            android:background="@drawable/ic_launcher"
+            android:onClick="refreshList" />
 
     </FrameLayout>
 </RelativeLayout>
