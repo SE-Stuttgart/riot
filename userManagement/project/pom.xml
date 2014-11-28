@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.uni-stuttgart.riot</groupId>
-	<artifactId>iot</artifactId>
+	<artifactId>riot.userManagement</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>iot</name>
+	<name>riot userManagement</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,12 +21,14 @@
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -35,8 +37,7 @@
 		</dependency>
 
 		<dependency>
-			<!-- grizzly is a light-weight, plain HTTP container for simple request 
-				tests -->
+			<!-- grizzly is a light-weight, plain HTTP container for simple request tests -->
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
 			<version>2.13</version>
@@ -46,17 +47,6 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.13</version>
-				<configuration>
-					<configLocation>checkstyle/conventions.xml</configLocation>
-					<suppressionsFile>checkstyle/suppressions.xml</suppressionsFile>
-				</configuration>
-			</plugin>
-		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
