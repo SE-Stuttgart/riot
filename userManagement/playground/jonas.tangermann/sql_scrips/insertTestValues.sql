@@ -4,7 +4,7 @@
      (3,'Vader','VaderPW', 'VaderSalt');
 
 INSERT INTO tokens(tokenid, userID, tokenvalue, issuedate, expirationdate)
-    VALUES (1, 1, 'token1', '2014-11-26', '2020-11-26'),
+    VALUES (1, 1, 'token1', '2014-11-26', '2014-11-26'),
      (2, 2, 'token2', '2014-11-26', '2020-11-26'),
      (3, 3, 'token3', '2014-11-26', '2020-11-26');
     

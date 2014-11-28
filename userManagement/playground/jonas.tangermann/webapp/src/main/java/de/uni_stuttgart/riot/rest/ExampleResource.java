@@ -32,9 +32,8 @@ public class ExampleResource {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getHello(){
-		InitialContext context;
 		try {
-			context = new InitialContext();
+			InitialContext context = new InitialContext();
 			DataSource ds = (DataSource)context.lookup("jdbc/postgres_umdb");
 			System.err.println("Recived Datasource from JNDI: "+ds.getClass());
 			

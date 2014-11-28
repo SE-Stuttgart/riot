@@ -12,7 +12,7 @@ import org.glassfish.jersey.server.ResourceConfig;
  * 
  * @see https://jersey.java.net/documentation/latest/deployment.html
  */
-@ApplicationPath("/api/v1/*")
+@ApplicationPath("/api/*")
 public class Application extends ResourceConfig {
 	
 	/**
