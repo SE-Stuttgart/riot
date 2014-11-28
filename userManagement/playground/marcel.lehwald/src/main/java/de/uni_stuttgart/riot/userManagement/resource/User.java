@@ -1,9 +1,7 @@
 package de.uni_stuttgart.riot.userManagement.resource;
 
-//import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
-//@XmlRootElement(name = "User")
 public class User
 {
 	private Integer id;

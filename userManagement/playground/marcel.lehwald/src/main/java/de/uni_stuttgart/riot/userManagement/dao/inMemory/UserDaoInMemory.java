@@ -1,8 +1,9 @@
-package de.uni_stuttgart.riot.userManagement.dao;
+package de.uni_stuttgart.riot.userManagement.dao.inMemory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_stuttgart.riot.userManagement.dao.UserDao;
 import de.uni_stuttgart.riot.userManagement.resource.User;
 
 public class UserDaoInMemory implements UserDao {
