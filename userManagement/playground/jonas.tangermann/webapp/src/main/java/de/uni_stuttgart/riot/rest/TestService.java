@@ -7,6 +7,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import de.uni_stuttgart.riot.data.exc.DatasourceInsertException;
+import de.uni_stuttgart.riot.data.sqlQueryDao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.data.storable.User;
+
 
 @Path("test")
 public class TestService implements ServerService{
@@ -33,5 +37,19 @@ public class TestService implements ServerService{
 	@Override
 	public boolean isPermitted(@PathParam("permission") String permission,@PathParam("token") String token) {
 		return this.serverService.isPermitted(permission, token);
+	}
+	
+	@GET
+	@Produces( MediaType.TEXT_PLAIN )
+	@Path("newUser/id/{id}/name/{name}")
+	public String newUser(@PathParam("id") String id,@PathParam("name") String name) {
+		UserSqlQueryDao dao = new UserSqlQueryDao(Manager.getUsermanagementManager().getDataSource());
+		try {
+			dao.insert(new User(new Long(id), name));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
+		return "User added";
 	}
 }

@@ -1,13 +1,10 @@
 ﻿DROP TABLE IF EXISTS 
-users_groups,
-groups_roles,
 roles_permissions,
 tokens_roles,
 users_roles,
 users,
 tokens,
 permissions,
-groups,
 roles;
 
 CREATE TABLE users 
@@ -27,7 +24,7 @@ tokenValue char(100),
 issueDate date,
 expirationDate date,
 PRIMARY KEY (tokenID),
-FOREIGN KEY (userID) REFERENCES users(userID)
+FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE
 );
 
 CREATE TABLE permissions
@@ -36,15 +33,6 @@ permissionID bigint,
 permissionValue varchar(50),
 PRIMARY KEY (permissionID)
 );
-
-CREATE TABLE groups 
-(
-groupID bigint,
-groupName varchar(50),
-PRIMARY KEY (groupID)
-);
-
-
 
 CREATE TABLE roles 
 (
@@ -57,8 +45,8 @@ CREATE TABLE users_roles
 (
 userID bigint,
 roleID bigint,
-FOREIGN KEY (roleID) REFERENCES roles(roleID),
-FOREIGN KEY (userID) REFERENCES users(userID),
+FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
+FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
 PRIMARY KEY (userID,roleID)
 );
 
@@ -66,8 +54,8 @@ CREATE TABLE tokens_roles
 (
 tokenID bigint,
 roleID bigint,
-FOREIGN KEY (roleID) REFERENCES roles(roleID),
-FOREIGN KEY (tokenID) REFERENCES tokens(tokenID),
+FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
+FOREIGN KEY (tokenID) REFERENCES tokens(tokenID) ON DELETE CASCADE,
 PRIMARY KEY (tokenID,roleID)
 );
 
@@ -75,25 +63,8 @@ CREATE TABLE roles_permissions
 (
 permissionID bigint,
 roleID bigint,
-FOREIGN KEY (roleID) REFERENCES roles(roleID),
-FOREIGN KEY (permissionID) REFERENCES permissions(permissionID),
+FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
+FOREIGN KEY (permissionID) REFERENCES permissions(permissionID) ON DELETE CASCADE,
 PRIMARY KEY (permissionID,roleID)
 );
 
-CREATE TABLE groups_roles 
-(
-groupID bigint,
-roleID bigint,
-FOREIGN KEY (roleID) REFERENCES roles(roleID),
-FOREIGN KEY (groupID) REFERENCES groups(groupID),
-PRIMARY KEY (roleID,groupID)
-);
-
-CREATE TABLE users_groups 
-(
-userID bigint,
-groupID bigint,
-FOREIGN KEY (userID) REFERENCES users(userID),
-FOREIGN KEY (groupID) REFERENCES groups(groupID),
-PRIMARY KEY (userID,groupID)
-);

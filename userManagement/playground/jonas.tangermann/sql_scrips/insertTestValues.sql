@@ -20,15 +20,6 @@ INSERT INTO permissions(permissionid, permissionvalue)
      (3, 'x'),
      (4, 'y');
 
-
-INSERT INTO groups(groupid, groupname)
-    VALUES (1, 'Goodside'), 
-     (2, 'Darkside');
-
-INSERT INTO groups_roles(groupid, roleid)
-    VALUES (1, 3),
-     (2, 4);
-
 INSERT INTO roles_permissions(permissionid, roleid)
     VALUES (1, 1),
      (4, 2),
@@ -40,11 +31,6 @@ INSERT INTO tokens_roles(tokenid, roleid)
      (2, 2),
      (3, 4),
      (1, 3);
-
-INSERT INTO users_groups(userid, groupid)
-    VALUES (1, 1),
-     (2, 1),
-     (3, 2);
 
 INSERT INTO users_roles(userid, roleid)
     VALUES (1, 1),
