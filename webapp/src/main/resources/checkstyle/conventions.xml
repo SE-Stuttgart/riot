@@ -164,9 +164,6 @@
       <property name="allowMissingPropertyJavadoc" value="true"/>
     </module>
     <module name="MissingSwitchDefault"/>
-    <module name="TodoComment">
-      <property name="format" value="(TODO)|(FIXME)"/>
-    </module>
     <module name="PackageName">
       <property name="format" value="^[a-z]+(\.[a-z][a-z0-9_]*)*$"/>
     </module>

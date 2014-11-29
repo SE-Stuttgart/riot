@@ -32,9 +32,9 @@ public abstract class BaseResource<E extends ResourceModel> {
     protected static final String CONSUMED_FORMAT = MediaType.APPLICATION_JSON;
 
     /** The page size. */
-    protected int pageSize = 20;
-    
-    protected static String URI_PATH;
+    // protected int pageSize = 20;
+
+    // protected static String URI_PATH;
 
     /** The model manager for read/write operations. */
     protected ModelManager<E> modelManager;

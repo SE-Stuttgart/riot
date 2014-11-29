@@ -46,3 +46,4 @@ Install the following plugins from the eclipse marketplace if not installed alre
   - Import -> webapp\src\main\resources\checkstyle\formatter.xml
   - Check that the imported formatter is selected in the project specific settings
 - Windows -> Preferences -> Java -> Editor -> Save Actions -> Perform all selected actions on save
+- Right-click on Project -> Checkstyle -> Activate Checkstyle 

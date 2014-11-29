@@ -14,10 +14,11 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
     private static HashMap<Integer, CalendarEntry> entries = new HashMap<>();
 
     static {
-        entries.put(1, new CalendarEntry(1, "important meeting", "Some body text"));
-        entries.put(2, new CalendarEntry(2, "entry2", "unicode support? äüößſðđŋ"));
-        entries.put(3, new CalendarEntry(3, "", "lorem ipsum dolor sit amet"));
-        entries.put(4, new CalendarEntry(4, "sprint planning", null));
+        int id = 1;
+        entries.put(id, new CalendarEntry(id++, "important meeting", "Some body text"));
+        entries.put(id, new CalendarEntry(id++, "entry2", "unicode support? äüößſðđŋ"));
+        entries.put(id, new CalendarEntry(id++, "", "lorem ipsum dolor sit amet"));
+        entries.put(id, new CalendarEntry(id++, "sprint planning", null));
     }
 
     /*
