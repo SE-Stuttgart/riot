@@ -32,28 +32,6 @@ public class ExampleResource {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getHello(){
-		try {
-			InitialContext context = new InitialContext();
-			DataSource ds = (DataSource)context.lookup("jdbc/postgres_umdb");
-			System.err.println("Recived Datasource from JNDI: "+ds.getClass());
-			
-			JdbcRealm realm = new JdbcRealm();
-			realm.setDataSource(ds);
-			DefaultSecurityManager securityManager = new DefaultSecurityManager(realm);
-			SecurityUtils.setSecurityManager(securityManager);
-			
-			try{
-				UsernamePasswordToken token = new UsernamePasswordToken("Yoda", "42");
-				Subject yoda = SecurityUtils.getSecurityManager().login(SecurityUtils.getSubject(), token);
-				yoda.isPermitted("doThat");
-			
-				System.err.println("Is user Yoda auth? = "+yoda.isAuthenticated());
-			} catch (AuthenticationException e){
-				System.err.println("Login failed");
-			}			
-		} catch (NamingException e) {
-			e.printStackTrace();
-		}
-		return "End of DB Test";
+		return "hallo";
 	}
 }

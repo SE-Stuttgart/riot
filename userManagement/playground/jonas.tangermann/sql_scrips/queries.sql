@@ -68,6 +68,10 @@ UPDATE users
    SET userid=?, username=?, pword=?, pword_salt=?
  WHERE userID = ?;
 
+-- FIND User by search param
+SELECT userid, username, pword, pword_salt FROM users 
+	WHERE username in ('Yoda','Vader'); 
+
 
 
 

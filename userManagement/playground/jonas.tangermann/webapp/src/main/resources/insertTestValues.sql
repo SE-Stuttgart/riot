@@ -1,4 +1,4 @@
-﻿INSERT INTO users(userid, username, pword, pword_salt)
+INSERT INTO users(userid, username, pword, pword_salt)
     VALUES (1,'Yoda','YodaPW', 'YodaSalt'),
      (2,'R2D2','R2D2PW', 'R2D2Salt'),
      (3,'Vader','VaderPW', 'VaderSalt');

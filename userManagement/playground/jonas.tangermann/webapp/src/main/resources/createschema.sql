@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS 
+DROP TABLE IF EXISTS
 roles_permissions,
 tokens_roles,
 users_roles,
