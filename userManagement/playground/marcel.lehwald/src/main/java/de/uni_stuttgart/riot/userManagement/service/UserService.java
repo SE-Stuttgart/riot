@@ -12,6 +12,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+
 import de.uni_stuttgart.riot.userManagement.dao.UserDao;
 import de.uni_stuttgart.riot.userManagement.dao.inMemory.UserDaoInMemory;
 import de.uni_stuttgart.riot.userManagement.resource.User;
@@ -59,7 +62,9 @@ public class UserService {
 	}
 
 	@PUT
+	@RequiresRoles("Master") //static authorization check
 	public Response putUser(User user) {
+		SecurityUtils.getSubject().checkRole("foo:" + user.getId()); //dynamic authorization check
 		try {
 			dao.insertUser(user);
 		}

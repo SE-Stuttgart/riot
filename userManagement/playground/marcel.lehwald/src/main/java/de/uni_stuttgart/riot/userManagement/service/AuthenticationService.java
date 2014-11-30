@@ -16,7 +16,6 @@ import org.apache.shiro.subject.Subject;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiError;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
 import de.uni_stuttgart.riot.userManagement.service.request.LoginRequest;
-import de.uni_stuttgart.riot.userManagement.service.request.LogoutRequest;
 import de.uni_stuttgart.riot.userManagement.service.request.RefreshRequest;
 import de.uni_stuttgart.riot.userManagement.service.response.AuthenticationResponse;
 import de.uni_stuttgart.riot.userManagement.service.response.LogoutResponse;
@@ -60,7 +59,7 @@ public class AuthenticationService {
 
 	@GET
 	@Path("/logout/")
-	public LogoutResponse logout(LogoutRequest request) {
+	public LogoutResponse logout() {
 		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, AuthenticationServiceError.UNIMPLEMENTED);
 
 		//return new LogoutResponse();

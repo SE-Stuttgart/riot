@@ -2,7 +2,12 @@ package de.uni_stuttgart.riot.userManagement.application;
 
 import javax.ws.rs.ApplicationPath;
 
+import jersey.repackaged.com.google.common.collect.Sets;
+
 import org.glassfish.jersey.server.ResourceConfig;
+
+import de.uni_stuttgart.riot.userManagement.security.AuthorizationExceptionMapper;
+import de.uni_stuttgart.riot.userManagement.security.AuthorizationFilterBinding;
 
 /**
  * <p>Configuration for the JAX-RS provider.</p>
@@ -19,6 +24,7 @@ public class UserManagementApplication extends ResourceConfig {
 	 * Configures the application.
 	 */
 	public UserManagementApplication() {
+		super(Sets.<Class<?>>newHashSet(AuthorizationFilterBinding.class, AuthorizationExceptionMapper.class));
 		packages("de.uni_stuttgart.riot.userManagement;");
 	}
 }

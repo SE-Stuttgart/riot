@@ -1,8 +1,10 @@
-package de.uni_stuttgart.riot.userManagement.shiro;
+package de.uni_stuttgart.riot.userManagement.security;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
 /**
+ * An AuthenticationToken implementation for an access token. Access tokens are usually used in REST APIs where
+ * the access token will be send along with the payload each request to authenticate the user.
  * 
  * @author Marcel Lehwald
  *

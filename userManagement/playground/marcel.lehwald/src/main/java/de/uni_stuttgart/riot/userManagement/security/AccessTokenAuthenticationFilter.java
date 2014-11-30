@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.userManagement.shiro;
+package de.uni_stuttgart.riot.userManagement.security;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -13,7 +13,7 @@ import org.apache.shiro.web.util.WebUtils;
 
 /**
  * 
- * Filter for securing resources which need authentication using a access token.
+ * Filter for securing resources which need authentication using an access token.
  * The Filter will get the access token from the request header and authenticate the subject based on the token.
  * 
  * @author Marcel Lehwald
@@ -21,7 +21,7 @@ import org.apache.shiro.web.util.WebUtils;
  */
 public class AccessTokenAuthenticationFilter extends AuthenticationFilter {
 
-	protected static final String AUTHENTICATE_HEADER = "Access-Token";
+	protected static final String AUTHENTICATION_HEADER = "Access-Token";
 
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
@@ -34,7 +34,10 @@ public class AccessTokenAuthenticationFilter extends AuthenticationFilter {
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
 		Subject user = SecurityUtils.getSubject();
-		String accessToken = getAccessToken(request);
+		
+		//get access token from request header
+		HttpServletRequest httpRequest = WebUtils.toHttp(request);
+		String accessToken = httpRequest.getHeader(AUTHENTICATION_HEADER);
 
 		try {
 			user.login(new AccessTokenAuthentication(accessToken));
@@ -43,12 +46,6 @@ public class AccessTokenAuthenticationFilter extends AuthenticationFilter {
 		}
 
 		return user.isAuthenticated();
-	}
-
-	private String getAccessToken(ServletRequest request) {
-		HttpServletRequest httpRequest = WebUtils.toHttp(request);
-
-		return httpRequest.getHeader(AUTHENTICATE_HEADER);
 	}
 
 }
