@@ -1,4 +1,4 @@
-package datasource;
+package datasource.common;
 
 import java.io.IOException;
 import java.io.LineNumberReader;

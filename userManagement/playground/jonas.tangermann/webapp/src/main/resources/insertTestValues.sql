@@ -4,9 +4,9 @@ INSERT INTO users(userid, username, pword, pword_salt)
      (3,'Vader','VaderPW', 'VaderSalt');
 
 INSERT INTO tokens(tokenid, userID, tokenvalue, issuedate, expirationdate)
-    VALUES (1, 1, 'token1', '2014-11-26', '2014-11-26'),
-     (2, 2, 'token2', '2014-11-26', '2020-11-26'),
-     (3, 3, 'token3', '2014-11-26', '2020-11-26');
+    VALUES (1, 1, 'token1', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
+     (2, 2, 'token2', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
+     (3, 3, 'token3', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54');
     
 INSERT INTO roles(roleid, rolename)
     VALUES (1, 'Master'),

@@ -14,7 +14,7 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
 	private static final String INSERT_QUERY= "INSERT INTO permissions(permissionID, permissionValue)VALUES (?, ?)";
 	private static final String UPDATE_QUERY= "UPDATE permissions SET permissionValue=? WHERE permissionID = ?;";
 	private static final String FIND_ID_QUERY= "SELECT permissionID,permissionValue FROM permissions WHERE permissionID = ?;";
-	private static final String FIND_PARAM_QUERY= "SELECT permissionID,permissionValue FROM permissions WHERE permissionValue in (?)"; 
+	private static final String FIND_PARAM_QUERY= "SELECT permissionID,permissionValue FROM permissions WHERE permissionValue in "; 
 	
 	@Override
 	public PreparedStatement buildDelete(Permission t, Connection connection)throws SQLException {

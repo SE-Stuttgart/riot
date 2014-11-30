@@ -10,7 +10,7 @@ roles;
 CREATE TABLE users 
 (
 userID bigint,
-username varchar(50),
+username varchar(50) unique,
 pword varchar(50),
 pword_salt varchar(50),
 PRIMARY KEY (userID)
@@ -20,9 +20,9 @@ CREATE TABLE tokens
 (
 tokenID bigint,
 userID bigint,
-tokenValue char(100),
-issueDate date,
-expirationDate date,
+tokenValue varchar(100),
+issueDate timestamp,
+expirationDate timestamp,
 PRIMARY KEY (tokenID),
 FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE
 );

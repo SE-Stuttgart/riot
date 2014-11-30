@@ -33,4 +33,48 @@ public class Permission implements Storable{
 		this.permissionValue = permissionValue;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((permissionID == null) ? 0 : permissionID.hashCode());
+		result = prime * result
+				+ ((permissionValue == null) ? 0 : permissionValue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Permission other = (Permission) obj;
+		if (permissionID == null) {
+			if (other.permissionID != null)
+				return false;
+		} else if (!permissionID.equals(other.permissionID))
+			return false;
+		if (permissionValue == null) {
+			if (other.permissionValue != null)
+				return false;
+		} else if (!permissionValue.equals(other.permissionValue))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Permission [permissionID=");
+		builder.append(permissionID);
+		builder.append(", permissionValue=");
+		builder.append(permissionValue);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

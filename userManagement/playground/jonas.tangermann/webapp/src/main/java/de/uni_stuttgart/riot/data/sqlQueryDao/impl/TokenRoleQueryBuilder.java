@@ -13,7 +13,7 @@ public class TokenRoleQueryBuilder extends StorableQueryBuilder implements Query
 	private static final String DELETE_QUERY= "DELETE FROM tokens_roles WHERE tokens_roles.tokenroleID = ?";
 	private static final String INSERT_QUERY= "INSERT INTO tokens_roles(tokenroleID,tokenID,roleID)VALUES (?, ?, ?)";
 	private static final String UPDATE_QUERY= "UPDATE tokens_roles SET tokenID=?, roleID=? WHERE tokenroleID = ?;";
-	private static final String FIND_ID_QUERY= "SELECT tokenroleID,tokenID,toleID FROM tokens_roles WHERE tokenroleID = ?;";
+	private static final String FIND_ID_QUERY= "SELECT tokenroleID,tokenID,roleID FROM tokens_roles WHERE tokenroleID = ?;";
 	private static final String FIND_PARAM_QUERY= "SELECT tokenroleID,tokenID,toleID FROM tokens_roles WHERE roleID or tokenID in (?)"; 
 	
 	@Override

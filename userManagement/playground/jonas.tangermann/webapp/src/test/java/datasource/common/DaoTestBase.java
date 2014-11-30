@@ -1,4 +1,4 @@
-package datasource;
+package datasource.common;
 
 import static org.junit.Assert.*;
 

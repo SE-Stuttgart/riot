@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.sql.DataSource;
 
@@ -70,7 +71,8 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T>{
 		try{
 			connection = ds.getConnection();
 			PreparedStatement stmt = this.queryBuilder.buildUpdate(t, connection);
-			stmt.execute();
+			int res = stmt.executeUpdate();
+			if(res == 0) throw new DatasourceUpdateException("Nothing to update!");
 		} catch (SQLException e){
 			throw new DatasourceUpdateException(e.getMessage());
 		} finally {
@@ -110,7 +112,12 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T>{
 		try{
 			connection = ds.getConnection();
 			PreparedStatement stmt = this.queryBuilder.buildFindBySearchParam(searchParams, connection);
-			stmt.execute();
+			ResultSet resultSet = stmt.executeQuery();
+			LinkedList<T> res = new LinkedList<T>();
+			while(resultSet.next()){
+				res.add(this.objectBuilder.build(resultSet));
+			}
+			return res;
 		} catch (SQLException e){
 			throw new DatasourceFindException(e.getMessage());
 		} finally {
@@ -119,7 +126,6 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T>{
 			} catch (SQLException e) {
 				throw new DatasourceFindException(e.getMessage());
 			}
-		}			
-		throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
+		}
 	}
 }

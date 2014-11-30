@@ -15,7 +15,7 @@ public class TokenRole implements Storable{
 		this.tokenRoleID = tokenRoleID;
 	}
 	
-	public TokenRole(Long tokenID, Long roleID, Long tokenRoleID) {
+	public TokenRole(Long tokenRoleID, Long tokenID, Long roleID) {
 		this.tokenID = tokenID;
 		this.roleID = roleID;
 		this.tokenRoleID = tokenRoleID;
@@ -37,5 +37,56 @@ public class TokenRole implements Storable{
 
 	public Long getTokenID() {
 		return tokenID;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((roleID == null) ? 0 : roleID.hashCode());
+		result = prime * result + ((tokenID == null) ? 0 : tokenID.hashCode());
+		result = prime * result
+				+ ((tokenRoleID == null) ? 0 : tokenRoleID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof TokenRole))
+			return false;
+		TokenRole other = (TokenRole) obj;
+		if (roleID == null) {
+			if (other.roleID != null)
+				return false;
+		} else if (!roleID.equals(other.roleID))
+			return false;
+		if (tokenID == null) {
+			if (other.tokenID != null)
+				return false;
+		} else if (!tokenID.equals(other.tokenID))
+			return false;
+		if (tokenRoleID == null) {
+			if (other.tokenRoleID != null)
+				return false;
+		} else if (!tokenRoleID.equals(other.tokenRoleID))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TokenRole [tokenRoleID=");
+		builder.append(tokenRoleID);
+		builder.append(", tokenID=");
+		builder.append(tokenID);
+		builder.append(", roleID=");
+		builder.append(roleID);
+		builder.append("]");
+		return builder.toString();
 	}
 }
