@@ -2,15 +2,14 @@ package de.uni_stuttgart.riot.userManagement.service.logic;
 
 import java.util.List;
 
-import javax.ws.rs.core.Response;
-
 import de.uni_stuttgart.riot.userManagement.dao.UserDao;
 import de.uni_stuttgart.riot.userManagement.dao.inMemory.UserDaoInMemory;
 import de.uni_stuttgart.riot.userManagement.resource.User;
-import de.uni_stuttgart.riot.userManagement.service.UserService.UserServiceError;
-import de.uni_stuttgart.riot.userManagement.service.exception.AddUserException;
-import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
-import de.uni_stuttgart.riot.userManagement.service.exception.DeleteUserException;
+import de.uni_stuttgart.riot.userManagement.service.exception.user.AddUserException;
+import de.uni_stuttgart.riot.userManagement.service.exception.user.DeleteUserException;
+import de.uni_stuttgart.riot.userManagement.service.exception.user.GetAllUsersException;
+import de.uni_stuttgart.riot.userManagement.service.exception.user.GetUserException;
+import de.uni_stuttgart.riot.userManagement.service.exception.user.UpdateUserException;
 
 /**
  * 
@@ -38,31 +37,37 @@ public class UserLogic {
         }
     }
 
-    public Response updateUser(int id, User user) {
+    public void updateUser(int id, User user) throws UpdateUserException {
         try {
             user.setId(id);
             dao.updateUser(user);
         } catch (Exception e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, UserServiceError.FOO_ERROR);
+            throw new UpdateUserException();
         }
-
-        return Response.ok().build();
     }
 
-    public User getUser(int id) {
+    public User getUser(int id) throws GetUserException {
         User user = null;
 
         try {
             user = dao.getUserById(id);
         } catch (Exception e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, UserServiceError.SOME_ERROR);
+            throw new GetUserException();
         }
 
         return user;
     }
 
-    public List<User> getAllUsers() {
-        return dao.getUsers();
+    public List<User> getAllUsers() throws GetAllUsersException {
+    	List<User> users = null;
+
+        try {
+            users = dao.getUsers();
+        } catch (Exception e) {
+            throw new GetAllUsersException();
+        }
+
+        return users;
     }
 
     public void addPermission() {

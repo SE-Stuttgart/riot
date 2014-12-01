@@ -1,4 +1,7 @@
-package de.uni_stuttgart.riot.userManagement.service.exception;
+package de.uni_stuttgart.riot.userManagement.service.exception.user;
+
+import de.uni_stuttgart.riot.userManagement.service.exception.ErrorCodes;
+import de.uni_stuttgart.riot.userManagement.service.exception.UserManagementException;
 
 /**
  * 
@@ -18,7 +21,7 @@ public class AddUserException extends UserManagementException {
 
     @Override
     public String getMessage() {
-        return "unable to add the new user";
+        return "Unable to add the new user";
     }
 
 }

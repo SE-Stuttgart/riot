@@ -16,6 +16,7 @@ import de.uni_stuttgart.riot.userManagement.dao.RoleDao;
 import de.uni_stuttgart.riot.userManagement.resource.Role;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiError;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
+import de.uni_stuttgart.riot.userManagement.service.exception.UserManagementException;
 
 /**
  * 
@@ -27,39 +28,61 @@ import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
 @Produces(MediaType.APPLICATION_JSON)
 public class RoleService {
 
-	public static class RoleServiceError
-	{
-		public static final ApiError UNIMPLEMENTED = new ApiError(1, "unimplemented..");
-	}
+    public static class RoleServiceError {
+        public static final ApiError UNIMPLEMENTED = new ApiError(1, "unimplemented..");
+    }
 
-	private RoleDao dao;
+    private RoleDao dao;
 
-	@GET
-	public List<Role> getRoles() {
-		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, RoleServiceError.UNIMPLEMENTED);
-	}
+    @GET
+    public List<Role> getRoles() {
+        try {
+            return UserManagementFacade.getInstance().getAllRoles();
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
 
-	@PUT
-	public Response putRole(Role role) {
-		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, RoleServiceError.UNIMPLEMENTED);
-	}
+    @PUT
+    public Response putRole(Role role) {
+        try {
+            UserManagementFacade.getInstance().addRole(role);
+            return Response.ok().build();
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
 
-	@GET
-	@Path("/{id}/")
-	public List<Role> getRole(@PathParam("id") int id) {
-		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, RoleServiceError.UNIMPLEMENTED);
-	}
+    @GET
+    @Path("/{id}/")
+    public List<Role> getRoles(@PathParam("id") int id) {
+        try {
+            return UserManagementFacade.getInstance().getAllRolesFromUser(id);
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
 
-	@PUT
-	@Path("/{id}/")
-	public Response putRole(@PathParam("id") int id, Role role) {
-		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, RoleServiceError.UNIMPLEMENTED);
-	}
+    @PUT
+    @Path("/{id}/")
+    public Response putRole(@PathParam("id") int id, Role role) {
+        try {
+            UserManagementFacade.getInstance().addRoleToUser(id, role);
+            return Response.ok().build();
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
 
-	@DELETE
-	@Path("/{id}/")
-	public List<Role> deleteRole(@PathParam("id") int id) {
-		throw new ApiErrorResponse(Response.Status.BAD_REQUEST, RoleServiceError.UNIMPLEMENTED);
-	}
+    @DELETE
+    @Path("/{id}/")
+    public Response deleteRole(@PathParam("id") int id) {
+        try {
+            UserManagementFacade.getInstance().deleteRole(id);
+            return Response.ok().build();
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
 
 }

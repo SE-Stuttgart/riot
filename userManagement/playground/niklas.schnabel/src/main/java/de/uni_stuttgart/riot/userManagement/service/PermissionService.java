@@ -12,72 +12,68 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.uni_stuttgart.riot.userManagement.resource.User;
+import de.uni_stuttgart.riot.userManagement.resource.Permission;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiError;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
-import de.uni_stuttgart.riot.userManagement.service.exception.user.AddUserException;
-import de.uni_stuttgart.riot.userManagement.service.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.userManagement.service.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.userManagement.service.exception.user.GetUserException;
-import de.uni_stuttgart.riot.userManagement.service.exception.user.UpdateUserException;
+import de.uni_stuttgart.riot.userManagement.service.exception.UserManagementException;
 
 /**
  * 
  * @author Marcel Lehwald
  *
  */
-@Path("/users/")
+@Path("/permissions/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService {
+public class PermissionService {
 
     @GET
-    public List<User> getUsers() {
+    public List<Permission> getPermissions() {
         try {
-            return UserManagementFacade.getInstance().getAllUsers();
-        } catch (GetAllUsersException e) {
+            return UserManagementFacade.getInstance().getAllPermissions();
+        } catch (UserManagementException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
+        }
+    }
+
+    @PUT
+    public Response putPermission(Permission permission) {
+        try {
+            UserManagementFacade.getInstance().addPermission(permission);
+            return Response.ok().build();
+        } catch (UserManagementException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
         }
     }
 
     @GET
     @Path("/{id}/")
-    public User getUser(@PathParam("id") int id) {
+    public List<Permission> getPermission(@PathParam("id") int id) {
         try {
-        	return UserManagementFacade.getInstance().getUser(id);
-        } catch (GetUserException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
-        }
-    }
-
-    @PUT
-    public Response putUser(User user) {
-        try {
-            UserManagementFacade.getInstance().addUser(user);
-            return Response.ok().build();
-        } catch (AddUserException e) {
+            return UserManagementFacade.getInstance().getAllPermissionsFromUser(id);
+        } catch (UserManagementException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
         }
     }
 
     @PUT
     @Path("/{id}/")
-    public Response putUser(@PathParam("id") int id, User user) {
+    public Response putPermission(@PathParam("id") int id, Permission permission) {
         try {
-            UserManagementFacade.getInstance().updateUser(id, user);
+            UserManagementFacade.getInstance().updatePermission(id, permission);
             return Response.ok().build();
-        } catch (UpdateUserException e) {
+        } catch (UserManagementException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
         }
     }
 
     @DELETE
     @Path("/{id}/")
-    public Response deleteUser(@PathParam("id") int id) {
+    public Response deletePermission(@PathParam("id") int id) {
         try {
-            UserManagementFacade.getInstance().deleteUser(id);
+            UserManagementFacade.getInstance().deletePermission(id);
             return Response.ok().build();
-        } catch (DeleteUserException e) {
+        } catch (UserManagementException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, new ApiError(e.getErrorCode(), e.getMessage()));
         }
     }

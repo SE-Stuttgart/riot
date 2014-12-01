@@ -1,4 +1,7 @@
-package de.uni_stuttgart.riot.userManagement.service.exception;
+package de.uni_stuttgart.riot.userManagement.service.exception.user;
+
+import de.uni_stuttgart.riot.userManagement.service.exception.ErrorCodes;
+import de.uni_stuttgart.riot.userManagement.service.exception.UserManagementException;
 
 /**
  * 
