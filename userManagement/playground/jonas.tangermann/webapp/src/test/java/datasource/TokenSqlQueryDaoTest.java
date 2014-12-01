@@ -3,8 +3,8 @@ package datasource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -13,12 +13,8 @@ import de.uni_stuttgart.riot.data.exc.DatasourceDeleteException;
 import de.uni_stuttgart.riot.data.exc.DatasourceFindException;
 import de.uni_stuttgart.riot.data.exc.DatasourceInsertException;
 import de.uni_stuttgart.riot.data.exc.DatasourceUpdateException;
-import de.uni_stuttgart.riot.data.sqlQueryDao.impl.TokenRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.data.sqlQueryDao.impl.TokenSqlQueryDAO;
-import de.uni_stuttgart.riot.data.sqlQueryDao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.data.storable.Token;
-import de.uni_stuttgart.riot.data.storable.TokenRole;
-import de.uni_stuttgart.riot.data.storable.User;
 
 public class TokenSqlQueryDaoTest extends DaoTestBase{
 
@@ -88,4 +84,15 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 		}
 		fail("Should not ne reached because there is no item with id 32");
 	}
+	
+	   @Test
+	    public void findAllTest(){
+	       TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+	        try {
+	            Collection<Token> Token = dao.findAll();
+	            assertEquals(3, Token.size());
+	        } catch (DatasourceFindException e) {
+	            fail(e.getMessage());
+	        }
+	    }
 }

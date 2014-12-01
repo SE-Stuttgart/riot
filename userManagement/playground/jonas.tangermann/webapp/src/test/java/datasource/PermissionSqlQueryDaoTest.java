@@ -14,7 +14,8 @@ import de.uni_stuttgart.riot.data.exc.DatasourceFindException;
 import de.uni_stuttgart.riot.data.exc.DatasourceInsertException;
 import de.uni_stuttgart.riot.data.exc.DatasourceUpdateException;
 import de.uni_stuttgart.riot.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
+import de.uni_stuttgart.riot.data.sqlquerydao.SearchFields;
+import de.uni_stuttgart.riot.data.sqlquerydao.SearchParameter;
 import de.uni_stuttgart.riot.data.storable.Permission;
 
 public class PermissionSqlQueryDaoTest extends DaoTestBase{
@@ -86,15 +87,26 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase{
 	@Test
 	public void findByParamTest(){
 		PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.ds);
-		LinkedList<String> param = new LinkedList<>();
-		param.add("x");
-		param.add("y");
+		LinkedList<SearchParameter> param = new LinkedList<>();
+		param.add(new SearchParameter(SearchFields.PERMISSIONVALUE, "x"));
+		param.add(new SearchParameter(SearchFields.PERMISSIONVALUE, "y"));
 		try {
-			Collection<Permission> ps = dao.findBy(param);
+			Collection<Permission> ps = dao.findBy(param,true);
 			assertEquals(2, ps.size());
 		} catch (DatasourceFindException e) {
 			fail(e.getMessage());
 		}
 	}
 	
+	   @Test
+	    public void findAllTest(){
+	       PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.ds);
+	        try {
+	            Collection<Permission> Permission = dao.findAll();
+	            assertEquals(4, Permission.size());
+	        } catch (DatasourceFindException e) {
+	            fail(e.getMessage());
+	        }
+	    }
+	    
 }

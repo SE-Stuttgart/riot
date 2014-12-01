@@ -3,6 +3,8 @@ package datasource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Collection;
+
 import org.junit.Test;
 
 import datasource.common.DaoTestBase;
@@ -10,10 +12,8 @@ import de.uni_stuttgart.riot.data.exc.DatasourceDeleteException;
 import de.uni_stuttgart.riot.data.exc.DatasourceFindException;
 import de.uni_stuttgart.riot.data.exc.DatasourceInsertException;
 import de.uni_stuttgart.riot.data.exc.DatasourceUpdateException;
-import de.uni_stuttgart.riot.data.sqlQueryDao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.data.sqlQueryDao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.data.storable.Role;
-import de.uni_stuttgart.riot.data.storable.RolePermission;
 
 public class RoleSqlQueryDaoTest extends DaoTestBase{
 
@@ -78,4 +78,16 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 		}
 		fail("Should not ne reached because there is no item with id 32");
 	}
+	
+	@Test
+    public void findAllTest(){
+	    RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+        try {
+            Collection<Role> Role = dao.findAll();
+            assertEquals(4, Role.size());
+        } catch (DatasourceFindException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

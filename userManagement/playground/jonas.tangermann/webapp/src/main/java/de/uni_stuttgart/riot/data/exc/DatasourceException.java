@@ -1,9 +1,23 @@
 package de.uni_stuttgart.riot.data.exc;
 
-public class DatasourceException extends Exception{
+/**
+ * Superclass for all errors according the datasource.
+ * 
+ * @author Jonas Tangermann
+ *
+ */
+public class DatasourceException extends Exception {
 
-	public DatasourceException(String massage) {
-		super(massage);
-	}
-	
+    private static final long serialVersionUID = -509609274709680393L;
+
+    /**
+     * Default-Constructor.
+     * 
+     * @param massage
+     *            Error text
+     */
+    public DatasourceException(String massage) {
+        super(massage);
+    }
+
 }

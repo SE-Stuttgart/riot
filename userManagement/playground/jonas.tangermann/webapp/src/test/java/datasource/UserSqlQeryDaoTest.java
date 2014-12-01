@@ -1,6 +1,9 @@
 package datasource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -9,9 +12,7 @@ import de.uni_stuttgart.riot.data.exc.DatasourceDeleteException;
 import de.uni_stuttgart.riot.data.exc.DatasourceFindException;
 import de.uni_stuttgart.riot.data.exc.DatasourceInsertException;
 import de.uni_stuttgart.riot.data.exc.DatasourceUpdateException;
-import de.uni_stuttgart.riot.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.data.sqlQueryDao.impl.UserSqlQueryDao;
-import de.uni_stuttgart.riot.data.storable.Permission;
 import de.uni_stuttgart.riot.data.storable.User;
 
 public class UserSqlQeryDaoTest extends DaoTestBase{
@@ -67,5 +68,15 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 		}
 		fail("Should not be reached because id 1 does not longer exist");
 	}
-
+	
+	@Test
+	public void findAllTest(){
+	    UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+        try {
+            Collection<User> user = dao.findAll();
+            assertEquals(3, user.size());
+        } catch (DatasourceFindException e) {
+            fail(e.getMessage());
+        }
+	}
 }
