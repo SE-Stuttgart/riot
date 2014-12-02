@@ -66,21 +66,40 @@ public class MainActivity extends Activity {
 			selectItem(0);
 		}
 	}
-
+	
+	/**
+	 * Prepare the OptionsMenu / Refreshbutton on the right side
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-
+	
+	/**
+	 * Define displaying settings for the options menu
+	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-		menu.findItem(R.id.action_refresh).setVisible(!drawerOpen);
+		
+		// boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+
+		// Refresh button is only shown in the home screen
+		if (!getActionBar().getTitle().equals("Home")) {
+			menu.findItem(R.id.action_refresh).setVisible(false);
+		} else {
+			menu.findItem(R.id.action_refresh).setVisible(true);
+		}
+
+		// menu.findItem(R.id.action_settings).setVisible(!homeScreenNotDisplayed);
+
 		return super.onPrepareOptionsMenu(menu);
 	}
-
+	
+	/**
+	 * Actions for the option buttons
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
