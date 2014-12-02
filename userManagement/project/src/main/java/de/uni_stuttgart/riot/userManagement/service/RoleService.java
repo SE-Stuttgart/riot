@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.userManagement.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,13 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.uni_stuttgart.riot.userManagement.data.storable.User;
+import de.uni_stuttgart.riot.userManagement.data.storable.Role;
 import de.uni_stuttgart.riot.userManagement.logic.exception.LogicException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.AddUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
 
 /**
@@ -27,45 +21,45 @@ import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
  * @author Marcel Lehwald
  *
  */
-@Path("/users/")
+@Path("/roles/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService {
+public class RoleService {
 
     @GET
-    public Collection<User> getUsers() {
+    public List<Role> getRoles() {
         try {
-            return UserManagementFacade.getInstance().getAllUsers();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
-    }
-
-    @GET
-    @Path("/{id}/")
-    public User getUser(@PathParam("id") int id) {
-        try {
-        	return UserManagementFacade.getInstance().getUser(id);
+            return UserManagementFacade.getInstance().getAllRoles();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
 
     @PUT
-    public Response putUser(User user) {
+    public Response putRole(Role role) {
         try {
-            UserManagementFacade.getInstance().addUser(user);
+            UserManagementFacade.getInstance().addRole(role);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
 
+    @GET
+    @Path("/{id}/")
+    public List<Role> getRoles(@PathParam("id") int id) {
+        try {
+            return UserManagementFacade.getInstance().getAllRolesFromUser(id);
+        } catch (LogicException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
+        }
+    }
+
     @PUT
     @Path("/{id}/")
-    public Response putUser(@PathParam("id") int id, User user) {
+    public Response putRole(@PathParam("id") int id, Role role) {
         try {
-            UserManagementFacade.getInstance().updateUser(id, user);
+            UserManagementFacade.getInstance().addRoleToUser(id, role);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
@@ -74,12 +68,13 @@ public class UserService {
 
     @DELETE
     @Path("/{id}/")
-    public Response deleteUser(@PathParam("id") int id) {
+    public Response deleteRole(@PathParam("id") int id) {
         try {
-            UserManagementFacade.getInstance().deleteUser(id);
+            UserManagementFacade.getInstance().deleteRole(id);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
+
 }

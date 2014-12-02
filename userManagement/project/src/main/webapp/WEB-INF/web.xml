@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-# Note: this is only a stub
-
-You can use annotations to configure everything that used to be in this deployment
-descriptor since Java EE 6 and Servlet 3.0 (which is the preferred way).
--->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 		 xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
 		 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
@@ -12,5 +6,23 @@ descriptor since Java EE 6 and Servlet 3.0 (which is the preferred way).
 		 version="3.1">
 
 	<display-name>riot userManagement</display-name>
+
+	<listener>
+		<listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+	</listener>
+	
+	<filter>
+		<filter-name>ShiroFilter</filter-name>
+		<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>ShiroFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
 
 </web-app>

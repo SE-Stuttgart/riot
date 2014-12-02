@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.userManagement.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,13 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import de.uni_stuttgart.riot.userManagement.data.storable.User;
+import de.uni_stuttgart.riot.userManagement.data.storable.Permission;
 import de.uni_stuttgart.riot.userManagement.logic.exception.LogicException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.AddUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
 
 /**
@@ -27,45 +21,45 @@ import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
  * @author Marcel Lehwald
  *
  */
-@Path("/users/")
+@Path("/permissions/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService {
+public class PermissionService {
 
     @GET
-    public Collection<User> getUsers() {
+    public List<Permission> getPermissions() {
         try {
-            return UserManagementFacade.getInstance().getAllUsers();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
-    }
-
-    @GET
-    @Path("/{id}/")
-    public User getUser(@PathParam("id") int id) {
-        try {
-        	return UserManagementFacade.getInstance().getUser(id);
+            return UserManagementFacade.getInstance().getAllPermissions();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
 
     @PUT
-    public Response putUser(User user) {
+    public Response putPermission(Permission permission) {
         try {
-            UserManagementFacade.getInstance().addUser(user);
+            UserManagementFacade.getInstance().addPermission(permission);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
 
+    @GET
+    @Path("/{id}/")
+    public List<Permission> getPermission(@PathParam("id") int id) {
+        try {
+            return UserManagementFacade.getInstance().getAllPermissionsFromUser(id);
+        } catch (LogicException e) {
+            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
+        }
+    }
+
     @PUT
     @Path("/{id}/")
-    public Response putUser(@PathParam("id") int id, User user) {
+    public Response putPermission(@PathParam("id") int id, Permission permission) {
         try {
-            UserManagementFacade.getInstance().updateUser(id, user);
+            UserManagementFacade.getInstance().updatePermission(id, permission);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
@@ -74,9 +68,9 @@ public class UserService {
 
     @DELETE
     @Path("/{id}/")
-    public Response deleteUser(@PathParam("id") int id) {
+    public Response deletePermission(@PathParam("id") int id) {
         try {
-            UserManagementFacade.getInstance().deleteUser(id);
+            UserManagementFacade.getInstance().deletePermission(id);
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
