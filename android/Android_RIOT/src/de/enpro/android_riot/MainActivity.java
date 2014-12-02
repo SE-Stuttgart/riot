@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,16 +16,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	
+
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,29 +39,25 @@ public class MainActivity extends Activity {
 
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
-		
+
 		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.drawer_list_item, mMenuTitles));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, 
-		mDrawerLayout, 
-		R.drawable.ic_drawer,
-		R.string.drawer_open,
-		R.string.drawer_close
-		) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
 			public void onDrawerClosed(View view) {
 				getActionBar().setTitle(mTitle);
-				invalidateOptionsMenu(); 
+				invalidateOptionsMenu();
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				getActionBar().setTitle("Settings");
-				invalidateOptionsMenu(); 
+				invalidateOptionsMenu();
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -79,7 +77,7 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-		menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+		menu.findItem(R.id.action_refresh).setVisible(!drawerOpen);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -89,8 +87,10 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		switch (item.getItemId()) {
-		case R.id.action_settings:
+		case R.id.action_refresh:
 			// TODO: refresh
+			Toast.makeText(getApplicationContext(), "TODO: implement refresh",
+					Toast.LENGTH_LONG).show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -108,19 +108,20 @@ public class MainActivity extends Activity {
 
 	private void selectItem(int position) {
 		Fragment fragment = new MyFragment();
-		
+
 		Bundle args = new Bundle();
 		args.putString("Menu", mMenuTitles[position]);
 		fragment.setArguments(args);
-		
+
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-		
+		fragmentManager.beginTransaction()
+				.replace(R.id.content_frame, fragment).commit();
+
 		mDrawerList.setItemChecked(position, true);
 		setTitle(mMenuTitles[position]);
-		
+
 		mDrawerLayout.closeDrawer(mDrawerList);
-		
+
 	}
 
 	@Override

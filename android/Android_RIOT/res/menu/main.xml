@@ -3,9 +3,9 @@
     tools:context="de.enpro.android_riot.MainActivity" >
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_action_refresh"
+        android:showAsAction="ifRoom"
         android:title="@string/action_refresh"/>
 
 </menu>

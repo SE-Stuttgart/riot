@@ -16,6 +16,7 @@
 
 <resources>
     <string name="app_name">RIOT</string>
+    
     <string-array name="menu_array">
         <item >Home</item>
         <item >Filter</item>
