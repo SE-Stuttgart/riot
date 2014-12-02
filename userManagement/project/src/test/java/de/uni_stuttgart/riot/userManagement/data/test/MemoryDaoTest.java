@@ -37,9 +37,9 @@ public class MemoryDaoTest {
 			User u3u = u3.iterator().next();
 			assertEquals(u2, u3u);
 			assertEquals("Yoda2", u2.getUsername());
-			dao.delete(u2);
 			Collection<User> allUser = dao.findAll();
 			assertEquals(1, allUser.size());
+	         dao.delete(u2);
 		} catch (DatasourceInsertException e) {
 			fail(e.getMessage());
 		} catch (DatasourceFindException e) {

@@ -20,8 +20,8 @@ public class DaoTestBase {
     public void setup() {
         PGSimpleDataSource ds = new PGSimpleDataSource();
         ds.setDatabaseName("umdb");
-        ds.setUser("niklas");
-        ds.setPassword("wurscht");
+        ds.setUser("umuser");
+        ds.setPassword("1q2w3e4r");
         ds.setPortNumber(5432);
         ds.setServerName("localhost");
         this.ds = ds;

@@ -75,15 +75,15 @@ public class User implements Storable {
         this.username = username;
     }
 
-    // @Override
-    // public boolean equals(Object o) {
-    // if (o instanceof User) {
-    // User u = (User) o;
-    // return this.id.equals(u.getId()) && this.username.equals(u.username) && this.password.equals(u.password) &&
-    // this.passwordSalt.equals(u.passwordSalt);
-    // } else {
-    // return false;
-    // }
-    // }
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof User) {
+            User u = (User) o;
+            return this.id.equals(u.getId()) && this.username.equals(u.username) && this.password.equals(u.password) &&
+                    this.passwordSalt.equals(u.passwordSalt);
+        } else {
+            return false;
+        }
+    }
 
 }

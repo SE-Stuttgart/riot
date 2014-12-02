@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 import de.uni_stuttgart.riot.userManagement.data.storable.User;
@@ -50,6 +51,8 @@ public class UserService {
     }
 
     @PUT
+    @RequiresAuthentication
+    @RequiresRoles("Master")
     public Response putUser(LoginRequest user) {
         try {
             UserManagementFacade.getInstance().addUser(new User(42L, user.getUsername(), user.getPassword(), "gibtsnet"));

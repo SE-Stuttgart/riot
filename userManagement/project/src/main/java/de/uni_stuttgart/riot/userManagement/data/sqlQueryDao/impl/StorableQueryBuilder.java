@@ -32,7 +32,6 @@ public class StorableQueryBuilder {
             stmt.setObject(count, i.next().getValue());
             count++;
         }
-        System.out.println(stmt);
         return stmt;
     }
 

@@ -9,16 +9,16 @@ roles;
 
 CREATE TABLE users 
 (
-userID bigint,
+userID SERIAL,
 username varchar(50) unique,
-pword varchar(50),
-pword_salt varchar(50),
+password varchar(50),
+password_salt varchar(50),
 PRIMARY KEY (userID)
 );
 
 CREATE TABLE tokens 
 (
-tokenID bigint,
+tokenID SERIAL,
 userID bigint,
 tokenValue varchar(100),
 issueDate timestamp,
@@ -29,21 +29,21 @@ FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE
 
 CREATE TABLE permissions
 (
-permissionID bigint,
+permissionID SERIAL,
 permissionValue varchar(50),
 PRIMARY KEY (permissionID)
 );
 
 CREATE TABLE roles 
 (
-roleID bigint,
+roleID SERIAL,
 roleName varchar(50),
 PRIMARY KEY (roleID)
 );
 
 CREATE TABLE users_roles 
 (
-userRoleID bigInt,
+userRoleID SERIAL,
 userID bigint,
 roleID bigint,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
@@ -53,7 +53,7 @@ PRIMARY KEY (userRoleID)
 
 CREATE TABLE tokens_roles 
 (
-tokenRoleID bigint,
+tokenRoleID SERIAL,
 tokenID bigint,
 roleID bigint,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
@@ -63,7 +63,7 @@ PRIMARY KEY (tokenRoleID)
 
 CREATE TABLE roles_permissions 
 (
-rolePermissionID bigint,
+rolePermissionID SERIAL,
 permissionID bigint,
 roleID bigint,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
