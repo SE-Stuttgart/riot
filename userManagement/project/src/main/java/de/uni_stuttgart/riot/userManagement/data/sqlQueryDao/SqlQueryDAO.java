@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -18,7 +19,8 @@ import de.uni_stuttgart.riot.userManagement.data.storable.Storable;
 
 /**
  * 
- * Superclass for all SQL-Query based {@link DAO}s. 
+ * Superclass for all SQL-Query based {@link DAO}s.
+ * 
  * @author Jonas Tangermann
  *
  * @param <T>
@@ -31,9 +33,13 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
 
     /**
      * Constructor.
-     * @param ds the SQL-Datasource that should be used.
-     * @param queryBuilder the querybuilder for T
-     * @param objectBuilder the objectbuilder for T
+     * 
+     * @param ds
+     *            the SQL-Datasource that should be used.
+     * @param queryBuilder
+     *            the querybuilder for T
+     * @param objectBuilder
+     *            the objectbuilder for T
      */
     public SqlQueryDAO(DataSource ds, QueryBuilder<T> queryBuilder, ObjectBuilder<T> objectBuilder) {
         this.ds = ds;
@@ -150,7 +156,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             connection = ds.getConnection();
             PreparedStatement stmt = this.queryBuilder.buildFindAll(connection);
             ResultSet resultSet = stmt.executeQuery();
-            LinkedList<T> res = new LinkedList<T>();
+            ArrayList<T> res = new ArrayList<T>();
             while (resultSet.next()) {
                 res.add(this.objectBuilder.build(resultSet));
             }

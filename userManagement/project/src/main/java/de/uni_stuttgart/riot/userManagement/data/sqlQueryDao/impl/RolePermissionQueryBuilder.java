@@ -26,7 +26,7 @@ public class RolePermissionQueryBuilder extends StorableQueryBuilder implements 
     @Override
     public PreparedStatement buildInsert(RolePermission t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setLong(2, t.getRoleID());
         stmt.setLong(3, t.getPermissionID());
         return stmt;
@@ -37,7 +37,7 @@ public class RolePermissionQueryBuilder extends StorableQueryBuilder implements 
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setLong(1, t.getRoleID());
         stmt.setLong(2, t.getPermissionID());
-        stmt.setLong(3, t.getID());
+        stmt.setLong(3, t.getId());
         return stmt;
     }
 

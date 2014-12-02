@@ -13,39 +13,39 @@ import org.apache.shiro.web.util.WebUtils;
 
 /**
  * 
- * Filter for securing resources which need authentication using an access token.
- * The Filter will get the access token from the request header and authenticate the subject based on the token.
+ * Filter for securing resources which need authentication using an access token. The Filter will get the access token from the request
+ * header and authenticate the subject based on the token.
  * 
  * @author Marcel Lehwald
  *
  */
 public class AccessTokenAuthenticationFilter extends AuthenticationFilter {
 
-	protected static final String AUTHENTICATION_HEADER = "Access-Token";
+    protected static final String AUTHENTICATION_HEADER = "Access-Token";
 
-	@Override
-	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		HttpServletResponse httpResponse = WebUtils.toHttp(response);
+    @Override
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        HttpServletResponse httpResponse = WebUtils.toHttp(response);
         httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         return false;
-	}
+    }
 
-	@Override
-	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-		Subject user = SecurityUtils.getSubject();
-		
-		//get access token from request header
-		HttpServletRequest httpRequest = WebUtils.toHttp(request);
-		String accessToken = httpRequest.getHeader(AUTHENTICATION_HEADER);
+    @Override
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        Subject user = SecurityUtils.getSubject();
 
-		try {
-			user.login(new AccessTokenAuthentication(accessToken));
-		} catch (AuthenticationException e) {
-			return false;
-		}
+        // get access token from request header
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
+        String accessToken = httpRequest.getHeader(AUTHENTICATION_HEADER);
 
-		return user.isAuthenticated();
-	}
+        try {
+            user.login(new AccessTokenAuthentication(accessToken));
+        } catch (AuthenticationException e) {
+            return false;
+        }
+
+        return user.isAuthenticated();
+    }
 
 }

@@ -13,7 +13,7 @@ public class StorableQueryBuilder {
 
     public PreparedStatement buildDelete(Storable t, Connection connection, String query) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         return stmt;
     }
 

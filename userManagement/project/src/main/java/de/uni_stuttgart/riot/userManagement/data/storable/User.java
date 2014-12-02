@@ -8,10 +8,14 @@ import de.uni_stuttgart.riot.userManagement.data.sqlQueryDao.SearchParameter;
 
 public class User implements Storable {
 
-    private final Long id;
+    private Long id;
     private String username;
     private String password;
     private String passwordSalt;
+
+    public User() {
+        // TODO Auto-generated constructor stub
+    }
 
     public User(Long id, String username, String password, String passwordSalt) {
         this.id = id;
@@ -21,7 +25,7 @@ public class User implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.id;
     }
 
@@ -71,14 +75,15 @@ public class User implements Storable {
         this.username = username;
     }
 
-    @Override
-	public boolean equals(Object o) {
-        if (o instanceof User) {
-            User u = (User) o;
-            return this.id.equals(u.getID()) && this.username.equals(u.username) && this.password.equals(u.password) && this.passwordSalt.equals(u.passwordSalt);
-        } else {
-            return false;
-        }
-    }
+    // @Override
+    // public boolean equals(Object o) {
+    // if (o instanceof User) {
+    // User u = (User) o;
+    // return this.id.equals(u.getId()) && this.username.equals(u.username) && this.password.equals(u.password) &&
+    // this.passwordSalt.equals(u.passwordSalt);
+    // } else {
+    // return false;
+    // }
+    // }
 
 }

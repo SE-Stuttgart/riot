@@ -13,8 +13,8 @@ public class UserRole implements Storable {
     private final Long roleID;
 
     public UserRole(User user, Role role, Long userRoleID) {
-        this.userID = user.getID();
-        this.roleID = role.getID();
+        this.userID = user.getId();
+        this.roleID = role.getId();
         this.userRoleID = userRoleID;
     }
 
@@ -25,7 +25,7 @@ public class UserRole implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.userRoleID;
     }
 

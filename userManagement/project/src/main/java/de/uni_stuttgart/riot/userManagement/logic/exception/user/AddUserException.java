@@ -9,14 +9,16 @@ import de.uni_stuttgart.riot.userManagement.logic.exception.LogicException;
  *
  */
 public class AddUserException extends LogicException {
-	public AddUserException(String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+    public AddUserException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
     public AddUserException(String message, Exception cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
+
     /**
      * 
      */
@@ -24,11 +26,6 @@ public class AddUserException extends LogicException {
 
     public int getErrorCode() {
         return ErrorCodes.ADD_USER;
-    }
-
-    @Override
-    public String getMessage() {
-        return "Unable to add the new user";
     }
 
 }

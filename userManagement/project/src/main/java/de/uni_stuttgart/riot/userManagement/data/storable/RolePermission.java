@@ -13,9 +13,9 @@ public class RolePermission implements Storable {
     private final Long roleID;
 
     public RolePermission(Role role, Permission permission, Long rolePermissionID) {
-        this.roleID = role.getID();
+        this.roleID = role.getId();
         this.rolePermissionID = rolePermissionID;
-        this.permissionID = permission.getID();
+        this.permissionID = permission.getId();
     }
 
     public RolePermission(Long roleID, Long permissionID, Long rolePermissionID) {
@@ -25,7 +25,7 @@ public class RolePermission implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.rolePermissionID;
     }
 

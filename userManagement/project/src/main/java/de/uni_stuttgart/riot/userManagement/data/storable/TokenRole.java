@@ -16,8 +16,8 @@ public class TokenRole implements Storable {
     public final static String SEARCH_PARAM_TOKENID = "tokenID";
 
     public TokenRole(Token token, Role role, Long tokenRoleID) {
-        this.tokenID = token.getID();
-        this.roleID = role.getID();
+        this.tokenID = token.getId();
+        this.roleID = role.getId();
         this.tokenRoleID = tokenRoleID;
     }
 
@@ -28,7 +28,7 @@ public class TokenRole implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.tokenRoleID;
     }
 

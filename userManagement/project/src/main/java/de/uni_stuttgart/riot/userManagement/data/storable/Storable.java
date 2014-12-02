@@ -11,7 +11,7 @@ public interface Storable {
      * 
      * @return unique id
      */
-    public long getID();
+    public long getId();
 
     /**
      * Returns all search parameters that should be inspected

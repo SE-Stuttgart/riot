@@ -17,7 +17,7 @@ public class Permission implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.permissionID;
     }
 

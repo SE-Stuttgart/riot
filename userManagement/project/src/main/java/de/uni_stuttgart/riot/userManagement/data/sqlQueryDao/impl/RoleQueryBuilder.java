@@ -26,7 +26,7 @@ public class RoleQueryBuilder extends StorableQueryBuilder implements QueryBuild
     @Override
     public PreparedStatement buildInsert(Role t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setString(2, t.getRoleName());
         return stmt;
     }
@@ -35,7 +35,7 @@ public class RoleQueryBuilder extends StorableQueryBuilder implements QueryBuild
     public PreparedStatement buildUpdate(Role t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setString(1, t.getRoleName());
-        stmt.setLong(2, t.getID());
+        stmt.setLong(2, t.getId());
         return stmt;
     }
 

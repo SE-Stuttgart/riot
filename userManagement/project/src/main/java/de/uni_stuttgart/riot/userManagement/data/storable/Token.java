@@ -33,7 +33,7 @@ public class Token implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.tokenID;
     }
 

@@ -53,13 +53,13 @@ public class DatabaseSysoDumper {
 				User current = iUser.next();
 				System.out.println(printer.getUserString(current));
 				LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-				params.add(new SearchParameter(SearchFields.USERID, current.getID()));
+				params.add(new SearchParameter(SearchFields.USERID, current.getId()));
 				Collection<UserRole> userRoles = userRoleDao.findBy(params,false);
 				for (UserRole userRole: userRoles) {
 					Role role = roleDao.findBy(userRole.getRoleID());
 					System.out.println("\t <-"+printer.getUserRoleString(userRole)+ "-> " + printer.getRoleString(role));
 					LinkedList<SearchParameter> rolePSearch = new LinkedList<SearchParameter>();
-					rolePSearch.add(new SearchParameter(SearchFields.ROLEID, role.getID()));
+					rolePSearch.add(new SearchParameter(SearchFields.ROLEID, role.getId()));
 					Collection<RolePermission> rolePermissions = rolePermissionDao.findBy(rolePSearch,false);
 					for (RolePermission rolePermission: rolePermissions) {
 						Permission permission = permissionDao.findBy(rolePermission.getPermissionID());

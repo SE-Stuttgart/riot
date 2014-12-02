@@ -26,7 +26,7 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
     @Override
     public PreparedStatement buildInsert(Token t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setLong(2, t.getUserID());
         stmt.setString(3, t.getTokenValue());
         stmt.setTimestamp(4, t.getIssueTime());
@@ -41,7 +41,7 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
         stmt.setString(2, t.getTokenValue());
         stmt.setTimestamp(3, t.getIssueTime());
         stmt.setTimestamp(4, t.getExpirationTime());
-        stmt.setLong(5, t.getID());
+        stmt.setLong(5, t.getId());
         return stmt;
     }
 

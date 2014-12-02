@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.userManagement.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,14 +12,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
+
 import de.uni_stuttgart.riot.userManagement.data.storable.User;
 import de.uni_stuttgart.riot.userManagement.logic.exception.LogicException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.AddUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.GetUserException;
-import de.uni_stuttgart.riot.userManagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
+import de.uni_stuttgart.riot.userManagement.service.request.LoginRequest;
 
 /**
  * 
@@ -33,9 +30,10 @@ import de.uni_stuttgart.riot.userManagement.service.exception.ApiErrorResponse;
 public class UserService {
 
     @GET
-    public Collection<User> getUsers() {
+    @RequiresRoles("Master")
+    public List<User> getUsers() {
         try {
-            return UserManagementFacade.getInstance().getAllUsers();
+            return (List<User>) UserManagementFacade.getInstance().getAllUsers();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
@@ -45,16 +43,16 @@ public class UserService {
     @Path("/{id}/")
     public User getUser(@PathParam("id") int id) {
         try {
-        	return UserManagementFacade.getInstance().getUser(id);
+            return UserManagementFacade.getInstance().getUser(id);
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
     }
 
     @PUT
-    public Response putUser(User user) {
+    public Response putUser(LoginRequest user) {
         try {
-            UserManagementFacade.getInstance().addUser(user);
+            UserManagementFacade.getInstance().addUser(new User(42L, user.getUsername(), user.getPassword(), "gibtsnet"));
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);

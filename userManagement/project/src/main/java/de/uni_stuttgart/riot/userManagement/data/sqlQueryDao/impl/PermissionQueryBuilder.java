@@ -26,7 +26,7 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
     @Override
     public PreparedStatement buildInsert(Permission t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setString(2, t.getPermissionValue());
         return stmt;
     }
@@ -35,7 +35,7 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
     public PreparedStatement buildUpdate(Permission t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setString(1, t.getPermissionValue());
-        stmt.setLong(2, t.getID());
+        stmt.setLong(2, t.getId());
         return stmt;
     }
 

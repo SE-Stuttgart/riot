@@ -27,7 +27,7 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
     /**
      * Structure for storing the objects.
      * <br>
-     * Key = object id ( {@link Storable#getID()})
+     * Key = object id ( {@link Storable#getId()})
      */
     private final HashMap<Long, T> store;
 
@@ -49,19 +49,19 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
 
     @Override
     public void delete(T t) throws DatasourceDeleteException {
-        if (!this.getStore().remove(t.getID(), t)) {
+        if (!this.getStore().remove(t.getId(), t)) {
             throw new DatasourceDeleteException(DatasourceDeleteException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
         }
     }
 
     @Override
     public void insert(T t) throws DatasourceInsertException {
-        this.getStore().put(t.getID(), t);
+        this.getStore().put(t.getId(), t);
     }
 
     @Override
     public void update(T t) throws DatasourceUpdateException {
-        this.getStore().put(t.getID(), t);
+        this.getStore().put(t.getId(), t);
     }
 
     @Override

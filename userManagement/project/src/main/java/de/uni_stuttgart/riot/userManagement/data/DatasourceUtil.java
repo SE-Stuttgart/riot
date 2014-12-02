@@ -6,12 +6,12 @@ import javax.sql.DataSource;
 
 public class DatasourceUtil {
 
-	private static final String JNDI_PATH = "JNDI_PATH";
+    private static final String JNDI_PATH = "jdbc/iot";
 
-	public static DataSource getDataSource() throws NamingException{
-		InitialContext in;
-		in = new InitialContext();
-		return (DataSource)in.lookup(JNDI_PATH); // FIXME correct jndi path 
-	}
+    public static DataSource getDataSource() throws NamingException {
+        InitialContext in;
+        in = new InitialContext();
+        return (DataSource) in.lookup(JNDI_PATH); // FIXME correct jndi path
+    }
 
 }

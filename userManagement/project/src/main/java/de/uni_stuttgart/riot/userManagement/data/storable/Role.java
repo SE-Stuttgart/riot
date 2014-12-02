@@ -25,7 +25,7 @@ public class Role implements Storable {
     }
 
     @Override
-    public long getID() {
+    public long getId() {
         return this.id;
     }
 

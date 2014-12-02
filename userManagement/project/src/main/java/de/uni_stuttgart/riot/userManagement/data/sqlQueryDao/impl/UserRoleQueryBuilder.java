@@ -26,7 +26,7 @@ public class UserRoleQueryBuilder extends StorableQueryBuilder implements QueryB
     @Override
     public PreparedStatement buildInsert(UserRole t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setLong(2, t.getUserID());
         stmt.setLong(3, t.getRoleID());
         return stmt;
@@ -37,7 +37,7 @@ public class UserRoleQueryBuilder extends StorableQueryBuilder implements QueryB
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setLong(1, t.getUserID());
         stmt.setLong(2, t.getRoleID());
-        stmt.setLong(3, t.getID());
+        stmt.setLong(3, t.getId());
         return stmt;
     }
 

@@ -26,7 +26,7 @@ public class TokenRoleQueryBuilder extends StorableQueryBuilder implements Query
     @Override
     public PreparedStatement buildInsert(TokenRole t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getID());
+        stmt.setLong(1, t.getId());
         stmt.setLong(2, t.getTokenID());
         stmt.setLong(3, t.getRoleID());
         return stmt;
@@ -37,7 +37,7 @@ public class TokenRoleQueryBuilder extends StorableQueryBuilder implements Query
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setLong(1, t.getTokenID());
         stmt.setLong(2, t.getRoleID());
-        stmt.setLong(3, t.getID());
+        stmt.setLong(3, t.getId());
         return stmt;
     }
 
