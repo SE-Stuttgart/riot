@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MyFragment extends Fragment {
 
-	private TextView textView;
+	private ListView textView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -18,8 +19,8 @@ public class MyFragment extends Fragment {
 		View view = inflater
 				.inflate(R.layout.fragment_layout, container, false);
 		String menu = getArguments().getString("Menu");
-		textView = (TextView) view.findViewById(R.id.textView);
-		textView.setText(menu);
+		//textView = (ListView) view.findViewById(R.id.LISTE);
+		//textView.setText(menu);		
 		
 		return view;
 	}

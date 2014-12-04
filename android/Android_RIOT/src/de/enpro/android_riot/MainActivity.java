@@ -1,5 +1,7 @@
 package de.enpro.android_riot;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -108,12 +111,26 @@ public class MainActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
 			// TODO: refresh
-			Toast.makeText(getApplicationContext(), "TODO: implement refresh",
-					Toast.LENGTH_LONG).show();
+			//Toast.makeText(getApplicationContext(), "TODO: implement refresh",
+			//		Toast.LENGTH_LONG).show();
+			getEventList();			
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void getEventList(){
+		ArrayList<String> meineListe = new ArrayList<String>();
+		meineListe.add("TEST");
+		meineListe.add("TEST1");
+		meineListe.add("TEST2");
+		ListAdapter listenAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, meineListe);
+		ListView meineListView = (ListView) findViewById(R.id.LISTE);
+		meineListView.setAdapter(listenAdapter);	
 	}
 
 	private class DrawerItemClickListener implements
@@ -131,7 +148,7 @@ public class MainActivity extends Activity {
 		Bundle args = new Bundle();
 		args.putString("Menu", mMenuTitles[position]);
 		fragment.setArguments(args);
-
+		
 		FragmentManager fragmentManager = getFragmentManager();
 		fragmentManager.beginTransaction()
 				.replace(R.id.content_frame, fragment).commit();

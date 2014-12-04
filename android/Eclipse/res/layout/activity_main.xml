@@ -34,12 +34,6 @@
                 android:orientation="vertical" 
                 android:id="@+id/asd">
 
-                <ExpandableListView
-                    android:id="@+id/expandableListView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="394dp" >
-                </ExpandableListView>
-
             </LinearLayout>
 
         </ScrollView>
