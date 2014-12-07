@@ -2,12 +2,10 @@ package de.uni_stuttgart.riot.calendar;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 
 import javax.naming.NamingException;
 
 import org.sql2o.Connection;
-import org.sql2o.Sql2o;
 
 import de.uni_stuttgart.riot.db.ConnectionMgr;
 import de.uni_stuttgart.riot.db.DaoException;
@@ -18,25 +16,19 @@ import de.uni_stuttgart.riot.rest.ModelManager;
  */
 public class CalendarModelManager implements ModelManager<CalendarEntry> {
 
-    /** Some dummy entries to substitute the persistence layer. */
-    private static HashMap<Long, CalendarEntry> entries = new HashMap<>();
-
-    static {
-        long id = 1;
-        entries.put(id, new CalendarEntry(id++, "important meeting", "Some body text"));
-        entries.put(id, new CalendarEntry(id++, "entry2", "unicode support? äüößſðđŋ"));
-        entries.put(id, new CalendarEntry(id++, "", "lorem ipsum dolor sit amet"));
-        entries.put(id, new CalendarEntry(id++, "sprint planning", null));
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see de.uni_stuttgart.riot.rest.ModelManager#getById(long)
      */
     @Override
-    public CalendarEntry getById(long id) {
-        return entries.get(id);
+    public CalendarEntry getById(long id) throws DaoException {
+        String sql = "SELECT * FROM calendarEvents WHERE id = :id";
+        try (Connection con = ConnectionMgr.openConnection()){
+            return con.createQuery(sql).addParameter("id", id).executeAndFetchFirst(CalendarEntry.class);
+        } catch (NamingException | SQLException e) {
+            throw new DaoException("Could not access calendar entry.", e);
+        }
     }
 
     /*
@@ -48,7 +40,7 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
     public Collection<CalendarEntry> get() throws DaoException {
         String sql = "SELECT * FROM calendarEntries";
         //return entries.values();
-        try (Connection con = ConnectionMgr.openConnection()){    
+        try (Connection con = ConnectionMgr.openConnection()){
             return con.createQuery(sql).executeAndFetch(CalendarEntry.class);
         } catch (NamingException | SQLException e) {
             throw new DaoException("Could not access calendar entries.", e);
@@ -97,8 +89,8 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      */
     @Override
     public CalendarEntry update(CalendarEntry model) {
-        entries.put(model.getId(), model);
-        return model;
+        //TODO
+        return null;
     }
 
 }
