@@ -108,8 +108,11 @@ public class BaseResourceTest extends JerseyTest {
          */
         @Override
         public TestModel create(TestModel model) {
+            if (model == null) {
+                throw new IllegalArgumentException("The resource model must not be null");
+            }
+            model.setId(testData.size() + 1);
             testData.put(model.getId(), model);
-            model.setId(testData.size());
             return model;
         }
 

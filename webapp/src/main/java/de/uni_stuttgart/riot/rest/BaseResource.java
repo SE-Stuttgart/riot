@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -97,6 +98,9 @@ public abstract class BaseResource<E extends ResourceModel> {
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
     public Response create(E model) throws URISyntaxException, DaoException {
+        if(model == null){
+            throw new BadRequestException("please provide an entity in the request body.");
+        }
         E created = modelManager.create(model);
         URI relative = getUriForModel(created);
         return Response.created(relative).entity(created).build();
