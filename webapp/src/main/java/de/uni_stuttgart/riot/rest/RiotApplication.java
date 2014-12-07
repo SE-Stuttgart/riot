@@ -23,7 +23,7 @@ public class RiotApplication extends ResourceConfig {
      * Configures the application.
      */
     public RiotApplication() {
-        packages("de.uni_stuttgart.riot.rest;de.uni_stuttgart.riot.calendar;");
+        packages("de.uni_stuttgart.riot.rest;de.uni_stuttgart.riot.calendar;de.uni_stuttgart.riot.contacts;");
     }
 
 }
