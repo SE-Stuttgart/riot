@@ -119,8 +119,8 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
          */
         @Override
-        public void delete(long id) {
-            testData.remove(id);
+        public boolean delete(long id) {
+            return testData.remove(id) != null;
         }
 
         /*
@@ -232,13 +232,14 @@ public class BaseResourceTest extends JerseyTest {
 
     /**
      * Test deletion of objects.
+     * Response of 204 indicates success, 404 when nothing found that could be deleted.
      */
     @Test
     public void testDelete() {
-        Response resp = target("tests/10").request(MediaType.APPLICATION_JSON).delete();
+        Response resp = target("tests/9").request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
-
-        resp = target("tests/20").request(MediaType.APPLICATION_JSON).delete();
+        // resource deleted, so same request should return 404
+        resp = target("tests/9").request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
 

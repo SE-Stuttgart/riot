@@ -72,11 +72,12 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
      */
     @Override
-    public void delete(long id) throws DaoException {
+    public boolean delete(long id) throws DaoException {
         String sql = "DELETE FROM calendarEntries WHERE id = :id";
         
         try (Connection con = ConnectionMgr.openConnection()){
-            con.createQuery(sql).addParameter("id", id).executeUpdate();
+            int rows = con.createQuery(sql).addParameter("id", id).executeUpdate().getResult();
+            return rows > 0;
         } catch (NamingException | SQLException e) {
             throw new DaoException("Could not delete calendar entry", e);
         }

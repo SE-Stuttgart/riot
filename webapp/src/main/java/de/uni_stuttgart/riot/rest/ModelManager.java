@@ -43,8 +43,9 @@ public interface ModelManager<E extends ResourceModel> {
      *
      * @param id
      *            the id
+     * @return true if the specified row was deleted, false if no such row exists.
      */
-    void delete(long id) throws DaoException;
+    boolean delete(long id) throws DaoException;
 
     /**
      * Update/replace a model.

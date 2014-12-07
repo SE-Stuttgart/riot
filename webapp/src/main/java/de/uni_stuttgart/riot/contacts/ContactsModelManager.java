@@ -57,8 +57,8 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
      */
     @Override
-    public void delete(long id) {
-        entries.remove(id);
+    public boolean delete(long id) {
+        return entries.remove(id) != null;
     }
 
     /*

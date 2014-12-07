@@ -43,7 +43,7 @@ public class CalendarEntry implements ResourceModel {
      *            the id
      * @param title
      *            the title
-     * @param body
+     * @param description
      *            the body
      */
     public CalendarEntry(long id, String title, String description) {

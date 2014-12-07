@@ -110,15 +110,17 @@ public abstract class BaseResource<E extends ResourceModel> {
      *
      * @param id
      *            the id
-     * @return the response
+     * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
      * @throws DaoException when deletion not possible
      */
     @DELETE
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
     public Response delete(@PathParam("id") int id) throws DaoException {
-        modelManager.delete(id); // should throw an exception if not successful
-        return Response.noContent().build();
+        if(modelManager.delete(id)){
+            return Response.noContent().build();
+        }
+        throw new NotFoundException("No such resource exists or it has already been deleted.");
     }
 
     /**
