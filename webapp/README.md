@@ -54,7 +54,7 @@ Install the following plugins from the eclipse marketplace if not installed alre
 - open the mySQL shell as administrative user (e.g. with `mysql -u root -p`)
   - create a user for the riot application: `CREATE USER 'riot'@'localhost' IDENTIFIED BY 'password';`
   - create a database for the riot app: `CREATE DATABASE riot CHARACTER SET utf8;`
-  - grant permissions: `GRANT ALL ON riot.* TO 'riot'@'%' IDENTIFIED BY 'riot1234' WITH GRANT OPTION; FLUSH PRIVILEGES;`
+  - grant permissions: `GRANT ALL ON riot.* TO 'riot'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;`
 - download the mysql-connector jar from https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.34.zip
 - unzip the package and put the jar into the domain/lib folder of your glassfish installation
 - restart glassfish and open the admin panel: http://localhost:4848/common/index.jsf
