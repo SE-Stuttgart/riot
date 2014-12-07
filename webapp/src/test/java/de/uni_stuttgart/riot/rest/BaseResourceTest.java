@@ -6,48 +6,54 @@ import static org.junit.Assert.fail;
 import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Use a mock implementation of the BaseResource to check
- * if the behavior is as expected.
+ * Use a mock implementation of the BaseResource to check if the behavior is as expected.
  *
  */
 public class BaseResourceTest extends JerseyTest {
-    
+
     /**
      * Mock implementation of a resource.
      */
     private static class TestModel implements ResourceModel {
-        
+
         /** The id. */
         private long id;
-        
+
         /**
          * Instantiates a new test model.
          */
-        public TestModel(){}
-        
+        public TestModel() {
+        }
+
         /**
          * Instantiates a new test model.
          *
-         * @param i the i
+         * @param i
+         *            the i
          */
-        public TestModel(int i){
+        public TestModel(int i) {
             id = i;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ResourceModel#getId()
          */
         @Override
@@ -55,30 +61,29 @@ public class BaseResourceTest extends JerseyTest {
             return id;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ResourceModel#setId(long)
          */
         @Override
         public void setId(long id) {
             this.id = id;
         }
-        
+
     }
-    
+
     /**
      * Mock implementation of a resource manager that doesn't need a DB.
      */
     private static class ModelManagerImpl implements ModelManager<TestModel> {
-        
-        /** The test data. */
-        private static HashMap<Long,TestModel> testData = new HashMap<>();
-        static {
-            for(int i=0; i < 10; i++){
-                testData.put((long) i, new TestModel(i));
-            }
-        }
 
-        /* (non-Javadoc)
+        /** The test data. */
+        private static HashMap<Long, TestModel> testData = new HashMap<>();
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ModelManager#getById(long)
          */
         @Override
@@ -86,7 +91,9 @@ public class BaseResourceTest extends JerseyTest {
             return testData.get(id);
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ModelManager#get()
          */
         @Override
@@ -94,17 +101,21 @@ public class BaseResourceTest extends JerseyTest {
             return testData.values();
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ModelManager#create(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
         public TestModel create(TestModel model) {
-            model.setId(testData.size());
             testData.put(model.getId(), model);
+            model.setId(testData.size());
             return model;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
          */
         @Override
@@ -112,17 +123,18 @@ public class BaseResourceTest extends JerseyTest {
             testData.remove(id);
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.ModelManager#update(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
         public TestModel update(TestModel model) {
             return testData.put(model.getId(), model);
         }
-        
-        
+
     }
-    
+
     /**
      * Implementation of the base class to be tested.
      */
@@ -136,16 +148,18 @@ public class BaseResourceTest extends JerseyTest {
             super(new ModelManagerImpl());
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see de.uni_stuttgart.riot.rest.BaseResource#getUriForModel(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
         protected URI getUriForModel(TestModel model) {
             return null;
         }
-        
+
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -166,6 +180,14 @@ public class BaseResourceTest extends JerseyTest {
         return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
     }
 
+    @Before
+    public void resetTestData() {
+        ModelManagerImpl.testData.clear();
+        for (int i = 0; i < 10; i++) {
+            ModelManagerImpl.testData.put((long) i, new TestModel(i));
+        }
+    }
+
     /**
      * Test get one.
      */
@@ -178,15 +200,19 @@ public class BaseResourceTest extends JerseyTest {
         a = target("tests/1").request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
     }
-    
+
     /**
      * Test get all.
      */
     @Test
     public void testGetAll() {
-        target("tests").request(MediaType.APPLICATION_JSON).get(String.class);
+        Response resp = target("tests").request(MediaType.APPLICATION_JSON).get();
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Collection<TestModel> models = resp.readEntity(new GenericType<List<TestModel>>() {
+        });
+        assertEquals(ModelManagerImpl.testData.size(), models.size());
     }
-    
+
     /**
      * Test posting new objects.
      */
@@ -198,9 +224,12 @@ public class BaseResourceTest extends JerseyTest {
         assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
         // post requests must return the newly created resource with the id set
         TestModel created = resp.readEntity(TestModel.class);
-        assertEquals(ModelManagerImpl.testData.size() + 1, created.getId());
+        assertEquals(ModelManagerImpl.testData.size(), created.getId());
+        // post must fail with invalid body
+        resp = target("tests").request(MediaType.APPLICATION_JSON).post(null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
     }
-    
+
     /**
      * Test deletion of objects.
      */
@@ -208,11 +237,11 @@ public class BaseResourceTest extends JerseyTest {
     public void testDelete() {
         Response resp = target("tests/10").request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
-        
+
         resp = target("tests/20").request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
-    
+
     /**
      * Test put one.
      */
