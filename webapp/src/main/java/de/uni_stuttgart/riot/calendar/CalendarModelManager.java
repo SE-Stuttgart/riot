@@ -23,7 +23,7 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      */
     @Override
     public CalendarEntry getById(long id) throws DaoException {
-        String sql = "SELECT * FROM calendarEvents WHERE id = :id";
+        String sql = "SELECT * FROM calendarEntries WHERE id = :id";
         try (Connection con = ConnectionMgr.openConnection()){
             return con.createQuery(sql).addParameter("id", id).executeAndFetchFirst(CalendarEntry.class);
         } catch (NamingException | SQLException e) {
@@ -73,7 +73,7 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      */
     @Override
     public void delete(long id) throws DaoException {
-        String sql = "DELETE FROM calendarEvents WHERE id = :id";
+        String sql = "DELETE FROM calendarEntries WHERE id = :id";
         
         try (Connection con = ConnectionMgr.openConnection()){
             con.createQuery(sql).addParameter("id", id).executeUpdate();
