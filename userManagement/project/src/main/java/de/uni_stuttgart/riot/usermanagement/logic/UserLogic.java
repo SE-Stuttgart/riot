@@ -15,6 +15,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserExceptio
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 
 /**
+ * Contains all logic regarding an user.
  * 
  * @author Niklas Schnabel
  *
@@ -27,7 +28,6 @@ public class UserLogic {
         try {
             dao = new UserSqlQueryDao(DatasourceUtil.getDataSource());
         } catch (NamingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -36,7 +36,7 @@ public class UserLogic {
         try {
             dao.insert(user);
         } catch (Exception e) {
-            throw new AddUserException(e.getMessage(), e);
+            throw new AddUserException(e);
         }
     }
 
@@ -44,7 +44,7 @@ public class UserLogic {
         try {
             dao.delete(dao.findBy(id));
         } catch (Exception e) {
-            throw new DeleteUserException(e.getMessage(), e);
+            throw new DeleteUserException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class UserLogic {
         try {
             dao.update(user);
         } catch (Exception e) {
-            throw new UpdateUserException(e.getMessage(), e);
+            throw new UpdateUserException(e);
         }
     }
 
@@ -62,7 +62,7 @@ public class UserLogic {
         try {
             user = dao.findBy(id);
         } catch (Exception e) {
-            throw new GetUserException(e.getMessage(), e);
+            throw new GetUserException(e);
         }
 
         return user;
@@ -73,7 +73,7 @@ public class UserLogic {
         try {
             users = dao.findAll();
         } catch (Exception e) {
-            throw new GetAllUsersException(e.getMessage(), e);
+            throw new GetAllUsersException(e);
         }
 
         return users;

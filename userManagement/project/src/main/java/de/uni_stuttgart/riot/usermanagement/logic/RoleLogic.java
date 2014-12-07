@@ -19,7 +19,7 @@ public class RoleLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new AddRoleException(e.getMessage(),e);
+            throw new AddRoleException(e);
         }
     }
 
@@ -27,7 +27,7 @@ public class RoleLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new AddRoleException(e.getMessage(),e);
+            throw new AddRoleException(e);
         }
     }
 
@@ -35,7 +35,7 @@ public class RoleLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new DeleteRoleException(e.getMessage(),e);
+            throw new DeleteRoleException(e);
         }
     }
 
@@ -43,7 +43,7 @@ public class RoleLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new UpdateRoleException(e.getMessage(),e);
+            throw new UpdateRoleException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class RoleLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetRoleException(e.getMessage(),e);
+            throw new GetRoleException(e);
         }
     }
 
@@ -61,7 +61,7 @@ public class RoleLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetAllRolesException(e.getMessage(),e);
+            throw new GetAllRolesException(e);
         }
     }
 
@@ -70,7 +70,7 @@ public class RoleLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetRoleException(e.getMessage(),e);
+            throw new GetRoleException(e);
         }
     }
 }
