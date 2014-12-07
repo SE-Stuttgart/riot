@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.rest;
 
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.db.DaoException;
+
 /**
  * The ModelManager bridges the persistence layer and the client facing REST API.
  *
@@ -17,14 +19,15 @@ public interface ModelManager<E extends ResourceModel> {
      *            the model id
      * @return the ResourceModel if found, null otherwise
      */
-    E getById(int id);
+    E getById(long id) throws DaoException;
 
     /**
      * Gets the collection of models.
      *
      * @return the collection of models.
+     * @throws DaoException 
      */
-    Collection<E> get();
+    Collection<E> get() throws DaoException;
 
     /**
      * Creates a new model if the provided object is valid.
@@ -33,7 +36,7 @@ public interface ModelManager<E extends ResourceModel> {
      *            the model to be created
      * @return the newly created model (including its set id)
      */
-    E create(E model);
+    E create(E model) throws DaoException;
 
     /**
      * Delete a model by id.
@@ -41,7 +44,7 @@ public interface ModelManager<E extends ResourceModel> {
      * @param id
      *            the id
      */
-    void delete(int id);
+    void delete(long id) throws DaoException;
 
     /**
      * Update/replace a model.

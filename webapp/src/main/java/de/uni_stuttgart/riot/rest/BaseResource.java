@@ -15,6 +15,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.uni_stuttgart.riot.db.DaoException;
+
 /**
  * Base class for all rest resource classes.
  * 
@@ -55,11 +57,12 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the model if it exists, HTTP 404 otherwise
+     * @throws DaoException when access not possible
      */
     @GET
     @Path("{id}")
     @Produces(PRODUCED_FORMAT)
-    public E getById(@PathParam("id") int id) {
+    public E getById(@PathParam("id") long id) throws DaoException {
         E model = modelManager.getById(id);
         if (model == null) {
             throw new NotFoundException();
@@ -71,10 +74,11 @@ public abstract class BaseResource<E extends ResourceModel> {
      * Gets the collection fo resources.
      *
      * @return the collection
+     * @throws DaoException 
      */
     @GET
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> get() {
+    public Collection<E> get() throws DaoException {
         // TODO: pagination
         return modelManager.get();
     }
@@ -87,13 +91,13 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @return an HTTP created (201) response if successful
      * @throws URISyntaxException
      *             the URI syntax exception
+     * @throws DaoException when creation not possible
      */
     @POST
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Response create(E model) throws URISyntaxException {
-        E created = modelManager.create(model); // should throw an exception if
-                                                // not successful
+    public Response create(E model) throws URISyntaxException, DaoException {
+        E created = modelManager.create(model);
         URI relative = getUriForModel(created);
         return Response.created(relative).entity(created).build();
     }
@@ -107,11 +111,12 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the response
+     * @throws DaoException when deletion not possible
      */
     @DELETE
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
-    public Response delete(@PathParam("id") int id) {
+    public Response delete(@PathParam("id") int id) throws DaoException {
         modelManager.delete(id); // should throw an exception if not successful
         return Response.noContent().build();
     }

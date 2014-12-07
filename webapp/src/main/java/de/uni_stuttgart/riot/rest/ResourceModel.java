@@ -12,7 +12,7 @@ public interface ResourceModel {
      *
      * @return the id of the instance
      */
-    int getId();
+    long getId();
 
     /**
      * Sets the id for th einstance.
@@ -20,5 +20,5 @@ public interface ResourceModel {
      * @param id
      *            the new id
      */
-    void setId(int id);
+    void setId(long id);
 }

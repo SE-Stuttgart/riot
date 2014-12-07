@@ -3,78 +3,74 @@ package de.uni_stuttgart.riot.calendar;
 import java.util.Date;
 
 import de.uni_stuttgart.riot.rest.ResourceModel;
-
-// TODO: Auto-generated Javadoc
 /**
  * The Class CalendarEntry.
  */
 public class CalendarEntry implements ResourceModel {
 
     /** The id. */
-    private int id;
+    private long id;
+
+    /** The start time. */
+    private Date startTime;
     
-    /** The date. */
-    private Date date;
+    /** The end time. */
+    private Date endTime;
     
+    /** The all day event. */
+    private boolean allDayEvent;
+    
+    /** The description. */
+    private String description;
+    
+    /** The location. */
+    private String location;
+
     /** The title. */
     private String title;
-    
-    /** The body. */
-    private String body;
 
     /**
      * Instantiates a new calendar entry.
      */
     public CalendarEntry() {
-        this.date = new Date();
+        this.startTime = new Date();
     }
 
     /**
      * Instantiates a new calendar entry.
      *
-     * @param id the id
-     * @param title the title
-     * @param body the body
+     * @param id
+     *            the id
+     * @param title
+     *            the title
+     * @param body
+     *            the body
      */
-    public CalendarEntry(int id, String title, String body) {
+    public CalendarEntry(long id, String title, String description) {
         this.id = id;
         this.title = title;
-        this.body = body;
-        this.date = new Date();
+        this.description = description;
+        this.startTime = new Date();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.uni_stuttgart.riot.rest.ResourceModel#getId()
      */
     @Override
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.uni_stuttgart.riot.rest.ResourceModel#setId(int)
      */
     @Override
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
-    }
-
-    /**
-     * Gets the date.
-     *
-     * @return the date
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * Sets the date.
-     *
-     * @param date the new date
-     */
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     /**
@@ -89,28 +85,51 @@ public class CalendarEntry implements ResourceModel {
     /**
      * Sets the title.
      *
-     * @param title the new title
+     * @param title
+     *            the new title
      */
     public void setTitle(String title) {
         this.title = title;
     }
 
-    /**
-     * Gets the body.
-     *
-     * @return the body
-     */
-    public String getBody() {
-        return body;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    /**
-     * Sets the body.
-     *
-     * @param body the new body
-     */
-    public void setBody(String body) {
-        this.body = body;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
+    public boolean isAllDayEvent() {
+        return allDayEvent;
+    }
+
+    public void setAllDayEvent(boolean allDayEvent) {
+        this.allDayEvent = allDayEvent;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
 }

@@ -11,7 +11,7 @@ import de.uni_stuttgart.riot.rest.ModelManager;
 public class ContactsModelManager implements ModelManager<ContactEntry> {
 
     /** Some dummy entries to substitute the persistence layer. */
-    private static HashMap<Integer, ContactEntry> entries = new HashMap<>();
+    private static HashMap<Long, ContactEntry> entries = new HashMap<>();
 
     static {
     	ContactEntry c = new ContactEntry("Max", "Mustermann", "0123456");
@@ -23,10 +23,10 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
     /*
      * (non-Javadoc)
      * 
-     * @see de.uni_stuttgart.riot.rest.ModelManager#getById(int)
+     * @see de.uni_stuttgart.riot.rest.ModelManager#getById(long)
      */
     @Override
-    public ContactEntry getById(int id) {
+    public ContactEntry getById(long id) {
         return entries.get(id);
     }
 
@@ -54,10 +54,10 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
     /*
      * (non-Javadoc)
      * 
-     * @see de.uni_stuttgart.riot.rest.ModelManager#delete(int)
+     * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
      */
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         entries.remove(id);
     }
 

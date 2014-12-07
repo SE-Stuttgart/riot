@@ -25,7 +25,7 @@ public class CalendarEventDaoImpl implements CalendarEventDao {
             return con.createQuery(sql).executeAndFetch(CalendarEvent.class);
         } catch (Exception exp) {
             throw new DaoException("Failed by retrieving all calendar Events.", exp);
-        }
+        } 
     }
 
     @Override

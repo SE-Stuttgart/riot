@@ -32,7 +32,7 @@ public class ContactEntry implements ResourceModel {
      * @see de.uni_stuttgart.riot.rest.ResourceModel#getId()
      */
     @Override
-    public int getId() {
+    public long getId() {
         return this.id.hashCode();
     }
 
@@ -40,7 +40,7 @@ public class ContactEntry implements ResourceModel {
      * @see de.uni_stuttgart.riot.rest.ResourceModel#setId(int)
      */
     @Override
-    public void setId(int id) {
+    public void setId(long id) {
     }
     
     public String getFirstName() {

@@ -1,8 +1,16 @@
 package de.uni_stuttgart.riot.calendar;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 
+import javax.naming.NamingException;
+
+import org.sql2o.Connection;
+import org.sql2o.Sql2o;
+
+import de.uni_stuttgart.riot.db.ConnectionMgr;
+import de.uni_stuttgart.riot.db.DaoException;
 import de.uni_stuttgart.riot.rest.ModelManager;
 
 /**
@@ -11,10 +19,10 @@ import de.uni_stuttgart.riot.rest.ModelManager;
 public class CalendarModelManager implements ModelManager<CalendarEntry> {
 
     /** Some dummy entries to substitute the persistence layer. */
-    private static HashMap<Integer, CalendarEntry> entries = new HashMap<>();
+    private static HashMap<Long, CalendarEntry> entries = new HashMap<>();
 
     static {
-        int id = 1;
+        long id = 1;
         entries.put(id, new CalendarEntry(id++, "important meeting", "Some body text"));
         entries.put(id, new CalendarEntry(id++, "entry2", "unicode support? äüößſðđŋ"));
         entries.put(id, new CalendarEntry(id++, "", "lorem ipsum dolor sit amet"));
@@ -24,10 +32,10 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
     /*
      * (non-Javadoc)
      * 
-     * @see de.uni_stuttgart.riot.rest.ModelManager#getById(int)
+     * @see de.uni_stuttgart.riot.rest.ModelManager#getById(long)
      */
     @Override
-    public CalendarEntry getById(int id) {
+    public CalendarEntry getById(long id) {
         return entries.get(id);
     }
 
@@ -37,8 +45,14 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#get()
      */
     @Override
-    public Collection<CalendarEntry> get() {
-        return entries.values();
+    public Collection<CalendarEntry> get() throws DaoException {
+        String sql = "SELECT * FROM calendarEntries";
+        //return entries.values();
+        try (Connection con = ConnectionMgr.openConnection()){    
+            return con.createQuery(sql).executeAndFetch(CalendarEntry.class);
+        } catch (NamingException | SQLException e) {
+            throw new DaoException("Could not access calendar entries.", e);
+        }
     }
 
     /*
@@ -47,21 +61,33 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#create(de.uni_stuttgart.riot.rest.ResourceModel)
      */
     @Override
-    public CalendarEntry create(CalendarEntry model) {
-        Integer newId = entries.size() + 1;
-        model.setId(newId);
-        entries.put(newId, model);
-        return model;
+    public CalendarEntry create(CalendarEntry model) throws DaoException {
+        String sql = "INSERT INTO calendarEntries(title, startTime, endTime, allDayEvent, description, location) VALUES (:title, :startTime, :endTime, :allDayEvent, :description, :location)";
+
+        try (Connection con = ConnectionMgr.openConnection()){
+            long id = con.createQuery(sql, true).bind(model).executeUpdate().getKey(Long.class);
+            model.setId(id);
+            return model;
+
+        } catch (Exception e) {
+            throw new DaoException("Failed to insert a calendar Event.", e);
+        }
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see de.uni_stuttgart.riot.rest.ModelManager#delete(int)
+     * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
      */
     @Override
-    public void delete(int id) {
-        entries.remove(id);
+    public void delete(long id) throws DaoException {
+        String sql = "DELETE FROM calendarEvents WHERE id = :id";
+        
+        try (Connection con = ConnectionMgr.openConnection()){
+            con.createQuery(sql).addParameter("id", id).executeUpdate();
+        } catch (NamingException | SQLException e) {
+            throw new DaoException("Could not delete calendar entry", e);
+        }
     }
 
     /*
