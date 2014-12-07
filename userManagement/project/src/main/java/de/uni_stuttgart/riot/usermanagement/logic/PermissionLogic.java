@@ -19,7 +19,7 @@ public class PermissionLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new AddPermissionException(e.getMessage(),e);
+            throw new AddPermissionException(e);
         }
     }
 
@@ -27,7 +27,7 @@ public class PermissionLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new DeletePermissionException(e.getMessage(),e);
+            throw new DeletePermissionException(e);
         }
     }
 
@@ -35,7 +35,7 @@ public class PermissionLogic {
         try {
             // TODO
         } catch (Exception e) {
-            throw new UpdatePermissionException(e.getMessage(),e);
+            throw new UpdatePermissionException(e);
         }
     }
 
@@ -44,7 +44,7 @@ public class PermissionLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetPermissionException(e.getMessage(),e);
+            throw new GetPermissionException(e);
         }
     }
 
@@ -53,7 +53,7 @@ public class PermissionLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetAllPermissionsException(e.getMessage(),e);
+            throw new GetAllPermissionsException(e);
         }
     }
 
@@ -62,7 +62,7 @@ public class PermissionLogic {
             // TODO
             return null;
         } catch (Exception e) {
-            throw new GetPermissionException(e.getMessage(),e);
+            throw new GetPermissionException(e);
         }
     }
 }

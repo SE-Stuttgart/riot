@@ -12,6 +12,10 @@ public abstract class DatasourceException extends UserManagementException {
 
     private static final long serialVersionUID = -509609274709680393L;
 
+    public DatasourceException(Exception cause) {
+        super(cause);
+    }
+
     public DatasourceException(String message, Exception cause) {
         super(message, cause);
     }
