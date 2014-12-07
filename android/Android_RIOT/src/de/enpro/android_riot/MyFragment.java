@@ -16,8 +16,7 @@ public class MyFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View view = inflater
-				.inflate(R.layout.fragment_layout, container, false);
+		View view = inflater.inflate(R.layout.fragment_layout, container, false);
 		String menu = getArguments().getString("Menu");
 		//textView = (ListView) view.findViewById(R.id.LISTE);
 		//textView.setText(menu);		

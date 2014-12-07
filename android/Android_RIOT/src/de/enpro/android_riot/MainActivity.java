@@ -21,7 +21,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import de.enpro.android_riot.account.AccountFragment;
+
 public class MainActivity extends Activity {
+    private final static String TAG = "Main";
+
 
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
@@ -143,21 +147,30 @@ public class MainActivity extends Activity {
 	}
 
 	private void selectItem(int position) {
-		Fragment fragment = new MyFragment();
+        Log.v(TAG, "menu Item selected:" +position);
+		Fragment fragment;
+		if(position == 2)
+		{
+			fragment = new AccountFragment();
+		}
+		else
+		{
+			fragment = new MyFragment();
+		}
 
 		Bundle args = new Bundle();
 		args.putString("Menu", mMenuTitles[position]);
 		fragment.setArguments(args);
-		
+
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-				.replace(R.id.content_frame, fragment).commit();
+		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+
 
 		mDrawerList.setItemChecked(position, true);
 		setTitle(mMenuTitles[position]);
 
+		Log.v(TAG, "New fragment is shown: "+mMenuTitles[position]);
 		mDrawerLayout.closeDrawer(mDrawerList);
-
 	}
 
 	@Override
