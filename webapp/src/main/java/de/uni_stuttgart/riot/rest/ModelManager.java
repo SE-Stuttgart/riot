@@ -25,7 +25,7 @@ public interface ModelManager<E extends ResourceModel> {
      * Gets the collection of models.
      *
      * @return the collection of models.
-     * @throws DaoException 
+     * @throws DaoException
      */
     Collection<E> get() throws DaoException;
 
@@ -54,6 +54,6 @@ public interface ModelManager<E extends ResourceModel> {
      *            the new model
      * @return the modified model
      */
-    E update(E model);
+    E update(E model) throws DaoException;
 
 }
