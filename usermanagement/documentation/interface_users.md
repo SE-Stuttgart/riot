@@ -1,4 +1,4 @@
-#Users
+# Users
 
 Url | Method | Description
 ----|--------|------------
@@ -12,90 +12,90 @@ Url | Method | Description
 [/users/\{userID\}/roles/\{roleID\}](#remove-role-of-a-user) | DELETE | Remove role of a user
 [/users/\{userID\}/tokens](#get-tokens-of-a-user) | GET | Get tokens of a user
 
-##Get all users
+## Get all users
 
     GET /users
 
-###Response
+### Response
 TODO
 
 
 
-##Get user
+## Get user
 
     GET /users/{userID}
 
-###Response
+### Response
 TODO
 
 
 
-##Add new user
+## Add new user
 
     PUT /users
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Edit user
+## Edit user
 
     PUT /users/{userID}
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Delete user
+## Delete user
 
     DELETE /users/{userID}
 
-###Response
+### Response
 TODO
 
 
 
-##Get roles of a user
+## Get roles of a user
 
     GET /users/{userID}/roles
 
-###Response
+### Response
 TODO
 
 
 
-##Add role to a user
+## Add role to a user
 
     PUT /users/{userID}/roles
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Remove role of a user
+## Remove role of a user
 
     DELETE /users/{userID}/roles/{roleID}
 
-###Response
+### Response
 TODO
 
 
 
-##Get tokens of a user
+## Get tokens of a user
 
     GET /users/{userID}/tokens
 
-###Response
+### Response
 TODO

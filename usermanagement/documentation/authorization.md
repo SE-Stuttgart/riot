@@ -1,10 +1,10 @@
-#Authorization
+# Authorization
 
-##Basics
+## Basics
 TODO
 
-##Shiro
+## Shiro
 TODO
 
-##R-IOT Authorization
+## R-IOT Authorization
 TODO

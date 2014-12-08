@@ -1,4 +1,4 @@
-#Permissions
+# Permissions
 
 Url | Method | Description
 ----|--------|------------
@@ -8,51 +8,51 @@ Url | Method | Description
 [/permissions/\{permissionID\}](#edit-permission) | PUT | Edit permission
 [/permissions/\{permissionID\}](#delete-permission) | DELETE | Delete permission
 
-##Get all permissions
+## Get all permissions
 
     GET /permissions
 
-###Response
+### Response
 TODO
 
 
 
-##Get permission
+## Get permission
 
     GET /permissions/{permissionID}
 
-###Response
+### Response
 TODO
 
 
 
-##Add new permission
+## Add new permission
 
     PUT /permissions
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Edit permission
+## Edit permission
 
     PUT /permissions/{permissionID}
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Delete permission
+## Delete permission
 
     DELETE /permissions/{permissionID}
 
-###Response
+### Response
 TODO

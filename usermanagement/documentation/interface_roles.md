@@ -1,4 +1,4 @@
-#Roles
+# Roles
 
 Url | Method | Description
 ----|--------|------------
@@ -11,81 +11,81 @@ Url | Method | Description
 [/roles/\{roleID\}/permissions](#add-permission-to-a-role) | PUT | Add permission to a role
 [/roles/\{roleID\}/permissions/\{permissionID\}](#remove-permission-of-a-role) | DELETE | Remove permission of a role
 
-##Get all roles
+## Get all roles
 
     GET /roles
 
-###Response
+### Response
 TODO
 
 
 
-##Get role
+## Get role
 
     GET /roles/{roleID}
 
-###Response
+### Response
 TODO
 
 
 
-##Add new role
+## Add new role
 
     PUT /roles
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Edit role
+## Edit role
 
     PUT /roles/{roleID}
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Remove role
+## Remove role
 
     DELETE /roles/{roleID}
 
-###Response
+### Response
 TODO
 
 
 
-##Get permissions of a role
+## Get permissions of a role
 
     GET /roles/{roleID}/permissions
 
-###Response
+### Response
 TODO
 
 
 
-##Add permission to a role
+## Add permission to a role
 
     PUT /roles/{roleID}/permissions
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Remove permission of a role
+## Remove permission of a role
 
     DELETE /roles/{roleID}/permissions/{permissionID}
 
-###Response
+### Response
 TODO

@@ -1,4 +1,4 @@
-#Authentication
+# Authentication
 
 Url | Method | Description
 ----|--------|------------
@@ -6,33 +6,33 @@ Url | Method | Description
 [/auth/refresh](#refresh) | PUT | Refresh
 [/auth/logout](#logout) | GET | Logout
 
-##Login
+## Login
 
     PUT /login
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Refresh
+## Refresh
 
     PUT /refresh
 
-###Parameters
+### Parameters
 TODO
 
-###Response
+### Response
 TODO
 
 
 
-##Logout
+## Logout
 
     GET /logout
 
-###Response
+### Response
 TODO
