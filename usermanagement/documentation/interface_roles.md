@@ -6,7 +6,7 @@ Url | Method | Description
 [/roles/\{roleID\}](#get-role) | GET | Get role
 [/roles](#add-new-role) | PUT | Add new role
 [/roles/\{roleID\}](#edit-role) | PUT | Edit role
-[/roles/\{roleID\}](#delete-role) | DELETE | Delete role
+[/roles/\{roleID\}](#remove-role) | DELETE | Remove role
 [/roles/\{roleID\}/permissions](#get-permissions-of-a-role) | GET | Get permissions of a role
 [/roles/\{roleID\}/permissions](#add-permission-to-a-role) | PUT | Add permission to a role
 [/roles/\{roleID\}/permissions/\{permissionID\}](#remove-permission-of-a-role) | DELETE | Remove permission of a role

@@ -6,7 +6,7 @@ Url | Method | Description
 [/users/\{userID\}](#get-user) | GET | Get user
 [/users](#add-new-user) | PUT | Add new user
 [/users/\{userID\}](#edit-user) | PUT | Edit user
-[/users/\{userID\}](#delete-user) | DELETE | Delete user
+[/users/\{userID\}](#remove-user) | DELETE | Remove user
 [/users/\{userID\}/roles](#get-roles-of-a-user) | GET | Get roles of a user
 [/users/\{userID\}/roles](#add-role-to-a-user) | PUT | Add role to a user
 [/users/\{userID\}/roles/\{roleID\}](#remove-role-of-a-user) | DELETE | Remove role of a user
@@ -54,7 +54,7 @@ TODO
 
 
 
-## Delete user
+## Remove user
 
     DELETE /users/{userID}
 

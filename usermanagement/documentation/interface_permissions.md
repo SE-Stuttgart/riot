@@ -6,7 +6,7 @@ Url | Method | Description
 [/permissions/\{permissionID\}](#get-permission) | GET | Get permission
 [/permissions](#add-new-permission) | PUT | Add new permission
 [/permissions/\{permissionID\}](#edit-permission) | PUT | Edit permission
-[/permissions/\{permissionID\}](#delete-permission) | DELETE | Delete permission
+[/permissions/\{permissionID\}](#remove-permission) | DELETE | Remove permission
 
 ## Get all permissions
 
@@ -50,7 +50,7 @@ TODO
 
 
 
-## Delete permission
+## Remove permission
 
     DELETE /permissions/{permissionID}
 
