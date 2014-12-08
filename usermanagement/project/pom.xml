@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.uni-stuttgart.riot</groupId>
-	<artifactId>riot.userManagement</artifactId>
+	<artifactId>riot.usermanagement</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>riot userManagement</name>
+	<name>riot usermanagement</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
