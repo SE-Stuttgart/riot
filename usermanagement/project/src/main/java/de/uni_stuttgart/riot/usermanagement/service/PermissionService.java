@@ -44,7 +44,8 @@ public class PermissionService {
     /**
      * Update or create a permission.
      * 
-     * @param permission The permission request containing the permission.
+     * @param permission
+     *            The permission request containing the permission.
      * @return Returns an empty response.
      */
     @PUT
@@ -60,17 +61,14 @@ public class PermissionService {
     /**
      * Get all permission of a user.
      * 
-     * @param id The ID of the user.
+     * @param id
+     *            The ID of the user.
      * @return Returns a list of the users permissions.
      */
     @GET
     @Path("/{id}/")
     public List<Permission> getPermission(@PathParam("id") int id) {
-        try {
-            return UserManagementFacade.getInstance().getAllPermissionsFromUser(id);
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
+        return null;
     }
 
     /**

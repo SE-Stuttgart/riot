@@ -3,9 +3,6 @@ package de.uni_stuttgart.riot.usermanagement.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
@@ -58,6 +55,38 @@ public class UserManagementFacade {
             instance = new UserManagementFacade();
         }
         return instance;
+    }
+
+    /**
+     * Generate one bearer and one refresh token
+     * 
+     * @param username
+     *            User name of the user. Is used for authentication.
+     * @param password
+     *            Password of the user. Is used for authentication.
+     */
+    public void generateTokens(String username, String password) {
+        // TODO
+    }
+
+    /**
+     * Generate a new set of bearer and refresh token from a given refresh token.
+     * 
+     * @param refreshToken
+     *            The refresh token used for generating the new tokens
+     */
+    public void refreshToken(String refreshToken) {
+        // TODO
+    }
+
+    /**
+     * Log an user out be invalidating the bearer and refresh token
+     * 
+     * @param currentBearerToken
+     *            The current bearer token used to authenticate the user. Will no longer be valid after calling this method.
+     */
+    public void logout(String currentBearerToken) {
+        // TODO
     }
 
     /**
@@ -118,6 +147,53 @@ public class UserManagementFacade {
     }
 
     /**
+     * Add a new role to an existing user
+     * 
+     * @param id
+     *            The id of the user
+     * @param role
+     *            The role to add
+     * @throws AddRoleException
+     */
+    public void addRoleToUser(int id, Role role) throws AddRoleException {
+        roleLogic.addRoleToUser(id, role);
+    }
+
+    /**
+     * Get all roles from a specific user
+     * 
+     * @param id
+     *            The id of the user to get roles from
+     * @return A list with all roles of the given user
+     * @throws GetRoleException
+     */
+    public List<Role> getAllRolesFromUser(int id) throws GetRoleException {
+        return roleLogic.getAllRolesFromUser(id);
+    }
+
+    /**
+     * Remove a role from a specific user
+     * 
+     * @param idUser
+     *            The id of the user
+     * @param idRole
+     *            The id of the role to remove
+     */
+    public void removeRoleFromUser(int idUser, int idRole) {
+        // TODO
+    }
+
+    /**
+     * Get all active tokens of a specific user
+     * 
+     * @param idUser
+     *            The id of the user
+     */
+    public void getActiveTokensFromUser(int idUser) {
+        // TODO
+    }
+
+    /**
      * Add a new permission
      * 
      * @param permission
@@ -175,16 +251,6 @@ public class UserManagementFacade {
     }
 
     /**
-     * Get all existing permissions
-     * 
-     * @return All permissions in a list
-     * @throws GetAllPermissionsException
-     */
-    public List<Permission> getAllPermissionsFromUser(int id) throws GetPermissionException {
-        return permissionLogic.getAllPermissionsFromUser(id);
-    }
-
-    /**
      * Add a new role
      * 
      * @param role
@@ -193,19 +259,6 @@ public class UserManagementFacade {
      */
     public void addRole(Role role) throws AddRoleException {
         roleLogic.addRole(role);
-    }
-
-    /**
-     * Add a new role to an existing user
-     * 
-     * @param id
-     *            The id of the user
-     * @param role
-     *            The role to add
-     * @throws AddRoleException
-     */
-    public void addRoleToUser(int id, Role role) throws AddRoleException {
-        roleLogic.addRoleToUser(id, role);
     }
 
     /**
@@ -255,14 +308,36 @@ public class UserManagementFacade {
     }
 
     /**
-     * Get all roles from a specific user
+     * Get all permissions belonging to a role
      * 
-     * @param id
-     *            The id of the user to get roles from
-     * @return A list with all roles of the given user
-     * @throws GetRoleException
+     * @param roleId
+     *            The id of the role
      */
-    public List<Role> getAllRolesFromUser(int id) throws GetRoleException {
-        return roleLogic.getAllRolesFromUser(id);
+    public void getAllPermissionsOfRole(int roleId) {
+        // TODO
+    }
+
+    /**
+     * Add an existing permission to an existing role
+     * 
+     * @param roleId
+     *            The id of the role
+     * @param permission
+     *            The id of the permission, which should be added
+     */
+    public void addPermissionToRole(int roleId, int permissionId) {
+        // TODO
+    }
+
+    /**
+     * Remove a permission from a role
+     * 
+     * @param rolId
+     *            The id of the role
+     * @param permissionId
+     *            The id of the permission, which should be removed
+     */
+    public void deletePermissionFromRole(int rolId, int permissionId) {
+        // TODO
     }
 }
