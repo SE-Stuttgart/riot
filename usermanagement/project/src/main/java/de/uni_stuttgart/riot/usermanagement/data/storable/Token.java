@@ -1,13 +1,18 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * Holds the Token that is used to authenticate a user and the associated refresh token
+ * that could be used to retrieve a new token without the need of submitting the (username,password) credentials again.  
+ * @author Jonas Tangermann
+ *
+ */
 public class Token implements Storable {
 
     private final Long tokenID;
@@ -15,6 +20,7 @@ public class Token implements Storable {
     private final Timestamp issueTime;
     private final Timestamp expirationTime;
     private String tokenValue;
+    private String refreshtokenValue;
 
     public Timestamp getIssueTime() {
         return issueTime;
@@ -24,11 +30,12 @@ public class Token implements Storable {
         return expirationTime;
     }
 
-    public Token(Long tokenID, Long userID, String tokenValue, Timestamp issueTime, Timestamp expirationTime) {
+    public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime) {
         this.tokenID = tokenID;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
+        this.setRefreshtokenValue(refreshtokenValue);
         this.setTokenValue(tokenValue);
     }
 
@@ -59,9 +66,15 @@ public class Token implements Storable {
         return userID;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    public String getRefreshtokenValue() {
+        return refreshtokenValue;
+    }
+
+    public void setRefreshtokenValue(String refreshtokenValue) {
+        this.refreshtokenValue = refreshtokenValue;
+    }
+    
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -70,15 +83,14 @@ public class Token implements Storable {
         int result = 1;
         result = prime * result + ((expirationTime == null) ? 0 : expirationTime.hashCode());
         result = prime * result + ((issueTime == null) ? 0 : issueTime.hashCode());
+        result = prime * result + ((refreshtokenValue == null) ? 0 : refreshtokenValue.hashCode());
         result = prime * result + ((tokenID == null) ? 0 : tokenID.hashCode());
         result = prime * result + ((tokenValue == null) ? 0 : tokenValue.hashCode());
         result = prime * result + ((userID == null) ? 0 : userID.hashCode());
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -100,6 +112,11 @@ public class Token implements Storable {
                 return false;
         } else if (!issueTime.equals(other.issueTime))
             return false;
+        if (refreshtokenValue == null) {
+            if (other.refreshtokenValue != null)
+                return false;
+        } else if (!refreshtokenValue.equals(other.refreshtokenValue))
+            return false;
         if (tokenID == null) {
             if (other.tokenID != null)
                 return false;
@@ -118,22 +135,25 @@ public class Token implements Storable {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         StringBuilder builder = new StringBuilder();
         builder.append("Token [tokenID=");
         builder.append(tokenID);
         builder.append(", userID=");
         builder.append(userID);
         builder.append(", issueTime=");
-        builder.append(format.format(this.getIssueTime()));
+        builder.append(issueTime);
         builder.append(", expirationTime=");
-        builder.append(format.format(this.getExpirationTime()));
+        builder.append(expirationTime);
         builder.append(", tokenValue=");
         builder.append(tokenValue);
+        builder.append(", refreshtokenValue=");
+        builder.append(refreshtokenValue);
         builder.append("]");
         return builder.toString();
     }
-
 }

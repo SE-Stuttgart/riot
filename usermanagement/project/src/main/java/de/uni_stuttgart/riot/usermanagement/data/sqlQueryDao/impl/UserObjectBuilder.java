@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 
+/**
+ * {@link ObjectBuilder} for {@link User}. Used in {@link UserSqlQueryDao}
+ * @author Jonas Tangermann
+ *
+ */
 public class UserObjectBuilder implements ObjectBuilder<User> {
 
     @Override

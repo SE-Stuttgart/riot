@@ -3,14 +3,32 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.shiro.authz.permission.WildcardPermission;
+
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * A {@link Permission} is the lowest level of authorization in the usermanagement.
+ * Permissions can be assigned to {@link User}s over {@link Role}s. The permission value
+ *  is used internaly by the shiro framework. It can be used by calling //FIXME. 
+ * @author Jonas Tangermann
+ *
+ */
 public class Permission implements Storable {
 
     private final Long permissionID;
+
+    /**
+     * The permission string that is interpreted as {@link WildcardPermission}.
+     */
     private String permissionValue;
 
+    /**
+     * Constructor for {@link Permission}
+     * @param permissionID the unique id
+     * @param permissionValue the permission string in {@link WildcardPermission} format.
+     */
     public Permission(Long permissionID, String permissionValue) {
         this.permissionID = permissionID;
         this.setPermissionValue(permissionValue);
@@ -28,10 +46,18 @@ public class Permission implements Storable {
         return params;
     }
 
+    /**
+     * Getter for {@link Permission#permissionValue}
+     * @return Permission string in {@link WildcardPermission} format.
+     */
     public String getPermissionValue() {
         return permissionValue;
     }
 
+    /**
+     * Setter for {@link Permission#permissionValue}
+     * @param permissionValue Permission string in {@link WildcardPermission} format.
+     */
     public void setPermissionValue(String permissionValue) {
         this.permissionValue = permissionValue;
     }

@@ -21,6 +21,7 @@ CREATE TABLE tokens
 tokenID SERIAL,
 userID bigint,
 tokenValue varchar(100),
+refreshtokenValue varchar(100),
 issueDate timestamp,
 expirationDate timestamp,
 PRIMARY KEY (tokenID),

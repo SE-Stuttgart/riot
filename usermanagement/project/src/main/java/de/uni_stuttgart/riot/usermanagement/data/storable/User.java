@@ -6,6 +6,11 @@ import java.util.LinkedList;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * The User class holds all basic information regarding to a user.
+ * @author Jonas Tangermann
+ *
+ */
 public class User implements Storable {
 
     private Long id;

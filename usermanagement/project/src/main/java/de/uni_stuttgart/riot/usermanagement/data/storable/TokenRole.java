@@ -6,6 +6,12 @@ import java.util.LinkedList;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * {@link TokenRole} represents the n:m relation between {@link Token} and {@link Role}.
+ * Thus this class only maps Token to Role not adding any information.
+ * @author Jonas Tangermann
+ *
+ */
 public class TokenRole implements Storable {
 
     private final Long tokenRoleID;

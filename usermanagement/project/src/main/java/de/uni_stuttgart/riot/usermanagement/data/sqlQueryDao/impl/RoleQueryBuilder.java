@@ -9,6 +9,11 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 
+/**
+ * {@link QueryBuilder} for {@link Role}. Used in {@link RoleSqlQueryDAO}.
+ * @author Jonas Tangermann
+ *
+ */
 public class RoleQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Role> {
 
     private static final String DELETE_QUERY = "DELETE FROM roles WHERE roles.roleID = ?";

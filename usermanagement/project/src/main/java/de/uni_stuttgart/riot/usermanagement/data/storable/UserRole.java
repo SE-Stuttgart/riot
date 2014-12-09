@@ -6,6 +6,12 @@ import java.util.LinkedList;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * {@link UserRole} represents the n:m relation between {@link User} and {@link Role}.
+ * Thus this class only maps User to Role not adding any information.
+ * @author Jonas Tangermann
+ *
+ */
 public class UserRole implements Storable {
 
     private final Long userRoleID;

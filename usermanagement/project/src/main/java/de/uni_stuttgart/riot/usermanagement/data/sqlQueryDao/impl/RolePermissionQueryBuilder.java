@@ -9,6 +9,11 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 
+/**
+ * {@link QueryBuilder} for {@link RolePermission}. Used in {@link RolePermissionSqlQueryDAO}.
+ * @author Jonas Tangermann
+ *
+ */
 public class RolePermissionQueryBuilder extends StorableQueryBuilder implements QueryBuilder<RolePermission> {
 
     private static final String DELETE_QUERY = "DELETE FROM roles_permissions WHERE roles_permissions.rolepermissionID = ?";

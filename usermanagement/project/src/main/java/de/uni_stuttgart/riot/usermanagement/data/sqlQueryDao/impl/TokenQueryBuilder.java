@@ -9,14 +9,19 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 
+/**
+ * {@link QueryBuilder} for {@link Token}. Used in {@link TokenSqlQueryDAO}.
+ * @author Jonas Tangermann
+ *
+ */
 public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Token> {
 
     private static final String DELETE_QUERY = "DELETE FROM tokens WHERE tokens.tokenID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO tokens(tokenID, userID,tokenValue,issueDate,expirationdate)VALUES (?,?,?,?,?)";
-    private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?, issuedate=?, expirationdate=? WHERE tokenID=?";
-    private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, issuedate, expirationdate FROM tokens WHERE tokenID = ?;";
-    private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, issuedate, expirationdate FROM tokens ";
-    private static final String FIND_ALL_QUERY = "SELECT tokenid, userid, tokenvalue, issuedate, expirationdate FROM tokens";
+    private static final String INSERT_QUERY = "INSERT INTO tokens(tokenID, userID,tokenValue,refreshtokenvalue,issueDate,expirationdate)VALUES (?,?,?,?,?,?)";
+    private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?,refreshtokenvalue=?, issuedate=?, expirationdate=? WHERE tokenID=?";
+    private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens WHERE tokenID = ?;";
+    private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens ";
+    private static final String FIND_ALL_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens";
 
     @Override
     public PreparedStatement buildDelete(Token t, Connection connection) throws SQLException {
@@ -29,8 +34,9 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
         stmt.setLong(1, t.getId());
         stmt.setLong(2, t.getUserID());
         stmt.setString(3, t.getTokenValue());
-        stmt.setTimestamp(4, t.getIssueTime());
-        stmt.setTimestamp(5, t.getExpirationTime());
+        stmt.setString(4, t.getRefreshtokenValue());
+        stmt.setTimestamp(5, t.getIssueTime());
+        stmt.setTimestamp(6, t.getExpirationTime());
         return stmt;
     }
 
@@ -39,9 +45,10 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setLong(1, t.getUserID());
         stmt.setString(2, t.getTokenValue());
-        stmt.setTimestamp(3, t.getIssueTime());
-        stmt.setTimestamp(4, t.getExpirationTime());
-        stmt.setLong(5, t.getId());
+        stmt.setString(3, t.getRefreshtokenValue());
+        stmt.setTimestamp(4, t.getIssueTime());
+        stmt.setTimestamp(5, t.getExpirationTime());
+        stmt.setLong(6, t.getId());
         return stmt;
     }
 

@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 
+/**
+ * {@link ObjectBuilder} for {@link RolePermission}. Used in {@link RolePermissionSqlQueryDAO}.
+ * @author Jonas Tangermann
+ *
+ */
 public class RolePermissionObjectBuilder implements ObjectBuilder<RolePermission> {
 
     @Override

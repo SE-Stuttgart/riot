@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 
+/**
+ * {@link ObjectBuilder} for {@link TokenRole}. Used in {@link TokenRoleSqlQueryDAO}.
+ * @author tajoa
+ *
+ */
 public class TokenRoleObjectBuilder implements ObjectBuilder<TokenRole> {
 
     @Override

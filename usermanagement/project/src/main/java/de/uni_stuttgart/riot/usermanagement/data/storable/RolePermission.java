@@ -6,6 +6,12 @@ import java.util.LinkedList;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}.
+ * Thus this class only maps Roles to Permission not adding any information.
+ * @author Jonas Tangermann
+ *
+ */
 public class RolePermission implements Storable {
 
     private final Long rolePermissionID;

@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 
+/**
+ * {@link ObjectBuilder} for {@link Role}. Used in {@link RoleSqlQueryDAO}.
+ * @author Jonas Tangermann
+ *
+ */
 public class RoleObjectBuilder implements ObjectBuilder<Role> {
 
     @Override

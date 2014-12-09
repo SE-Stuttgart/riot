@@ -6,10 +6,16 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
-public class StorableQueryBuilder {
+/**
+ * Abstraction for all {@link QueryBuilder} to prevent code clones.
+ * @author Jonas Tangermann
+ *
+ */
+public abstract class StorableQueryBuilder {
 
     public PreparedStatement buildDelete(Storable t, Connection connection, String query) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);

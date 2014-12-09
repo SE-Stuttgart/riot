@@ -24,12 +24,13 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 		try {
 			Token testToken = new Token(new Long(42),
 					new Long(1),
-					"TestToken", 
+					"TestToken", "R",
 					new Timestamp(System.currentTimeMillis()),
 					new Timestamp(System.currentTimeMillis()+10000));
 			dao.insert(testToken);
 			Token findToken = dao.findBy(new Long(42));
 			System.out.println(testToken);
+			System.out.println(findToken);
 			System.out.println(findToken);
 			assertEquals(testToken, findToken);
 		} catch (DatasourceInsertException e) {
@@ -78,7 +79,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 	public void errorUpdateTest(){
 		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
 		try {
-			dao.update(new Token(new Long(32), new Long(34), "", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis())));
+			dao.update(new Token(new Long(32), new Long(34), "","", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis())));
 		} catch (DatasourceUpdateException e) {
 			return;
 		}

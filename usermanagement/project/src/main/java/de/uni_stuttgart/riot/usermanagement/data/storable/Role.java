@@ -6,6 +6,12 @@ import java.util.LinkedList;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * {@link Role}s can be assigned to {@link User}s to grand certain rights. It can also be used
+ * to group {@link Permission}s. By assigning a role to a user, the users receives all permissions associated to the role.
+ * @author Jonas Tangermann
+ *
+ */
 public class Role implements Storable {
 
     private final Long id;

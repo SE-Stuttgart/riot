@@ -4,6 +4,12 @@ import java.util.Collection;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
+/**
+ * 
+ * Interface for all classes that should be stored at some point.
+ * @author Jonas Tangermann
+ *
+ */
 public interface Storable {
 
     /**
