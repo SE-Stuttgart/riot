@@ -1,6 +1,6 @@
 ### Ablauf
 
-1.	[Hier](https://hobart.informatik.uni-stuttgart.de/se/enpro-iot/tree/master/android/riot) befindet sich das aktuelle Android Projekt
+1.	zunächst wenn nicht vorhanden Maven-Plugin für Eclipse installieren [Link](http://rgladwell.github.io/m2e-android/)
 2.	clonen etc.
-3.	IDE wichtig import as maven project
-4.	kann kurz dauern bis das Projekt gebaut ist
+3.	Projekt riot als Maven Projekt importieren
+4.	Kann einen Moment kurz dauern bis das Projekt gebaut worden ist
