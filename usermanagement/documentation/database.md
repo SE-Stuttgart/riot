@@ -4,8 +4,7 @@ This document describes the database relevant topics of the usermanagement.
 ## DB-Schema
 The following figue shows the database schema that is used to store all information regarding the usermanagement. 
 
-![Schema](image/usermanagement_db_erm.png
-  "Schema")
+![Schema](image/usermanagement_db_erm.png)
 
 * The users entity hold all basic attributes of a user, such as username, password and so on. 
 * The roles entity holds the roles available in the system. 
