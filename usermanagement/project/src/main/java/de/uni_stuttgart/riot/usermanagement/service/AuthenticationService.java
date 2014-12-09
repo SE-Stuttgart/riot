@@ -1,16 +1,37 @@
 package de.uni_stuttgart.riot.usermanagement.service;
 
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 
+import de.uni_stuttgart.riot.usermanagement.data.DAO;
+import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
+import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenRoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
+import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
 import de.uni_stuttgart.riot.usermanagement.security.TokenUtil;
+import de.uni_stuttgart.riot.usermanagement.service.exception.ApiErrorResponse;
 import de.uni_stuttgart.riot.usermanagement.service.request.LoginRequest;
 import de.uni_stuttgart.riot.usermanagement.service.request.RefreshRequest;
 import de.uni_stuttgart.riot.usermanagement.service.response.AuthenticationResponse;
@@ -38,15 +59,33 @@ public class AuthenticationService {
     @PUT
     @Path("/login/")
     public AuthenticationResponse login(LoginRequest request) {
-        Subject u = SecurityUtils.getSubject();
-        u.login(new UsernamePasswordToken("Yoda", "YodaPW"));
+        try {
+            DAO<User> userDAO = new UserSqlQueryDao(DatasourceUtil.getDataSource());
+            DAO<Token> tokenDAO = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<TokenRole> tokenRoleDAO = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+            
+            Subject u = SecurityUtils.getSubject();
+            u.login(new UsernamePasswordToken(request.getUsername(), request.getPassword()));
 
-        String authToken = TokenUtil.generateToken();
-        String refreshToken = TokenUtil.generateToken();
-
-        // TODO save tokens in db
-
-        return new AuthenticationResponse(authToken, refreshToken);
+            String authToken = TokenUtil.generateToken();
+            String refreshToken = TokenUtil.generateToken();
+            
+            LinkedList<SearchParameter> searchParams = new LinkedList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.USERNAME, request.getUsername()));
+            Collection<User> users = userDAO.findBy(searchParams, false);
+            Iterator<User> i = users.iterator();
+            if(i.hasNext()){
+                Token newToken = new Token(42L, i.next().getId(), authToken, refreshToken, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()+3000000));
+                tokenDAO.insert(newToken);
+                tokenRoleDAO.insert(new TokenRole(42L, 42L, 1L));
+            }
+            
+            return new AuthenticationResponse(authToken, refreshToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiErrorResponse(Status.INTERNAL_SERVER_ERROR, new AddUserException(e));
+        }
+        
     }
 
     /**

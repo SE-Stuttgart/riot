@@ -28,6 +28,6 @@ public class UserManagementApplication extends ResourceConfig {
      */
     public UserManagementApplication() {
         super(Sets.<Class<?>> newHashSet(AuthorizationFilterBinding.class, AuthorizationExceptionMapper.class));
-        packages("de.uni_stuttgart.riot.userManagement;");
+        packages("de.uni_stuttgart.riot.usermanagement;");
     }
 }

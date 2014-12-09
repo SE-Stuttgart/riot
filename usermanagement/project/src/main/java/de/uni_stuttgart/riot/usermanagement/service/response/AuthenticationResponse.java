@@ -12,6 +12,9 @@ public class AuthenticationResponse {
 
     private String accessToken;
     private String refreshToken;
+    
+    public AuthenticationResponse() {
+    }
 
     /**
      * Create a authentication response.
