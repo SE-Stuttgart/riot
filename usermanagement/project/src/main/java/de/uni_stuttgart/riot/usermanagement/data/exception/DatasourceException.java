@@ -30,4 +30,8 @@ public abstract class DatasourceException extends UserManagementException {
         super(massage);
     }
 
+    public DatasourceException(Throwable cause) {
+        super(cause);
+    }
+
 }

@@ -45,6 +45,7 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase{
 		} catch (DatasourceFindException e) {
 			fail(e.getMessage());
 		} catch (DatasourceUpdateException e) {
+		    e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}

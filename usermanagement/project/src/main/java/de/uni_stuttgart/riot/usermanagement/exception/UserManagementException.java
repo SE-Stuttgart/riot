@@ -42,6 +42,10 @@ public abstract class UserManagementException extends Exception {
         super(message, cause);
     }
 
+    public UserManagementException(Throwable cause) {
+        super(cause);
+    }
+
     public String getEndUserMessage() {
         return this.getMessage();
     }

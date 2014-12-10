@@ -7,7 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ RolePermissionSqlQueryDaoTest.class, RoleSqlQueryDaoTest.class,
 		TokenRoleSqlQueryDaoTest.class, TokenSqlQueryDaoTest.class,
-		UserRoleSqlQueryDaoTest.class, UserSqlQeryDaoTest.class, PermissionSqlQueryDaoTest.class, MemoryDaoTest.class })
+		UserRoleSqlQueryDaoTest.class, UserSqlQeryDaoTest.class, PermissionSqlQueryDaoTest.class, MemoryDaoTest.class 
+		,TransactionTest.class})
 public class AllTests {
-
 }

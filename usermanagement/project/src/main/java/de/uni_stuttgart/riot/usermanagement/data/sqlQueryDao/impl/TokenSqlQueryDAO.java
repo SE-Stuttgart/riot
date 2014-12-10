@@ -1,5 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
@@ -18,6 +21,10 @@ public class TokenSqlQueryDAO extends SqlQueryDAO<Token> {
      */
     public TokenSqlQueryDAO(DataSource ds) {
         super(ds, new TokenQueryBuilder(), new TokenObjectBuilder());
+    }
+
+    public TokenSqlQueryDAO(Connection connection) throws SQLException {
+        super(connection, new TokenQueryBuilder(), new TokenObjectBuilder());
     }
 
 }

@@ -23,6 +23,10 @@ public class DatasourceFindException extends DatasourceException {
     public DatasourceFindException(String massage) {
         super(massage);
     }
+    
+    public DatasourceFindException(Throwable cause) {
+        super(cause);
+    }
 
     @Override
     public int getErrorCode() {
