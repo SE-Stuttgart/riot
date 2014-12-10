@@ -14,7 +14,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class TokenRole implements Storable {
 
-    private final Long tokenRoleID;
+    private Long tokenRoleID;
     private final Long tokenID;
     private final Long roleID;
 
@@ -33,6 +33,11 @@ public class TokenRole implements Storable {
         this.tokenRoleID = tokenRoleID;
     }
 
+    public TokenRole(Long tokenID, Long roleID) {
+        this.tokenID = tokenID;
+        this.roleID = roleID;
+        this.tokenRoleID = -1L;
+    }
     @Override
     public long getId() {
         return this.tokenRoleID;
@@ -103,4 +108,10 @@ public class TokenRole implements Storable {
         builder.append("]");
         return builder.toString();
     }
+    
+    @Override
+    public void setId(Long id) {
+        this.tokenRoleID =id;
+    }
+
 }

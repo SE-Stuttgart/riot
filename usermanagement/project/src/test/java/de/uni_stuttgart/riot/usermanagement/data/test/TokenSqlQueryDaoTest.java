@@ -28,7 +28,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 					new Timestamp(System.currentTimeMillis()),
 					new Timestamp(System.currentTimeMillis()+10000));
 			dao.insert(testToken);
-			Token findToken = dao.findBy(new Long(42));
+			Token findToken = dao.findBy(testToken.getId());
 			System.out.println(testToken);
 			System.out.println(findToken);
 			System.out.println(findToken);

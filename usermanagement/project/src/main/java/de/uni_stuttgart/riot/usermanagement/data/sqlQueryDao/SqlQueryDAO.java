@@ -71,7 +71,12 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             connection = ds.getConnection();
             PreparedStatement stmt = this.queryBuilder.buildInsert(t, connection);
-            stmt.execute();
+            ResultSet rSet = stmt.executeQuery();
+            if(rSet.next()) {
+                t.setId(rSet.getLong(1));
+            } else {
+                throw new DatasourceInsertException("Error on getting the id-value");
+            }
         } catch (SQLException e) {
             throw new DatasourceInsertException(e.getMessage());
         } finally {

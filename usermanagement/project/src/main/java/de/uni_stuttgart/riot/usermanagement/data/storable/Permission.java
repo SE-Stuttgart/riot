@@ -17,7 +17,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class Permission implements Storable {
 
-    private final Long permissionID;
+    private Long permissionID;
 
     /**
      * The permission string that is interpreted as {@link WildcardPermission}.
@@ -29,10 +29,14 @@ public class Permission implements Storable {
      * @param permissionID the unique id
      * @param permissionValue the permission string in {@link WildcardPermission} format.
      */
-    public Permission(Long permissionID, String permissionValue) {
-        this.permissionID = permissionID;
+    public Permission(String permissionValue) {
+        this.permissionID = -1L;
         this.setPermissionValue(permissionValue);
     }
+
+    public Permission(long id, String permissionValue) {
+        this.permissionID = id;
+        this.setPermissionValue(permissionValue);    }
 
     @Override
     public long getId() {
@@ -102,6 +106,11 @@ public class Permission implements Storable {
         builder.append(permissionValue);
         builder.append("]");
         return builder.toString();
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.permissionID =id;
     }
 
 }

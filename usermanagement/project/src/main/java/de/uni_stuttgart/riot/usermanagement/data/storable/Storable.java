@@ -18,6 +18,11 @@ public interface Storable {
      * @return unique id
      */
     public long getId();
+    
+    /**
+     * Setter for the unique id
+     */
+    public void setId(Long id);
 
     /**
      * Returns all search parameters that should be inspected

@@ -23,7 +23,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
         try {
             UserRole testUserRole = new UserRole(new Long(1), new Long(1), new Long(42));
             dao.insert(testUserRole);
-            UserRole findUserRole = dao.findBy(new Long(42));
+            UserRole findUserRole = dao.findBy(testUserRole.getId());
             System.out.println(findUserRole);
             assertEquals(findUserRole, findUserRole);
         } catch (DatasourceInsertException e) {

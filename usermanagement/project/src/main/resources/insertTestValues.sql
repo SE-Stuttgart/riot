@@ -3,10 +3,10 @@ INSERT INTO users(username, password, password_salt)
      ('R2D2','R2D2PW', 'R2D2Salt'),
      ('Vader','VaderPW', 'VaderSalt');
 
-INSERT INTO tokens(userID, tokenvalue, refreshtokenValue, issuedate, expirationdate)
-    VALUES ( 1, 'token1','token1R', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
-     ( 2, 'token2','token2R', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
-     ( 3, 'token3','token3R', TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54');
+INSERT INTO tokens(userID, tokenvalue, refreshtokenValue,valid, issuedate, expirationdate)
+    VALUES ( 1, 'token1','token1R', true,TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
+     ( 2, 'token2','token2R', true,TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
+     ( 3, 'token3','token3R', true, TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54');
     
 INSERT INTO roles(rolename)
     VALUES ( 'Master'),

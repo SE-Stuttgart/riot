@@ -23,7 +23,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 		try {
 			User testuser = new User(new Long(42), "TestUser", "TestUserPW", "TestUserSalt");
 			dao.insert(testuser);
-			User findUser = dao.findBy(new Long(42));
+			User findUser = dao.findBy(testuser.getId());
 			System.out.println(findUser);
 			assertEquals(testuser, findUser);
 		} catch (DatasourceInsertException e) {

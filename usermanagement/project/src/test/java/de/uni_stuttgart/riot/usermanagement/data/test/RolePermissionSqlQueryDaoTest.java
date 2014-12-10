@@ -21,9 +21,9 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase{
 	public void insertAndFindTest() {
 		RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.ds);
 		try {
-			RolePermission testrolePermission = new RolePermission(new Long(1), new Long(1), new Long(42));
+			RolePermission testrolePermission = new RolePermission(new Long(1), new Long(1), new Long(-1));
 			dao.insert(testrolePermission);
-			RolePermission findRolePermission = dao.findBy(new Long(42));
+			RolePermission findRolePermission = dao.findBy(testrolePermission.getId());
 			System.out.println(findRolePermission);
 			assertEquals(findRolePermission, findRolePermission);
 		} catch (DatasourceInsertException e) {

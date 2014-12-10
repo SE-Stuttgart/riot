@@ -23,7 +23,7 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase{
 		try {
 			TokenRole testtokenRole = new TokenRole(new Long(42), new Long(1), new Long(1));
 			dao.insert(testtokenRole);
-			TokenRole find = dao.findBy(new Long(42));
+			TokenRole find = dao.findBy(testtokenRole.getId());
 			System.out.println(find);
 			assertEquals(find, testtokenRole);
 		} catch (DatasourceInsertException e) {

@@ -27,7 +27,7 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase{
 		try {
 			Permission testPermission = new Permission(new Long(42), "TestPermission");
 			dao.insert(testPermission);
-			Permission findPermission = dao.findBy(new Long(42));
+			Permission findPermission = dao.findBy(testPermission.getId());
 			System.out.println(testPermission);
 			System.out.println(findPermission);
 			assertEquals(testPermission, findPermission);

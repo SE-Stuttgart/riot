@@ -15,7 +15,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class Token implements Storable {
 
-    private final Long tokenID;
+    private Long tokenID;
     private final Long userID;
     private final Timestamp issueTime;
     private final Timestamp expirationTime;
@@ -32,6 +32,15 @@ public class Token implements Storable {
 
     public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime) {
         this.tokenID = tokenID;
+        this.userID = userID;
+        this.issueTime = issueTime;
+        this.expirationTime = expirationTime;
+        this.setRefreshtokenValue(refreshtokenValue);
+        this.setTokenValue(tokenValue);
+    }
+    
+    public Token(Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime) {
+        this.tokenID = -1L;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
@@ -156,4 +165,10 @@ public class Token implements Storable {
         builder.append("]");
         return builder.toString();
     }
+    
+    @Override
+    public void setId(Long id) {
+        this.tokenID =id;
+    }
+
 }

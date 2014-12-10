@@ -14,14 +14,14 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class UserRole implements Storable {
 
-    private final Long userRoleID;
+    private Long userRoleID;
     private final Long userID;
     private final Long roleID;
 
-    public UserRole(User user, Role role, Long userRoleID) {
+    public UserRole(User user, Role role) {
         this.userID = user.getId();
         this.roleID = role.getId();
-        this.userRoleID = userRoleID;
+        this.userRoleID = -1L;
     }
 
     public UserRole(Long userID, Long roleID, Long userRoleID) {
@@ -99,6 +99,11 @@ public class UserRole implements Storable {
         builder.append(roleID);
         builder.append("]");
         return builder.toString();
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.userRoleID =id;
     }
 
 }

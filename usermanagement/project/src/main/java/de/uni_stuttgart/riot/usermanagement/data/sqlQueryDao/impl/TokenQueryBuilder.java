@@ -17,7 +17,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Token> {
 
     private static final String DELETE_QUERY = "DELETE FROM tokens WHERE tokens.tokenID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO tokens(tokenID, userID,tokenValue,refreshtokenvalue,issueDate,expirationdate)VALUES (?,?,?,?,?,?)";
+    private static final String INSERT_QUERY = "INSERT INTO tokens(userID,tokenValue,refreshtokenvalue,issueDate,expirationdate)VALUES (?,?,?,?,?) RETURNING tokenid";
     private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?,refreshtokenvalue=?, issuedate=?, expirationdate=? WHERE tokenID=?";
     private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens WHERE tokenID = ?;";
     private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens ";
@@ -31,12 +31,11 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
     @Override
     public PreparedStatement buildInsert(Token t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getId());
-        stmt.setLong(2, t.getUserID());
-        stmt.setString(3, t.getTokenValue());
-        stmt.setString(4, t.getRefreshtokenValue());
-        stmt.setTimestamp(5, t.getIssueTime());
-        stmt.setTimestamp(6, t.getExpirationTime());
+        stmt.setLong(1, t.getUserID());
+        stmt.setString(2, t.getTokenValue());
+        stmt.setString(3, t.getRefreshtokenValue());
+        stmt.setTimestamp(4, t.getIssueTime());
+        stmt.setTimestamp(5, t.getExpirationTime());
         return stmt;
     }
 

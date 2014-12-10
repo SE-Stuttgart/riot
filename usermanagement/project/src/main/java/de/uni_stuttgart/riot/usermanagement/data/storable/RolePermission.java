@@ -14,13 +14,13 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class RolePermission implements Storable {
 
-    private final Long rolePermissionID;
+    private Long rolePermissionID;
     private final Long permissionID;
     private final Long roleID;
 
-    public RolePermission(Role role, Permission permission, Long rolePermissionID) {
+    public RolePermission(Role role, Permission permission) {
         this.roleID = role.getId();
-        this.rolePermissionID = rolePermissionID;
+        this.rolePermissionID = -1L;
         this.permissionID = permission.getId();
     }
 
@@ -100,4 +100,10 @@ public class RolePermission implements Storable {
         builder.append("]");
         return builder.toString();
     }
+    
+    @Override
+    public void setId(Long id) {
+        this.rolePermissionID =id;
+    }
+
 }

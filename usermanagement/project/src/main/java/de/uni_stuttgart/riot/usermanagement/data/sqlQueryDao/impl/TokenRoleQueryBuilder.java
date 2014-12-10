@@ -17,7 +17,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 public class TokenRoleQueryBuilder extends StorableQueryBuilder implements QueryBuilder<TokenRole> {
 
     private static final String DELETE_QUERY = "DELETE FROM tokens_roles WHERE tokens_roles.tokenroleID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO tokens_roles(tokenroleID,tokenID,roleID)VALUES (?, ?, ?)";
+    private static final String INSERT_QUERY = "INSERT INTO tokens_roles(tokenID,roleID)VALUES (?, ?) RETURNING tokenroleid";
     private static final String UPDATE_QUERY = "UPDATE tokens_roles SET tokenID=?, roleID=? WHERE tokenroleID = ?;";
     private static final String FIND_ID_QUERY = "SELECT tokenroleID,tokenID,roleID FROM tokens_roles WHERE tokenroleID = ?;";
     private static final String FIND_PARAM_QUERY = "SELECT tokenroleID,tokenID,roleID FROM tokens_roles ";
@@ -31,9 +31,8 @@ public class TokenRoleQueryBuilder extends StorableQueryBuilder implements Query
     @Override
     public PreparedStatement buildInsert(TokenRole t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
-        stmt.setLong(1, t.getId());
-        stmt.setLong(2, t.getTokenID());
-        stmt.setLong(3, t.getRoleID());
+        stmt.setLong(1, t.getTokenID());
+        stmt.setLong(2, t.getRoleID());
         return stmt;
     }
 

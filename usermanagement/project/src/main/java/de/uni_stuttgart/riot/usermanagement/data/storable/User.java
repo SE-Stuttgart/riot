@@ -19,11 +19,18 @@ public class User implements Storable {
     private String passwordSalt;
 
     public User() {
-        // TODO Auto-generated constructor stub
     }
 
     public User(Long id, String username, String password, String passwordSalt) {
         this.id = id;
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setPasswordSalt(passwordSalt);
+    }
+    
+
+    public User(String username, String password, String passwordSalt) {
+        this.id = -1L;
         this.setUsername(username);
         this.setPassword(password);
         this.setPasswordSalt(passwordSalt);
@@ -89,6 +96,11 @@ public class User implements Storable {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id =id;
     }
 
 }
