@@ -14,25 +14,28 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class RolePermission implements Storable {
 
-    private Long rolePermissionID;
-    private final Long permissionID;
-    private final Long roleID;
+    private Long id;
+    private Long permissionID;
+    private Long roleID;
+    
+    public RolePermission() {
+    }
 
     public RolePermission(Role role, Permission permission) {
         this.roleID = role.getId();
-        this.rolePermissionID = -1L;
+        this.id = -1L;
         this.permissionID = permission.getId();
     }
 
     public RolePermission(Long roleID, Long permissionID, Long rolePermissionID) {
         this.roleID = roleID;
-        this.rolePermissionID = rolePermissionID;
+        this.id = rolePermissionID;
         this.permissionID = permissionID;
     }
 
     @Override
     public long getId() {
-        return this.rolePermissionID;
+        return this.id;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class RolePermission implements Storable {
         int result = 1;
         result = prime * result + ((permissionID == null) ? 0 : permissionID.hashCode());
         result = prime * result + ((roleID == null) ? 0 : roleID.hashCode());
-        result = prime * result + ((rolePermissionID == null) ? 0 : rolePermissionID.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -80,10 +83,10 @@ public class RolePermission implements Storable {
                 return false;
         } else if (!roleID.equals(other.roleID))
             return false;
-        if (rolePermissionID == null) {
-            if (other.rolePermissionID != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!rolePermissionID.equals(other.rolePermissionID))
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }
@@ -92,7 +95,7 @@ public class RolePermission implements Storable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("RolePermission [rolePermissionID=");
-        builder.append(rolePermissionID);
+        builder.append(id);
         builder.append(", permissionID=");
         builder.append(permissionID);
         builder.append(", roleID=");
@@ -103,7 +106,7 @@ public class RolePermission implements Storable {
     
     @Override
     public void setId(long id) {
-        this.rolePermissionID =id;
+        this.id =id;
     }
 
 }

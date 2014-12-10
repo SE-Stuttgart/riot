@@ -15,13 +15,16 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class Token implements Storable {
 
-    private Long tokenID;
-    private final Long userID;
-    private final Timestamp issueTime;
-    private final Timestamp expirationTime;
+    private Long id;
+    private Long userID;
+    private Timestamp issueTime;
+    private Timestamp expirationTime;
     private String tokenValue;
     private String refreshtokenValue;
     private boolean valid;
+    
+    public Token() {
+    }
 
     public Timestamp getIssueTime() {
         return issueTime;
@@ -32,7 +35,7 @@ public class Token implements Storable {
     }
 
     public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
-        this.tokenID = tokenID;
+        this.id = tokenID;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
@@ -42,7 +45,7 @@ public class Token implements Storable {
     }
     
     public Token(Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
-        this.tokenID = -1L;
+        this.id = -1L;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
@@ -53,7 +56,7 @@ public class Token implements Storable {
 
     @Override
     public long getId() {
-        return this.tokenID;
+        return this.id;
     }
 
     @Override
@@ -96,7 +99,7 @@ public class Token implements Storable {
         result = prime * result + ((expirationTime == null) ? 0 : expirationTime.hashCode());
         result = prime * result + ((issueTime == null) ? 0 : issueTime.hashCode());
         result = prime * result + ((refreshtokenValue == null) ? 0 : refreshtokenValue.hashCode());
-        result = prime * result + ((tokenID == null) ? 0 : tokenID.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((tokenValue == null) ? 0 : tokenValue.hashCode());
         result = prime * result + ((userID == null) ? 0 : userID.hashCode());
         return result;
@@ -129,10 +132,10 @@ public class Token implements Storable {
                 return false;
         } else if (!refreshtokenValue.equals(other.refreshtokenValue))
             return false;
-        if (tokenID == null) {
-            if (other.tokenID != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!tokenID.equals(other.tokenID))
+        } else if (!id.equals(other.id))
             return false;
         if (tokenValue == null) {
             if (other.tokenValue != null)
@@ -154,7 +157,7 @@ public class Token implements Storable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Token [tokenID=");
-        builder.append(tokenID);
+        builder.append(id);
         builder.append(", userID=");
         builder.append(userID);
         builder.append(", issueTime=");
@@ -171,7 +174,7 @@ public class Token implements Storable {
     
     @Override
     public void setId(long id) {
-        this.tokenID =id;
+        this.id =id;
     }
 
     public boolean isValid() {

@@ -14,25 +14,28 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class UserRole implements Storable {
 
-    private Long userRoleID;
-    private final Long userID;
-    private final Long roleID;
+    private Long id;
+    private Long userID;
+    private Long roleID;
 
+    public UserRole() {
+    }
+    
     public UserRole(User user, Role role) {
         this.userID = user.getId();
         this.roleID = role.getId();
-        this.userRoleID = -1L;
+        this.id = -1L;
     }
 
     public UserRole(Long userID, Long roleID, Long userRoleID) {
         this.userID = userID;
         this.roleID = roleID;
-        this.userRoleID = userRoleID;
+        this.id = userRoleID;
     }
 
     @Override
     public long getId() {
-        return this.userRoleID;
+        return this.id;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class UserRole implements Storable {
         int result = 1;
         result = prime * result + ((roleID == null) ? 0 : roleID.hashCode());
         result = prime * result + ((userID == null) ? 0 : userID.hashCode());
-        result = prime * result + ((userRoleID == null) ? 0 : userRoleID.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -80,10 +83,10 @@ public class UserRole implements Storable {
                 return false;
         } else if (!userID.equals(other.userID))
             return false;
-        if (userRoleID == null) {
-            if (other.userRoleID != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!userRoleID.equals(other.userRoleID))
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }
@@ -92,7 +95,7 @@ public class UserRole implements Storable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("UserRole [userRoleID=");
-        builder.append(userRoleID);
+        builder.append(id);
         builder.append(", userID=");
         builder.append(userID);
         builder.append(", roleID=");
@@ -103,7 +106,7 @@ public class UserRole implements Storable {
 
     @Override
     public void setId(long id) {
-        this.userRoleID =id;
+        this.id =id;
     }
 
 }

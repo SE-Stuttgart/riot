@@ -17,7 +17,10 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class Permission implements Storable {
 
-    private Long permissionID;
+    private long id;
+    
+    public Permission() {
+    }
 
     /**
      * The permission string that is interpreted as {@link WildcardPermission}.
@@ -26,21 +29,21 @@ public class Permission implements Storable {
 
     /**
      * Constructor for {@link Permission}
-     * @param permissionID the unique id
+     * @param id the unique id
      * @param permissionValue the permission string in {@link WildcardPermission} format.
      */
     public Permission(String permissionValue) {
-        this.permissionID = -1L;
+        this.id = -1L;
         this.setPermissionValue(permissionValue);
     }
 
     public Permission(long id, String permissionValue) {
-        this.permissionID = id;
+        this.id = id;
         this.setPermissionValue(permissionValue);    }
 
     @Override
     public long getId() {
-        return this.permissionID;
+        return this.id;
     }
 
     @Override
@@ -66,28 +69,32 @@ public class Permission implements Storable {
         this.permissionValue = permissionValue;
     }
 
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((permissionID == null) ? 0 : permissionID.hashCode());
+        result = prime * result + (int) (id ^ (id >>> 32));
         result = prime * result + ((permissionValue == null) ? 0 : permissionValue.hashCode());
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+        if (!(obj instanceof Permission))
             return false;
         Permission other = (Permission) obj;
-        if (permissionID == null) {
-            if (other.permissionID != null)
-                return false;
-        } else if (!permissionID.equals(other.permissionID))
+        if (id != other.id)
             return false;
         if (permissionValue == null) {
             if (other.permissionValue != null)
@@ -101,7 +108,7 @@ public class Permission implements Storable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Permission [permissionID=");
-        builder.append(permissionID);
+        builder.append(id);
         builder.append(", permissionValue=");
         builder.append(permissionValue);
         builder.append("]");
@@ -110,7 +117,7 @@ public class Permission implements Storable {
 
     @Override
     public void setId(long id) {
-        this.permissionID =id;
+        this.id =id;
     }
 
 }

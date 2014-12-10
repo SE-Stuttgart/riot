@@ -14,33 +14,36 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class TokenRole implements Storable {
 
-    private Long tokenRoleID;
-    private final Long tokenID;
-    private final Long roleID;
+    private Long id;
+    private Long tokenID;
+    private Long roleID;
 
     public final static String SEARCH_PARAM_ROLEID = "roleID";
     public final static String SEARCH_PARAM_TOKENID = "tokenID";
 
+    public TokenRole() {
+    }
+    
     public TokenRole(Token token, Role role, Long tokenRoleID) {
         this.tokenID = token.getId();
         this.roleID = role.getId();
-        this.tokenRoleID = tokenRoleID;
+        this.id = tokenRoleID;
     }
 
     public TokenRole(Long tokenRoleID, Long tokenID, Long roleID) {
         this.tokenID = tokenID;
         this.roleID = roleID;
-        this.tokenRoleID = tokenRoleID;
+        this.id = tokenRoleID;
     }
 
     public TokenRole(Long tokenID, Long roleID) {
         this.tokenID = tokenID;
         this.roleID = roleID;
-        this.tokenRoleID = -1L;
+        this.id = -1L;
     }
     @Override
     public long getId() {
-        return this.tokenRoleID;
+        return this.id;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class TokenRole implements Storable {
         int result = 1;
         result = prime * result + ((roleID == null) ? 0 : roleID.hashCode());
         result = prime * result + ((tokenID == null) ? 0 : tokenID.hashCode());
-        result = prime * result + ((tokenRoleID == null) ? 0 : tokenRoleID.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -88,10 +91,10 @@ public class TokenRole implements Storable {
                 return false;
         } else if (!tokenID.equals(other.tokenID))
             return false;
-        if (tokenRoleID == null) {
-            if (other.tokenRoleID != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!tokenRoleID.equals(other.tokenRoleID))
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }
@@ -100,7 +103,7 @@ public class TokenRole implements Storable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("TokenRole [tokenRoleID=");
-        builder.append(tokenRoleID);
+        builder.append(id);
         builder.append(", tokenID=");
         builder.append(tokenID);
         builder.append(", roleID=");
@@ -111,7 +114,7 @@ public class TokenRole implements Storable {
     
     @Override
     public void setId(long id) {
-        this.tokenRoleID =id;
+        this.id =id;
     }
 
 }

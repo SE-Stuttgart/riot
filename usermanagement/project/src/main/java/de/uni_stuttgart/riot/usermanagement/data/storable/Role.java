@@ -17,6 +17,9 @@ public class Role implements Storable {
     private Long id;
     private String roleName;
 
+    public Role() {
+    } 
+    
     public Role(Long id, String roleName) {
         this.id = id;
         this.setRoleName(roleName);
