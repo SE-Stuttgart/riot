@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
-import de.uni_stuttgart.riot.usermanagement.data.test.UserRoleSqlQueryDaoTest;
 
 /**
  * {@link ObjectBuilder} for {@link UserRole}. Used in {@link UserRoleSqlQueryDAO}

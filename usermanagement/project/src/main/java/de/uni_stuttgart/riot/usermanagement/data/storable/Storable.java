@@ -22,7 +22,7 @@ public interface Storable {
     /**
      * Setter for the unique id
      */
-    public void setId(Long id);
+    public void setId(long id);
 
     /**
      * Returns all search parameters that should be inspected

@@ -102,7 +102,7 @@ public class RolePermission implements Storable {
     }
     
     @Override
-    public void setId(Long id) {
+    public void setId(long id) {
         this.rolePermissionID =id;
     }
 

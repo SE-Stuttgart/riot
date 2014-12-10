@@ -85,7 +85,7 @@ public class AuthenticationLogic {
                 DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
 
                 for (Role role : roles) {
-                    tokenRoleDao.insert(new TokenRole(DatasourceUtil.nextId(), token.getId(), role.getId()));
+                    tokenRoleDao.insert(new TokenRole( token.getId(), role.getId()));
                 }
 
                 return new AuthenticationResponse(authToken, refreshToken);
@@ -135,7 +135,7 @@ public class AuthenticationLogic {
                     Collection<TokenRole> tokenRoles = tokenRoleDao.findBy(searchParameter, false);
 
                     for (TokenRole tokenRole : tokenRoles) {
-                        tokenRoleDao.insert(new TokenRole(DatasourceUtil.nextId(), token.getId(), tokenRole.getRoleID()));
+                        tokenRoleDao.insert(new TokenRole(token.getId(), tokenRole.getRoleID()));
                     }
                 }
 

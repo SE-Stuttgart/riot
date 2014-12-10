@@ -109,7 +109,7 @@ public class Permission implements Storable {
     }
 
     @Override
-    public void setId(Long id) {
+    public void setId(long id) {
         this.permissionID =id;
     }
 

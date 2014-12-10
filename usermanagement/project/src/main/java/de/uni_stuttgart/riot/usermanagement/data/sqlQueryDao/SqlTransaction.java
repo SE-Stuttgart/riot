@@ -17,7 +17,6 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDa
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;

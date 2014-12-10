@@ -13,7 +13,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class User implements Storable {
 
-    private Long id;
+    private long id;
     private String username;
     private String password;
     private String passwordSalt;
@@ -21,13 +21,12 @@ public class User implements Storable {
     public User() {
     }
 
-    public User(Long id, String username, String password, String passwordSalt) {
+    public User(long id, String username, String password, String passwordSalt) {
         this.id = id;
         this.setUsername(username);
         this.setPassword(password);
         this.setPasswordSalt(passwordSalt);
     }
-    
 
     public User(String username, String password, String passwordSalt) {
         this.id = -1L;
@@ -91,7 +90,7 @@ public class User implements Storable {
     public boolean equals(Object o) {
         if (o instanceof User) {
             User u = (User) o;
-            return this.id.equals(u.getId()) && this.username.equals(u.username) && this.password.equals(u.password) &&
+            return this.id == u.getId() && this.username.equals(u.username) && this.password.equals(u.password) &&
                     this.passwordSalt.equals(u.passwordSalt);
         } else {
             return false;
@@ -99,7 +98,7 @@ public class User implements Storable {
     }
 
     @Override
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id =id;
     }
 
