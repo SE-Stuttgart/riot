@@ -35,7 +35,7 @@ public class PermissionService {
     @GET
     public List<Permission> getPermissions() {
         try {
-            return UserManagementFacade.getInstance().getAllPermissions();
+            return (List<Permission>) UserManagementFacade.getInstance().getAllPermissions();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
@@ -80,7 +80,7 @@ public class PermissionService {
      */
     @PUT
     @Path("/{id}/")
-    public Response putPermission(@PathParam("id") int id, Permission permission) {
+    public Response putPermission(@PathParam("id") Long id, Permission permission) {
         try {
             UserManagementFacade.getInstance().updatePermission(id, permission);
             return Response.ok().build();
@@ -97,7 +97,7 @@ public class PermissionService {
      */
     @DELETE
     @Path("/{id}/")
-    public Response deletePermission(@PathParam("id") int id) {
+    public Response deletePermission(@PathParam("id") Long id) {
         try {
             UserManagementFacade.getInstance().deletePermission(id);
             return Response.ok().build();

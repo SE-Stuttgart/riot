@@ -42,7 +42,7 @@ public class UserService {
 
     @GET
     @Path("/{id}/")
-    public User getUser(@PathParam("id") int id) {
+    public User getUser(@PathParam("id") Long id) {
         try {
             return UserManagementFacade.getInstance().getUser(id);
         } catch (LogicException e) {
@@ -64,7 +64,7 @@ public class UserService {
 
     @PUT
     @Path("/{id}/")
-    public Response putUser(@PathParam("id") int id, User user) {
+    public Response putUser(@PathParam("id") Long id, User user) {
         try {
             UserManagementFacade.getInstance().updateUser(id, user);
             return Response.ok().build();
@@ -75,7 +75,7 @@ public class UserService {
 
     @DELETE
     @Path("/{id}/")
-    public Response deleteUser(@PathParam("id") int id) {
+    public Response deleteUser(@PathParam("id") Long id) {
         try {
             UserManagementFacade.getInstance().deleteUser(id);
             return Response.ok().build();

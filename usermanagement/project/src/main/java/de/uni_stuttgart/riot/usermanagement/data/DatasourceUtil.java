@@ -14,4 +14,8 @@ public class DatasourceUtil {
         return (DataSource) in.lookup(JNDI_PATH); // FIXME correct jndi path
     }
 
+    public static Long nextId() {
+        return 42L;
+    }
+
 }

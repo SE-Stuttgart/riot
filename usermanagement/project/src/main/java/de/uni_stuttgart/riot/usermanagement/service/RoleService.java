@@ -29,7 +29,7 @@ public class RoleService {
     @GET
     public List<Role> getRoles() {
         try {
-            return UserManagementFacade.getInstance().getAllRoles();
+            return (List<Role>) UserManagementFacade.getInstance().getAllRoles();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
@@ -47,9 +47,9 @@ public class RoleService {
 
     @GET
     @Path("/{id}/")
-    public List<Role> getRoles(@PathParam("id") int id) {
+    public List<Role> getRoles(@PathParam("id") Long id) {
         try {
-            return UserManagementFacade.getInstance().getAllRolesFromUser(id);
+            return (List<Role>) UserManagementFacade.getInstance().getAllRolesFromUser(id);
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
         }
@@ -57,9 +57,9 @@ public class RoleService {
 
     @PUT
     @Path("/{id}/")
-    public Response putRole(@PathParam("id") int id, Role role) {
+    public Response putRole(@PathParam("id") Long userId, Role role) {
         try {
-            UserManagementFacade.getInstance().addRoleToUser(id, role);
+            UserManagementFacade.getInstance().addRoleToUser(userId, (Long) role.getId());
             return Response.ok().build();
         } catch (LogicException e) {
             throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
@@ -68,7 +68,7 @@ public class RoleService {
 
     @DELETE
     @Path("/{id}/")
-    public Response deleteRole(@PathParam("id") int id) {
+    public Response deleteRole(@PathParam("id") Long id) {
         try {
             UserManagementFacade.getInstance().deleteRole(id);
             return Response.ok().build();

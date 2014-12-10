@@ -15,6 +15,9 @@ public class ErrorCodes {
     public static final int UPDATE_USER = 3;
     public static final int GET_USER = 4;
     public static final int GET_ALL_USERS = 5;
+    public static final int ADD_ROLE_TO_USER = 6;
+    public static final int REMOVE_ROLE_FROM_USER = 7;
+    public static final int GET_ROLES_FROM_USER = 8;
 
     public static final int ADD_PERMISSION = 11;
     public static final int DELETE_PERMISSION = 12;
@@ -27,4 +30,10 @@ public class ErrorCodes {
     public static final int UPDATE_ROLE = 23;
     public static final int GET_ROLE = 24;
     public static final int GET_ALL_ROLES = 25;
+    public static final int ADD_PERMISSION_TO_ROLE = 26;
+    public static final int REMOVE_PERMISSION_FROM_ROLE = 27;
+    public static final int GET_PERMISSIONS_FROM_ROLE = 28;
+
+    public static final int GET_TOKEN = 31;
+    public static final int LOGOUT = 32;
 }

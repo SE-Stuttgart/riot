@@ -1,9 +1,12 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
-import java.util.List;
+import java.util.Collection;
+
+import javax.naming.NamingException;
 
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.memorydao.MemoryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
@@ -11,58 +14,94 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPer
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
 
+/**
+ * Contains all logic regarding the permissions.
+ * 
+ * @author Niklas Schnabel
+ *
+ */
 public class PermissionLogic {
 
-    private DAO<Permission> dao = new MemoryDAO<Permission>();
+    private DAO<Permission> dao;
+
+    /**
+     * Constructor.
+     */
+    public PermissionLogic() {
+        try {
+            dao = new PermissionSqlQueryDAO(DatasourceUtil.getDataSource());
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void addPermission(Permission permission) throws AddPermissionException {
         try {
-            // TODO
+            dao.insert(permission);
         } catch (Exception e) {
             throw new AddPermissionException(e);
         }
     }
 
-    public void deletePermission(int id) throws DeletePermissionException {
+    /**
+     * Remove a permission from the system.
+     * 
+     * @param id
+     *            The id of the permission to remove
+     * @throws DeletePermissionException
+     */
+    public void deletePermission(Long id) throws DeletePermissionException {
         try {
-            // TODO
+            dao.delete(dao.findBy(id));
         } catch (Exception e) {
             throw new DeletePermissionException(e);
         }
     }
 
-    public void updatePermission(int id, Permission permission) throws UpdatePermissionException {
+    /**
+     * Change an existing permission
+     * 
+     * @param id
+     *            The id of the permission to change
+     * @param permission
+     *            The new content of the permission
+     * @throws UpdatePermissionException
+     */
+    public void updatePermission(Long id, Permission permission) throws UpdatePermissionException {
         try {
-            // TODO
+            dao.update(new Permission(id, permission.getPermissionValue()));
         } catch (Exception e) {
             throw new UpdatePermissionException(e);
         }
     }
 
-    public Permission getPermission(int id) throws GetPermissionException {
+    /**
+     * Get a specific permission.
+     * 
+     * @param id
+     *            The id of the permission to get
+     * @return The retrieved permission
+     * @throws GetPermissionException
+     */
+    public Permission getPermission(Long id) throws GetPermissionException {
         try {
-            // TODO
-            return null;
+            return dao.findBy(id);
         } catch (Exception e) {
             throw new GetPermissionException(e);
         }
     }
 
-    public List<Permission> getAllPermissions() throws GetAllPermissionsException {
+    /**
+     * Get all existing permissions.
+     * 
+     * @return All existing permissions in a collection
+     * @throws GetAllPermissionsException
+     */
+    public Collection<Permission> getAllPermissions() throws GetAllPermissionsException {
         try {
-            // TODO
-            return null;
+            return dao.findAll();
         } catch (Exception e) {
             throw new GetAllPermissionsException(e);
-        }
-    }
-
-    public List<Permission> getAllPermissionsFromUser(int id) throws GetPermissionException {
-        try {
-            // TODO
-            return null;
-        } catch (Exception e) {
-            throw new GetPermissionException(e);
         }
     }
 }
