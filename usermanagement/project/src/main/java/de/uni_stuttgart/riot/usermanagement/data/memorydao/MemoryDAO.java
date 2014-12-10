@@ -113,4 +113,12 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
         return this.getStore().values();
     }
 
+    @Override
+    public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
+        for (T t : this.store.values()) {
+            if(t.getSearchParam().contains(searchParameter)) return t;
+        }
+        throw new DatasourceFindException("No such Element");
+    }
+
 }

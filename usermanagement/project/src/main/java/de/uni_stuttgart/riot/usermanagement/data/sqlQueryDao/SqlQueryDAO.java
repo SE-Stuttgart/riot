@@ -176,4 +176,29 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             }
         }
     }
+
+    @Override
+    public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
+        Connection connection = null;
+        try {
+            connection = ds.getConnection();
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(searchParameter);
+            PreparedStatement stmt = this.queryBuilder.buildFindBySearchParam(searchParams, connection, false);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                return this.objectBuilder.build(resultSet);
+            } else {
+                throw new DatasourceFindException("No such Element");
+            }
+        } catch (SQLException e) {
+            throw new DatasourceFindException(e.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new DatasourceFindException(e.getMessage());
+            }
+        }
+    }
 }

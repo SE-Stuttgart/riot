@@ -21,6 +21,7 @@ public class Token implements Storable {
     private final Timestamp expirationTime;
     private String tokenValue;
     private String refreshtokenValue;
+    private boolean valid;
 
     public Timestamp getIssueTime() {
         return issueTime;
@@ -30,22 +31,24 @@ public class Token implements Storable {
         return expirationTime;
     }
 
-    public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime) {
+    public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
         this.tokenID = tokenID;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
         this.setRefreshtokenValue(refreshtokenValue);
         this.setTokenValue(tokenValue);
+        this.setValid(valid);
     }
     
-    public Token(Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime) {
+    public Token(Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
         this.tokenID = -1L;
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
         this.setRefreshtokenValue(refreshtokenValue);
         this.setTokenValue(tokenValue);
+        this.setValid(valid);
     }
 
     @Override
@@ -169,6 +172,14 @@ public class Token implements Storable {
     @Override
     public void setId(Long id) {
         this.tokenID =id;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
 }

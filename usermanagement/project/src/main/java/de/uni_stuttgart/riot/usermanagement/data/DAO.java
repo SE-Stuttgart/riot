@@ -6,6 +6,7 @@ import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteExcep
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
@@ -57,4 +58,13 @@ public interface DAO<T extends Storable> {
      * @throws DatasourceFindException
      */
     public Collection<T> findAll() throws DatasourceFindException;
+    
+    /**
+     * Returns the fist element that is matching the searchparameter.
+     * <b>Should only be used with unique fields</b>
+     * @param searchParameter
+     * @return the first matching element
+     * @throws DatasourceFindException if there is no such element
+     */
+    public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException;
 }

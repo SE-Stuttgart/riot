@@ -11,6 +11,8 @@ import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteExcep
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
@@ -79,4 +81,15 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
             fail(e.getMessage());
         }
 	}
+	
+	   @Test
+	    public void findUniqueTest(){
+	        UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+	        try {
+	            User user = dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, "Yoda"));
+	            assertEquals(user.getPassword(), "YodaPW");
+	        } catch (DatasourceFindException e) {
+	            fail(e.getMessage());
+	        }
+	    }
 }

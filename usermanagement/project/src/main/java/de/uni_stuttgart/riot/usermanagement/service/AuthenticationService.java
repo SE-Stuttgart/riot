@@ -59,33 +59,7 @@ public class AuthenticationService {
     @PUT
     @Path("/login/")
     public AuthenticationResponse login(LoginRequest request) {
-        try {
-            DAO<User> userDAO = new UserSqlQueryDao(DatasourceUtil.getDataSource());
-            DAO<Token> tokenDAO = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
-            DAO<TokenRole> tokenRoleDAO = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            
-            Subject u = SecurityUtils.getSubject();
-            u.login(new UsernamePasswordToken(request.getUsername(), request.getPassword()));
-
-            String authToken = TokenUtil.generateToken();
-            String refreshToken = TokenUtil.generateToken();
-            
-            LinkedList<SearchParameter> searchParams = new LinkedList<SearchParameter>();
-            searchParams.add(new SearchParameter(SearchFields.USERNAME, request.getUsername()));
-            Collection<User> users = userDAO.findBy(searchParams, false);
-            Iterator<User> i = users.iterator();
-            if(i.hasNext()){
-                Token newToken = new Token(42L, i.next().getId(), authToken, refreshToken, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()+3000000));
-                tokenDAO.insert(newToken);
-                tokenRoleDAO.insert(new TokenRole(42L, 42L, 1L));
-            }
-            
-            return new AuthenticationResponse(authToken, refreshToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiErrorResponse(Status.INTERNAL_SERVER_ERROR, new AddUserException(e));
-        }
-        
+       return new AuthenticationResponse("TODO", "TODO");
     }
 
     /**

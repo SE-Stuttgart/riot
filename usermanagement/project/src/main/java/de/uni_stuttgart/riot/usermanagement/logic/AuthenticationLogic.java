@@ -173,7 +173,7 @@ public class AuthenticationLogic {
         Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
 
         // FIXME Ids of the user and the token
-        Token token = new Token(1L, 1L, authToken, refreshToken, issueTime, expirationTime);
+        Token token = new Token(1L, 1L, authToken, refreshToken, issueTime, expirationTime,true);
         try {
             dao.insert(token);
         } catch (DatasourceInsertException e) {

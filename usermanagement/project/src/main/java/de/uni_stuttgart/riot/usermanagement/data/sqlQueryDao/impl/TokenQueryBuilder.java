@@ -17,11 +17,11 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Token> {
 
     private static final String DELETE_QUERY = "DELETE FROM tokens WHERE tokens.tokenID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO tokens(userID,tokenValue,refreshtokenvalue,issueDate,expirationdate)VALUES (?,?,?,?,?) RETURNING tokenid";
-    private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?,refreshtokenvalue=?, issuedate=?, expirationdate=? WHERE tokenID=?";
-    private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens WHERE tokenID = ?;";
-    private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens ";
-    private static final String FIND_ALL_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate FROM tokens";
+    private static final String INSERT_QUERY = "INSERT INTO tokens(userID,tokenValue,refreshtokenvalue,issueDate,expirationdate,valid)VALUES (?,?,?,?,?,?) RETURNING tokenid";
+    private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?,refreshtokenvalue=?, issuedate=?, expirationdate=?, valid=? WHERE tokenID=?";
+    private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate, valid FROM tokens WHERE tokenID = ?;";
+    private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate, valid FROM tokens ";
+    private static final String FIND_ALL_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate, valid FROM tokens";
 
     @Override
     public PreparedStatement buildDelete(Token t, Connection connection) throws SQLException {
@@ -36,6 +36,7 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
         stmt.setString(3, t.getRefreshtokenValue());
         stmt.setTimestamp(4, t.getIssueTime());
         stmt.setTimestamp(5, t.getExpirationTime());
+        stmt.setBoolean(6, t.isValid());
         return stmt;
     }
 
@@ -47,7 +48,8 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
         stmt.setString(3, t.getRefreshtokenValue());
         stmt.setTimestamp(4, t.getIssueTime());
         stmt.setTimestamp(5, t.getExpirationTime());
-        stmt.setLong(6, t.getId());
+        stmt.setBoolean(6, t.isValid());
+        stmt.setLong(7, t.getId());
         return stmt;
     }
 
