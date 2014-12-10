@@ -10,7 +10,8 @@ import de.uni_stuttgart.riot.rest.ResourceModel;
  */
 public class ContactEntry implements ResourceModel {
 
-    private String id; // unique ID
+	private long id;
+    private String uid; // unique ID
     private String firstName; 
     private String lastName;
     private String email;
@@ -20,9 +21,10 @@ public class ContactEntry implements ResourceModel {
         super();
     }
         
-    public ContactEntry(String firstName, String lastName, String phoneNumber) {
+    public ContactEntry(long id, String firstName, String lastName, String phoneNumber) {
         super();
-        this.id = UUID.randomUUID().toString();
+        this.id = id;
+        this.uid = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -33,7 +35,7 @@ public class ContactEntry implements ResourceModel {
      */
     @Override
     public long getId() {
-        return this.id.hashCode();
+        return this.id;
     }
 
     /* (non-Javadoc)

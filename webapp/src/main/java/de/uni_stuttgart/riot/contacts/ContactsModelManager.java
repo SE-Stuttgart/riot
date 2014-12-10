@@ -14,9 +14,9 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
     private static HashMap<Long, ContactEntry> entries = new HashMap<>();
 
     static {
-    	ContactEntry c = new ContactEntry("Max", "Mustermann", "0123456");
+    	ContactEntry c = new ContactEntry(1,"Max", "Mustermann", "0123456");
     	entries.put(c.getId(), c);
-    	c = new ContactEntry("Markus", "Mustermann", "0456789");
+    	c = new ContactEntry(2,"Markus", "Mustermann", "0456789");
     	entries.put(c.getId(), c);
     }
 
