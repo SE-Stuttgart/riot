@@ -65,7 +65,7 @@ public class AuthenticationLogic {
      * 
      * @return A response containing the bearer and refresh token
      */
-    public AuthenticationResponse generateTokens(String username, String password) throws GenerateTokenException {
+    public AuthenticationResponse login(String username, String password) throws GenerateTokenException {
         try {
             Subject subject = SecurityUtils.getSubject();
 
