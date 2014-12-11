@@ -60,6 +60,15 @@
 			<version>2.13</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<!-- Needed for creating an intial context, so testing works without glassfish -->
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>tomcat-catalina</artifactId>
+		    <version>8.0.15</version>
+		    <scope>test</scope>
+		</dependency>
+		
 		<!-- shiro -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
