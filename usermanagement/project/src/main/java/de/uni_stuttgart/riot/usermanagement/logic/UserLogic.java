@@ -2,7 +2,6 @@ package de.uni_stuttgart.riot.usermanagement.logic;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.naming.NamingException;
 
@@ -11,6 +10,7 @@ import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
@@ -72,7 +72,7 @@ public class UserLogic {
      */
     public void deleteUser(Long id) throws DeleteUserException {
         try {
-            dao.delete(dao.findBy(id)); // TODO ugly
+            dao.delete(dao.findBy(id));
         } catch (Exception e) {
             throw new DeleteUserException(e);
         }
@@ -89,8 +89,7 @@ public class UserLogic {
      */
     public void updateUser(Long id, User user) throws UpdateUserException {
         try {
-            // FIXME given id is ignored
-            dao.update(user);
+            dao.update(new User(id, user.getUsername(), user.getPassword(), user.getPasswordSalt()));
         } catch (Exception e) {
             throw new UpdateUserException(e);
         }
@@ -112,21 +111,19 @@ public class UserLogic {
         }
     }
 
+    /**
+     * Retrive an existing user
+     * 
+     * @param username
+     *            Username of the user
+     * @return The user
+     * @throws GetUserException
+     */
     public User getUser(String username) throws GetUserException {
 
         try {
-            Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
-            searchParameter.add(new SearchParameter(SearchFields.USERNAME, username));
-
-            Collection<User> userRoles = dao.findBy(searchParameter, false);
-
-            Iterator<User> i = userRoles.iterator();
-
-            if (i.hasNext()) {
-                return i.next();
-            } else {
-                throw new GetUserException("User does not exist");
-            }
+            // search user by user name
+            return dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, username));
         } catch (Exception e) {
             throw new GetUserException(e);
         }
@@ -157,9 +154,8 @@ public class UserLogic {
      */
     public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
         try {
-            // FIXME Question: Is there any check if the user and role ids already exist?
             DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            UserRole ur = new UserRole(1L, userId, roleId); // FIXME id
+            UserRole ur = new UserRole(userId, roleId);
             roleDao.insert(ur);
         } catch (Exception e) {
             throw new AddRoleToUserException(e);
@@ -177,14 +173,17 @@ public class UserLogic {
     public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
         try {
             DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
-            searchParameter.add(new SearchParameter(SearchFields.USERID, id));
-
-            Collection<UserRole> userRoles = userRoleDao.findBy(searchParameter, false);
-
             DAO<Role> roleDao = new RoleSqlQueryDAO(DatasourceUtil.getDataSource());
 
+            // get all roles with the given user id
+            Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
+            searchParameter.add(new SearchParameter(SearchFields.USERID, id));
+            Collection<UserRole> userRoles = userRoleDao.findBy(searchParameter, false);
+
+            // contains all associated roles
             Collection<Role> roles = new ArrayList<Role>();
+
+            // get all associated roles
             for (UserRole userRole : userRoles) {
                 roles.add(roleDao.findBy(userRole.getRoleID()));
             }
@@ -207,7 +206,7 @@ public class UserLogic {
     public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
         try {
             DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            UserRole ur = new UserRole(1L, userId, roleId); // FIXME id
+            UserRole ur = new UserRole(userId, roleId);
             userRoleDao.delete(ur);
         } catch (Exception e) {
             throw new RemoveRoleFromUserException(e);
@@ -217,13 +216,23 @@ public class UserLogic {
     /**
      * Get all active Tokens of a user
      * 
-     * @param idUser
+     * @param userId
      *            The id of a user
      * @return Collection with tokens
      * @throws GetActiveTokenException
      */
-    public Collection<Token> getActiveTokensFromUser(Long idUser) throws GetActiveTokenException {
-        // FIXME return dao.getActiveTokens(idUser);
-        return null;
+    public Collection<Token> getActiveTokensFromUser(Long userId) throws GetActiveTokenException {
+        try {
+            DAO<Token> tokenDao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
+
+            // get all active tokens with the given user id
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.USERID, userId));
+            searchParams.add(new SearchParameter(SearchFields.TOKENVALID, true));
+
+            return tokenDao.findBy(searchParams, false);
+        } catch (Exception e) {
+            throw new GetActiveTokenException(e);
+        }
     }
 }
