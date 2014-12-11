@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,6 +18,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.response.PermissionResponse;
+import de.uni_stuttgart.riot.usermanagement.service.response.RoleResponse;
 
 /**
  * The roles service will handle any access (create, read, update, delete) to the roles.
@@ -39,9 +43,16 @@ public class RoleService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET
-    public Collection<Role> getRoles() throws UserManagementException {
+    public Collection<RoleResponse> getRoles() throws UserManagementException {
         // TODO limit returned roles
-        return facade.getAllRoles();
+        Collection<Role> roles = facade.getAllRoles();
+
+        Collection<RoleResponse> roleResponse = new ArrayList<RoleResponse>();
+        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
+            roleResponse.add(new RoleResponse(it.next()));
+        }
+
+        return roleResponse;
     }
 
     /**
@@ -56,8 +67,8 @@ public class RoleService {
      */
     @GET
     @Path("/{roleID}")
-    public Role getRole(@PathParam("roleID") Long roleID) throws UserManagementException {
-        return facade.getRole(roleID);
+    public RoleResponse getRole(@PathParam("roleID") Long roleID) throws UserManagementException {
+        return new RoleResponse(facade.getRole(roleID));
     }
 
     /**
@@ -71,11 +82,10 @@ public class RoleService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    public Role addRole(Role role) throws UserManagementException {
+    public RoleResponse addRole(Role role) throws UserManagementException {
         facade.addRole(role);
 
-        // TODO return new role
-        return null;
+        return new RoleResponse(facade.getRole(role.getId()));
     }
 
     /**
@@ -92,11 +102,10 @@ public class RoleService {
      */
     @PUT
     @Path("/{roleID}")
-    public Role updateRole(@PathParam("roleID") Long roleID, Role role) throws UserManagementException {
+    public RoleResponse updateRole(@PathParam("roleID") Long roleID, Role role) throws UserManagementException {
         facade.updateRole(roleID, role);
 
-        // TODO return updated role
-        return null;
+        return new RoleResponse(facade.getRole(role.getId()));
     }
 
     /**
@@ -129,9 +138,16 @@ public class RoleService {
      */
     @GET
     @Path("/{roleID}/permissions")
-    public Collection<Permission> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
-        //TODO limit returned permissions
-        return facade.getAllPermissionsOfRole(roleID);
+    public Collection<PermissionResponse> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
+        // TODO limit returned permissions
+        Collection<Permission> permissions = facade.getAllPermissionsOfRole(roleID);
+
+        Collection<PermissionResponse> permissionResponse = new ArrayList<PermissionResponse>();
+        for (Iterator<Permission> it = permissions.iterator(); it.hasNext();) {
+            permissionResponse.add(new PermissionResponse(it.next()));
+        }
+
+        return permissionResponse;
     }
 
     /**
@@ -148,8 +164,7 @@ public class RoleService {
      */
     @PUT
     @Path("/{roleID}/permissions/{permissionID}")
-    public Response addUserRole(@PathParam("roleID") Long roleID,
-                                @PathParam("permissionID") Long permissionID) throws UserManagementException {
+    public Response addUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.addPermissionToRole(roleID, permissionID);
 
         return Response.ok().build();
@@ -169,8 +184,7 @@ public class RoleService {
      */
     @DELETE
     @Path("/{roleID}/permissions/{permissionID}")
-    public Response removeUserRole(@PathParam("roleID") Long roleID,
-                                   @PathParam("permissionID") Long permissionID) throws UserManagementException {
+    public Response removeUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.deletePermissionFromRole(roleID, permissionID);
 
         return Response.ok().build();

@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,6 +17,7 @@ import javax.ws.rs.core.Response;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.response.PermissionResponse;
 
 /**
  * The permissions service will handle any access (create, read, update, delete) to the permissions.
@@ -38,9 +41,16 @@ public class PermissionService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET
-    public Collection<Permission> getPermissions() throws UserManagementException {
+    public Collection<PermissionResponse> getPermissions() throws UserManagementException {
         // TODO limit returned permissions
-        return facade.getAllPermissions();
+        Collection<Permission> permissions = facade.getAllPermissions();
+
+        Collection<PermissionResponse> permissionResponse = new ArrayList<PermissionResponse>();
+        for (Iterator<Permission> it = permissions.iterator(); it.hasNext();) {
+            permissionResponse.add(new PermissionResponse(it.next()));
+        }
+
+        return permissionResponse;
     }
 
     /**
@@ -70,11 +80,10 @@ public class PermissionService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    public Permission addPermission(Permission permission) throws UserManagementException {
+    public PermissionResponse addPermission(Permission permission) throws UserManagementException {
         facade.addPermission(permission);
 
-        // TODO return new permission
-        return null;
+        return new PermissionResponse(facade.getPermission(permission.getId()));
     }
 
     /**
@@ -91,11 +100,10 @@ public class PermissionService {
      */
     @PUT
     @Path("/{permissionID}")
-    public Permission updatePermission(@PathParam("permissionID") Long permissionID, Permission permission) throws UserManagementException {
+    public PermissionResponse updatePermission(@PathParam("permissionID") Long permissionID, Permission permission) throws UserManagementException {
         facade.updatePermission(permissionID, permission);
 
-        // TODO return updated permission
-        return null;
+        return new PermissionResponse(facade.getPermission(permission.getId()));
     }
 
     /**

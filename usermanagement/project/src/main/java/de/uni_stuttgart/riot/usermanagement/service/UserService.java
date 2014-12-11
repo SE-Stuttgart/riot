@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -9,14 +11,19 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.response.RoleResponse;
+import de.uni_stuttgart.riot.usermanagement.service.response.TokenResponse;
+import de.uni_stuttgart.riot.usermanagement.service.response.UserResponse;
 
 /**
  * The users service will handle any access (create, read, update, delete) to the users.
@@ -29,6 +36,8 @@ import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExce
 @Produces(MediaType.APPLICATION_JSON)
 public class UserService {
 
+    @Context
+    private UriInfo uriInfo;
     UserManagementFacade facade = UserManagementFacade.getInstance();
 
     /**
@@ -40,9 +49,16 @@ public class UserService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET
-    public Collection<User> getUsers() throws UserManagementException {
+    public Collection<UserResponse> getUsers() throws UserManagementException {
         // TODO limit returned users
-        return facade.getAllUsers();
+        Collection<User> users = facade.getAllUsers();
+
+        Collection<UserResponse> userResponse = new ArrayList<UserResponse>();
+        for (Iterator<User> it = users.iterator(); it.hasNext();) {
+            userResponse.add(new UserResponse(it.next()));
+        }
+
+        return userResponse;
     }
 
     /**
@@ -57,8 +73,8 @@ public class UserService {
      */
     @GET
     @Path("/{userID}")
-    public User getUser(@PathParam("userID") Long userID) throws UserManagementException {
-        return facade.getUser(userID);
+    public UserResponse getUser(@PathParam("userID") Long userID) throws UserManagementException {
+        return new UserResponse(facade.getUser(userID));
     }
 
     /**
@@ -72,11 +88,10 @@ public class UserService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    public User addUser(User user) throws UserManagementException {
+    public UserResponse addUser(User user) throws UserManagementException {
         facade.addUser(user);
 
-        // TODO return new user
-        return null;
+        return new UserResponse(facade.getUser(user.getId()));
     }
 
     /**
@@ -93,11 +108,10 @@ public class UserService {
      */
     @PUT
     @Path("/{userID}")
-    public User updateUser(@PathParam("userID") Long userID, User user) throws UserManagementException {
+    public UserResponse updateUser(@PathParam("userID") Long userID, User user) throws UserManagementException {
         facade.updateUser(userID, user);
 
-        // TODO return updated user
-        return null;
+        return new UserResponse(facade.getUser(user.getId()));
     }
 
     /**
@@ -130,9 +144,16 @@ public class UserService {
      */
     @GET
     @Path("/{userID}/roles")
-    public Collection<Role> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
+    public Collection<RoleResponse> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned roles
-        return facade.getAllRolesFromUser(userID);
+        Collection<Role> roles = facade.getAllRolesFromUser(userID);
+
+        Collection<RoleResponse> roleResponse = new ArrayList<RoleResponse>();
+        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
+            roleResponse.add(new RoleResponse(it.next()));
+        }
+
+        return roleResponse;
     }
 
     /**
@@ -187,9 +208,16 @@ public class UserService {
      */
     @GET
     @Path("/{userID}/tokens")
-    public Collection<Token> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
+    public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
-        return facade.getActiveTokensFromUser(userID);
+        Collection<Token> tokens = facade.getActiveTokensFromUser(userID);
+
+        Collection<TokenResponse> tokenResponse = new ArrayList<TokenResponse>();
+        for (Iterator<Token> it = tokens.iterator(); it.hasNext();) {
+            tokenResponse.add(new TokenResponse(it.next()));
+        }
+
+        return tokenResponse;
     }
 
 }
