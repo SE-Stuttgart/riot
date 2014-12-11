@@ -7,6 +7,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.GenerateTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.service.request.LoginRequest;
@@ -61,10 +64,12 @@ public class AuthenticationService {
      * @return Returns an empty response.
      * @throws LogoutException
      */
-    @GET
+    @PUT
     @Path("/logout")
+    @RequiresAuthentication
     public Response logout() throws LogoutException {
-        UserManagementFacade.getInstance().logout(""); // FIXME token
+        String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
+        UserManagementFacade.getInstance().logout(accessToken);
 
         return Response.ok().build();
     }
