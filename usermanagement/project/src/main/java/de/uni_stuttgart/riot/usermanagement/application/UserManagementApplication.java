@@ -6,8 +6,9 @@ import jersey.repackaged.com.google.common.collect.Sets;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import de.uni_stuttgart.riot.usermanagement.security.AuthorizationExceptionMapper;
 import de.uni_stuttgart.riot.usermanagement.security.AuthorizationFilterBinding;
+import de.uni_stuttgart.riot.usermanagement.service.exception.AuthorizationExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
 
 /**
  * <p>
@@ -27,7 +28,6 @@ public class UserManagementApplication extends ResourceConfig {
      * Configures the application.
      */
     public UserManagementApplication() {
-        super(Sets.<Class<?>> newHashSet(AuthorizationFilterBinding.class, AuthorizationExceptionMapper.class));
         packages("de.uni_stuttgart.riot.usermanagement;");
     }
 }

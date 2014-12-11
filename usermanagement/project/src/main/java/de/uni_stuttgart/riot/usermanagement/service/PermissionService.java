@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.service;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,96 +13,107 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
-import de.uni_stuttgart.riot.usermanagement.service.exception.ApiErrorResponse;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
 
 /**
- * The permissions service will handle any access (read, write, delete, update) to the permissions.
+ * The permissions service will handle any access (create, read, update, delete) to the permissions.
  * 
  * @author Marcel Lehwald
  *
  */
-@Path("/permissions/")
+@Path("/permissions")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PermissionService {
 
+    UserManagementFacade facade = UserManagementFacade.getInstance();
+
     /**
-     * Get a list of all permissions.
+     * Get all permissions.
      * 
-     * @return Returns the permission response containing a list of all permissions.
+     * @return Returns a list of all permissions.
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
      */
     @GET
-    public List<Permission> getPermissions() {
-        try {
-            return (List<Permission>) UserManagementFacade.getInstance().getAllPermissions();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
+    public Collection<Permission> getPermissions() throws UserManagementException {
+        // TODO limit returned permissions
+        return facade.getAllPermissions();
     }
 
     /**
-     * Update or create a permission.
+     * Get a permission.
+     * 
+     * @param permissionID
+     *            The permission ID.
+     * @return Returns a permission with the permission ID.
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
+     */
+    @GET
+    @Path("/{permissionID}")
+    public Permission getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
+        return facade.getPermission(permissionID);
+    }
+
+    /**
+     * Add new permission.
      * 
      * @param permission
-     *            The permission request containing the permission.
-     * @return Returns an empty response.
+     *            The permission.
+     * @return Returns the added permission.
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    public Response putPermission(Permission permission) {
-        try {
-            UserManagementFacade.getInstance().addPermission(permission);
-            return Response.ok().build();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
-    }
+    public Permission addPermission(Permission permission) throws UserManagementException {
+        facade.addPermission(permission);
 
-    /**
-     * Get all permission of a user.
-     * 
-     * @param id
-     *            The ID of the user.
-     * @return Returns a list of the users permissions.
-     */
-    @GET
-    @Path("/{id}/")
-    public List<Permission> getPermission(@PathParam("id") int id) {
+        // TODO return new permission
         return null;
     }
 
     /**
-     * Set the permission of a user.
+     * Update permission.
      * 
-     * @param id
+     * @param permissionID
+     *            The permission ID.
      * @param permission
-     * @return
+     *            The permission.
+     * @return Returns the updated permission.
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    @Path("/{id}/")
-    public Response putPermission(@PathParam("id") Long id, Permission permission) {
-        try {
-            UserManagementFacade.getInstance().updatePermission(id, permission);
-            return Response.ok().build();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
+    @Path("/{permissionID}")
+    public Permission updatePermission(@PathParam("permissionID") Long permissionID, Permission permission) throws UserManagementException {
+        facade.updatePermission(permissionID, permission);
+
+        // TODO return updated permission
+        return null;
     }
 
     /**
-     * Delete the permission of a user.
+     * Remove permission.
      * 
-     * @param id
-     * @return
+     * @param permissionID
+     *            The permission ID.
+     * @return Returns empty response (with status code 200) on success.
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
      */
     @DELETE
-    @Path("/{id}/")
-    public Response deletePermission(@PathParam("id") Long id) {
-        try {
-            UserManagementFacade.getInstance().deletePermission(id);
-            return Response.ok().build();
-        } catch (LogicException e) {
-            throw new ApiErrorResponse(Response.Status.BAD_REQUEST, e);
-        }
+    @Path("/{permissionID}")
+    public Response removePermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
+        facade.deletePermission(permissionID);
+
+        return Response.ok().build();
     }
+
 }

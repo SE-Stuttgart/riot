@@ -8,6 +8,7 @@ import java.util.List;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresGuest;
@@ -22,6 +23,7 @@ import org.apache.shiro.authz.annotation.RequiresUser;
  * @author Marcel Lehwald
  *
  */
+@Provider
 public class AuthorizationFilterBinding implements DynamicFeature {
 
     private static List<Class<? extends Annotation>> annotations = Collections.unmodifiableList(Arrays.asList(

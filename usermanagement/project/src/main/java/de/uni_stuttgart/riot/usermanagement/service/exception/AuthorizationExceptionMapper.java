@@ -1,8 +1,9 @@
-package de.uni_stuttgart.riot.usermanagement.security;
+package de.uni_stuttgart.riot.usermanagement.service.exception;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.shiro.authz.AuthorizationException;
 
@@ -14,11 +15,14 @@ import org.apache.shiro.authz.AuthorizationException;
  * @author Marcel Lehwald
  *
  */
+@Provider
 public class AuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {
 
     @Override
     public Response toResponse(AuthorizationException exception) {
-        return Response.status(Status.FORBIDDEN).entity("").build();
+        return Response.status(Status.FORBIDDEN)
+                       .entity("")
+                       .build();
     }
 
 }
