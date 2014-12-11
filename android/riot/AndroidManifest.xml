@@ -5,7 +5,7 @@
     android:versionName="0.0.1-SNAPSHOT" >
 
     <uses-sdk
-        android:minSdkVersion="16"
+        android:minSdkVersion="17"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -42,7 +42,6 @@
         It's also possible to attach a SyncAdapter to an existing account provided by another
         package. In that case, this element could be omitted here.
         -->
-
         <service android:name="de.enpro.android_riot.account.AccountAuthenticatorService" >
 
             <!-- Required filter used by the system to launch our account service. -->
@@ -54,6 +53,38 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
+        <!-- this is used for the notification if anything is changed concerning our calendar -->
+        <receiver android:name="de.enpro.android_riot.account.CalendarChangedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED"/>
+                <data android:scheme="content"/>
+                <data android:host="com.android.calendar"/>
+            </intent-filter>
+        </receiver>
+
+
+        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system
+        sync framework can access it. -->
+        <service android:name="de.enpro.android_riot.account.SyncService"
+            android:exported="true">
+            <!-- This intent filter is required. It allows the system to launch our sync service
+            as needed. -->
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <!-- This points to a required XML file which describes our SyncAdapter. -->
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <provider
+            android:name="de.enpro.android_riot.account.DummyProvider"
+            android:authorities="de.enpro.android_riot.account.auth"
+            android:exported="false"
+            android:multiprocess="true" >
+        </provider>
+
     </application>
 
 </manifest>

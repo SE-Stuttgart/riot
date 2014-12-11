@@ -2,14 +2,13 @@ package de.enpro.android_riot.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 
-/**
- * Created by dirkmb on 12/7/14.
- */
 public class RIOTAccount {
     // static stuff
     private final static String TAG= "RIOTAccount";
@@ -33,6 +32,12 @@ public class RIOTAccount {
     {
         this.ctx = ctx;
         getOrCreateAccount();
+    }
+
+    public Account getAccount()
+    {
+        getOrCreateAccount();
+        return account;
     }
 
     Account account;
@@ -72,13 +77,6 @@ public class RIOTAccount {
             return;
         }
         account = null;
-    }
-
-    void AddAccount() {
-        //ContentProviderClient client = getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
-        Account acc = new Account(AUTHORITY, ACCOUNT_TYPE);
-        //Calendar cal = new Calendar(acc, client, "RIOT");
-        //cal.AddEvent("MyEvent");
     }
 
 
