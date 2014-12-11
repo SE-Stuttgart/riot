@@ -5,7 +5,7 @@ ALTER TABLE calendarEntries DROP PRIMARY KEY;
 DROP TABLE calendarEntries;
 
 CREATE TABLE calendarEntries (
-	id INT NOT NULL,
+	id INT NOT NULL AUTO_INCREMENT,
 	startTime DATETIME NOT NULL,
 	endTime DATETIME,
 	allDayEvent BIT NOT NULL,
