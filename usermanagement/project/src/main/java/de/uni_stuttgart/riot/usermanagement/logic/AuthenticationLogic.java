@@ -3,7 +3,6 @@ package de.uni_stuttgart.riot.usermanagement.logic;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.naming.NamingException;
 
@@ -38,6 +37,9 @@ public class AuthenticationLogic {
     // How long is the bearer token valid. Time in ms. Current value: 2h (=min * sec * ms)
     private static final int VALID_TOKEN_TIME_IN_MS = 120 * 60 * 1000;
 
+    // If the token already exists in the db, how often should be tried to generate a unique token
+    private static final int TOKEN_GENERATION_MAX_RETRIES = 20;
+
     private DAO<Token> dao;
 
     /**
@@ -64,37 +66,39 @@ public class AuthenticationLogic {
      * @return A response containing the bearer and refresh token
      */
     public AuthenticationResponse generateTokens(String username, String password) throws GenerateTokenException {
+        try {
+            Subject subject = SecurityUtils.getSubject();
 
-        Subject subject = SecurityUtils.getSubject();
+            subject.login(new UsernamePasswordToken(username, password));
 
-        subject.login(new UsernamePasswordToken(username, password));
+            if (subject.isAuthenticated()) {
+                try {
+                    UserLogic ul = new UserLogic();
 
-        if (subject.isAuthenticated()) {
-            try {
-                String authToken = TokenUtil.generateToken();
-                String refreshToken = TokenUtil.generateToken();
+                    // get the user with the given user name
+                    User user = ul.getUser(username);
 
-                Token token = saveTokensInDB(authToken, refreshToken);
+                    Token token = generateAndSaveTokens(user.getId());
 
-                UserLogic ul = new UserLogic();
-                User user;
+                    // get all roles of the user
+                    Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
+                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
 
-                user = ul.getUser(username);
-                Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
+                    // assign the token the same roles as the user has
+                    for (Role role : roles) {
+                        tokenRoleDao.insert(new TokenRole(token.getId(), role.getId()));
+                    }
 
-                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-
-                for (Role role : roles) {
-                    tokenRoleDao.insert(new TokenRole( token.getId(), role.getId()));
+                    return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue());
+                } catch (Exception e) {
+                    throw new GenerateTokenException(e);
                 }
 
-                return new AuthenticationResponse(authToken, refreshToken);
-            } catch (Exception e) {
-                throw new GenerateTokenException(e);
+            } else {
+                throw new GenerateTokenException("Wrong Username/Password");
             }
-
-        } else {
-            throw new GenerateTokenException("Wrong Username/Password");
+        } catch (Exception e) {
+            throw new GenerateTokenException(e);
         }
     }
 
@@ -111,38 +115,31 @@ public class AuthenticationLogic {
     public AuthenticationResponse refreshToken(String providedRefreshToken) throws GenerateTokenException {
 
         try {
-            // test if refresh token is valid (valid: exists in database and was not used yet)
-            // FIXME boolean valid = dao.isRefreshTokenValid(providedRefreshToken);
-            boolean valid = true;
+            // find the token belonging to the given refresh token
+            Token token = dao.findByUniqueField(new SearchParameter(SearchFields.REFRESHTOKEN, providedRefreshToken));
 
-            if (valid) {
-                String authToken = TokenUtil.generateToken();
-                String newRefreshToken = TokenUtil.generateToken();
+            // test, if token is valid
+            if (token != null && token.isValid()) {
 
-                Token token = saveTokensInDB(authToken, newRefreshToken);
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
 
+                // get all connections between the given token and roles
                 Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
-                searchParameter.add(new SearchParameter(SearchFields.REFRESHTOKEN, providedRefreshToken));
+                searchParameter.add(new SearchParameter(SearchFields.TOKENID, token.getId()));
+                Collection<TokenRole> tokenRoles = tokenRoleDao.findBy(searchParameter, false);
 
-                Collection<Token> tokens = dao.findBy(searchParameter, false);
-                Iterator<Token> i = tokens.iterator();
-
-                if (i.hasNext()) {
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-                    searchParameter.clear();
-                    searchParameter.add(new SearchParameter(SearchFields.TOKENID, i.next().getId()));
-
-                    Collection<TokenRole> tokenRoles = tokenRoleDao.findBy(searchParameter, false);
-
-                    for (TokenRole tokenRole : tokenRoles) {
-                        tokenRoleDao.insert(new TokenRole(token.getId(), tokenRole.getRoleID()));
-                    }
+                for (TokenRole tokenRole : tokenRoles) {
+                    tokenRoleDao.insert(new TokenRole(token.getId(), tokenRole.getRoleID()));
                 }
 
-                // invalidate old tokens
-                // FIXME dao.invalidateTokensFromRefreshToken(providedRefreshToken);
+                // invalidate old token
+                token.setValid(false);
+                dao.update(token);
 
-                return new AuthenticationResponse(authToken, newRefreshToken);
+                // generate a new token and save it in the db
+                Token newToken = generateAndSaveTokens(token.getUserID());
+
+                return new AuthenticationResponse(newToken.getTokenValue(), newToken.getRefreshtokenValue());
             } else {
                 throw new GenerateTokenException("The provided refresh token is not valid");
             }
@@ -161,24 +158,52 @@ public class AuthenticationLogic {
      */
     public void logout(String currentBearerToken) throws LogoutException {
         try {
-            // invalidate tokens
-            // FIXME dao.invalidateTokensFromBearerToken(currentBearerToken);
+            Token token = dao.findByUniqueField(new SearchParameter(SearchFields.TOKENVALUE, currentBearerToken));
+            token.setValid(false);
+            dao.update(token);
         } catch (Exception e) {
             throw new LogoutException(e);
         }
     }
 
-    private Token saveTokensInDB(String authToken, String refreshToken) throws GenerateTokenException {
+    /**
+     * Generate new tokens and save them in the database.
+     * 
+     * @param userId
+     *            The id of the user for whom the tokens should be generated
+     * @return The generated token
+     * @throws GenerateTokenException
+     */
+    private Token generateAndSaveTokens(Long userId) throws GenerateTokenException {
+
+        Token token = null;
+        int retries = TOKEN_GENERATION_MAX_RETRIES;
+        Exception lastException = null;
+
         Timestamp issueTime = new Timestamp(System.currentTimeMillis());
         Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
 
-        // FIXME Ids of the user and the token
-        Token token = new Token(1L, 1L, authToken, refreshToken, issueTime, expirationTime,true);
-        try {
-            dao.insert(token);
-        } catch (DatasourceInsertException e) {
-            throw new GenerateTokenException(e);
+        do {
+            // generate new tokens
+            String authToken = TokenUtil.generateToken();
+            String refreshToken = TokenUtil.generateToken();
+
+            token = new Token(userId, authToken, refreshToken, issueTime, expirationTime, true);
+
+            try {
+                dao.insert(token);
+            } catch (DatasourceInsertException e) {
+                retries--;
+                token = null;
+                lastException = e;
+            }
+        } while (token == null && retries > 0);
+
+        // throw exception if token generation was not successfull
+        if (token == null) {
+            throw new GenerateTokenException(lastException);
         }
+
         return token;
     }
 }
