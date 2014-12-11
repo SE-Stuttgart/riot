@@ -7,10 +7,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
-
-import de.uni_stuttgart.riot.usermanagement.security.TokenUtil;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.GenerateTokenException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.service.request.LoginRequest;
 import de.uni_stuttgart.riot.usermanagement.service.request.RefreshRequest;
 import de.uni_stuttgart.riot.usermanagement.service.response.AuthenticationResponse;
@@ -34,18 +32,12 @@ public class AuthenticationService {
      * @param request
      *            The login request containing username and password.
      * @return Returns a new access and refresh token on success.
+     * @throws GenerateTokenException
      */
     @PUT
     @Path("/login")
-    public AuthenticationResponse login(LoginRequest request) {
-        SecurityUtils.getSubject().login(new UsernamePasswordToken(request.getUsername(), request.getPassword()));
-
-        String authToken = TokenUtil.generateToken();
-        String refreshToken = TokenUtil.generateToken();
-
-        // TODO save tokens in db
-
-        return new AuthenticationResponse(authToken, refreshToken);
+    public AuthenticationResponse login(LoginRequest request) throws GenerateTokenException {
+        return UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
     }
 
     /**
@@ -55,29 +47,24 @@ public class AuthenticationService {
      * @param request
      *            The refresh request containing a refresh token.
      * @return Returns a new access and refresh token on success.
+     * @throws GenerateTokenException
      */
     @PUT
     @Path("/refresh")
-    public AuthenticationResponse refresh(RefreshRequest request) {
-        // TODO validate refresh token
-
-        String authToken = TokenUtil.generateToken();
-        String refreshToken = TokenUtil.generateToken();
-
-        // TODO save tokens in db
-
-        return new AuthenticationResponse(authToken, refreshToken);
+    public AuthenticationResponse refresh(RefreshRequest request) throws GenerateTokenException {
+        return UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
     }
 
     /**
      * Logout an authenticated user. The access and refresh token will therefore be marked as invalid.
      * 
      * @return Returns an empty response.
+     * @throws LogoutException
      */
     @GET
     @Path("/logout")
-    public Response logout() {
-        // TODO
+    public Response logout() throws LogoutException {
+        UserManagementFacade.getInstance().logout(""); // FIXME token
 
         return Response.ok().build();
     }

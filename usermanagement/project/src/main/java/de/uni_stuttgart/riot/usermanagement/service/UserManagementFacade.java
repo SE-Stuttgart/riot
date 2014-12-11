@@ -81,8 +81,8 @@ public class UserManagementFacade {
      * @throws GenerateTokenException
      *             Thrown if any errors occur
      */
-    public AuthenticationResponse generateTokens(String username, String password) throws GenerateTokenException {
-        return authLogic.generateTokens(username, password);
+    public AuthenticationResponse login(String username, String password) throws GenerateTokenException {
+        return authLogic.login(username, password);
     }
 
     /**
