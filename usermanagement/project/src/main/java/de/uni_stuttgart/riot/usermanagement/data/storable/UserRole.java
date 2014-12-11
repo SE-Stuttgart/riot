@@ -7,8 +7,9 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
- * {@link UserRole} represents the n:m relation between {@link User} and {@link Role}.
- * Thus this class only maps User to Role not adding any information.
+ * {@link UserRole} represents the n:m relation between {@link User} and {@link Role}. Thus this class only maps User to Role not adding any
+ * information.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -20,10 +21,16 @@ public class UserRole implements Storable {
 
     public UserRole() {
     }
-    
+
     public UserRole(User user, Role role) {
         this.userID = user.getId();
         this.roleID = role.getId();
+        this.id = -1L;
+    }
+
+    public UserRole(Long userID, Long roleID) {
+        this.userID = userID;
+        this.roleID = roleID;
         this.id = -1L;
     }
 
@@ -106,7 +113,7 @@ public class UserRole implements Storable {
 
     @Override
     public void setId(long id) {
-        this.id =id;
+        this.id = id;
     }
 
 }
