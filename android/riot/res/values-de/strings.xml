@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- Default entries -->
+
+    <!-- Default entries -->
     <string name="app_name">RIOT</string>
 
     <string-array name="menu_array">
@@ -28,6 +29,8 @@
     <string name="german">Deutsch</string>
     <string name="flag_uk">Flagge England</string>
     <string name="flag_de">Flagge Deutschland</string>
-    <string name="lang_header_uk">Bitte wählen Sie eine Sprache aus</string>
+    <string name="lang_header">Bitte wählen Sie eine Sprache aus</string>
+    <string name="desc_uk">Sprache auf Englisch-UK umstellen.</string>
+    <string name="desc_ger">Sprache auf Deutsch umstellen.</string>
 
 </resources>

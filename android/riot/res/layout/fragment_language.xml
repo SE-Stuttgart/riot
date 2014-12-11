@@ -7,8 +7,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="45dp"
-        android:text="@string/lang_header_uk"
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:text="@string/lang_header"
         android:textSize="24sp" />
 
     <ImageView
@@ -18,23 +19,44 @@
         android:contentDescription="@string/flag_uk"
         android:src="@drawable/uk" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/desc_uk" />
+
     <RadioGroup
         android:id="@+id/lang_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical" >
 
         <RadioButton
             android:id="@+id/lang_en"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="45dp"
-            android:text="@string/english" /><ImageView
+            android:text="@string/english" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:background="#000000" />
+
+        <ImageView
             android:id="@+id/image_de"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/flag_de"
             android:src="@drawable/de" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/desc_ger" />
 
         <RadioButton
             android:id="@+id/lang_de"

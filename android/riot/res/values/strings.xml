@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
 
@@ -24,7 +25,9 @@
     <string name="german">German</string>
     <string name="flag_uk">Flag United Kingdom</string>
     <string name="flag_de">Flag Germany</string>
-    <string name="lang_header_uk">Please select your preferred language</string>
+    <string name="lang_header">Please select your preferred language</string>
+    <string name="desc_uk">Sets the language to English-UK.</string>
+    <string name="desc_ger">Sets the language to German.</string>
 
     <!-- Fragment account (all entries for account please insert here) -->
     <string name="add_account">Add Account</string>

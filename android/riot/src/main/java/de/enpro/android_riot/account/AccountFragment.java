@@ -19,7 +19,7 @@ public class AccountFragment extends Fragment implements OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.account_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_account, container, false);
 //        String menu = getArguments().getString("Menu");
 
         Button b;
