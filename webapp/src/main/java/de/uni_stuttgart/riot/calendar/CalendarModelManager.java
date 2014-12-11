@@ -89,14 +89,12 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#update(de.uni_stuttgart.riot.rest.ResourceModel)
      */
     @Override
-    public CalendarEntry update(CalendarEntry model) throws DaoException {
+    public boolean update(CalendarEntry model) throws DaoException {
         String sql = "UPDATE calendarEntries SET title = :title, startTime = :startTime, endTime = :endTime, allDayEvent = :allDayEvent, description = :description, location = :location WHERE id = :id";
 
         try (Connection con = ConnectionMgr.openConnection()) {
-            long id = con.createQuery(sql, true).bind(model).executeUpdate().getKey(Long.class);
-            model.setId(id);
-            return model;
-
+            int rows = con.createQuery(sql, true).bind(model).executeUpdate().getResult();
+            return rows > 0;
         } catch (Exception e) {
             throw new DaoException("Could not update calendar entry", e);
         }

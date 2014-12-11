@@ -14,10 +14,10 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
     private static HashMap<Long, ContactEntry> entries = new HashMap<>();
 
     static {
-    	ContactEntry c = new ContactEntry(1,"Max", "Mustermann", "0123456");
-    	entries.put(c.getId(), c);
-    	c = new ContactEntry(2,"Markus", "Mustermann", "0456789");
-    	entries.put(c.getId(), c);
+        ContactEntry c = new ContactEntry(1, "Max", "Mustermann", "0123456");
+        entries.put(c.getId(), c);
+        c = new ContactEntry(2, "Markus", "Mustermann", "0456789");
+        entries.put(c.getId(), c);
     }
 
     /*
@@ -67,9 +67,8 @@ public class ContactsModelManager implements ModelManager<ContactEntry> {
      * @see de.uni_stuttgart.riot.rest.ModelManager#update(de.uni_stuttgart.riot.rest.ResourceModel)
      */
     @Override
-    public ContactEntry update(ContactEntry model) {
-        entries.put(model.getId(), model);
-        return model;
+    public boolean update(ContactEntry model) {
+        return entries.put(model.getId(), model) != null;
     }
 
 }

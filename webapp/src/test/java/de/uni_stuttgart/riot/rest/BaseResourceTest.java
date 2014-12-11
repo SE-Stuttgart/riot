@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.util.Collection;
@@ -34,6 +33,9 @@ public class BaseResourceTest extends JerseyTest {
 
         /** The id. */
         private long id;
+
+        /** Some comment */
+        private String comment;
 
         /**
          * Instantiates a new test model.
@@ -71,6 +73,13 @@ public class BaseResourceTest extends JerseyTest {
             this.id = id;
         }
 
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
     }
 
     /**
@@ -132,8 +141,8 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#update(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
-        public TestModel update(TestModel model) {
-            return testData.put(model.getId(), model);
+        public boolean update(TestModel model) {
+            return testData.put(model.getId(), model) != null;
         }
 
     }
@@ -234,8 +243,7 @@ public class BaseResourceTest extends JerseyTest {
     }
 
     /**
-     * Test deletion of objects.
-     * Response of 204 indicates success, 404 when nothing found that could be deleted.
+     * Test deletion of objects. Response of 204 indicates success, 404 when nothing found that could be deleted.
      */
     @Test
     public void testDelete() {
@@ -247,11 +255,28 @@ public class BaseResourceTest extends JerseyTest {
     }
 
     /**
-     * Test put one.
+     * Test put one. Response of 204 indicates success, 404 when nothing found that could be updated.
      */
     @Test
     public void testPutOne() {
-        fail("Not yet implemented");
+
+        TestModel m = new TestModel();
+        // change some field at the object
+        m.setComment("changed");
+
+        Entity<TestModel> testEntity = Entity.entity(m, MediaType.APPLICATION_JSON_TYPE);
+        Response resp = target("tests/1").request(MediaType.APPLICATION_JSON).put(testEntity);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
+
+        // retrieved object must have the "comment" field updated
+        Response a = target("tests/1").request(MediaType.APPLICATION_JSON).get();
+        assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
+        TestModel updated = a.readEntity(TestModel.class);
+        assertEquals(m.getComment(), updated.getComment());
+
+        // resource doesnt exist, so put request should return 404
+        resp = target("tests/10").request(MediaType.APPLICATION_JSON).put(testEntity);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
 
 }

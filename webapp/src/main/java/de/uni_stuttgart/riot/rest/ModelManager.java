@@ -52,8 +52,8 @@ public interface ModelManager<E extends ResourceModel> {
      *
      * @param model
      *            the new model
-     * @return the modified model
+     * @return true if the specified row was updated, false otherwise.
      */
-    E update(E model) throws DaoException;
+    boolean update(E model) throws DaoException;
 
 }

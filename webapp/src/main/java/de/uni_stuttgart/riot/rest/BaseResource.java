@@ -10,6 +10,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -58,7 +59,8 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the model if it exists, HTTP 404 otherwise
-     * @throws DaoException when access not possible
+     * @throws DaoException
+     *             when access not possible
      */
     @GET
     @Path("{id}")
@@ -75,7 +77,7 @@ public abstract class BaseResource<E extends ResourceModel> {
      * Gets the collection fo resources.
      *
      * @return the collection
-     * @throws DaoException 
+     * @throws DaoException
      */
     @GET
     @Produces(PRODUCED_FORMAT)
@@ -92,13 +94,14 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @return an HTTP created (201) response if successful
      * @throws URISyntaxException
      *             the URI syntax exception
-     * @throws DaoException when creation not possible
+     * @throws DaoException
+     *             when creation not possible
      */
     @POST
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
     public Response create(E model) throws URISyntaxException, DaoException {
-        if(model == null){
+        if (model == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
         E created = modelManager.create(model);
@@ -106,7 +109,32 @@ public abstract class BaseResource<E extends ResourceModel> {
         return Response.created(relative).entity(created).build();
     }
 
-    // TODO: PUT for model
+    /**
+     * Updates the model with the given id.
+     *
+     * @param id
+     *            the id
+     * @param model
+     *            the model
+     * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
+     * @throws DaoException
+     *             when update not possible
+     */
+    @PUT
+    @Path("{id}")
+    @Consumes(CONSUMED_FORMAT)
+    @Produces(PRODUCED_FORMAT)
+    public Response update(@PathParam("id") long id, E model) throws URISyntaxException, DaoException {
+        if (model == null) {
+            throw new BadRequestException("please provide an entity in the request body.");
+        }
+        model.setId(id);
+        if (modelManager.update(model)) {
+            return Response.noContent().build();
+        }
+        throw new NotFoundException("No such resource exists.");
+    }
+
     // TODO: put for collection
 
     /**
@@ -115,13 +143,14 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
-     * @throws DaoException when deletion not possible
+     * @throws DaoException
+     *             when deletion not possible
      */
     @DELETE
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
     public Response delete(@PathParam("id") int id) throws DaoException {
-        if(modelManager.delete(id)){
+        if (modelManager.delete(id)) {
             return Response.noContent().build();
         }
         throw new NotFoundException("No such resource exists or it has already been deleted.");
