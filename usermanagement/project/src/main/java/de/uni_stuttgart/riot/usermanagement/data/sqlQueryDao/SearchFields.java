@@ -52,7 +52,9 @@ public enum SearchFields {
      */
     TOKENID("tokenID"),
 
-    REFRESHTOKEN("refreshtokenValue");
+    REFRESHTOKEN("refreshtokenValue"),
+
+    TOKENVALID("valid");
 
     private final String text;
 
