@@ -7,8 +7,9 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
- * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}.
- * Thus this class only maps Roles to Permission not adding any information.
+ * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}. Thus this class only maps Roles to
+ * Permission not adding any information.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -17,7 +18,7 @@ public class RolePermission implements Storable {
     private Long id;
     private Long permissionID;
     private Long roleID;
-    
+
     public RolePermission() {
     }
 
@@ -25,6 +26,12 @@ public class RolePermission implements Storable {
         this.roleID = role.getId();
         this.id = -1L;
         this.permissionID = permission.getId();
+    }
+
+    public RolePermission(Long roleID, Long permissionID) {
+        this.roleID = roleID;
+        this.id = -1L;
+        this.permissionID = permissionID;
     }
 
     public RolePermission(Long roleID, Long permissionID, Long rolePermissionID) {
@@ -103,10 +110,10 @@ public class RolePermission implements Storable {
         builder.append("]");
         return builder.toString();
     }
-    
+
     @Override
     public void setId(long id) {
-        this.id =id;
+        this.id = id;
     }
 
 }
