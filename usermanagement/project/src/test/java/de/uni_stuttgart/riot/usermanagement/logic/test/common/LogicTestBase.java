@@ -50,6 +50,6 @@ public class LogicTestBase {
 
     @Before
     public void setUp() throws Exception {
-        SqlRunner.runStartupScripts(ds);
+        SqlRunner.runStartupScripts(ds, true);
     }
 }

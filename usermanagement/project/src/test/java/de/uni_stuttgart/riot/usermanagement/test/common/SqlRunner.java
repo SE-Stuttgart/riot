@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.sql.Connection;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.message.internal.NullOutputStream;
 
 public class SqlRunner {
     public static final String DELIMITER_LINE_REGEX = "(?i)DELIMITER.+", DELIMITER_LINE_SPLIT_REGEX = "(?i)DELIMITER", DEFAULT_DELIMITER = ";";
@@ -40,9 +42,10 @@ public class SqlRunner {
         this.err = err;
     }
 
-    public static void runStartupScripts(DataSource ds) {
+    public static void runStartupScripts(DataSource ds, boolean silent) {
         try {
-            SqlRunner runner = new SqlRunner(ds.getConnection(), new PrintWriter(System.out), new PrintWriter(System.err), true, false);
+            OutputStream os = silent ? new NullOutputStream() : System.out;
+            SqlRunner runner = new SqlRunner(ds.getConnection(), new PrintWriter(os), new PrintWriter(System.err), true, false);
             runner.runScript(new FileReader(new File("src/main/resources/createschema.sql")));
             runner.runScript(new FileReader(new File("src/main/resources/insertTestValues.sql")));
         } catch (SQLException e) {
@@ -50,6 +53,10 @@ public class SqlRunner {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void runStartupScripts(DataSource ds) {
+        SqlRunner.runStartupScripts(ds, false);
     }
 
     public void runScript(final Reader reader) throws SQLException {
