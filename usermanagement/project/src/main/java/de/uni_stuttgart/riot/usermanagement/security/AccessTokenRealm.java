@@ -57,7 +57,7 @@ public class AccessTokenRealm extends AuthorizingRealm {
             String principal = getPrincipal(connection, accessToken);
 
             if (principal == null) {
-                throw new UnknownAccountException("No account found for provided token");
+                return null;
             }
 
             info = new SimpleAuthenticationInfo(accessToken, accessToken, getName());

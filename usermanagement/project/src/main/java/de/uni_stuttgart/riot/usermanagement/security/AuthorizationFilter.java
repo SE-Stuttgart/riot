@@ -3,22 +3,18 @@ package de.uni_stuttgart.riot.usermanagement.security;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresGuest;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.authz.annotation.RequiresUser;
-import org.apache.shiro.authz.aop.AuthenticatedAnnotationHandler;
 import org.apache.shiro.authz.aop.AuthorizingAnnotationHandler;
-import org.apache.shiro.authz.aop.GuestAnnotationHandler;
 import org.apache.shiro.authz.aop.PermissionAnnotationHandler;
 import org.apache.shiro.authz.aop.RoleAnnotationHandler;
-import org.apache.shiro.authz.aop.UserAnnotationHandler;
 
 /**
  * The AuthorizationFilter will be used together with the {@link AuthorizationFilterBinding} class to enable the authorization annotations
@@ -29,6 +25,7 @@ import org.apache.shiro.authz.aop.UserAnnotationHandler;
  * @author Marcel Lehwald
  *
  */
+@Priority(Priorities.AUTHORIZATION)
 public class AuthorizationFilter<T extends Annotation> implements ContainerRequestFilter {
 
     private final T authzSpec;
@@ -63,12 +60,6 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
             return new PermissionAnnotationHandler();
         } else if (RequiresRoles.class.equals(t)) {
             return new RoleAnnotationHandler();
-        } else if (RequiresUser.class.equals(t)) {
-            return new UserAnnotationHandler();
-        } else if (RequiresGuest.class.equals(t)) {
-            return new GuestAnnotationHandler();
-        } else if (RequiresAuthentication.class.equals(t)) {
-            return new AuthenticatedAnnotationHandler();
         } else {
             throw new IllegalArgumentException("No default handler known for annotation " + t);
         }
@@ -81,6 +72,7 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
         } catch (UnauthorizedException e) {
             requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
         } catch (Exception e) {
+            e.printStackTrace();
             requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
         }
     }
