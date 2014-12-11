@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.usermanagement.logic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.naming.NamingException;
 
@@ -206,15 +207,23 @@ public class UserLogic {
     public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
         try {
             DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            UserRole ur = new UserRole(userId, roleId);
-            userRoleDao.delete(ur);
+
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.USERID, userId));
+            searchParams.add(new SearchParameter(SearchFields.ROLEID, roleId));
+            Collection<UserRole> userRoles = userRoleDao.findBy(searchParams, false);
+
+            Iterator<UserRole> i = userRoles.iterator();
+            if (i.hasNext()) {
+                userRoleDao.delete(i.next());
+            }
         } catch (Exception e) {
             throw new RemoveRoleFromUserException(e);
         }
     }
 
     /**
-     * Get all active Tokens of a user
+     * Get all active Tokens of a user. If no active token exists, a GetActiveTokenException is thrown.
      * 
      * @param userId
      *            The id of a user
