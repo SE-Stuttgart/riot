@@ -149,7 +149,7 @@ public abstract class BaseResource<E extends ResourceModel> {
     @DELETE
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
-    public Response delete(@PathParam("id") int id) throws DaoException {
+    public Response delete(@PathParam("id") long id) throws DaoException {
         if (modelManager.delete(id)) {
             return Response.noContent().build();
         }
