@@ -14,6 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
@@ -41,6 +43,7 @@ public class PermissionService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET
+    @RequiresAuthentication
     public Collection<PermissionResponse> getPermissions() throws UserManagementException {
         // TODO limit returned permissions
         Collection<Permission> permissions = facade.getAllPermissions();
@@ -65,6 +68,7 @@ public class PermissionService {
      */
     @GET
     @Path("/{permissionID}")
+    @RequiresAuthentication
     public Permission getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
         return facade.getPermission(permissionID);
     }
@@ -80,6 +84,7 @@ public class PermissionService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
+    @RequiresAuthentication
     public PermissionResponse addPermission(Permission permission) throws UserManagementException {
         facade.addPermission(permission);
 
@@ -100,6 +105,7 @@ public class PermissionService {
      */
     @PUT
     @Path("/{permissionID}")
+    @RequiresAuthentication
     public PermissionResponse updatePermission(@PathParam("permissionID") Long permissionID, Permission permission) throws UserManagementException {
         facade.updatePermission(permissionID, permission);
 
@@ -118,6 +124,7 @@ public class PermissionService {
      */
     @DELETE
     @Path("/{permissionID}")
+    @RequiresAuthentication
     public Response removePermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.deletePermission(permissionID);
 

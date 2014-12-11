@@ -14,6 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
@@ -43,6 +45,7 @@ public class RoleService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET
+    @RequiresAuthentication
     public Collection<RoleResponse> getRoles() throws UserManagementException {
         // TODO limit returned roles
         Collection<Role> roles = facade.getAllRoles();
@@ -67,6 +70,7 @@ public class RoleService {
      */
     @GET
     @Path("/{roleID}")
+    @RequiresAuthentication
     public RoleResponse getRole(@PathParam("roleID") Long roleID) throws UserManagementException {
         return new RoleResponse(facade.getRole(roleID));
     }
@@ -82,6 +86,7 @@ public class RoleService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
+    @RequiresAuthentication
     public RoleResponse addRole(Role role) throws UserManagementException {
         facade.addRole(role);
 
@@ -102,6 +107,7 @@ public class RoleService {
      */
     @PUT
     @Path("/{roleID}")
+    @RequiresAuthentication
     public RoleResponse updateRole(@PathParam("roleID") Long roleID, Role role) throws UserManagementException {
         facade.updateRole(roleID, role);
 
@@ -120,6 +126,7 @@ public class RoleService {
      */
     @DELETE
     @Path("/{roleID}")
+    @RequiresAuthentication
     public Response removeRole(@PathParam("roleID") Long roleID) throws UserManagementException {
         facade.deleteRole(roleID);
 
@@ -138,6 +145,7 @@ public class RoleService {
      */
     @GET
     @Path("/{roleID}/permissions")
+    @RequiresAuthentication
     public Collection<PermissionResponse> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
         // TODO limit returned permissions
         Collection<Permission> permissions = facade.getAllPermissionsOfRole(roleID);
@@ -164,6 +172,7 @@ public class RoleService {
      */
     @PUT
     @Path("/{roleID}/permissions/{permissionID}")
+    @RequiresAuthentication
     public Response addUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.addPermissionToRole(roleID, permissionID);
 
@@ -184,6 +193,7 @@ public class RoleService {
      */
     @DELETE
     @Path("/{roleID}/permissions/{permissionID}")
+    @RequiresAuthentication
     public Response removeUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.deletePermissionFromRole(roleID, permissionID);
 
