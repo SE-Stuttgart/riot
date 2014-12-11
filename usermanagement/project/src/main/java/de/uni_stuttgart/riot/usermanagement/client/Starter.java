@@ -15,17 +15,27 @@ public class Starter {
         
         // Using a secured Webservice without the need of giving authorization information.  
         Client c = ClientBuilder.newClient();
-        WebTarget target = c.target("http://localhost:8080/riot.usermanagement/").path("api/v1/users"); 
-       
-        // Printing the response
-        Response r = client.get(target, MediaType.APPLICATION_JSON);
-        String result = r.readEntity(String.class);
-        System.out.println(result);
+        WebTarget userstarget = c.target("http://localhost:8080/riot.usermanagement/").path("api/v1/users"); 
+        WebTarget rolestarget = c.target("http://localhost:8080/riot.usermanagement/").path("api/v1/roles"); 
+        WebTarget permissionstarget = c.target("http://localhost:8080/riot.usermanagement/").path("api/v1/permissions"); 
+
         
-        // Test after Token is invalid
-        Response r2 = client.get(target, MediaType.APPLICATION_JSON);
-        String result2 = r2.readEntity(String.class);
-        System.out.println(result2);
+        
+        // Printing the response
+        Response rUsers = client.get(userstarget, MediaType.APPLICATION_JSON);
+        String usersResult = rUsers.readEntity(String.class);
+        System.out.println(usersResult);
+        
+        // Printing the response
+        Response rRoles = client.get(rolestarget, MediaType.APPLICATION_JSON);
+        String rolesResult = rRoles.readEntity(String.class);
+        System.out.println(rolesResult);
+        
+        // Printing the response
+        Response rPermissions = client.get(permissionstarget, MediaType.APPLICATION_JSON);
+        String permissionsResult = rPermissions.readEntity(String.class);
+        System.out.println(permissionsResult);
+        client.logout();
     }
 
 }

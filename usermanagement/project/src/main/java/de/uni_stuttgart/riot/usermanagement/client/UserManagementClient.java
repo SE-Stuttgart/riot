@@ -42,7 +42,12 @@ public class UserManagementClient {
     }
     
     public void logout(){
-        //TODO
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target(this.serverUrl).path("api/v1/auth/logout"); 
+        System.out.println(target.getUri());
+        Response r = target.request().header(ACCESS_TOKEN, UserManagementClient.this.currentAuthenticationToken).get();
+        String s =r.readEntity(String.class);
+        System.out.println(s);
         this.logedIn = false;
     }
     
