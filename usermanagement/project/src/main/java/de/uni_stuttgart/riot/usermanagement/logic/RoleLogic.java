@@ -1,11 +1,15 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.naming.NamingException;
 
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
+import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
@@ -65,8 +69,7 @@ public class RoleLogic {
      */
     public void deleteRole(Long id) throws DeleteRoleException {
         try {
-            // FIXME dao.deleteRole(id); //delete a role by id
-            dao.delete(dao.findBy(new Long(id)));
+            dao.delete(dao.findBy(id));
         } catch (Exception e) {
             throw new DeleteRoleException(e);
         }
@@ -99,7 +102,7 @@ public class RoleLogic {
      */
     public Role getRole(Long id) throws GetRoleException {
         try {
-            return dao.findBy(new Long(id));
+            return dao.findBy(id);
         } catch (Exception e) {
             throw new GetRoleException(e);
         }
@@ -128,8 +131,28 @@ public class RoleLogic {
      * @throws GetPermissionsFromRoleException
      */
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
-        // FIXME dao.getPermissionsFromRole(roleId);
-        return null;
+
+        try {
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(DatasourceUtil.getDataSource());
+
+            // find all permissions belonging to a role
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.ROLEID, roleId));
+            Collection<RolePermission> rolePermissions = rolePermissionDao.findBy(searchParams, false);
+
+            // collection with the associated permissions
+            Collection<Permission> permissions = new ArrayList<Permission>();
+
+            // get all associated permissions
+            for (RolePermission rolePermission : rolePermissions) {
+                permissions.add(permissionDao.findBy(rolePermission.getPermissionID()));
+            }
+
+            return permissions;
+        } catch (Exception e) {
+            throw new GetPermissionsFromRoleException(e);
+        }
     }
 
     /**
@@ -143,9 +166,8 @@ public class RoleLogic {
      */
     public void addPermissiontToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
-            // FIXME Question: Is there any check if the role and permission ids already exist?
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(DatasourceUtil.getDataSource());
-            RolePermission rp = new RolePermission(1L, roleId, permissionId); // FIXME id
+            RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.insert(rp);
         } catch (Exception e) {
             throw new AddPermissionToRoleException(e);
@@ -163,9 +185,8 @@ public class RoleLogic {
      */
     public void removePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         try {
-            // FIXME Question: Is there any check if the role and permission ids already exist?
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(DatasourceUtil.getDataSource());
-            RolePermission rp = new RolePermission(1L, roleId, permissionId); // FIXME id
+            RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.delete(rp);
         } catch (Exception e) {
             throw new RemovePermissionFromRoleException(e);
