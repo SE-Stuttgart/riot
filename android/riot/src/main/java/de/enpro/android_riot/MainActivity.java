@@ -21,7 +21,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.enpro.android_riot.account.AccountFragment;
-import de.enpro.android_riot.database.DatabaseHandler;
+import de.enpro.android_riot.database.LanguageDatabase;
 import de.enpro.android_riot.language.LanguageFragment;
 
 public class MainActivity extends Activity {
@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
 
-	private DatabaseHandler dbHandler;
+	private LanguageDatabase dbHandler;
 	private Locale locale;
 
 	@Override
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void setLanguage() {
-		dbHandler = new DatabaseHandler(this);
+		dbHandler = new LanguageDatabase(this);
 		if (dbHandler.getCount() == 0) {
 			locale = new Locale("en");
 		} else {

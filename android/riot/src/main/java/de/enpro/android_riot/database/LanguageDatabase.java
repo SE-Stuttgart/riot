@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class LanguageDatabase extends SQLiteOpenHelper {
 
 	private final static int DATABASE_VERION = 1;
 	private final static String DATABASE_NAME = "RIOT";
@@ -15,7 +15,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private final static String KEY_ID = "id";
 	private final static String KEY_DESC = "description";
 
-	public DatabaseHandler(Context context) {
+	public LanguageDatabase(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERION);
 		// TODO Auto-generated constructor stub
 	}

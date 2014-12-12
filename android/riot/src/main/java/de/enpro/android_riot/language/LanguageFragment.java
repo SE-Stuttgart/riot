@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import de.enpro.android.riot.R;
-import de.enpro.android_riot.database.DatabaseHandler;
+import de.enpro.android_riot.database.LanguageDatabase;
 
 public class LanguageFragment extends Fragment {
 
-	private DatabaseHandler dbHandler;
+	private LanguageDatabase dbHandler;
 	private RadioGroup buttonGroup;
 
 	@Override
@@ -29,13 +29,13 @@ public class LanguageFragment extends Fragment {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				switch (checkedId) {
 				case R.id.lang_en:
-					dbHandler = new DatabaseHandler(getActivity());
+					dbHandler = new LanguageDatabase(getActivity());
 					dbHandler.deleteAllLanguages();
 					dbHandler.addLanguage("en", "Supports the english language");
 					break;
 
 				case R.id.lang_de:
-					dbHandler = new DatabaseHandler(getActivity());
+					dbHandler = new LanguageDatabase(getActivity());
 					dbHandler.deleteAllLanguages();
 					dbHandler.addLanguage("de", "Supports the german language");
 					break;
