@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,20 +19,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import de.enpro.android.riot.R;
 import de.enpro.android_riot.account.AccountFragment;
 import de.enpro.android_riot.database.DatabaseHandler;
 import de.enpro.android_riot.language.LanguageFragment;
 
-public class MainActivity extends Activity implements OnCheckedChangeListener {
+public class MainActivity extends Activity {
 	private final static String TAG = "Main";
 
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
-	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
 
@@ -43,14 +39,10 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		setLanguage();
-
 		setContentView(R.layout.activity_main);
 
-		
-
-		mTitle = mDrawerTitle = getTitle();
+		mTitle = getTitle();
 		mMenuTitles = getResources().getStringArray(R.array.menu_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -158,7 +150,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		meineListe.add("TEST");
 		meineListe.add("TEST1");
 		meineListe.add("TEST2");
-		ListAdapter listenAdapter = new ArrayAdapter(this,
+		ListAdapter listenAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, meineListe);
 		ListView meineListView = (ListView) findViewById(R.id.LISTE);
 		meineListView.setAdapter(listenAdapter);
@@ -246,11 +238,4 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}
-
-	@Override
-	public void onCheckedChanged(RadioGroup arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
