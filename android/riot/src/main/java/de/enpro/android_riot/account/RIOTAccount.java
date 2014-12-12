@@ -40,8 +40,8 @@ public class RIOTAccount {
         return account;
     }
 
-    Account account;
-    Context ctx;
+    private Account account;
+    private Context ctx;
 
     private void getOrCreateAccount()
     {

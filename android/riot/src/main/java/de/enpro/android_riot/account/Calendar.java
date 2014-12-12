@@ -31,21 +31,11 @@ public class Calendar {
 
 	private long GetCalendar(String calendarName) {
 		Cursor cur = null;
-		Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI
-				.buildUpon()
-				.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME,
-						account.name)
-				.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE,
-						account.type)
-				.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER,
-						"true").build();
+		Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI.buildUpon()
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+				.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type)
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
 
-		// String selection = "((" + Calendars.ACCOUNT_NAME + " = ?))";
-		// String[] selectionArgs = new String[]{Main.AUTHORITY};
-
-		// Submit the query and get a Cursor object back.
-		// TODO cur = cr.query(uri, new String[]{Calendars._ID}, selection,
-		// selectionArgs, null);
 		try {
 			cur = client.query(calendarsURI,
 					new String[] { CalendarContract.Calendars._ID }, null,
@@ -59,7 +49,7 @@ public class Calendar {
 			e.printStackTrace();
 		}
 
-		Log.v(TAG, "Nothing found for: " + calendarsURI);// "/"+selection+"|"+selectionArgs[0]);
+		Log.v(TAG, "Nothing found for: " + calendarsURI);
 		return -1;
 	}
 
@@ -68,20 +58,14 @@ public class Calendar {
 		values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
 		values.put(CalendarContract.Calendars.ACCOUNT_TYPE, account.type);
 		values.put(CalendarContract.Calendars.NAME, calendarName);
-		values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-				calendarTitle);
+		values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendarTitle);
 		values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xFFC3EA6E);
 		values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
 		values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
 		values.put(CalendarContract.Calendars.VISIBLE, 1);
 		// values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
 
-		/*
-		 * if (info.isReadOnly()) values.put(Calendars.CALENDAR_ACCESS_LEVEL,
-		 * Calendars.CAL_ACCESS_READ); else {
-		 */
-		values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
-				CalendarContract.Calendars.CAL_ACCESS_OWNER);
+		values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
 		values.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 1);
 		values.put(CalendarContract.Calendars.CAN_MODIFY_TIME_ZONE, 1);
 		// }
@@ -124,26 +108,30 @@ public class Calendar {
 		return -1;
 	}
 
-	public long AddEvent(String eventName) {
+
+    public long AddEvent(String eventName)
+    {
+        return AddEvent(eventName, java.util.Calendar.getInstance().getTimeInMillis());
+    }
+
+    public long AddEvent(String eventName, long dtstart)
+    {
+        // default end is 2min after start
+        return AddEvent(eventName, dtstart, java.util.Calendar.getInstance().getTimeInMillis()+120000);
+    }
+
+	public long AddEvent(String eventName, long dtstart, long dtend) {
 		ContentValues cv = new ContentValues();
 		cv.put(CalendarContract.Events.CALENDAR_ID, calendarId);
 		cv.put(CalendarContract.Events.TITLE, eventName);
 		cv.put(CalendarContract.Events.ALL_DAY, 0);
-		cv.put(CalendarContract.Events.DTSTART, java.util.Calendar
-				.getInstance().getTimeInMillis());
-		cv.put(CalendarContract.Events.DTEND, java.util.Calendar.getInstance()
-				.getTimeInMillis());
+		cv.put(CalendarContract.Events.DTSTART, dtstart);
+		cv.put(CalendarContract.Events.DTEND, dtend);
 		cv.put(CalendarContract.Events.EVENT_TIMEZONE, "UTC");
 		cv.put(CalendarContract.Events.DIRTY, 1);
 
-		// cv.put(CalendarContract.Events.EVENT_TIMEZONE, "GMT");
-		// cv.put(CalendarContract.Events.DTSTART, 1417966730000L);
-		// cv.put(CalendarContract.Events.DTEND, 1417966730000L);
-
-		// cv.put(CalendarContract.Events.TITLE, eventName);
 		// cv.put(CalendarContract.Events.EVENT_LOCATION, "RIOT-LOCATION");
 		// cv.put(CalendarContract.Events.DESCRIPTION, "RIOT-DESCRIPTION");
-		// cv.put(CalendarContract.Events.DTSTART, "1417214633");
 
 		Uri calendarsURI = CalendarContract.Events.CONTENT_URI
 				.buildUpon()

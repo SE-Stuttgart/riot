@@ -32,5 +32,8 @@
     <!-- Fragment account (all entries for account please insert here) -->
     <string name="add_account">Add Account</string>
     <string name="add_event">Add Event</string>
+    <string name="acc_username">Username:</string>
+    <string name="acc_password">Password:</string>
+
 
 </resources>

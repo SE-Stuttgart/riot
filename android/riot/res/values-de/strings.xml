@@ -20,10 +20,6 @@
     <!-- Fragment main (all entries for main please insert here) -->
     <string name="action_refresh">Aktualisieren</string>
 
-    <!-- Fragment account (all entries for account please insert here) -->
-    <string name="add_account">Account hinzufügen</string>
-    <string name="add_event">Event hinzufügen</string>
-
     <!-- Fragment language (all entries for language please insert here) -->
     <string name="english">Englisch</string>
     <string name="german">Deutsch</string>
@@ -32,5 +28,12 @@
     <string name="lang_header">Bitte wählen Sie eine Sprache aus</string>
     <string name="desc_uk">Sprache auf Englisch-UK umstellen.</string>
     <string name="desc_ger">Sprache auf Deutsch umstellen.</string>
+
+    <!-- Fragment account (all entries for account please insert here) -->
+    <string name="add_account">Account hinzufügen</string>
+    <string name="add_event">Event hinzufügen</string>
+    <string name="acc_username">Benutzername:</string>
+    <string name="acc_password">Passwort:</string>
+
 
 </resources>
