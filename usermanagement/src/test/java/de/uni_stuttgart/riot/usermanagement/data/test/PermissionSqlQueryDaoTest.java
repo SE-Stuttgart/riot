@@ -41,13 +41,8 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceException {
         PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(getDataSource());
-        try {
-            Permission Permission = dao.findBy(new Long(1));
-            dao.delete(Permission);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage()); // Shouldn't occur yet
-        }
-
+        Permission Permission = dao.findBy(new Long(1));
+        dao.delete(Permission);
         dao.findBy(new Long(1));
     }
 

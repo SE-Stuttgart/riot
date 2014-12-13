@@ -18,75 +18,43 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
-    public void insertAndFindTest() {
+    public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException {
         UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
-        try {
-            UserRole testUserRole = new UserRole(new Long(1), new Long(2), new Long(42));
-            dao.insert(testUserRole);
-            UserRole findUserRole = dao.findBy(testUserRole.getId());
-            assertEquals(findUserRole, findUserRole);
-        } catch (DatasourceInsertException e) {
-            fail(e.getMessage());
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        }
+        UserRole testUserRole = new UserRole(new Long(1), new Long(2), new Long(42));
+        dao.insert(testUserRole);
+        UserRole findUserRole = dao.findBy(testUserRole.getId());
+        assertEquals(findUserRole, findUserRole);
     }
 
     @Test
-    public void FindUpdateFindTest() {
+    public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException {
         UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
-        try {
-            UserRole findUserRole = dao.findBy(new Long(1));
-            // UserRoles are not mutable at the time, only to test the update funktion.
-            dao.update(findUserRole);
-            UserRole findAfterUpdate = dao.findBy(new Long(1));
-            assertEquals(findAfterUpdate, findUserRole);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceUpdateException e) {
-            fail(e.getMessage());
-        }
+        UserRole findUserRole = dao.findBy(new Long(1));
+        // UserRoles are not mutable at the time, only to test the update funktion.
+        dao.update(findUserRole);
+        UserRole findAfterUpdate = dao.findBy(new Long(1));
+        assertEquals(findAfterUpdate, findUserRole);
+    }
+
+    @Test(expected = DatasourceFindException.class)
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException{
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
+        UserRole UserRole = dao.findBy(new Long(1));
+        dao.delete(UserRole);
+        dao.findBy(new Long(1));
+    }
+
+    @Test(expected = DatasourceUpdateException.class)
+    public void errorUpdateTest() throws DatasourceUpdateException{
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
+        dao.update(new UserRole(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
-    public void deleteTest(){
+    public void findAllTest() throws DatasourceFindException{
         UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
-        try {
-            UserRole UserRole = dao.findBy(new Long(1));
-            dao.delete(UserRole);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceDeleteException e) {
-            fail(e.getMessage());
-        }
-        try {
-            dao.findBy(new Long(1));
-        } catch (DatasourceFindException e) {
-            return;
-        }
-        fail("Should not be reached because id 1 does not longer exist");
-    }
-
-    @Test
-    public void errorUpdateTest(){
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
-        try {
-            dao.update(new UserRole(new Long(32), new Long(32), new Long(32)));
-        } catch (DatasourceUpdateException e) {
-            return;
-        }
-        fail("Should not ne reached because there is no item with id 32");
-    }
-
-    @Test
-    public void findAllTest(){
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
-        try {
-            Collection<UserRole> UserRole = dao.findAll();
-            assertEquals(3, UserRole.size());
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        }
+        Collection<UserRole> UserRole = dao.findAll();
+        assertEquals(3, UserRole.size());
     }
 
 }

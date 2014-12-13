@@ -18,80 +18,48 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class TokenSqlQueryDaoTest extends DaoTestBase{
 
-	@Test
-	public void insertAndFindTest() {
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
-		try {
-			Token testToken = new Token(new Long(42),
-					new Long(1),
-					"TestToken", "R",
-					new Timestamp(System.currentTimeMillis()),
-					new Timestamp(System.currentTimeMillis()+10000),
-					true);
-			dao.insert(testToken);
-			Token findToken = dao.findBy(testToken.getId());
-			assertEquals(testToken, findToken);
-		} catch (DatasourceInsertException e) {
-			fail(e.getMessage());
-		} catch (DatasourceFindException e) {
-			fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void FindUpdateFindTest() {
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
-		try {
-			Token findToken = dao.findBy(new Long(1));
-			findToken.setTokenValue("testvalue");
-			dao.update(findToken);
-			Token findAfterUpdate = dao.findBy(new Long(1));
-			assertEquals(findAfterUpdate, findToken);
-		} catch (DatasourceFindException e) {
-			fail(e.getMessage());
-		} catch (DatasourceUpdateException e) {
-			fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void deleteTest(){
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
-		try {
-			Token Token = dao.findBy(new Long(1));
-			dao.delete(Token);
-		} catch (DatasourceFindException e) {
-			fail(e.getMessage());
-		} catch (DatasourceDeleteException e) {
-			fail(e.getMessage());
-		}
-		try {
-			dao.findBy(new Long(1));
-		} catch (DatasourceFindException e) {
-			return;
-		}
-		fail("Should not be reached because id 1 does not longer exist");
-	}
-	
-	@Test
-	public void errorUpdateTest(){
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
-		try {
-			dao.update(new Token(new Long(32), new Long(34), "","", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),true));
-		} catch (DatasourceUpdateException e) {
-			return;
-		}
-		fail("Should not ne reached because there is no item with id 32");
-	}
-	
-	   @Test
-	    public void findAllTest(){
-	       TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
-	        try {
-	            Collection<Token> Token = dao.findAll();
-	            assertEquals(3, Token.size());
-	        } catch (DatasourceFindException e) {
-	            fail(e.getMessage());
-	        }
-	    }
+    @Test
+    public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException {
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+        Token testToken = new Token(new Long(42),
+                new Long(1),
+                "TestToken", "R",
+                new Timestamp(System.currentTimeMillis()),
+                new Timestamp(System.currentTimeMillis()+10000),
+                true);
+        dao.insert(testToken);
+        Token findToken = dao.findBy(testToken.getId());
+        assertEquals(testToken, findToken);
+    }
+
+    @Test
+    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException {
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+        Token findToken = dao.findBy(new Long(1));
+        findToken.setTokenValue("testvalue");
+        dao.update(findToken);
+        Token findAfterUpdate = dao.findBy(new Long(1));
+        assertEquals(findAfterUpdate, findToken);
+    }
+
+    @Test(expected = DatasourceFindException.class)
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+        Token Token = dao.findBy(new Long(1));
+        dao.delete(Token);
+        dao.findBy(new Long(1));
+    }
+
+    @Test(expected = DatasourceUpdateException.class)
+    public void errorUpdateTest() throws DatasourceUpdateException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+        dao.update(new Token(new Long(32), new Long(34), "","", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),true));
+    }
+
+    @Test
+    public void findAllTest() throws DatasourceFindException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+        Collection<Token> Token = dao.findAll();
+        assertEquals(3, Token.size());
+    }
 }

@@ -27,61 +27,34 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() {
+    public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException {
         RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
-        try {
-            RolePermission findRolePermission = dao.findBy(new Long(1));
-            // RolePermissions are not mutable at the time, only to test the update funktion.
-            dao.update(findRolePermission);
-            RolePermission findAfterUpdate = dao.findBy(new Long(1));
-            assertEquals(findAfterUpdate, findRolePermission);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceUpdateException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
+        RolePermission findRolePermission = dao.findBy(new Long(1));
+        // RolePermissions are not mutable at the time, only to test the update funktion.
+        dao.update(findRolePermission);
+        RolePermission findAfterUpdate = dao.findBy(new Long(1));
+        assertEquals(findAfterUpdate, findRolePermission);
+    }
+
+    @Test(expected = DatasourceFindException.class)
+    public void deleteTest() throws DatasourceFindException, DatasourceDeleteException {
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
+        RolePermission rolePermission = dao.findBy(new Long(1));
+        dao.delete(rolePermission);
+        dao.findBy(new Long(1));
+    }
+
+    @Test(expected = DatasourceUpdateException.class)
+    public void errorUpdateTest() throws DatasourceUpdateException {
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
+        dao.update(new RolePermission(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
-    public void deleteTest() {
+    public void findAllTest() throws DatasourceFindException {
         RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
-        try {
-            RolePermission rolePermission = dao.findBy(new Long(1));
-            dao.delete(rolePermission);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceDeleteException e) {
-            fail(e.getMessage());
-        }
-        try {
-            dao.findBy(new Long(1));
-        } catch (DatasourceFindException e) {
-            return;
-        }
-        fail("Should not be reached because id 1 does not longer exist");
-    }
-
-    @Test
-    public void errorUpdateTest() {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
-        try {
-            dao.update(new RolePermission(new Long(32), new Long(32), new Long(32)));
-        } catch (DatasourceUpdateException e) {
-            return;
-        }
-        fail("Should not ne reached because there is no item with id 32");
-    }
-
-    @Test
-    public void findAllTest() {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(getDataSource());
-        try {
-            Collection<RolePermission> RolePermission = dao.findAll();
-            assertEquals(4, RolePermission.size());
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        }
+        Collection<RolePermission> RolePermission = dao.findAll();
+        assertEquals(4, RolePermission.size());
     }
 
 }

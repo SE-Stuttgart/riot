@@ -28,60 +28,34 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() {
+    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException {
         TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
-        try {
-            TokenRole find = dao.findBy(new Long(1));
-            // TokenRoles are not mutable at the time, only to test the update funktion.
-            dao.update(find);
-            TokenRole findAfterUpdate = dao.findBy(new Long(1));
-            assertEquals(findAfterUpdate, find);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceUpdateException e) {
-            fail(e.getMessage());
-        }
+        TokenRole find = dao.findBy(new Long(1));
+        // TokenRoles are not mutable at the time, only to test the update funktion.
+        dao.update(find);
+        TokenRole findAfterUpdate = dao.findBy(new Long(1));
+        assertEquals(findAfterUpdate, find);
+    }
+
+    @Test(expected = DatasourceFindException.class)
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException {
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
+        TokenRole TokenRole = dao.findBy(new Long(1));
+        dao.delete(TokenRole);
+        dao.findBy(new Long(1));
+    }
+
+    @Test(expected = DatasourceUpdateException.class)
+    public void errorUpdateTest() throws DatasourceUpdateException {
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
+        dao.update(new TokenRole(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
-    public void deleteTest() {
+    public void findAllTest() throws DatasourceFindException {
         TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
-        try {
-            TokenRole TokenRole = dao.findBy(new Long(1));
-            dao.delete(TokenRole);
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        } catch (DatasourceDeleteException e) {
-            fail(e.getMessage());
-        }
-        try {
-            dao.findBy(new Long(1));
-        } catch (DatasourceFindException e) {
-            return;
-        }
-        fail("Should not be reached because id 1 does not longer exist");
-    }
-
-    @Test
-    public void errorUpdateTest() {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
-        try {
-            dao.update(new TokenRole(new Long(32), new Long(32), new Long(32)));
-        } catch (DatasourceUpdateException e) {
-            return;
-        }
-        fail("Should not ne reached because there is no item with id 32");
-    }
-
-    @Test
-    public void findAllTest() {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(getDataSource());
-        try {
-            Collection<TokenRole> TokenRole = dao.findAll();
-            assertEquals(4, TokenRole.size());
-        } catch (DatasourceFindException e) {
-            fail(e.getMessage());
-        }
+        Collection<TokenRole> TokenRole = dao.findAll();
+        assertEquals(4, TokenRole.size());
     }
 
 }
