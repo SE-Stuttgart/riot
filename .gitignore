@@ -4,3 +4,5 @@
 .classpath
 target
 nb-configuration.xml
+.checkstyle
+.tern-project
