@@ -1,18 +1,26 @@
 package de.uni_stuttgart.riot.usermanagement.logic.test.common;
 
+import java.io.File;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
 
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.postgresql.ds.PGSimpleDataSource;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 
 import de.uni_stuttgart.riot.usermanagement.test.common.SqlRunner;
 
 public class LogicTestBase {
 
-    private static PGSimpleDataSource ds;
+    @ClassRule
+    public static TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private static DataSource dataSource;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -25,31 +33,34 @@ public class LogicTestBase {
          * <groupId>org.apache.tomcat</groupId> <artifactId>tomcat-catalina</artifactId> <version>8.0.15</version> <scope>test</scope>
          * </dependency>
          */
+
+        // Create initial context
+        System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
+        System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
+        InitialContext ic = new InitialContext();
+
         try {
-            // Create initial context
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("jdbc");
-
-            // Construct DataSource
-            ds = new PGSimpleDataSource();
-            ds.setDatabaseName("umdb");
-            ds.setUser("umuser");
-            ds.setPassword("1q2w3e4r");
-            ds.setPortNumber(5432);
-            ds.setServerName("localhost");
-
-            ic.bind("jdbc/iot", ds);
-        } catch (NamingException ex) {
-            ex.printStackTrace();
+            ic.destroySubcontext("jdbc");
+        } catch (NameNotFoundException e) {
+            // Ignore
         }
+
+        ic.createSubcontext("jdbc");
+
+        // Construct DataSource
+        File tempFile = tempFolder.newFile();
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:" + tempFile.getAbsolutePath());
+        ds.setUser("sa");
+        ds.setUser("sa");
+        dataSource = ds;
+
+        ic.rebind("jdbc/iot", ds);
 
     }
 
     @Before
     public void setUp() throws Exception {
-        SqlRunner.runStartupScripts(ds, true);
+        SqlRunner.runStartupScripts(dataSource, true);
     }
 }

@@ -20,7 +20,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 
 	@Test
 	public void insertAndFindTest() {
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
 		try {
 			Token testToken = new Token(new Long(42),
 					new Long(1),
@@ -30,9 +30,6 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 					true);
 			dao.insert(testToken);
 			Token findToken = dao.findBy(testToken.getId());
-			System.out.println(testToken);
-			System.out.println(findToken);
-			System.out.println(findToken);
 			assertEquals(testToken, findToken);
 		} catch (DatasourceInsertException e) {
 			fail(e.getMessage());
@@ -43,7 +40,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void FindUpdateFindTest() {
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
 		try {
 			Token findToken = dao.findBy(new Long(1));
 			findToken.setTokenValue("testvalue");
@@ -59,7 +56,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void deleteTest(){
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
 		try {
 			Token Token = dao.findBy(new Long(1));
 			dao.delete(Token);
@@ -78,7 +75,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void errorUpdateTest(){
-		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+		TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
 		try {
 			dao.update(new Token(new Long(32), new Long(34), "","", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),true));
 		} catch (DatasourceUpdateException e) {
@@ -89,7 +86,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
 	
 	   @Test
 	    public void findAllTest(){
-	       TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.ds);
+	       TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
 	        try {
 	            Collection<Token> Token = dao.findAll();
 	            assertEquals(3, Token.size());

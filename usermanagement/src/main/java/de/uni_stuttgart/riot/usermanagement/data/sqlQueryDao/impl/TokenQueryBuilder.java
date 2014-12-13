@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
@@ -17,7 +18,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Token> {
 
     private static final String DELETE_QUERY = "DELETE FROM tokens WHERE tokens.tokenID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO tokens(userID,tokenValue,refreshtokenvalue,issueDate,expirationdate,valid)VALUES (?,?,?,?,?,?) RETURNING tokenid";
+    private static final String INSERT_QUERY = "INSERT INTO tokens(userID,tokenValue,refreshtokenvalue,issueDate,expirationdate,valid)VALUES (?,?,?,?,?,?)";
     private static final String UPDATE_QUERY = "UPDATE tokens SET userid=?, tokenvalue=?,refreshtokenvalue=?, issuedate=?, expirationdate=?, valid=? WHERE tokenID=?";
     private static final String FIND_ID_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate, valid FROM tokens WHERE tokenID = ?;";
     private static final String FIND_PARAM_QUERY = "SELECT tokenid, userid, tokenvalue, refreshtokenvalue, issuedate, expirationdate, valid FROM tokens ";
@@ -30,7 +31,7 @@ public class TokenQueryBuilder extends StorableQueryBuilder implements QueryBuil
 
     @Override
     public PreparedStatement buildInsert(Token t, Connection connection) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
+        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
         stmt.setLong(1, t.getUserID());
         stmt.setString(2, t.getTokenValue());
         stmt.setString(3, t.getRefreshtokenValue());

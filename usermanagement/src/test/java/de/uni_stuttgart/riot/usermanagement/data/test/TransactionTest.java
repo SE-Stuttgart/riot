@@ -23,7 +23,7 @@ public class TransactionTest extends DaoTestBase {
     public void transactionErrorTest() {
         try {
             // Open Transaction
-            SqlTransaction transaction = new SqlTransaction(this.ds);
+            SqlTransaction transaction = new SqlTransaction(getDataSource());
             // Getting the DAO's
             DAO<User> userDAO = transaction.getUserDao();
             User yoda = userDAO.findBy(1L);
@@ -42,7 +42,7 @@ public class TransactionTest extends DaoTestBase {
         } catch (DatasourceUpdateException e) {
             DAO<User> userDAO;
             try {
-                userDAO = new UserSqlQueryDao(this.ds);
+                userDAO = new UserSqlQueryDao(getDataSource());
                 User yoda = userDAO.findBy(1L);
                 assertEquals("Yoda", yoda.getUsername());
             } catch (DatasourceFindException e1) {
@@ -56,7 +56,7 @@ public class TransactionTest extends DaoTestBase {
     @Test
     public void transactionRollbackTest() {
         try {
-            SqlTransaction transaction = new SqlTransaction(this.ds);
+            SqlTransaction transaction = new SqlTransaction(getDataSource());
             DAO<User> userDAO = transaction.getUserDao();
             User yoda = userDAO.findBy(1L);
             yoda.setUsername("Yoda2");
@@ -65,7 +65,7 @@ public class TransactionTest extends DaoTestBase {
             vader.setUsername("Vader2");
             userDAO.update(vader);
             transaction.rollback();
-            userDAO = new UserSqlQueryDao(this.ds);
+            userDAO = new UserSqlQueryDao(getDataSource());
             User yodaF = userDAO.findBy(1L);
             User vaderF = userDAO.findBy(3L);
             assertEquals("Yoda", yodaF.getUsername());
@@ -82,7 +82,7 @@ public class TransactionTest extends DaoTestBase {
     @Test
     public void transactionCommitTest() {
         try {
-            SqlTransaction transaction = new SqlTransaction(this.ds);
+            SqlTransaction transaction = new SqlTransaction(getDataSource());
             DAO<User> userDAO = transaction.getUserDao();
             User yoda = userDAO.findBy(1L);
             yoda.setUsername("Yoda2");
@@ -91,7 +91,7 @@ public class TransactionTest extends DaoTestBase {
             vader.setUsername("Vader2");
             userDAO.update(vader);
             transaction.commit();
-            userDAO = new UserSqlQueryDao(this.ds);
+            userDAO = new UserSqlQueryDao(getDataSource());
             User yodaF = userDAO.findBy(1L);
             User vaderF = userDAO.findBy(3L);
             assertEquals("Yoda2", yodaF.getUsername());

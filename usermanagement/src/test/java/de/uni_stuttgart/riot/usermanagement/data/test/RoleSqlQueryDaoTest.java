@@ -19,12 +19,11 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 
 	@Test
 	public void insertAndFindTest() {
-		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(getDataSource());
 		try {
 			Role testrole = new Role(new Long(42), "TestRole");
 			dao.insert(testrole);
 			Role findRole = dao.findBy(testrole.getId());
-			System.out.println(testrole);
 			assertEquals(testrole, findRole);
 		} catch (DatasourceInsertException e) {
 			fail(e.getMessage());
@@ -35,7 +34,7 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void FindUpdateFindTest() {
-		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(getDataSource());
 		try {
 			Role findRole = dao.findBy(new Long(1));
 			findRole.setRoleName("testRoleName");
@@ -51,7 +50,7 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void deleteTest(){
-		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(getDataSource());
 		try {
 			Role Role = dao.findBy(new Long(1));
 			dao.delete(Role);
@@ -70,7 +69,7 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void errorUpdateTest(){
-		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+		RoleSqlQueryDAO dao = new RoleSqlQueryDAO(getDataSource());
 		try {
 			dao.update(new Role(new Long(32),""));
 		} catch (DatasourceUpdateException e) {
@@ -81,7 +80,7 @@ public class RoleSqlQueryDaoTest extends DaoTestBase{
 	
 	@Test
     public void findAllTest(){
-	    RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.ds);
+	    RoleSqlQueryDAO dao = new RoleSqlQueryDAO(getDataSource());
         try {
             Collection<Role> Role = dao.findAll();
             assertEquals(4, Role.size());

@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
@@ -17,7 +18,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 public class RoleQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Role> {
 
     private static final String DELETE_QUERY = "DELETE FROM roles WHERE roles.roleID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO roles(rolename)VALUES (?) RETURNING roleid";
+    private static final String INSERT_QUERY = "INSERT INTO roles(rolename)VALUES (?)";
     private static final String UPDATE_QUERY = "UPDATE roles SET rolename=? WHERE roleID = ?;";
     private static final String FIND_ID_QUERY = "SELECT roleID,rolename FROM roles WHERE roleID = ?;";
     private static final String FIND_PARAM_QUERY = "SELECT roleID,rolename FROM roles ";
@@ -30,7 +31,7 @@ public class RoleQueryBuilder extends StorableQueryBuilder implements QueryBuild
 
     @Override
     public PreparedStatement buildInsert(Role t, Connection connection) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
+        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, t.getRoleName());
         return stmt;
     }

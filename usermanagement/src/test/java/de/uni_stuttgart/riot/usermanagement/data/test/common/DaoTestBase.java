@@ -1,30 +1,42 @@
 package de.uni_stuttgart.riot.usermanagement.data.test.common;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.sql.DataSource;
 
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
-import org.postgresql.ds.PGSimpleDataSource;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 
 import de.uni_stuttgart.riot.usermanagement.test.common.SqlRunner;
 
 public class DaoTestBase {
-
-    protected DataSource ds;
+    
+    @ClassRule
+    public static TemporaryFolder tempFolder = new TemporaryFolder();
+    
+    private DataSource dataSource;
 
     @Before
-    public void setup() {
-        PGSimpleDataSource ds = new PGSimpleDataSource();
-        ds.setDatabaseName("umdb");
-        ds.setUser("umuser");
-        ds.setPassword("1q2w3e4r");
-        ds.setPortNumber(5432);
-        ds.setServerName("localhost");
+    public void setup() throws IOException {
+        File tempFile = tempFolder.newFile();
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:" + tempFile.getAbsolutePath());
+        ds.setUser("sa");
+        ds.setUser("sa");
         SqlRunner.runStartupScripts(ds);
-        this.ds = ds;
+        dataSource = ds;
     }
 
     @After
     public void tearDown() {
     }
+    
+    protected DataSource getDataSource() {
+        return dataSource;
+    }
+
 }

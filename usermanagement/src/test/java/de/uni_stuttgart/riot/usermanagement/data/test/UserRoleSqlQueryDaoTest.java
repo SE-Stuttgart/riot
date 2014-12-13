@@ -19,12 +19,11 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() {
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.ds);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
         try {
-            UserRole testUserRole = new UserRole(new Long(1), new Long(1), new Long(42));
+            UserRole testUserRole = new UserRole(new Long(1), new Long(2), new Long(42));
             dao.insert(testUserRole);
             UserRole findUserRole = dao.findBy(testUserRole.getId());
-            System.out.println(findUserRole);
             assertEquals(findUserRole, findUserRole);
         } catch (DatasourceInsertException e) {
             fail(e.getMessage());
@@ -35,7 +34,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void FindUpdateFindTest() {
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.ds);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
         try {
             UserRole findUserRole = dao.findBy(new Long(1));
             // UserRoles are not mutable at the time, only to test the update funktion.
@@ -51,7 +50,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void deleteTest(){
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.ds);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
         try {
             UserRole UserRole = dao.findBy(new Long(1));
             dao.delete(UserRole);
@@ -70,7 +69,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void errorUpdateTest(){
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.ds);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
         try {
             dao.update(new UserRole(new Long(32), new Long(32), new Long(32)));
         } catch (DatasourceUpdateException e) {
@@ -81,7 +80,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void findAllTest(){
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.ds);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(getDataSource());
         try {
             Collection<UserRole> UserRole = dao.findAll();
             assertEquals(3, UserRole.size());

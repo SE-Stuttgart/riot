@@ -60,11 +60,11 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         this.connection = connection;
         this.connection.setAutoCommit(false);
         this.queryBuilder = queryBuilder;
-        this.objectBuilder = objectBuilder;    
+        this.objectBuilder = objectBuilder;
     }
 
-    private Connection getConnection() throws SQLException{
-        if(connection == null){
+    private Connection getConnection() throws SQLException {
+        if (connection == null) {
             return this.ds.getConnection();
         } else {
             return connection;
@@ -77,7 +77,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             VoidQueryExecuter ex = new VoidQueryExecuter(this.getConnection()) {
                 public void executeInternal() throws Exception {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildDelete(t, this.getConnection());
-                    stmt.execute();                    
+                    stmt.execute();
                 }
             };
             ex.execute(this.isTransaction());
@@ -91,21 +91,26 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             VoidQueryExecuter ex = new VoidQueryExecuter(this.getConnection()) {
                 public void executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildInsert(t, this.getConnection());
-                    ResultSet rSet = stmt.executeQuery();
-                    if(rSet.next()) {
-                        t.setId(rSet.getLong(1));
-                    } else {
-                        throw new DatasourceInsertException("Error on getting the id-value");
+                    try (PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildInsert(t, this.getConnection())) {
+                        if (stmt.executeUpdate() == 0) {
+                            throw new DatasourceInsertException("Error on inserting new value");
+                        }
+
+                        try (ResultSet rSet = stmt.getGeneratedKeys()) {
+                            if (rSet.next()) {
+                                t.setId(rSet.getLong(1));
+                            } else {
+                                throw new DatasourceInsertException("Error on getting the id-value");
+                            }
+                        }
                     }
                 }
             };
             ex.execute(this.isTransaction());
         } catch (Exception e) {
-            throw new DatasourceInsertException(e.getMessage());
+            throw new DatasourceInsertException(e);
         }
     }
-
 
     @Override
     public void update(T t) throws DatasourceUpdateException {
@@ -116,7 +121,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     int res = stmt.executeUpdate();
                     if (res == 0) {
                         throw new DatasourceUpdateException("Nothing to update!");
-                    }                    
+                    }
                 }
             };
             ex.execute(this.isTransaction());
@@ -132,7 +137,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                 public T executeInternal() throws Exception {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindByID(id, this.getConnection());
                     ResultSet resultSet = stmt.executeQuery();
-                    if(resultSet.next()) {
+                    if (resultSet.next()) {
                         return SqlQueryDAO.this.objectBuilder.build(resultSet);
                     } else {
                         throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
@@ -148,7 +153,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public Collection<T> findBy(Collection<SearchParameter> searchParams, boolean or) throws DatasourceFindException {
         try {
-            CollectionQueryExecuter<T> exc =  new CollectionQueryExecuter<T>(this.getConnection()) {
+            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.getConnection()) {
                 public Collection<T> executeInternal() throws Exception {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, this.getConnection(), or);
                     ResultSet resultSet = stmt.executeQuery();
@@ -168,7 +173,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public Collection<T> findAll() throws DatasourceFindException {
         try {
-            CollectionQueryExecuter<T> exc =  new CollectionQueryExecuter<T>(this.getConnection()) {
+            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.getConnection()) {
                 public Collection<T> executeInternal() throws Exception {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindAll(this.getConnection());
                     ResultSet resultSet = stmt.executeQuery();
@@ -210,7 +215,5 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     public boolean isTransaction() {
         return transaction;
     }
-
-
 
 }

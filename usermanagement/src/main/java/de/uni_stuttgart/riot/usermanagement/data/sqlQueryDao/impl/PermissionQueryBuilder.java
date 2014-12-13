@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
@@ -17,7 +18,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 public class PermissionQueryBuilder extends StorableQueryBuilder implements QueryBuilder<Permission> {
 
     private static final String DELETE_QUERY = "DELETE FROM permissions WHERE permissions.permissionID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO permissions(permissionValue)VALUES (?) RETURNING permissionid";
+    private static final String INSERT_QUERY = "INSERT INTO permissions(permissionValue) VALUES (?)";
     private static final String UPDATE_QUERY = "UPDATE permissions SET permissionValue=? WHERE permissionID = ?;";
     private static final String FIND_ID_QUERY = "SELECT permissionID,permissionValue FROM permissions WHERE permissionID = ?;";
     private static final String FIND_PARAM_QUERY = "SELECT permissionID,permissionValue FROM permissions ";
@@ -30,7 +31,7 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
 
     @Override
     public PreparedStatement buildInsert(Permission t, Connection connection) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY);
+        PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, t.getPermissionValue());
         return stmt;
     }

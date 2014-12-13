@@ -21,12 +21,11 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 
 	@Test
 	public void insertAndFindTest() {
-		UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+		UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
 		try {
 			User testuser = new User(new Long(42), "TestUser", "TestUserPW", "TestUserSalt");
 			dao.insert(testuser);
 			User findUser = dao.findBy(testuser.getId());
-			System.out.println(findUser);
 			assertEquals(testuser, findUser);
 		} catch (DatasourceInsertException e) {
 			fail(e.getMessage());
@@ -37,10 +36,9 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void FindUpdateFindTest() {
-		UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+		UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
 		try {
 			User findUser = dao.findBy(new Long(1));
-			System.out.println(findUser);
 			findUser.setUsername("TestUser2");
 			dao.update(findUser);
 			User findAfterUpdate = dao.findBy(new Long(1));
@@ -54,7 +52,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void deleteTest(){
-		UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+		UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
 		try {
 			User User = dao.findBy(new Long(1));
 			dao.delete(User);
@@ -73,7 +71,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 	
 	@Test
 	public void findAllTest(){
-	    UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+	    UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
         try {
             Collection<User> user = dao.findAll();
             assertEquals(3, user.size());
@@ -84,7 +82,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
 	
 	   @Test
 	    public void findUniqueTest(){
-	        UserSqlQueryDao dao = new UserSqlQueryDao(this.ds);
+	        UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
 	        try {
 	            User user = dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, "Yoda"));
 	            assertEquals(user.getPassword(), "YodaPW");

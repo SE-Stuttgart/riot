@@ -56,7 +56,7 @@ public class SqlRunner {
     }
 
     public static void runStartupScripts(DataSource ds) {
-        SqlRunner.runStartupScripts(ds, false);
+        SqlRunner.runStartupScripts(ds, true);
     }
 
     public void runScript(final Reader reader) throws SQLException {
