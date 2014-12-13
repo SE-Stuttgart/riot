@@ -78,6 +78,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                 public void executeInternal() throws Exception {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildDelete(t, this.getConnection());
                     stmt.execute();
+                    stmt.close();
                 }
             };
             ex.execute(this.isTransaction());
@@ -95,14 +96,16 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                         if (stmt.executeUpdate() == 0) {
                             throw new DatasourceInsertException("Error on inserting new value");
                         }
-
                         try (ResultSet rSet = stmt.getGeneratedKeys()) {
                             if (rSet.next()) {
                                 t.setId(rSet.getLong(1));
                             } else {
                                 throw new DatasourceInsertException("Error on getting the id-value");
                             }
+                            rSet.close();
                         }
+                        stmt.close();
+                        
                     }
                 }
             };
@@ -122,6 +125,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     if (res == 0) {
                         throw new DatasourceUpdateException("Nothing to update!");
                     }
+                    stmt.close();
                 }
             };
             ex.execute(this.isTransaction());
@@ -138,8 +142,11 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindByID(id, this.getConnection());
                     ResultSet resultSet = stmt.executeQuery();
                     if (resultSet.next()) {
-                        return SqlQueryDAO.this.objectBuilder.build(resultSet);
+                        T result = SqlQueryDAO.this.objectBuilder.build(resultSet);
+                        stmt.close();
+                        return result;
                     } else {
+                        stmt.close();
                         throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
                     }
                 }
@@ -161,6 +168,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     while (resultSet.next()) {
                         res.add(SqlQueryDAO.this.objectBuilder.build(resultSet));
                     }
+                    stmt.close();
                     return res;
                 }
             };
@@ -181,6 +189,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     while (resultSet.next()) {
                         res.add(SqlQueryDAO.this.objectBuilder.build(resultSet));
                     }
+                    stmt.close();
                     return res;
                 }
             };
@@ -200,8 +209,11 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                     PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, this.getConnection(), false);
                     ResultSet resultSet = stmt.executeQuery();
                     if (resultSet.next()) {
-                        return SqlQueryDAO.this.objectBuilder.build(resultSet);
+                        T result = SqlQueryDAO.this.objectBuilder.build(resultSet);
+                        stmt.close();
+                        return result;
                     } else {
+                        stmt.close();
                         throw new DatasourceFindException("No such Element");
                     }
                 }
