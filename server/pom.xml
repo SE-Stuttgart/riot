@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-   
-   <parent>
+
+	<parent>
 		<groupId>de.uni-stuttgart.riot</groupId>
 		<artifactId>riot</artifactId>
 		<version>1.0-SNAPSHOT</version>
@@ -20,19 +20,17 @@
 	</properties>
 
 	<dependencies>
-      <!-- Commons and Usermanagement -->
-      <dependency>
+		<!-- Commons and Usermanagement -->
+		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.commons</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-      <!-- Coming soon <dependency>
-			<groupId>de.uni-stuttgart.riot</groupId>
-			<artifactId>riot.usermanagement</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency> -->
-      
-      <!-- Server -->
+		<!-- Coming soon <dependency> <groupId>de.uni-stuttgart.riot</groupId> 
+			<artifactId>riot.usermanagement</artifactId> <version>${project.parent.version}</version> 
+			</dependency> -->
+
+		<!-- Server -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
@@ -41,18 +39,18 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 		</dependency>
-      
-      <!-- Database -->
-      <dependency>
-         <groupId>org.sql2o</groupId>
-         <artifactId>sql2o</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-      </dependency>
-      
-      <!-- Testing -->
+
+		<!-- Database -->
+		<dependency>
+			<groupId>org.sql2o</groupId>
+			<artifactId>sql2o</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<!-- Testing -->
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
@@ -66,18 +64,18 @@
 
 	<build>
 		<plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-               <source>1.8</source>
-               <target>1.8</target>
-            </configuration>
-         </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-   
-   <reporting>
+
+	<reporting>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
