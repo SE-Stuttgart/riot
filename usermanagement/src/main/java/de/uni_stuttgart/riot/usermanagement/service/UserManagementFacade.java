@@ -2,6 +2,9 @@ package de.uni_stuttgart.riot.usermanagement.service;
 
 import java.util.Collection;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
@@ -366,4 +369,12 @@ public class UserManagementFacade {
     public void deletePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         roleLogic.removePermissionFromRole(roleId, permissionId);
     }
+    
+    public void requiresRole(String role) throws AuthorizationException {
+    	SecurityUtils.getSubject().checkRole(role);
+	}
+    
+    public void requiresPermission(String permission) throws AuthorizationException {
+    	SecurityUtils.getSubject().checkPermission(permission);
+	}
 }
