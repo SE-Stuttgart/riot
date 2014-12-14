@@ -76,6 +76,9 @@ git fetch origin
 git rebase origin/master
 # Wenn Rebase-Konflikte auftreten, diese beheben (siehe unten).
 
+# Tests laufen lassen
+mvn clean install
+
 # Änderungen hochladen:
 git push origin RIOT-123
 # Wenn Git beim Pushen einen non-fast-forward meldet, stellt man sicher, 
@@ -146,6 +149,9 @@ git rebase origin/master
 # dass Merge-Konflikte zu beheben sind, und stellt es wieder auf "In Progress".
 
 # Den Code anschauen.
+
+# Tests laufen lassen
+mvn clean install
 
 # Wenn OK:
 # Integrieren und das JIRA-Ticket auf "Done" stellen.

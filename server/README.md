@@ -1,29 +1,16 @@
-# R-IOT Web Application
-
-This is the web application for the R-IOT project.
-
+# RioT Server
 
 ## IDE Setup (Eclipse)
 
 ### Prerequisites
 
-- install the lates JDK8 from Oracle
-- download and unpack the application server Glassfish 4.1 (Java e 7 Full Platform)  from https://glassfish.java.net/download.html 
-- clone the git repository
-
+- Everything in ../README.md
+- Download and unpack the application server Glassfish 4.1 (Java e 7 Full Platform) from https://glassfish.java.net/download.html 
 
 ### Plugins
-Install the following plugins from the eclipse marketplace if not installed already:
+Install the following plugins from the Eclipse Marketplace if not installed already:
 
-- maven integration for Eclipse
 - Glassfish Tools plugin
-- Checkstyle Plug-in
-
-### Import the Maven project
-- make sure the JDK8 is configured in the *installed JREs* section of the Eclipse preferences
-- Open the import dialog via File->Import->
-- select `Maven->Existing Maven Projects` and click *next*
-- select the folder with the cloned repository as root directory and click *finish*
 
 ### Configure the application server
 
@@ -35,18 +22,6 @@ Install the following plugins from the eclipse marketplace if not installed alre
 - click *finish*
 - select `run as->run on server` in the context menu of the project and choose the Glassfish server
 - open http://localhost:4848 to check if the application was started on the server
-
-### Configure Checkstyle
-- Windows -> Preference -> Checkstyle -> New
-  - Type: External Configuration File
-  - Name: IoT
-  - Location: Browse -> webapp\src\main\resources\checkstyle\conventions.xml
-- Select new configuration as default
-- Windows -> Preferences -> Java -> Code Style -> Formatter
-  - Import -> webapp\src\main\resources\checkstyle\formatter.xml
-  - Check that the imported formatter is selected in the project specific settings
-- Windows -> Preferences -> Java -> Editor -> Save Actions -> Perform all selected actions on save
-- Right-click on Project -> Checkstyle -> Activate Checkstyle 
 
 ## Database Setup
 
