@@ -23,8 +23,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.GenerateTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
-import de.uni_stuttgart.riot.usermanagement.security.TokenUtil;
-import de.uni_stuttgart.riot.usermanagement.service.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.usermanagement.security.AccessTokenUtil;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
 
 /**
  * Contains all logic regarding the authorization process.
@@ -185,8 +185,8 @@ public class AuthenticationLogic {
 
         do {
             // generate new tokens
-            String authToken = TokenUtil.generateToken();
-            String refreshToken = TokenUtil.generateToken();
+            String authToken = AccessTokenUtil.generateToken();
+            String refreshToken = AccessTokenUtil.generateToken();
 
             token = new Token(userId, authToken, refreshToken, issueTime, expirationTime, true);
 

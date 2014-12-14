@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service.response;
+package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 

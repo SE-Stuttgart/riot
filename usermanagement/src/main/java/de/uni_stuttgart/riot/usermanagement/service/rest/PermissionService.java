@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service;
+package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +18,9 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
-import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.response.PermissionResponse;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
+import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.PermissionResponse;
 
 /**
  * The permissions service will handle any access (create, read, update, delete) to the permissions.

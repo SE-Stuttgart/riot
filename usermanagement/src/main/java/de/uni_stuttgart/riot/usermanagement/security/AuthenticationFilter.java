@@ -34,7 +34,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         String accessToken = requestContext.getHeaderString(AUTHENTICATION_HEADER);
 
         try {
-            user.login(new AccessTokenAuthentication(accessToken));
+            user.login(new AccessToken(accessToken));
             if (!user.isAuthenticated()) {
                 throw new UnauthenticatedException();
             }

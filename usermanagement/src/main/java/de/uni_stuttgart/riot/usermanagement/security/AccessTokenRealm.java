@@ -14,7 +14,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -41,12 +40,12 @@ public class AccessTokenRealm extends AuthorizingRealm {
      * Create a access token realm for authentication and authorization using shiro.
      */
     public AccessTokenRealm() {
-        setAuthenticationTokenClass(AccessTokenAuthentication.class);
+        setAuthenticationTokenClass(AccessToken.class);
     }
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        AccessTokenAuthentication tokenImpl = (AccessTokenAuthentication)token;
+        AccessToken tokenImpl = (AccessToken)token;
         String accessToken = tokenImpl.getToken();
 
         Connection connection = null;

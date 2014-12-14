@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service.exception;
+package de.uni_stuttgart.riot.usermanagement.service.rest.exception;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;

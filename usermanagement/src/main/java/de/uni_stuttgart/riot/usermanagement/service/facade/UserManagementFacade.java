@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service;
+package de.uni_stuttgart.riot.usermanagement.service.facade;
 
 import java.util.Collection;
 
@@ -37,7 +37,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUse
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
-import de.uni_stuttgart.riot.usermanagement.service.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
 
 /**
  * This class is the only point which should be used to access the user management.

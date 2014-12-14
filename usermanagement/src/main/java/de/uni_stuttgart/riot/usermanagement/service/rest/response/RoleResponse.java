@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service.response;
+package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +7,7 @@ import java.util.Iterator;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
-import de.uni_stuttgart.riot.usermanagement.service.UserManagementFacade;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 public class RoleResponse {
 

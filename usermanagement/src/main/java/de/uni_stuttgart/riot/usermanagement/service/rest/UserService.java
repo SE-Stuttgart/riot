@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service;
+package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,10 +22,11 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
-import de.uni_stuttgart.riot.usermanagement.service.exception.UserManagementExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.response.RoleResponse;
-import de.uni_stuttgart.riot.usermanagement.service.response.TokenResponse;
-import de.uni_stuttgart.riot.usermanagement.service.response.UserResponse;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
+import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
 
 /**
  * The users service will handle any access (create, read, update, delete) to the users.

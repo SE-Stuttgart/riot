@@ -1,6 +1,6 @@
-package de.uni_stuttgart.riot.usermanagement.service.request;
+package de.uni_stuttgart.riot.usermanagement.service.rest.request;
 
-import de.uni_stuttgart.riot.usermanagement.service.AuthenticationService;
+import de.uni_stuttgart.riot.usermanagement.service.rest.AuthenticationService;
 
 /**
  * The refresh request message of the client used in {@link AuthenticationService}.

@@ -8,7 +8,7 @@ import java.security.SecureRandom;
  * @author Niklas Schnabel
  *
  */
-public class TokenUtil {
+public class AccessTokenUtil {
     private static SecureRandom random = new SecureRandom();
 
     public static String generateToken() {

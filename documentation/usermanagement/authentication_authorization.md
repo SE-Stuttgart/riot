@@ -42,11 +42,25 @@ The `@RequiresAuthentication` annotation will secure the API call from unauthent
 This section will describe the authorization process based on an already authenticated user.
 
 ### High-Level View
-The authorization process will **grant or deny access to an already authenticated user based on roles an permissions**. Each user has roles and permissions assigned. Based on these roles and permissions, access to specific parts of the API can be granted or denied.
-
-The **roles** can be for example an administrator, support or a simple user. The roles are specific to the system. Roles itself should not imply any access to specific parts of an API. Thats where **permissions** should be used. For example the role *administrator* should not be used to secure the creation of accounts. Instead a *create account permission* should be used which is assigned to the *administrator* role. This way the authorization process is much more flexible. Assume you want to add an additional role *Account Creator* which should have the permission to add accounts. If you secured your API by requesting the *Administrator* role to create accounts you would need to change your code and add the *Account Creator* role. If the account creation is associated with a *create account permission*, new roles can simply be added with the needed permissions.
+The authorization process will **grant or deny access to an already authenticated user based on roles an permissions**. Specific parts of the API can therefore be excluded from access of different users. Each role has assigned a collection of permission and a roles are assigned to users. See the following diagram.
 
 ![Roles and Permissions](image/authorization.png)
+
+**Roles** are really straight forward just a name for a group of users which have specific rights. But roles itself should not imply specific rights where someone would often think in such a way. For example the administrator role itself often implies that this role is allowed to create new users. A normal user itself would maybe not have this right. The implication of the right is based on just the name of the role not actual specified rights. It is possible to think in such a way, but this will result in more static authorizations where change will have a major impact on the system. For the actual rights of specific roles the permissions are used.
+
+**Permissions** are the most atomic level and describe the actual rights a specific role has. They often represent the common actions on resources, such as create, read, update, and delete. These permissions can have different levels of granularity. There is the **resource level** (*User is allowed to create a new calendar entry*), the **instance level** (*User can only update the own user data*) and **attribute level** (*User can update the own username*).
+
+**Example roles:**
+- Administrator
+- Support
+- User
+
+**Example permission:** 
+- read users
+- update users
+- add calender entry
+- read user with ID 5
+- delete calender entry with ID 11
 
 **!!! This was only a brief introduction to roles and permissions. You must read the detailed [Authorization Guide with Apache Shiro](http://shiro.apache.org/java-authorization-guide.html) to understand the concept. This is pretty important for developing flexible authorizations and should be understood before continue with the actual code implementation. !!!**
 
@@ -63,9 +77,9 @@ The process of requiring a specific role or permissions is as simple as the auth
         return dao.getUsers();
     }
 
-Along with the `@RequiresAuthentication` annotation the `@RequiresRoles` annotation can be used to request a specific role.
+The `@RequiresRoles` annotation is used (along the `@RequiresAuthentication`) to request the user to have a specific role.
 
-For requesting a specific permission see the following example.
+For requiring a specific permission see the following example.
 
     @GET
     @Path("/users")
@@ -75,9 +89,11 @@ For requesting a specific permission see the following example.
         return dao.getUsers();
     }
 
-This will request the user to have a role where the *users:read* permission is assigned. If a user without the specified role or permission tries to access the API, an automatic HTTP response with status code **403 Forbidden** will be returned and your code will never be executed.
+This will request the user to have a role where the *users:read* permission is assigned.
 
-The authorization check through annotations are **static** and can not be parameterized. Assume you want only each user to access its own user information and prevent other users from getting them. You would have an API where the user ID would be delivered via the URL to access a specific user (e.g. /users/{userID}). You would have a permission for each user (*users:read:{userID}*) to access only the users own user data. Since this is a **dynamic** permission based on a parameter, you can't use the annotation. See the following example of how to achieve this.
+If a user without the specified role or permission tries to access the API, an automatic HTTP response with status code **403 Forbidden** will be returned and your code will never be executed.
+
+The authorization check through annotations are **static** and can not be parameterized. Assume you want only each user to access its own user information and prevent other users from getting them. You would have an API where the user ID would be delivered via the URL to access a specific user (e.g. /users/{userID}). You would have a permission for each user (e.g. *users:read:{userID}*) to access only the users own user data. Since this is a **dynamic** permission based on a parameter (user ID), you can't use the annotation and need check the authorization inside your method. See the following example of how to achieve this.
 
     @GET
     @Path("/users/{userID}")
@@ -87,4 +103,4 @@ The authorization check through annotations are **static** and can not be parame
         return dao.getUser(userID);
     }
 
-In this case you need to insert the code for checking the permission inside your method to access the parameter and build a dynamic permission based on the parameter. This permission check (or alternatively role check) *should always be the first line inside your method*. If the user doesn't have the required permission an exception will be thrown which will automatically mapped to a proper **403 Forbidden** response. Therefore you don't need to implement any unauthorized logic in each method yourself.
+In this case you simply check the permission inside your method to access the delivered parameter and build a dynamic permission based on this parameter. This permission check (or similarly the role check) *should always be the first line inside your method*. If the user doesn't have the required permission an exception will be thrown which will automatically mapped to a proper **403 Forbidden** response. Therefore you don't need to implement any unauthorized logic in each method yourself.

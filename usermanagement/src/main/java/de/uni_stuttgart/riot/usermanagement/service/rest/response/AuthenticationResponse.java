@@ -1,6 +1,6 @@
-package de.uni_stuttgart.riot.usermanagement.service.response;
+package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 
-import de.uni_stuttgart.riot.usermanagement.service.AuthenticationService;
+import de.uni_stuttgart.riot.usermanagement.service.rest.AuthenticationService;
 
 /**
  * The authentication response message for the client used in {@link AuthenticationService}.

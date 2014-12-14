@@ -9,7 +9,7 @@ import org.apache.shiro.authc.AuthenticationToken;
  * @author Marcel Lehwald
  *
  */
-public class AccessTokenAuthentication implements AuthenticationToken {
+public class AccessToken implements AuthenticationToken {
 
     private static final long serialVersionUID = 1L;
     private String token;
@@ -19,7 +19,7 @@ public class AccessTokenAuthentication implements AuthenticationToken {
      * 
      * @param token The access token.
      */
-    public AccessTokenAuthentication(String token) {
+    public AccessToken(String token) {
         this.token = token;
     }
 
