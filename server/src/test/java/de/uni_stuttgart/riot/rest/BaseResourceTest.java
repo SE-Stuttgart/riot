@@ -160,16 +160,6 @@ public class BaseResourceTest extends JerseyTest {
             super(new ModelManagerImpl());
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see de.uni_stuttgart.riot.rest.BaseResource#getUriForModel(de.uni_stuttgart.riot.rest.ResourceModel)
-         */
-        @Override
-        protected URI getUriForModel(TestModel model) {
-            return null;
-        }
-
     }
 
     /*

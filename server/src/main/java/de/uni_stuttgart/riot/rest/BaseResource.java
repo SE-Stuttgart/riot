@@ -14,8 +14,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import de.uni_stuttgart.riot.db.DaoException;
 
@@ -42,6 +44,9 @@ public abstract class BaseResource<E extends ResourceModel> {
 
     /** The model manager for read/write operations. */
     protected ModelManager<E> modelManager;
+
+    @Context
+    private UriInfo uriInfo;
 
     /**
      * Instantiates a new base resource.
@@ -163,6 +168,8 @@ public abstract class BaseResource<E extends ResourceModel> {
      *            the model
      * @return the uri for model
      */
-    protected abstract URI getUriForModel(E model);
+    protected URI getUriForModel(E model) {
+        return uriInfo.getBaseUriBuilder().path(this.getClass()).path(Long.toString(model.getId())).build();
+    }
 
 }
