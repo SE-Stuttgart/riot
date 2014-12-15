@@ -4,12 +4,9 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
-import javax.naming.NamingException;
-
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlTransaction;

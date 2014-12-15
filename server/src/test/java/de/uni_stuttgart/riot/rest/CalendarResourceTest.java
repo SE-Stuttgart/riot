@@ -1,23 +1,21 @@
 package de.uni_stuttgart.riot.rest;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.contacts.ContactEntry;
+import de.uni_stuttgart.riot.db.JerseyDBTestBase;
 
 /**
  * Test class for the calendar which uses the Jersey Test Framework.
  * 
  * @see https://jersey.java.net/documentation/latest/test-framework.html
  */
-public class CalendarResourceTest extends JerseyTest {
+public class CalendarResourceTest extends JerseyDBTestBase {
 
     /*
      * (non-Javadoc)

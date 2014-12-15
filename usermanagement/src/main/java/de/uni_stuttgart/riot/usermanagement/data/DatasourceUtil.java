@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 
 public class DatasourceUtil {
 
-    private static final String JNDI_PATH = "jdbc/iot";
+    private static final String JNDI_PATH = "jdbc/riot";
 
     public static DataSource getDataSource() throws NamingException {
         InitialContext in;

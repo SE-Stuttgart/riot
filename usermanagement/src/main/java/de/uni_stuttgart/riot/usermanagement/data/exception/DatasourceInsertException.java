@@ -14,8 +14,8 @@ public class DatasourceInsertException extends DatasourceException {
         super(message, cause);
     }
 
-    public DatasourceInsertException(String massage) {
-        super(massage);
+    public DatasourceInsertException(String message) {
+        super(message);
     }
 
     public DatasourceInsertException(Throwable cause) {

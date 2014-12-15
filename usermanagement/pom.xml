@@ -22,6 +22,20 @@
 
 	<dependencies>
 
+		<!-- Commons -->
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.commons</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.commons</artifactId>
+			<version>${project.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- TODO: Do we need this? -->
 		<dependency>
 			<groupId>org.json</groupId>
@@ -29,9 +43,9 @@
 			<version>20141113</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -66,22 +80,11 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-		</dependency>
-		<dependency>
-			<!-- Needed for creating an intial context, so testing works without GlassFish -->
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-catalina</artifactId>
-			<version>8.0.15</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901-1.jdbc4</version>
 			<scope>test</scope>
 		</dependency>
 

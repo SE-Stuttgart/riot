@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
@@ -10,7 +9,6 @@ import org.junit.Test;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;

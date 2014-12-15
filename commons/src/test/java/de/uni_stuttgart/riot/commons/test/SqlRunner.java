@@ -1,13 +1,12 @@
-package de.uni_stuttgart.riot.usermanagement.test.common;
+package de.uni_stuttgart.riot.commons.test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -18,10 +17,9 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.message.internal.NullOutputStream;
 
-public class SqlRunner {
+public class SqlRunner implements AutoCloseable {
     public static final String DELIMITER_LINE_REGEX = "(?i)DELIMITER.+", DELIMITER_LINE_SPLIT_REGEX = "(?i)DELIMITER", DEFAULT_DELIMITER = ";";
     private final boolean autoCommit, stopOnError;
     private final Connection connection;
@@ -42,21 +40,24 @@ public class SqlRunner {
         this.err = err;
     }
 
-    public static void runStartupScripts(DataSource ds, boolean silent) {
-        try {
-            OutputStream os = silent ? new NullOutputStream() : System.out;
-            SqlRunner runner = new SqlRunner(ds.getConnection(), new PrintWriter(os), new PrintWriter(System.err), true, false);
-            runner.runScript(new FileReader(new File("src/main/resources/createschema.sql")));
-            runner.runScript(new FileReader(new File("src/main/resources/insertTestValues.sql")));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    public SqlRunner(final DataSource dataSource, final boolean silent) throws SQLException {
+        this(dataSource.getConnection(), new PrintWriter(silent ? new NullOutputStream() : System.out), new PrintWriter(System.err), true, false);
     }
 
-    public static void runStartupScripts(DataSource ds) {
-        SqlRunner.runStartupScripts(ds, true);
+    public SqlRunner(final DataSource dataSource) throws SQLException {
+        this(dataSource, true);
+    }
+
+    public void runScript(final String resourceName) throws SQLException {
+        runScript(new InputStreamReader(SqlRunner.class.getResourceAsStream(resourceName)));
+    }
+
+    public void runScript(final URL url) throws SQLException, IOException {
+        runScript(url.openStream());
+    }
+
+    public void runScript(final InputStream stream) throws SQLException {
+        runScript(new InputStreamReader(stream));
     }
 
     public void runScript(final Reader reader) throws SQLException {
@@ -145,7 +146,10 @@ public class SqlRunner {
                                 out.print(name + "\t");
                             }
                             out.println("");
-                            out.println(StringUtils.repeat("---------", md.getColumnCount()));
+                            for (int i = 0; i < md.getColumnCount(); i++) {
+                                out.print("---------");
+                            }
+                            out.println();
                             out.flush();
 
                             // Print result rows
@@ -211,5 +215,10 @@ public class SqlRunner {
             err.println(e);
             err.flush();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        connection.close();
     }
 }

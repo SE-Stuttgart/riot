@@ -1,8 +1,6 @@
 --<ScriptOptions statementTerminator=";"/>
 
-ALTER TABLE calendarEntries DROP PRIMARY KEY;
-
-DROP TABLE calendarEntries;
+DROP TABLE IF EXISTS calendarEntries;
 
 CREATE TABLE calendarEntries (
 	id INT NOT NULL AUTO_INCREMENT,

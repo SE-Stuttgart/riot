@@ -7,15 +7,19 @@ package de.uni_stuttgart.riot.usermanagement.data.exception;
  *
  */
 public class DatasourceUpdateException extends DatasourceException {
-    
-    /**
-     * Default-Constructor.
-     * 
-     * @param massage
-     *            Error text
-     */
-    public DatasourceUpdateException(String massage) {
-        super(massage);
+
+    private static final long serialVersionUID = 1L;
+
+    public DatasourceUpdateException(String message, Exception cause) {
+        super(message, cause);
+    }
+
+    public DatasourceUpdateException(String message) {
+        super(message);
+    }
+
+    public DatasourceUpdateException(Throwable cause) {
+        super(cause);
     }
 
     @Override

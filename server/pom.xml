@@ -26,6 +26,13 @@
 			<artifactId>riot.commons</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.commons</artifactId>
+			<version>${project.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 		<!-- Coming soon <dependency> <groupId>de.uni-stuttgart.riot</groupId> 
 			<artifactId>riot.usermanagement</artifactId> <version>${project.parent.version}</version> 
 			</dependency> -->
@@ -45,6 +52,8 @@
 			<groupId>org.sql2o</groupId>
 			<artifactId>sql2o</artifactId>
 		</dependency>
+		<!-- TODO Remove This dependency. Tests should H2 database and the server 
+			should bring its own JDBC provider. -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -54,10 +63,17 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
 			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

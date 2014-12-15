@@ -8,24 +8,23 @@ package de.uni_stuttgart.riot.usermanagement.data.exception;
  */
 public class DatasourceFindException extends DatasourceException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Error message.
      */
-    public static final String OBJECT_DOES_NOT_EXIST_IN_DATASOURCE = 
-            "There is no object stored in the datasource assosiated with the given ID or parameter";
+    public static final String OBJECT_DOES_NOT_EXIST_IN_DATASOURCE = "There is no object stored in the datasource assosiated with the given ID or parameter";
 
-    /**
-     * Default-Constructor.
-     * 
-     * @param massage
-     *            Error text
-     */
-    public DatasourceFindException(String massage) {
-        super(massage);
+    public DatasourceFindException(String message) {
+        super(message);
     }
-    
+
     public DatasourceFindException(Throwable cause) {
         super(cause);
+    }
+
+    public DatasourceFindException(String message, Exception cause) {
+        super(message, cause);
     }
 
     @Override

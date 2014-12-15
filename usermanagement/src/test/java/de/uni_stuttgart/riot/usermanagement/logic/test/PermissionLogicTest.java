@@ -5,9 +5,8 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.util.Collection;
 
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
@@ -20,10 +19,12 @@ import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 public class PermissionLogicTest extends LogicTestBase {
 
-    private PermissionLogic pl = new PermissionLogic();
+    private PermissionLogic pl;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Before
+    public void initLogic() {
+        pl = new PermissionLogic();
+    }
 
     @Test
     public void testAddPermission() throws UserManagementException {

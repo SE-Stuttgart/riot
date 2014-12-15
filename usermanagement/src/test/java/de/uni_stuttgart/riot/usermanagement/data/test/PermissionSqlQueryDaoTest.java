@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -18,7 +17,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class PermissionSqlQueryDaoTest extends DaoTestBase {
-
+    
     @Test
     public void insertAndFindTest() throws DatasourceException {
         PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(getDataSource());

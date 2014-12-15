@@ -7,9 +7,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.model.CalendarEvent;
 
-public class CalendarEventDaoImplTest {
+/**
+ * @deprecated The tested class is deprecated, too.
+ */
+public class CalendarEventDaoImplTest extends JerseyDBTestBase {
 
     private static CalendarEventDao dao;
     private static CalendarEvent event;
@@ -20,53 +24,42 @@ public class CalendarEventDaoImplTest {
         event = new CalendarEvent("Important Meeting", new Date(), new Date());
     }
 
-    @Test
-    public void insertAndDeleteCalendarEventTest() {
-        try {
-            // --- Inserting
-            dao.insertCalendarEvent(event);
+    // @Test
+    public void insertAndDeleteCalendarEventTest() throws DaoException {
+        // --- Inserting
+        dao.insertCalendarEvent(event);
 
-            CalendarEvent retrievedEvent = dao.getCalendarEventById(event.getId());
+        CalendarEvent retrievedEvent = dao.getCalendarEventById(event.getId());
 
-            Assert.assertNotNull(retrievedEvent);
-            Assert.assertEquals(event.getId(), retrievedEvent.getId());
-            Assert.assertEquals(event.getTitle(), retrievedEvent.getTitle());
-            // FIXME Date
-            // Assert.assertEquals(event.getStartTime(), retrievedEvent.getStartTime());
+        Assert.assertNotNull(retrievedEvent);
+        Assert.assertEquals(event.getId(), retrievedEvent.getId());
+        Assert.assertEquals(event.getTitle(), retrievedEvent.getTitle());
+        // FIXME Date
+        // Assert.assertEquals(event.getStartTime(), retrievedEvent.getStartTime());
 
-            // --- Deleting
-            dao.deleteCalendarEvent(event);
+        // --- Deleting
+        dao.deleteCalendarEvent(event);
 
-            retrievedEvent = dao.getCalendarEventById(event.getId());
-            Assert.assertNull(retrievedEvent);
-
-        } catch (DaoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        retrievedEvent = dao.getCalendarEventById(event.getId());
+        Assert.assertNull(retrievedEvent);
     }
 
-    @Test
-    public void getCalendarEventsTest() {
+    // @Test
+    public void getCalendarEventsTest() throws DaoException {
 
         List<CalendarEvent> events;
-        try {
-            // --- Inserting
-            dao.insertCalendarEvent(event);
+        // --- Inserting
+        dao.insertCalendarEvent(event);
 
-            // --- Getting All events
-            events = dao.getCalendarEvents();
+        // --- Getting All events
+        events = dao.getCalendarEvents();
 
-            for (CalendarEvent calendarEntry : events) {
-                System.out.println("entry id:" + calendarEntry.getId());
-            }
-
-            // --- Deleting
-            dao.deleteCalendarEvent(event);
-
-        } catch (DaoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        for (CalendarEvent calendarEntry : events) {
+            System.out.println("entry id:" + calendarEntry.getId());
         }
+
+        // --- Deleting
+        dao.deleteCalendarEvent(event);
+
     }
 }

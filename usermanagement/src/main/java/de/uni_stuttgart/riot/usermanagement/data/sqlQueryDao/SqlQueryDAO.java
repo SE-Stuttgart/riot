@@ -12,12 +12,9 @@ import javax.sql.DataSource;
 
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserObjectBuilder;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserQueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 /**
@@ -105,7 +102,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                             rSet.close();
                         }
                         stmt.close();
-                        
+
                     }
                 }
             };
@@ -130,7 +127,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             };
             ex.execute(this.isTransaction());
         } catch (Exception e) {
-            throw new DatasourceUpdateException(e.getMessage());
+            throw new DatasourceUpdateException(e);
         }
     }
 
@@ -174,7 +171,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             };
             return exc.execute(this.isTransaction());
         } catch (Exception e) {
-            throw new DatasourceFindException(e.getMessage());
+            throw new DatasourceFindException(e);
         }
     }
 
@@ -195,7 +192,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             };
             return exc.execute(this.isTransaction());
         } catch (Exception e) {
-            throw new DatasourceFindException(e.getMessage());
+            throw new DatasourceFindException(e);
         }
     }
 
@@ -220,7 +217,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             };
             return exc.execute(this.isTransaction());
         } catch (Exception e) {
-            throw new DatasourceFindException(e.getMessage());
+            throw new DatasourceFindException(e);
         }
     }
 

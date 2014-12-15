@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
@@ -17,7 +16,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDa
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
-public class UserSqlQeryDaoTest extends DaoTestBase{
+public class UserSqlQeryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException {
@@ -39,7 +38,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
     }
 
     @Test(expected = DatasourceFindException.class)
-    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException{
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
         User User = dao.findBy(new Long(1));
         dao.delete(User);
@@ -47,14 +46,14 @@ public class UserSqlQeryDaoTest extends DaoTestBase{
     }
 
     @Test
-    public void findAllTest() throws DatasourceFindException{
+    public void findAllTest() throws DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
         Collection<User> user = dao.findAll();
         assertEquals(3, user.size());
     }
 
     @Test
-    public void findUniqueTest() throws DatasourceFindException{
+    public void findUniqueTest() throws DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
         User user = dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, "Yoda"));
         assertEquals(user.getPassword(), "YodaPW");

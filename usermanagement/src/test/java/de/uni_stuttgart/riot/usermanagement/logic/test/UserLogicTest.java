@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import javax.naming.NamingException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
@@ -31,7 +32,12 @@ import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 public class UserLogicTest extends LogicTestBase {
 
-    private UserLogic ul = new UserLogic();
+    private UserLogic ul;
+
+    @Before
+    public void initLogic() {
+        ul = new UserLogic();
+    }
 
     @Test
     public void testAddUser() {
