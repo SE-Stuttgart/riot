@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.calendar;
 import java.util.Date;
 
 import de.uni_stuttgart.riot.rest.ResourceModel;
+
 /**
  * The Class CalendarEntry.
  */
@@ -73,21 +74,10 @@ public class CalendarEntry implements ResourceModel {
         this.id = id;
     }
 
-    /**
-     * Gets the title.
-     *
-     * @return the title
-     */
     public String getTitle() {
         return title;
     }
 
-    /**
-     * Sets the title.
-     *
-     * @param title
-     *            the new title
-     */
     public void setTitle(String title) {
         this.title = title;
     }

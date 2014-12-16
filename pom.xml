@@ -17,6 +17,7 @@
 		<module>commons</module>
 		<module>usermanagement</module>
 		<module>server</module>
+		<module>clientlibrary</module>
 		<module>android</module>
 	</modules>
 

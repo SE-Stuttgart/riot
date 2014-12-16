@@ -7,7 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 public class Starter {
-
+    /*
     public static void main(String[] args) {
         // Login into Usermanagement
         UserManagementClient client = new UserManagementClient("http://localhost:8080/riot.usermanagement/", "Test");
@@ -36,6 +36,6 @@ public class Starter {
         String permissionsResult = rPermissions.readEntity(String.class);
         System.out.println(permissionsResult);
         client.logout();
-    }
+    }*/
 
 }

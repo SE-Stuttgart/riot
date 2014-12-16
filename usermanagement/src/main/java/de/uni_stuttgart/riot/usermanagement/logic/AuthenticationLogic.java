@@ -49,7 +49,7 @@ public class AuthenticationLogic {
         try {
             dao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
         } catch (NamingException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

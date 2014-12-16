@@ -35,7 +35,16 @@
 
 	<dependencies>
 		<!-- Commons and Client-Lib -->
-		<!-- TODO Coming Soon -->
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.commons</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.clientlibrary</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- Android -->
 		<dependency>
