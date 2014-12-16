@@ -21,6 +21,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
+import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.LanguageDatabase;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 
@@ -35,10 +36,13 @@ public class MainActivity extends Activity {
 
 	private LanguageDatabase dbHandler;
 	private Locale locale;
+	//private ServerConnection conncector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//conncector = new ServerConnection();
 		setLanguage();
 		setContentView(R.layout.activity_main);
 
@@ -56,7 +60,7 @@ public class MainActivity extends Activity {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
-
+		
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
@@ -75,8 +79,69 @@ public class MainActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
+		
 	}
 
+	/* -----------------------------------------------------------
+	 * REFRESH BUTTON
+	 * -----------------------------------------------------------
+	 */
+	
+	
+	/**
+	 * Prepare the refresh button on the right side
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/**
+	 * Define displaying settings for the refresh button
+	 */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+
+		// Refresh button is only shown in the home screen
+		if (!getActionBar().getTitle().equals("Home")) {
+			menu.findItem(R.id.action_refresh).setVisible(false);
+		} else {
+			menu.findItem(R.id.action_refresh).setVisible(true);
+		}
+
+		new ServerConnection(this).execute();
+
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	/**
+	 * Actions for the refresh button (right upper corner).
+	 * It can later be extended with more options.	  
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+		switch (item.getItemId()) {
+		case R.id.action_refresh:
+			new ServerConnection(this).execute();		
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}	
+
+	
+	/* -----------------------------------------------------------
+	 * OPTIONS MENU
+	 * -----------------------------------------------------------
+	 */
+
+	/**
+	 *
+	 */
 	private void setLanguage() {
 		dbHandler = new LanguageDatabase(this);
 		if (dbHandler.getCount() == 0) {
@@ -89,72 +154,8 @@ public class MainActivity extends Activity {
 		config.locale = locale;
 		getBaseContext().getResources().updateConfiguration(config,
 				getBaseContext().getResources().getDisplayMetrics());
-	}
+	}	
 
-	/**
-	 * Prepare the OptionsMenu / Refreshbutton on the right side
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	/**
-	 * Define displaying settings for the options menu
-	 */
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-
-		// boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-
-		// Refresh button is only shown in the home screen
-		if (!getActionBar().getTitle().equals("Home")) {
-			menu.findItem(R.id.action_refresh).setVisible(false);
-		} else {
-			menu.findItem(R.id.action_refresh).setVisible(true);
-		}
-
-		// menu.findItem(R.id.action_settings).setVisible(!homeScreenNotDisplayed);
-
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	/**
-	 * Actions for the option buttons
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
-		switch (item.getItemId()) {
-		case R.id.action_refresh:
-			// TODO: refresh
-			// Toast.makeText(getApplicationContext(),
-			// "TODO: implement refresh",
-			// Toast.LENGTH_LONG).show();
-			getEventList();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	/**
-	 * 
-	 */
-	private void getEventList() {
-		ArrayList<String> meineListe = new ArrayList<String>();
-		meineListe.add("TEST");
-		meineListe.add("TEST1");
-		meineListe.add("TEST2");
-		ListAdapter listenAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, meineListe);
-		ListView meineListView = (ListView) findViewById(R.id.LISTE);
-		meineListView.setAdapter(listenAdapter);
-	}
 
 	private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {

@@ -23,6 +23,18 @@
 				<updatePolicy>daily</updatePolicy>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>my-alternate-repository</id>
+			<url>http://myrepo.net/repo</url>
+		</repository>
 	</repositories>
 
 	<properties>
@@ -59,6 +71,21 @@
 			<version>18.0.0</version>
 			<scope>compile</scope>
 		</dependency>
+
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework.android</groupId>
+			<artifactId>spring-android-rest-template</artifactId>
+			<version>2.0.0.M1</version>
+		</dependency>
+
+		<!-- Jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
