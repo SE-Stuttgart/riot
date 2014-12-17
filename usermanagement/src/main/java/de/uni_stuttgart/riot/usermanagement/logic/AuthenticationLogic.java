@@ -21,10 +21,10 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.GenerateTokenException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
 import de.uni_stuttgart.riot.usermanagement.security.AccessTokenUtil;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
 
 /**
  * Contains all logic regarding the authorization process.
@@ -60,12 +60,12 @@ public class AuthenticationLogic {
      *            User name of the user. Is used for authentication.
      * @param password
      *            Password of the user. Is used for authentication.
-     * @throws GenerateTokenException
+     * @throws LoginException
      *             Thrown if any error happens
      * 
      * @return A response containing the bearer and refresh token
      */
-    public AuthenticationResponse login(String username, String password) throws GenerateTokenException {
+    public Token login(String username, String password) throws LoginException {
         try {
             Subject subject = SecurityUtils.getSubject();
 
@@ -89,16 +89,16 @@ public class AuthenticationLogic {
                         tokenRoleDao.insert(new TokenRole(token.getId(), role.getId()));
                     }
 
-                    return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue());
+                    return token;
                 } catch (Exception e) {
-                    throw new GenerateTokenException(e);
+                    throw new LoginException(e);
                 }
 
             } else {
-                throw new GenerateTokenException("Wrong Username/Password");
+                throw new LoginException("Wrong Username/Password");
             }
         } catch (Exception e) {
-            throw new GenerateTokenException(e);
+            throw new LoginException(e);
         }
     }
 
@@ -107,12 +107,12 @@ public class AuthenticationLogic {
      * 
      * @param providedRefreshToken
      *            The refresh token used for generating the new tokens
-     * @throws GenerateTokenException
+     * @throws LoginException
      *             Thrown if any error happens
      * 
      * @return A response containing the bearer and refresh token
      */
-    public AuthenticationResponse refreshToken(String providedRefreshToken) throws GenerateTokenException {
+    public Token refreshToken(String providedRefreshToken) throws RefreshException {
 
         try {
             // find the token belonging to the given refresh token
@@ -123,28 +123,28 @@ public class AuthenticationLogic {
 
                 DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
 
+                // generate a new token and save it in the db
+                Token newToken = generateAndSaveTokens(token.getUserID());
+
                 // get all connections between the given token and roles
                 Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
                 searchParameter.add(new SearchParameter(SearchFields.TOKENID, token.getId()));
                 Collection<TokenRole> tokenRoles = tokenRoleDao.findBy(searchParameter, false);
 
                 for (TokenRole tokenRole : tokenRoles) {
-                    tokenRoleDao.insert(new TokenRole(token.getId(), tokenRole.getRoleID()));
+                    tokenRoleDao.insert(new TokenRole(newToken.getId(), tokenRole.getRoleID()));
                 }
 
                 // invalidate old token
                 token.setValid(false);
                 dao.update(token);
 
-                // generate a new token and save it in the db
-                Token newToken = generateAndSaveTokens(token.getUserID());
-
-                return new AuthenticationResponse(newToken.getTokenValue(), newToken.getRefreshtokenValue());
+                return newToken;
             } else {
-                throw new GenerateTokenException("The provided refresh token is not valid");
+                throw new RefreshException("The provided refresh token is not valid");
             }
         } catch (Exception e) {
-            throw new GenerateTokenException(e);
+            throw new RefreshException(e);
         }
     }
 
@@ -172,9 +172,9 @@ public class AuthenticationLogic {
      * @param userId
      *            The id of the user for whom the tokens should be generated
      * @return The generated token
-     * @throws GenerateTokenException
+     * @throws LoginException
      */
-    private Token generateAndSaveTokens(Long userId) throws GenerateTokenException {
+    private Token generateAndSaveTokens(Long userId) throws LoginException {
 
         Token token = null;
         int retries = TOKEN_GENERATION_MAX_RETRIES;
@@ -201,7 +201,7 @@ public class AuthenticationLogic {
 
         // throw exception if token generation was not successfull
         if (token == null) {
-            throw new GenerateTokenException(lastException);
+            throw new LoginException(lastException);
         }
 
         return token;

@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.usermanagement.logic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.naming.NamingException;
 
@@ -54,6 +55,10 @@ public class RoleLogic {
      */
     public void addRole(Role role) throws AddRoleException {
         try {
+            if (role.getRoleName() != null && role.getRoleName().isEmpty()) {
+                throw new AddRoleException("You have to specify a role name");
+            }
+
             dao.insert(role);
         } catch (Exception e) {
             throw new AddRoleException(e);
@@ -84,9 +89,13 @@ public class RoleLogic {
      *            The content of the role to update
      * @throws UpdateRoleException
      */
-    public void updateRole(Long id, Role role) throws UpdateRoleException {
+    public void updateRole(Role role) throws UpdateRoleException {
         try {
-            dao.update(new Role(id, role.getRoleName()));
+            if (role.getRoleName() != null && role.getRoleName().isEmpty()) {
+                throw new UpdateRoleException("You have to specify a role name");
+            }
+
+            dao.update(role);
         } catch (Exception e) {
             throw new UpdateRoleException(e);
         }
@@ -149,6 +158,10 @@ public class RoleLogic {
                 permissions.add(permissionDao.findBy(rolePermission.getPermissionID()));
             }
 
+            if (permissions.isEmpty()) {
+                throw new GetPermissionsFromRoleException("The role has no permissions");
+            }
+
             return permissions;
         } catch (Exception e) {
             throw new GetPermissionsFromRoleException(e);
@@ -164,7 +177,7 @@ public class RoleLogic {
      *            The id of the permission
      * @throws AddPermissionToRoleException
      */
-    public void addPermissiontToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
+    public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(DatasourceUtil.getDataSource());
             RolePermission rp = new RolePermission(roleId, permissionId);
@@ -185,8 +198,28 @@ public class RoleLogic {
      */
     public void removePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         try {
+            if (roleId == null || permissionId == null) {
+                throw new RemovePermissionFromRoleException("Role id and permission id can not be null");
+            }
+
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(DatasourceUtil.getDataSource());
-            RolePermission rp = new RolePermission(roleId, permissionId);
+
+            // get the permission to remove
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.ROLEID, roleId));
+            searchParams.add(new SearchParameter(SearchFields.PERMISSIONID, permissionId));
+            Collection<RolePermission> rolePermission = rolePermissionDao.findBy(searchParams, false);
+
+            Iterator<RolePermission> i = rolePermission.iterator();
+            RolePermission rp = null;
+
+            if (i.hasNext()) {
+                rp = i.next();
+            } else {
+                throw new RemovePermissionFromRoleException("The user with the id " + roleId + " does not have the permission with the id " + permissionId);
+            }
+
+            // remove the permission
             rolePermissionDao.delete(rp);
         } catch (Exception e) {
             throw new RemovePermissionFromRoleException(e);

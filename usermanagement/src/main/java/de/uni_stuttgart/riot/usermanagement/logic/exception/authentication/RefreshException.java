@@ -4,12 +4,12 @@ import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
 /**
- * Exception is thrown, if an error occurs while creating a new set of tokens.
+ * Exception is thrown, if an error occurs while creating a new tokens with a given refresh token
  * 
  * @author Niklas Schnabel
  *
  */
-public class GenerateTokenException extends LogicException {
+public class RefreshException extends LogicException {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +21,7 @@ public class GenerateTokenException extends LogicException {
      * @param cause
      *            Root cause for the exception
      */
-    public GenerateTokenException(String message, Exception cause) {
+    public RefreshException(String message, Exception cause) {
         super(message, cause);
     }
 
@@ -31,7 +31,7 @@ public class GenerateTokenException extends LogicException {
      * @param message
      *            that is shown to the user
      */
-    public GenerateTokenException(String message) {
+    public RefreshException(String message) {
         super(message);
     }
 
@@ -41,7 +41,7 @@ public class GenerateTokenException extends LogicException {
      * @param cause
      *            Root cause for the exception
      */
-    public GenerateTokenException(Exception cause) {
+    public RefreshException(Exception cause) {
         super(cause);
     }
 

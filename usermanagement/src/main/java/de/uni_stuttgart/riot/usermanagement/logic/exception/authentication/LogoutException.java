@@ -16,6 +16,8 @@ public class LogoutException extends LogicException {
      */
     private static final long serialVersionUID = -5647256573410094208L;
 
+    private static final String END_USER_MESSAGE = "Logout failed";
+
     /**
      * Constructs a new exception for the case that logging out fails.
      * 
@@ -46,6 +48,11 @@ public class LogoutException extends LogicException {
      */
     public LogoutException(Exception cause) {
         super(cause);
+    }
+
+    @Override
+    public String getEndUserMessage() {
+        return END_USER_MESSAGE;
     }
 
     @Override

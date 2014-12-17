@@ -58,6 +58,10 @@ public class UserLogic {
      */
     public void addUser(User user) throws AddUserException {
         try {
+            if (!isUserValid(user)) {
+                throw new AddUserException("Username, password and password salt must not be empty");
+            }
+
             dao.insert(user);
         } catch (Exception e) {
             throw new AddUserException(e);
@@ -88,9 +92,13 @@ public class UserLogic {
      *            The new content of the user
      * @throws UpdateUserException
      */
-    public void updateUser(Long id, User user) throws UpdateUserException {
+    public void updateUser(User user) throws UpdateUserException {
         try {
-            dao.update(new User(id, user.getUsername(), user.getPassword(), user.getPasswordSalt()));
+            if (!isUserValid(user)) {
+                throw new UpdateUserException("Username, password and password salt must not be empty");
+            }
+
+            dao.update(user);
         } catch (Exception e) {
             throw new UpdateUserException(e);
         }
@@ -172,6 +180,10 @@ public class UserLogic {
      * @throws GetRolesFromUserException
      */
     public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
+        if (id == null) {
+            throw new GetRolesFromUserException("The id must not be null");
+        }
+
         try {
             DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
             DAO<Role> roleDao = new RoleSqlQueryDAO(DatasourceUtil.getDataSource());
@@ -216,6 +228,8 @@ public class UserLogic {
             Iterator<UserRole> i = userRoles.iterator();
             if (i.hasNext()) {
                 userRoleDao.delete(i.next());
+            } else {
+                throw new RemoveRoleFromUserException("User with the id " + userId + " has not the role with the id " + roleId);
             }
         } catch (Exception e) {
             throw new RemoveRoleFromUserException(e);
@@ -231,6 +245,10 @@ public class UserLogic {
      * @throws GetActiveTokenException
      */
     public Collection<Token> getActiveTokensFromUser(Long userId) throws GetActiveTokenException {
+        if (userId == null) {
+            throw new GetActiveTokenException("The id must not be null");
+        }
+
         try {
             DAO<Token> tokenDao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
 
@@ -243,5 +261,9 @@ public class UserLogic {
         } catch (Exception e) {
             throw new GetActiveTokenException(e);
         }
+    }
+
+    private boolean isUserValid(User user) {
+        return !(user.getPassword() == "" || user.getPasswordSalt() == "" || user.getUsername() == "");
     }
 }

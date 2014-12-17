@@ -110,7 +110,8 @@ public class RoleService {
     @Path("/{roleID}")
     @RequiresAuthentication
     public RoleResponse updateRole(@PathParam("roleID") Long roleID, Role role) throws UserManagementException {
-        facade.updateRole(roleID, role);
+        role.setId(roleID);
+        facade.updateRole(role);
 
         return new RoleResponse(facade.getRole(role.getId()));
     }

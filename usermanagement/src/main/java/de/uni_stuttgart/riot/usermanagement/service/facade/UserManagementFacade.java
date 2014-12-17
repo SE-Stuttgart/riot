@@ -13,8 +13,9 @@ import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.GenerateTokenException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPermissionsException;
@@ -37,7 +38,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUse
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
 
 /**
  * This class is the only point which should be used to access the user management.
@@ -81,10 +81,10 @@ public class UserManagementFacade {
      * @param password
      *            Password of the user. Is used for authentication.
      * @return Contains the generated bearer and refresh token
-     * @throws GenerateTokenException
+     * @throws LoginException
      *             Thrown if any errors occur
      */
-    public AuthenticationResponse login(String username, String password) throws GenerateTokenException {
+    public Token login(String username, String password) throws LoginException {
         return authLogic.login(username, password);
     }
 
@@ -94,10 +94,10 @@ public class UserManagementFacade {
      * @param refreshToken
      *            The refresh token used for generating the new tokens
      * @return Contains the generated bearer and refresh token
-     * @throws GenerateTokenException
+     * @throws LoginException
      *             Thrown if any errors occur
      */
-    public AuthenticationResponse refreshToken(String refreshToken) throws GenerateTokenException {
+    public Token refreshToken(String refreshToken) throws RefreshException {
         return authLogic.refreshToken(refreshToken);
     }
 
@@ -144,8 +144,8 @@ public class UserManagementFacade {
      *            New user data
      * @throws UpdateUserException
      */
-    public void updateUser(Long id, User user) throws UpdateUserException {
-        userLogic.updateUser(id, user);
+    public void updateUser(User user) throws UpdateUserException {
+        userLogic.updateUser(user);
     }
 
     /**
@@ -307,8 +307,8 @@ public class UserManagementFacade {
      *            The new data for the role
      * @throws UpdateRoleException
      */
-    public void updateRole(Long id, Role role) throws UpdateRoleException {
-        roleLogic.updateRole(id, role);
+    public void updateRole(Role role) throws UpdateRoleException {
+        roleLogic.updateRole(role);
     }
 
     /**
@@ -354,7 +354,7 @@ public class UserManagementFacade {
      * @throws AddPermissionToRoleException
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
-        roleLogic.addPermissiontToRole(roleId, permissionId);
+        roleLogic.addPermissionToRole(roleId, permissionId);
     }
 
     /**
@@ -369,12 +369,12 @@ public class UserManagementFacade {
     public void deletePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         roleLogic.removePermissionFromRole(roleId, permissionId);
     }
-    
+
     public void requiresRole(String role) throws AuthorizationException {
-    	SecurityUtils.getSubject().checkRole(role);
-	}
-    
+        SecurityUtils.getSubject().checkRole(role);
+    }
+
     public void requiresPermission(String permission) throws AuthorizationException {
-    	SecurityUtils.getSubject().checkPermission(permission);
-	}
+        SecurityUtils.getSubject().checkPermission(permission);
+    }
 }

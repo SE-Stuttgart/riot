@@ -116,7 +116,8 @@ public class UserService {
     @Path("/{userID}")
     @RequiresAuthentication
     public UserResponse updateUser(@PathParam("userID") Long userID, User user) throws UserManagementException {
-        facade.updateUser(userID, user);
+        user.setId(userID);
+        facade.updateUser(user);
 
         return new UserResponse(facade.getUser(user.getId()));
     }
