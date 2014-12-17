@@ -14,36 +14,19 @@ The following sofware components are needed to setup the build environment:
 
     sudo apt-get install nodejs
     sudo apt-get install npm
-    sudo npm install -g grunt-cli
-    sudo npm install -g bower
-    sudo npm install -g yo
-
-It may be necessary to install the legacy package of node with the following command.
-
-    sudo apt-get install nodejs-legacy
-
-### Install on Windows
-
- - Downlod the [installer](http://nodejs.org/download/) (the .msi package)
- - **Important:** Node has to be added to the `PATH` in Windows. See the following image:
-
-![NodeJS Installer](Node_Path.png)
-
-After the installation is complete:
-
     npm install -g grunt-cli
     npm install -g bower
     npm install -g yo
 
-It may be necessary to add the `NODE_PATH` variable to your path in order to install `yo`: 
+### Install on Windows
 
-    setx NODE_PATH "%NODE_PATH%;C:\Users\<YOUR USERNAME>\AppData\Roaming\npm\node_modules"
+TODO
 
 ## Development
 
 ### Setup
 
-Run the following commands in the root directory of the webapp to load the required dependencies.
+Run the following commands to load the required dependencies.
 
     npm install
     bower install
