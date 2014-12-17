@@ -15,4 +15,9 @@ public class LogicTestBase extends BaseDatabaseTest {
         }
     }
 
+    protected void emptyDatabaseTables() throws Exception {
+        try (SqlRunner sqlRunner = new SqlRunner(getDataSource())) {
+            sqlRunner.runScript("/createschema.sql");
+        }
+    }
 }
