@@ -69,7 +69,7 @@
 				<version>3.8.2</version>
 				<configuration>
 					<sdk>
-						<platform>16</platform>
+						<platform>21</platform>
 					</sdk>
 					<deleteConflictingFiles>true</deleteConflictingFiles>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
