@@ -6,6 +6,9 @@ import java.util.Iterator;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
@@ -16,7 +19,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserRoleSqlQue
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
@@ -27,6 +30,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUse
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
+import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
 /**
  * Contains all logic regarding an user.
@@ -36,7 +40,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserExcep
  */
 public class UserLogic {
 
-    private DAO<User> dao;
+    private DAO<UMUser> dao;
 
     /**
      * Constructor.
@@ -52,17 +56,25 @@ public class UserLogic {
     /**
      * Add a new user to the system.
      * 
-     * @param user
+     * @param username
      *            The new user
+     * @param clearTextPassword
+     *            The password of the user as clear text
      * @throws AddUserException
+     * 
+     * @return The added user
      */
-    public void addUser(User user) throws AddUserException {
+    public UMUser addUser(String username, String clearTextPassword) throws AddUserException {
         try {
-            if (!isUserValid(user)) {
-                throw new AddUserException("Username, password and password salt must not be empty");
-            }
+            Validate.notEmpty(username, "username must not be empty");
+            Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
+
+            UMUser user = new UMUser(username);
+            hashPassword(user, clearTextPassword);
 
             dao.insert(user);
+
+            return user;
         } catch (Exception e) {
             throw new AddUserException(e);
         }
@@ -74,6 +86,7 @@ public class UserLogic {
      * @param id
      *            The id of the user
      * @throws DeleteUserException
+     *             Thrown if any error occurs
      */
     public void deleteUser(Long id) throws DeleteUserException {
         try {
@@ -86,16 +99,20 @@ public class UserLogic {
     /**
      * Update an existing user.
      * 
-     * @param id
-     *            The id of the user
      * @param user
      *            The new content of the user
+     * @param clearTextPassword
+     *            The password of the user as clear text. If the password should not be updated use null.
      * @throws UpdateUserException
      */
-    public void updateUser(User user) throws UpdateUserException {
+    public void updateUser(UMUser user, String clearTextPassword) throws UpdateUserException {
         try {
             if (!isUserValid(user)) {
-                throw new UpdateUserException("Username, password and password salt must not be empty");
+                throw new UpdateUserException("Username, password and password salt must not be empty or null");
+            }
+
+            if (StringUtils.isNotEmpty(clearTextPassword)) {
+                hashPassword(user, clearTextPassword);
             }
 
             dao.update(user);
@@ -107,12 +124,10 @@ public class UserLogic {
     /**
      * Retrieve an existing user.
      * 
-     * @param id
-     *            The id of the user
      * @return The user
      * @throws GetUserException
      */
-    public User getUser(Long id) throws GetUserException {
+    public UMUser getUser(Long id) throws GetUserException {
         try {
             return dao.findBy(id);
         } catch (Exception e) {
@@ -128,7 +143,7 @@ public class UserLogic {
      * @return The user
      * @throws GetUserException
      */
-    public User getUser(String username) throws GetUserException {
+    public UMUser getUser(String username) throws GetUserException {
 
         try {
             // search user by user name
@@ -144,7 +159,7 @@ public class UserLogic {
      * @return Collection containing all users
      * @throws GetAllUsersException
      */
-    public Collection<User> getAllUsers() throws GetAllUsersException {
+    public Collection<UMUser> getAllUsers() throws GetAllUsersException {
         try {
             return dao.findAll();
         } catch (Exception e) {
@@ -263,7 +278,32 @@ public class UserLogic {
         }
     }
 
-    private boolean isUserValid(User user) {
-        return !(user.getPassword() == "" || user.getPasswordSalt() == "" || user.getUsername() == "");
+    /**
+     * Test if the user is valid.
+     * 
+     * @param user
+     *            The user to test
+     * @return true if valid, else false
+     */
+    private boolean isUserValid(UMUser user) {
+
+        return StringUtils.isNotEmpty(user.getHashedPassword()) && StringUtils.isNotEmpty(user.getPasswordSalt()) //
+                && StringUtils.isNotEmpty(user.getUsername()) && user.getHashIterations() > 0 && user.getId() >= 0;
+    }
+
+    /**
+     * Hash the password of a user.
+     * 
+     * @param user
+     *            The user of whom the password shall be hashed
+     */
+    private void hashPassword(UMUser user, String clearTextPassword) {
+        // TODO Read amount of iterations from some sort of centralized configuration file/database
+        user.setHashIterations(2000000);
+
+        user.setPasswordSalt(AuthenticationUtil.generateSalt());
+
+        String hashedPassword = AuthenticationUtil.getHashedString(clearTextPassword, user.getPasswordSalt(), user.getHashIterations());
+        user.setHashedPassword(hashedPassword);
     }
 }

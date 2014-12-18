@@ -19,7 +19,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDa
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 
 public class DatabaseSysoDumper {
@@ -47,10 +47,10 @@ public class DatabaseSysoDumper {
 		PermissionSqlQueryDAO permissionDao = new PermissionSqlQueryDAO(ds);
 		System.out.println(printer.getHeadLine());
 		try {
-			Collection<User> users = userDao.findAll();
-			Iterator<User> iUser = users.iterator();
+			Collection<UMUser> users = userDao.findAll();
+			Iterator<UMUser> iUser = users.iterator();
 			while(iUser.hasNext()){
-				User current = iUser.next();
+				UMUser current = iUser.next();
 				System.out.println(printer.getUserString(current));
 				LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
 				params.add(new SearchParameter(SearchFields.USERID, current.getId()));
@@ -73,7 +73,7 @@ public class DatabaseSysoDumper {
 	}
 	
 	public interface Printer{
-		public String getUserString(User t);
+		public String getUserString(UMUser t);
 		public String getHeadLine();
 		public String getUserRoleString(UserRole t);
 		public String getRoleString(Role t);
@@ -82,7 +82,7 @@ public class DatabaseSysoDumper {
 	}
 	
 	public class AllPrinter implements Printer {
-		public String getUserString(User t) {
+		public String getUserString(UMUser t) {
 			return t.toString();
 		}
 		public String getUserRoleString(UserRole t) {
@@ -104,7 +104,7 @@ public class DatabaseSysoDumper {
 	}
 	
 	public class OverviewPrinter implements Printer {
-		public String getUserString(User t) {
+		public String getUserString(UMUser t) {
 			return t.getUsername();
 		}
 		public String getUserRoleString(UserRole t) {

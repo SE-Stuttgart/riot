@@ -1,105 +1,86 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-
 /**
  * The User class holds all basic information regarding to a user.
- * @author Jonas Tangermann
+ * 
+ * @author Niklas Schnabel
  *
  */
-public class User implements Storable {
+public class User {
 
-    private long id;
-    private String username;
-    private String password;
-    private String passwordSalt;
+    // TODO This class should be moved to a better place than this. Maybe the commons project would be the right place
 
+    protected long id;
+    protected String username;
+
+    /**
+     * Constructs a new user.
+     */
     public User() {
+        id = -1;
+        username = null;
     }
 
-    public User(long id, String username, String password, String passwordSalt) {
-        this.id = id;
-        this.setUsername(username);
-        this.setPassword(password);
-        this.setPasswordSalt(passwordSalt);
-    }
-
-    public User(String username, String password, String passwordSalt) {
-        this.id = -1L;
-        this.setUsername(username);
-        this.setPassword(password);
-        this.setPasswordSalt(passwordSalt);
-    }
-
-    @Override
-    public long getId() {
-        return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
-        result.add(new SearchParameter(SearchFields.USERNAME, this.getUsername()));
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("User [id=");
-        builder.append(id);
-        builder.append(", username=");
-        builder.append(username);
-        builder.append(", password=");
-        builder.append(password);
-        builder.append(", passwordSalt=");
-        builder.append(passwordSalt);
-        builder.append("]");
-        return builder.toString();
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPasswordSalt() {
-        return passwordSalt;
-    }
-
-    public void setPasswordSalt(String passwordSalt) {
-        this.passwordSalt = passwordSalt;
-    }
-
-    public void setUsername(String username) {
+    /**
+     * Constructs a new user.
+     * 
+     * @param username
+     *            The name of the user
+     */
+    public User(String username) {
+        this.id = -1;
         this.username = username;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof User) {
-            User u = (User) o;
-            return this.id == u.getId() && this.username.equals(u.username) && this.password.equals(u.password) &&
-                    this.passwordSalt.equals(u.passwordSalt);
-        } else {
-            return false;
-        }
+    /**
+     * Constructs a new user.
+     * 
+     * @param id
+     *            The id of the user
+     * @param username
+     *            The name of the user
+     */
+    public User(long id, String username) {
+        this.id = id;
+        this.username = username;
     }
 
-    @Override
+    /**
+     * Returns the id.
+     * 
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the id.
+     * 
+     * @param id
+     *            the id to set
+     */
     public void setId(long id) {
-        this.id =id;
+        this.id = id;
+    }
+
+    /**
+     * Returns the user name.
+     * 
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Sets the user name.
+     * 
+     * @param username
+     *            the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }

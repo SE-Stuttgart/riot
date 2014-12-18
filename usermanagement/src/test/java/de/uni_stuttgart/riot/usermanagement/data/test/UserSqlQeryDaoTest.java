@@ -13,7 +13,7 @@ import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateExcep
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class UserSqlQeryDaoTest extends DaoTestBase {
@@ -21,26 +21,26 @@ public class UserSqlQeryDaoTest extends DaoTestBase {
     @Test
     public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
-        User testuser = new User(new Long(42), "TestUser", "TestUserPW", "TestUserSalt");
+        UMUser testuser = new UMUser(new Long(42), "TestUser", "TestUserPW", "TestUserSalt", 42);
         dao.insert(testuser);
-        User findUser = dao.findBy(testuser.getId());
+        UMUser findUser = dao.findBy(testuser.getId());
         assertEquals(testuser, findUser);
     }
 
     @Test
     public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
-        User findUser = dao.findBy(new Long(1));
+        UMUser findUser = dao.findBy(new Long(1));
         findUser.setUsername("TestUser2");
         dao.update(findUser);
-        User findAfterUpdate = dao.findBy(new Long(1));
+        UMUser findAfterUpdate = dao.findBy(new Long(1));
         assertEquals(findAfterUpdate, findUser);
     }
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceDeleteException, DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
-        User User = dao.findBy(new Long(1));
+        UMUser User = dao.findBy(new Long(1));
         dao.delete(User);
         dao.findBy(new Long(1));
     }
@@ -48,14 +48,14 @@ public class UserSqlQeryDaoTest extends DaoTestBase {
     @Test
     public void findAllTest() throws DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
-        Collection<User> user = dao.findAll();
+        Collection<UMUser> user = dao.findAll();
         assertEquals(3, user.size());
     }
 
     @Test
     public void findUniqueTest() throws DatasourceFindException {
         UserSqlQueryDao dao = new UserSqlQueryDao(getDataSource());
-        User user = dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, "Yoda"));
-        assertEquals(user.getPassword(), "YodaPW");
+        UMUser user = dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, "Yoda"));
+        assertEquals(user.getHashedPassword(), "yPYMjqXzWOPKaAKNJXfEw7Gu3EnckZmoWUuEhOqz/7IqGd4Ub+3/X3uANlO0mkIOqIMhxhUi/ieU1KZt2BK+eg==");
     }
 }

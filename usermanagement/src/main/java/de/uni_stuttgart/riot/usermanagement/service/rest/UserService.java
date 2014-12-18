@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
@@ -24,6 +25,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
@@ -85,7 +87,7 @@ public class UserService {
     /**
      * Add new user.
      * 
-     * @param user
+     * @param userRequest
      *            The user ID.
      * @return Returns the added user.
      * @throws UserManagementException
@@ -94,10 +96,9 @@ public class UserService {
      */
     @PUT
     @RequiresAuthentication
-    public UserResponse addUser(User user) throws UserManagementException {
-        facade.addUser(user);
-
-        return new UserResponse(facade.getUser(user.getId()));
+    public UserResponse addUser(UserRequest userRequest) throws UserManagementException {
+        User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
+        return new UserResponse(user);
     }
 
     /**
@@ -105,7 +106,7 @@ public class UserService {
      * 
      * @param userID
      *            The user ID.
-     * @param user
+     * @param userRequest
      *            The user.
      * @return Returns the updated user.
      * @throws UserManagementException
@@ -115,11 +116,17 @@ public class UserService {
     @PUT
     @Path("/{userID}")
     @RequiresAuthentication
-    public UserResponse updateUser(@PathParam("userID") Long userID, User user) throws UserManagementException {
-        user.setId(userID);
-        facade.updateUser(user);
+    public UserResponse updateUser(@PathParam("userID") Long userID, UserRequest userRequest) throws UserManagementException {
+        User user = facade.getUser(userID);
 
-        return new UserResponse(facade.getUser(user.getId()));
+        if (StringUtils.isNotEmpty(userRequest.getUsername())) {
+            user.setUsername(userRequest.getUsername());
+        }
+
+        facade.updateUser(user, userRequest.getPassword());
+
+        // the user contains after it is updated all the information it is updated with
+        return new UserResponse(user);
     }
 
     /**

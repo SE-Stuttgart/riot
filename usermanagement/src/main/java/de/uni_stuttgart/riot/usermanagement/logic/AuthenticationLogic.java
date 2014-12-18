@@ -20,11 +20,11 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryD
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
-import de.uni_stuttgart.riot.usermanagement.security.AccessTokenUtil;
+import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
 /**
  * Contains all logic regarding the authorization process.
@@ -43,7 +43,7 @@ public class AuthenticationLogic {
     private DAO<Token> dao;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public AuthenticationLogic() {
         try {
@@ -68,15 +68,15 @@ public class AuthenticationLogic {
     public Token login(String username, String password) throws LoginException {
         try {
             Subject subject = SecurityUtils.getSubject();
+            UserLogic ul = new UserLogic();
 
-            subject.login(new UsernamePasswordToken(username, password));
+            UMUser user = ul.getUser(username);
+            String hashedPassword = AuthenticationUtil.getHashedString(password, user.getPasswordSalt(), user.getHashIterations());
+
+            subject.login(new UsernamePasswordToken(username, hashedPassword));
 
             if (subject.isAuthenticated()) {
                 try {
-                    UserLogic ul = new UserLogic();
-
-                    // get the user with the given user name
-                    User user = ul.getUser(username);
 
                     Token token = generateAndSaveTokens(user.getId());
 
@@ -185,8 +185,8 @@ public class AuthenticationLogic {
 
         do {
             // generate new tokens
-            String authToken = AccessTokenUtil.generateToken();
-            String refreshToken = AccessTokenUtil.generateToken();
+            String authToken = AuthenticationUtil.generateAccessToken();
+            String refreshToken = AuthenticationUtil.generateAccessToken();
 
             token = new Token(userId, authToken, refreshToken, issueTime, expirationTime, true);
 

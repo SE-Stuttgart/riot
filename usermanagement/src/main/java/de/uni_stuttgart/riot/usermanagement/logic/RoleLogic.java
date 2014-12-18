@@ -6,6 +6,8 @@ import java.util.Iterator;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
@@ -55,7 +57,7 @@ public class RoleLogic {
      */
     public void addRole(Role role) throws AddRoleException {
         try {
-            if (role.getRoleName() != null && role.getRoleName().isEmpty()) {
+            if (StringUtils.isEmpty(role.getRoleName())) {
                 throw new AddRoleException("You have to specify a role name");
             }
 
@@ -91,7 +93,7 @@ public class RoleLogic {
      */
     public void updateRole(Role role) throws UpdateRoleException {
         try {
-            if (role.getRoleName() != null && role.getRoleName().isEmpty()) {
+            if (StringUtils.isEmpty(role.getRoleName())) {
                 throw new UpdateRoleException("You have to specify a role name");
             }
 

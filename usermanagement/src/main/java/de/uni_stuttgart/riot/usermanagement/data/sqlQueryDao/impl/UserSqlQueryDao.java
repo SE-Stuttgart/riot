@@ -6,14 +6,14 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 
 /**
- * DAO for {@link User}
+ * DAO for {@link UMUser}
  * @author Jonas Tangermann
  *
  */
-public class UserSqlQueryDao extends SqlQueryDAO<User> {
+public class UserSqlQueryDao extends SqlQueryDAO<UMUser> {
 
     /**
      * Constructor

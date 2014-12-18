@@ -10,7 +10,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement.
- * Permissions can be assigned to {@link User}s over {@link Role}s. The permission value
+ * Permissions can be assigned to {@link UMUser}s over {@link Role}s. The permission value
  *  is used internaly by the shiro framework. It can be used by calling //FIXME. 
  * @author Jonas Tangermann
  *

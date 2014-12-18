@@ -19,7 +19,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 
 public class SqlTransaction {
 
@@ -33,7 +33,7 @@ public class SqlTransaction {
         this.connection = ds.getConnection();
     }
 
-    public DAO<User> getUserDao() throws SQLException {
+    public DAO<UMUser> getUserDao() throws SQLException {
         return new UserSqlQueryDao(connection);
     }
     

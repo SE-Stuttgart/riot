@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.service.facade;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
@@ -8,6 +9,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
@@ -114,14 +116,17 @@ public class UserManagementFacade {
     }
 
     /**
-     * Add a new user
+     * Add a new user.
      * 
-     * @param user
-     *            The new user
+     * @param username
+     *            The user name of the user
+     * @param clearTextPassword
+     *            The password of the user as clear text
+     * @return The added user
      * @throws AddUserException
      */
-    public void addUser(User user) throws AddUserException {
-        userLogic.addUser(user);
+    public User addUser(String username, String clearTextPassword) throws AddUserException {
+        return (User) userLogic.addUser(username, clearTextPassword);
     }
 
     /**
@@ -138,14 +143,18 @@ public class UserManagementFacade {
     /**
      * Update the data of an existing user
      * 
-     * @param id
-     *            Id of the user to modify
      * @param user
      *            New user data
+     * @param clearTextPassword
+     *            The password of the user as clear text. If the password should not be updated use null.
      * @throws UpdateUserException
      */
-    public void updateUser(User user) throws UpdateUserException {
-        userLogic.updateUser(user);
+    public void updateUser(User user, String clearTextPassword) throws UpdateUserException {
+        if (user instanceof UMUser) {
+            userLogic.updateUser((UMUser) user, clearTextPassword);
+        } else {
+            throw new UpdateUserException("The user is not an instance of a UMUser");
+        }
     }
 
     /**
@@ -157,7 +166,7 @@ public class UserManagementFacade {
      * @throws GetUserException
      */
     public User getUser(Long id) throws GetUserException {
-        return userLogic.getUser(id);
+        return (User) userLogic.getUser(id);
     }
 
     /**
@@ -167,7 +176,9 @@ public class UserManagementFacade {
      * @throws GetAllUsersException
      */
     public Collection<User> getAllUsers() throws GetAllUsersException {
-        return userLogic.getAllUsers();
+        ArrayList<User> users = new ArrayList<User>();
+        users.addAll(getAllUsers());
+        return users;
     }
 
     /**
