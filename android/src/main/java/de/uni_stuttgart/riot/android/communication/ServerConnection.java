@@ -1,54 +1,79 @@
 package de.uni_stuttgart.riot.android.communication;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.CodeLearnAdapter;
 import de.uni_stuttgart.riot.android.MainActivity;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class ServerConnection extends AsyncTask<Void, Void, Greeting> {
+public class ServerConnection extends AsyncTask<Void, Void, TestString> {
 
-	private MainActivity mA;
+	private MainActivity mainActivity;
 
-	public ServerConnection(MainActivity mA) {
-		this.mA = mA;
+	public ServerConnection(MainActivity mainActivity) {
+		this.mainActivity = mainActivity;
 	}
 
 	@Override
-	protected Greeting doInBackground(Void... params) {
+	protected TestString doInBackground(Void... params) {
 		try {
 			final String url = "http://rest-service.guides.spring.io/greeting";
 			RestTemplate restTemplate = new RestTemplate();
 			restTemplate.getMessageConverters().add(
 					new MappingJackson2HttpMessageConverter());
-			Greeting greeting = restTemplate.getForObject(url, Greeting.class);
+			TestString greeting = restTemplate.getForObject(url,
+					TestString.class);
 			return greeting;
 		} catch (Exception e) {
-			System.out.println("fehler");
-			// Log.e("MainActivity", e.getMessage(), e);
+			Log.e("MainActivity", e.getMessage(), e);
 		}
 
 		return null;
 	}
 
 	@Override
-	protected void onPostExecute(Greeting greeting) {
-		
-		ArrayList<String> meineListe = new ArrayList<String>();
-		meineListe.add(greeting.getContent());
-		meineListe.add(greeting.getId());
+	protected void onPostExecute(TestString greeting) {
 
-		ListAdapter listenAdapter = new ArrayAdapter<String>(
-				mA, android.R.layout.simple_list_item_1,
-				meineListe);
-		ListView meineListView = (ListView) mA.findViewById(R.id.LISTE);
-		meineListView.setAdapter(listenAdapter);
+		// ArrayList<String> jsonTest = new ArrayList<String>();
+		// jsonTest.add(greeting.getContent());
+		// jsonTest.add(greeting.getId());
+		//
+		// ListView notificationList = (ListView) mainActivity
+		// .findViewById(R.id.NotificationList);
+		//
+		// ListAdapter listAdapter = new ArrayAdapter<String>(mainActivity,
+		// android.R.layout.simple_list_item_single_choice, jsonTest);
+		//
+		// notificationList.setAdapter(listAdapter);
+
+		CodeLearnAdapter chapterListAdapter = new CodeLearnAdapter(
+				mainActivity, getDataForListView(greeting));
+		ListView codeLearnLessons = (ListView) mainActivity
+				.findViewById(R.id.NotificationList);
+		codeLearnLessons.setAdapter(chapterListAdapter);
+	}
+
+	public List<TestString> getDataForListView(TestString chapter) {
+		List<TestString> codeLearnChaptersList = new ArrayList<TestString>();
+
+		for (int i = 0; i < 3; i++) {
+
+			chapter.setId(chapter.getId());
+			chapter.setContent(chapter.getContent());
+			codeLearnChaptersList.add(chapter);
+		}
+
+		return codeLearnChaptersList;
 
 	}
 

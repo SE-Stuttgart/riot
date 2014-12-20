@@ -36,13 +36,11 @@ public class MainActivity extends Activity {
 
 	private LanguageDatabase dbHandler;
 	private Locale locale;
-	//private ServerConnection conncector;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//conncector = new ServerConnection();
+	
 		setLanguage();
 		setContentView(R.layout.activity_main);
 
@@ -60,7 +58,7 @@ public class MainActivity extends Activity {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
-		
+
 		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 				R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
@@ -79,15 +77,13 @@ public class MainActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
-		
+
 	}
 
-	/* -----------------------------------------------------------
-	 * REFRESH BUTTON
-	 * -----------------------------------------------------------
+	/*
+	 * ----------------- REFRESH BUTTON -----------------
 	 */
-	
-	
+
 	/**
 	 * Prepare the refresh button on the right side
 	 */
@@ -108,17 +104,17 @@ public class MainActivity extends Activity {
 		if (!getActionBar().getTitle().equals("Home")) {
 			menu.findItem(R.id.action_refresh).setVisible(false);
 		} else {
+			// get the latest Notifications
+			new ServerConnection(this).execute();
 			menu.findItem(R.id.action_refresh).setVisible(true);
 		}
-
-		new ServerConnection(this).execute();
 
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	/**
-	 * Actions for the refresh button (right upper corner).
-	 * It can later be extended with more options.	  
+	 * Actions for the refresh button (right upper corner). It can later be
+	 * extended with more options.
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -127,20 +123,18 @@ public class MainActivity extends Activity {
 		}
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			new ServerConnection(this).execute();		
+			new ServerConnection(this).execute();
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-	}	
+	}
 
-	
-	/* -----------------------------------------------------------
-	 * OPTIONS MENU
-	 * -----------------------------------------------------------
+	/*
+	 * ----------------- OPTIONS MENU -----------------
 	 */
 
 	/**
-	 *
+	 *Method for changing the language
 	 */
 	private void setLanguage() {
 		dbHandler = new LanguageDatabase(this);
@@ -154,8 +148,7 @@ public class MainActivity extends Activity {
 		config.locale = locale;
 		getBaseContext().getResources().updateConfiguration(config,
 				getBaseContext().getResources().getDisplayMetrics());
-	}	
-
+	}
 
 	private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {
