@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.commons.test;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.glassfish.jersey.message.internal.NullOutputStream;
 
-public class SqlRunner implements AutoCloseable {
+public class SqlRunner implements Closeable {
     public static final String DELIMITER_LINE_REGEX = "(?i)DELIMITER.+", DELIMITER_LINE_SPLIT_REGEX = "(?i)DELIMITER", DEFAULT_DELIMITER = ";";
     private final boolean autoCommit, stopOnError;
     private final Connection connection;
@@ -218,7 +219,11 @@ public class SqlRunner implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        connection.close();
+    public void close() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
