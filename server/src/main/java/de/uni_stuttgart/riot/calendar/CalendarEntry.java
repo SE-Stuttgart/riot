@@ -14,16 +14,16 @@ public class CalendarEntry implements ResourceModel {
 
     /** The start time. */
     private Date startTime;
-    
+
     /** The end time. */
     private Date endTime;
-    
+
     /** The all day event. */
     private boolean allDayEvent;
-    
+
     /** The description. */
     private String description;
-    
+
     /** The location. */
     private String location;
 
@@ -120,6 +120,61 @@ public class CalendarEntry implements ResourceModel {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (allDayEvent ? 1231 : 1237);
+        result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
+        result = prime * result + (int) (id ^ (id >>> 32));
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
+        result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
+        result = prime * result + ((title == null) ? 0 : title.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CalendarEntry other = (CalendarEntry) obj;
+        if (allDayEvent != other.allDayEvent)
+            return false;
+        if (description == null) {
+            if (other.description != null)
+                return false;
+        } else if (!description.equals(other.description))
+            return false;
+        if (endTime == null) {
+            if (other.endTime != null)
+                return false;
+        } else if (!endTime.equals(other.endTime))
+            return false;
+        if (id != other.id)
+            return false;
+        if (location == null) {
+            if (other.location != null)
+                return false;
+        } else if (!location.equals(other.location))
+            return false;
+        if (startTime == null) {
+            if (other.startTime != null)
+                return false;
+        } else if (!startTime.equals(other.startTime))
+            return false;
+        if (title == null) {
+            if (other.title != null)
+                return false;
+        } else if (!title.equals(other.title))
+            return false;
+        return true;
     }
 
 }
