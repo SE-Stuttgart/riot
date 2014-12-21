@@ -24,7 +24,20 @@ It may be necessary to install the legacy package of node with the following com
 
 ### Install on Windows
 
-TODO
+ - Downlod the [installer](http://nodejs.org/download/) (the .msi package)
+ - **Important:** Node has to be added to the `PATH` in Windows. See the following image:
+
+![NodeJS Installer](Node_Path.png)
+
+After the installation is complete:
+
+    npm install -g grunt-cli
+    npm install -g bower
+    npm install -g yo
+
+It may be necessary to add the `NODE_PATH` variable to your path in order to install `yo`: 
+
+    setx NODE_PATH "%NODE_PATH%;C:\Users\<YOUR USERNAME>\AppData\Roaming\npm\node_modules"
 
 ## Development
 
