@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 /**
  * 

@@ -1,8 +1,9 @@
-package de.uni_stuttgart.riot.usermanagement.service.rest.response;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.response;
 
 import java.sql.Timestamp;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+
 
 /**
  * Wrapper around a {@link Token}.

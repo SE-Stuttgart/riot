@@ -4,10 +4,10 @@ import java.util.Collection;
 
 import javax.naming.NamingException;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPermissionsException;

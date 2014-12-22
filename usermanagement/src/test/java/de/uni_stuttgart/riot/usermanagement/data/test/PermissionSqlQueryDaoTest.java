@@ -7,13 +7,13 @@ import java.util.LinkedList;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class PermissionSqlQueryDaoTest extends DaoTestBase {

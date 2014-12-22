@@ -3,8 +3,8 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 
 /**
  * {@link ObjectBuilder} for {@link Token}. Used in {@link TokenSqlQueryDAO}.

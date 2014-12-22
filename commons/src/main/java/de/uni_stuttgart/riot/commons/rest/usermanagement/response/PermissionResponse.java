@@ -1,6 +1,7 @@
-package de.uni_stuttgart.riot.usermanagement.service.rest.response;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.response;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+
 
 /**
  * Wrapper around {@link Permission} to only expose the desired fields over REST.

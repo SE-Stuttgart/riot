@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 
 /**
  * {@link QueryBuilder} for {@link Role}. Used in {@link RoleSqlQueryDAO}.

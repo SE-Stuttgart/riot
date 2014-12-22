@@ -1,8 +1,6 @@
-package de.uni_stuttgart.riot.usermanagement.data.storable;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.util.Collection;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * 
@@ -23,12 +21,5 @@ public interface Storable {
      * Setter for the unique id
      */
     public void setId(long id);
-
-    /**
-     * Returns all search parameters that should be inspected
-     * 
-     * @return all search parameters
-     */
-    public Collection<SearchParameter> getSearchParam();
 
 }

@@ -8,7 +8,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;

@@ -6,9 +6,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 /**
  * Abstraction for all {@link QueryBuilder} to prevent code clones.

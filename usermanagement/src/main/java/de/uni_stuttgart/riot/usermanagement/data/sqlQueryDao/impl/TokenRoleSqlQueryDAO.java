@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 
 /**

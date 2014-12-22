@@ -1,7 +1,7 @@
 package de.uni_stuttgart.riot.commons.test;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Hashtable;
 

@@ -1,6 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.service.rest.request;
-
-import de.uni_stuttgart.riot.usermanagement.service.rest.AuthenticationService;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.request;
 
 /**
  * The login request message of the client used in {@link AuthenticationService}.
@@ -12,6 +10,14 @@ public class LoginRequest {
 
     private String username;
     private String password;
+    
+    public LoginRequest(String username, String password) {
+    	this.username = username;
+    	this.password = password;
+    }
+    
+    public LoginRequest() {
+	}
 
     public String getUsername() {
         return username;

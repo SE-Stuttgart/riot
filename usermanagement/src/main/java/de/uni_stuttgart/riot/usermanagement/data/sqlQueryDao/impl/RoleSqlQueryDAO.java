@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 
 /**
  * Data access class for all {@link Role} objects.

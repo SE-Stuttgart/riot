@@ -1,6 +1,5 @@
-package de.uni_stuttgart.riot.usermanagement.service.rest.request;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.request;
 
-import de.uni_stuttgart.riot.usermanagement.service.rest.AuthenticationService;
 
 /**
  * The refresh request message of the client used in {@link AuthenticationService}.
@@ -12,6 +11,14 @@ public class RefreshRequest {
 
     private String refreshToken;
 
+    
+    public RefreshRequest(String refreshToken) {
+    	this.refreshToken = refreshToken;
+	}
+    
+    public RefreshRequest() {
+	}
+	
     public String getRefreshToken() {
         return refreshToken;
     }

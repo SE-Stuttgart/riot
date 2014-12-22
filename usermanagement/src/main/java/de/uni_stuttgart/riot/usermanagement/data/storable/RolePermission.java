@@ -1,10 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 
 /**
  * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}. Thus this class only maps Roles to
@@ -43,14 +41,6 @@ public class RolePermission implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
-        result.add(new SearchParameter(SearchFields.ROLEID, this.getRoleID()));
-        result.add(new SearchParameter(SearchFields.PERMISSIONID, this.getPermissionID()));
-        return result;
     }
 
     public Long getRoleID() {

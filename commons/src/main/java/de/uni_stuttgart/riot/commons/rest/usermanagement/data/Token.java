@@ -1,11 +1,8 @@
-package de.uni_stuttgart.riot.usermanagement.data.storable;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * Holds the Token that is used to authenticate a user and the associated refresh token
@@ -57,16 +54,6 @@ public class Token implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.TOKENVALUE, this.getTokenValue()));
-        params.add(new SearchParameter(SearchFields.USERID, this.getUserID()));
-        params.add(new SearchParameter(SearchFields.ISSUETIME, this.getIssueTime()));
-        params.add(new SearchParameter(SearchFields.EXPIRATIONTIME, this.getExpirationTime()));
-        return params;
     }
 
     public String getTokenValue() {
