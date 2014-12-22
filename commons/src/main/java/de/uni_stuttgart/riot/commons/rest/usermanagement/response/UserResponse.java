@@ -14,24 +14,8 @@ public class UserResponse {
     }
 
     public UserResponse(User user, Collection<RoleResponse> userRoles) {
-        this.user = user;
+        this.setUser(user);
         this.roles = userRoles;
-    }
-
-    public Long getId() {
-        return user.getId();
-    }
-
-    public void setId(Long id) {
-        user.setId(id);
-    }
-
-    public String getUsername() {
-        return user.getUsername();
-    }
-
-    public void setUsername(String username) {
-        user.setUsername(username);
     }
 
     public Collection<RoleResponse> getRoles() {
@@ -41,5 +25,13 @@ public class UserResponse {
     public void setRoles(Collection<RoleResponse> roles) {
         this.roles = roles;
     }
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 }

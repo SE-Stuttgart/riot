@@ -8,18 +8,53 @@ import java.util.Collection;
  * @author Jonas Tangermann
  *
  */
-public interface Storable {
+public abstract class Storable {
+	
+	public Storable(Long id) {
+		this.id = id;
+	}
 
-    /**
+	public Storable() {
+	}
+	
+    private Long id;
+	
+	/**
      * Returns the unique id of this object.
      * 
      * @return unique id
      */
-    public long getId();
+    public Long getId() {
+		return this.id;
+	}
     
     /**
      * Setter for the unique id
      */
-    public void setId(long id);
+    public void setId(Long id) {
+    	this.id = id;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Storable other = (Storable) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 
 }
