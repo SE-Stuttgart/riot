@@ -3,14 +3,15 @@ package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.junit.Ignore;
+
 /**
  * The User class holds all basic information regarding to a user.
  * @author Jonas Tangermann
  *
  */
-public class User implements Storable {
+public class User extends Storable {
 
-    private long id;
     private String username;
     private String password;
     private String passwordSalt;
@@ -19,37 +20,17 @@ public class User implements Storable {
     }
 
     public User(long id, String username, String password, String passwordSalt) {
-        this.id = id;
-        this.setUsername(username);
+    	super(id);
+    	this.setUsername(username);
         this.setPassword(password);
         this.setPasswordSalt(passwordSalt);
     }
 
     public User(String username, String password, String passwordSalt) {
-        this.id = -1L;
+    	super(-1L);
         this.setUsername(username);
         this.setPassword(password);
         this.setPasswordSalt(passwordSalt);
-    }
-
-    @Override
-    public long getId() {
-        return this.id;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("User [id=");
-        builder.append(id);
-        builder.append(", username=");
-        builder.append(username);
-        builder.append(", password=");
-        builder.append(password);
-        builder.append(", passwordSalt=");
-        builder.append(passwordSalt);
-        builder.append("]");
-        return builder.toString();
     }
 
     public String getUsername() {
@@ -76,20 +57,44 @@ public class User implements Storable {
         this.username = username;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof User) {
-            User u = (User) o;
-            return this.id == u.getId() && this.username.equals(u.username) && this.password.equals(u.password) &&
-                    this.passwordSalt.equals(u.passwordSalt);
-        } else {
-            return false;
-        }
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((password == null) ? 0 : password.hashCode());
+		result = prime * result
+				+ ((passwordSalt == null) ? 0 : passwordSalt.hashCode());
+		result = prime * result
+				+ ((username == null) ? 0 : username.hashCode());
+		return result;
+	}
 
-    @Override
-    public void setId(long id) {
-        this.id =id;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (passwordSalt == null) {
+			if (other.passwordSalt != null)
+				return false;
+		} else if (!passwordSalt.equals(other.passwordSalt))
+			return false;
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		return true;
+	}
 
 }

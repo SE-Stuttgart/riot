@@ -12,23 +12,14 @@ public class PermissionResponse {
     }
 
     public PermissionResponse(Permission permission) {
-        this.permission = permission;
+        this.setPermission(permission);
     }
 
-    public Long getId() {
-        return permission.getId();
-    }
+	public Permission getPermission() {
+		return permission;
+	}
 
-    public void setId(Long id) {
-        permission.setId(id);
-    }
-
-    public String getPermissionValue() {
-        return permission.getPermissionValue();
-    }
-
-    public void setPermissionValue(String permissionValue) {
-        permission.setPermissionValue(permissionValue);
-    }
-
+	public void setPermission(Permission permission) {
+		this.permission = permission;
+	}
 }

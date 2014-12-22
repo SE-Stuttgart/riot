@@ -10,9 +10,8 @@ import java.util.LinkedList;
  * @author Jonas Tangermann
  *
  */
-public class Token implements Storable {
+public class Token extends Storable {
 
-    private Long id;
     private Long userID;
     private Timestamp issueTime;
     private Timestamp expirationTime;
@@ -32,7 +31,7 @@ public class Token implements Storable {
     }
 
     public Token(Long tokenID, Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
-        this.id = tokenID;
+    	super(tokenID);
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
@@ -42,18 +41,13 @@ public class Token implements Storable {
     }
     
     public Token(Long userID, String tokenValue, String refreshtokenValue, Timestamp issueTime, Timestamp expirationTime, boolean valid) {
-        this.id = -1L;
+    	super(-1L);
         this.userID = userID;
         this.issueTime = issueTime;
         this.expirationTime = expirationTime;
         this.setRefreshtokenValue(refreshtokenValue);
         this.setTokenValue(tokenValue);
         this.setValid(valid);
-    }
-
-    @Override
-    public long getId() {
-        return this.id;
     }
 
     public String getTokenValue() {
@@ -76,94 +70,6 @@ public class Token implements Storable {
         this.refreshtokenValue = refreshtokenValue;
     }
     
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((expirationTime == null) ? 0 : expirationTime.hashCode());
-        result = prime * result + ((issueTime == null) ? 0 : issueTime.hashCode());
-        result = prime * result + ((refreshtokenValue == null) ? 0 : refreshtokenValue.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((tokenValue == null) ? 0 : tokenValue.hashCode());
-        result = prime * result + ((userID == null) ? 0 : userID.hashCode());
-        return result;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof Token))
-            return false;
-        Token other = (Token) obj;
-        if (expirationTime == null) {
-            if (other.expirationTime != null)
-                return false;
-        } else if (!expirationTime.equals(other.expirationTime))
-            return false;
-        if (issueTime == null) {
-            if (other.issueTime != null)
-                return false;
-        } else if (!issueTime.equals(other.issueTime))
-            return false;
-        if (refreshtokenValue == null) {
-            if (other.refreshtokenValue != null)
-                return false;
-        } else if (!refreshtokenValue.equals(other.refreshtokenValue))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (tokenValue == null) {
-            if (other.tokenValue != null)
-                return false;
-        } else if (!tokenValue.equals(other.tokenValue))
-            return false;
-        if (userID == null) {
-            if (other.userID != null)
-                return false;
-        } else if (!userID.equals(other.userID))
-            return false;
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Token [tokenID=");
-        builder.append(id);
-        builder.append(", userID=");
-        builder.append(userID);
-        builder.append(", issueTime=");
-        builder.append(issueTime);
-        builder.append(", expirationTime=");
-        builder.append(expirationTime);
-        builder.append(", tokenValue=");
-        builder.append(tokenValue);
-        builder.append(", refreshtokenValue=");
-        builder.append(refreshtokenValue);
-        builder.append("]");
-        return builder.toString();
-    }
-    
-    @Override
-    public void setId(long id) {
-        this.id =id;
-    }
-
     public boolean isValid() {
         return valid;
     }
@@ -171,5 +77,64 @@ public class Token implements Storable {
     public void setValid(boolean valid) {
         this.valid = valid;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((expirationTime == null) ? 0 : expirationTime.hashCode());
+		result = prime * result
+				+ ((issueTime == null) ? 0 : issueTime.hashCode());
+		result = prime
+				* result
+				+ ((refreshtokenValue == null) ? 0 : refreshtokenValue
+						.hashCode());
+		result = prime * result
+				+ ((tokenValue == null) ? 0 : tokenValue.hashCode());
+		result = prime * result + ((userID == null) ? 0 : userID.hashCode());
+		result = prime * result + (valid ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Token other = (Token) obj;
+		if (expirationTime == null) {
+			if (other.expirationTime != null)
+				return false;
+		} else if (!expirationTime.equals(other.expirationTime))
+			return false;
+		if (issueTime == null) {
+			if (other.issueTime != null)
+				return false;
+		} else if (!issueTime.equals(other.issueTime))
+			return false;
+		if (refreshtokenValue == null) {
+			if (other.refreshtokenValue != null)
+				return false;
+		} else if (!refreshtokenValue.equals(other.refreshtokenValue))
+			return false;
+		if (tokenValue == null) {
+			if (other.tokenValue != null)
+				return false;
+		} else if (!tokenValue.equals(other.tokenValue))
+			return false;
+		if (userID == null) {
+			if (other.userID != null)
+				return false;
+		} else if (!userID.equals(other.userID))
+			return false;
+		if (valid != other.valid)
+			return false;
+		return true;
+	}
+    
 
 }

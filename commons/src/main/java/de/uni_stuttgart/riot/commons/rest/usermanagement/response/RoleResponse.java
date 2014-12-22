@@ -14,24 +14,8 @@ public class RoleResponse {
     }
 
     public RoleResponse(Role role, Collection<PermissionResponse> rolePermis) {
-        this.role = role;
+        this.setRole(role);
         this.permissions = rolePermis;
-    }
-
-    public Long getId() {
-        return role.getId();
-    }
-
-    public void setId(Long id) {
-        role.setId(id);
-    }
-
-    public String getRoleName() {
-        return role.getRoleName();
-    }
-
-    public void setRoleName(String roleName) {
-        role.setRoleName(roleName);
     }
 
     public Collection<PermissionResponse> getPermissions() {
@@ -41,5 +25,13 @@ public class RoleResponse {
     public void setPermissions(Collection<PermissionResponse> permissions) {
         this.permissions = permissions;
     }
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
 
 }
