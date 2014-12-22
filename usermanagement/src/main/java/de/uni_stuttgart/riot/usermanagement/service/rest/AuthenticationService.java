@@ -25,7 +25,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.response.Authentication
  * @author Marcel Lehwald
  *
  */
-@Path("/auth")
+@Path("auth")
 @Consumes("application/json")
 @Produces("application/json")
 public class AuthenticationService {

@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>riot.usermanagement</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>riot.usermanagement</name>
 

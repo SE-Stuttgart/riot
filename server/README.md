@@ -35,6 +35,8 @@ Install the following plugins from the Eclipse Marketplace if not installed alre
 - restart glassfish and open the admin panel: http://localhost:4848/common/index.jsf
 - create a new JDBC connection pool to mysql JDBC->JDBC Connection Pools->New...
   - Select MySql as Database Driver Vendor and javax.sql.ConnectionPoolDataSource as Resource Type, click next
+  - remove all existing properties, then:
   - add properties "user:riot", "password:yourpassword", "databaseName:riot" and save
-- go back to jdbc and create a resource with the jndi name "jdbc/riot-pool" and reference the connection pool
+- go back to jdbc and create a resource with the jndi name "jdbc/riot" and reference the connection pool
 - the jndi name can now be used to access the pool in the jee containers
+- Run the scripts "createschema.sql" from UserManagement and "createCalendarEntries.sql" from the Server project.

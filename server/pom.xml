@@ -33,9 +33,11 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		<!-- Coming soon <dependency> <groupId>de.uni-stuttgart.riot</groupId> 
-			<artifactId>riot.usermanagement</artifactId> <version>${project.parent.version}</version> 
-			</dependency> -->
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.usermanagement</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- Server -->
 		<dependency>
@@ -80,6 +82,13 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warName>riot</warName>
 				</configuration>
 			</plugin>
 		</plugins>

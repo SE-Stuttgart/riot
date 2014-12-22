@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.rest;
 
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -23,7 +22,7 @@ public class RiotApplication extends ResourceConfig {
      * Configures the application.
      */
     public RiotApplication() {
-        packages("de.uni_stuttgart.riot.rest;de.uni_stuttgart.riot.calendar;de.uni_stuttgart.riot.contacts;");
+        packages("de.uni_stuttgart.riot.rest", "de.uni_stuttgart.riot.calendar", "de.uni_stuttgart.riot.contacts", "de.uni_stuttgart.riot.usermanagement.service.rest");
     }
-
+    
 }

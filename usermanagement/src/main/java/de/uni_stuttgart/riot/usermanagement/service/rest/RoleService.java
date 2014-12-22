@@ -30,7 +30,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
  * @author Marcel Lehwald
  *
  */
-@Path("/roles")
+@Path("roles")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class RoleService {

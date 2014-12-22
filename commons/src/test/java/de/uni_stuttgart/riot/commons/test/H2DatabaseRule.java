@@ -29,10 +29,6 @@ public class H2DatabaseRule extends JNDIRule {
         dataSource = ds;
         registerJNDI("jdbc/riot", ds);
 
-        // For now, we just use our regular DataSource as the pool, too, since
-        // pool users expect a normal DataSource, anyway, and don't case about
-        // the pooling and pooling is not necessary during unit tests.
-        registerJNDI("jdbc/riot-pool", ds);
     }
 
     @Override

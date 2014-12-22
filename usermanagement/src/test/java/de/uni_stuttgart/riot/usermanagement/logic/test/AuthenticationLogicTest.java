@@ -36,7 +36,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         lc.stop();
 
         // load shiro configuration
-        Factory<SecurityManager> factory = new IniSecurityManagerFactory("src/main/webapp/WEB-INF/shiro.ini");
+        Factory<SecurityManager> factory = new IniSecurityManagerFactory();
         SecurityManager securityManager = factory.getInstance();
         SecurityUtils.setSecurityManager(securityManager);
     }

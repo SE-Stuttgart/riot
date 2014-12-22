@@ -17,7 +17,7 @@ public abstract class ConnectionMgr {
     /**
      * JNDI name of the jdbc resource as configured on the jee server.
      */
-    private static final String DATASOURCE_NAME = "jdbc/riot-pool";
+    private static final String DATASOURCE_NAME = "jdbc/riot";
 
     /**
      * Gets the DataSource. Could probably be injected with CDI.
@@ -33,31 +33,30 @@ public abstract class ConnectionMgr {
     }
 
     /**
-     * Creates a sql2o instance. Use {@link #openConnection()} in a 
-     * try-with-resources block if you do not need to perform transactions.
+     * Creates a sql2o instance. Use {@link #openConnection()} in a try-with-resources block if you do not need to perform transactions.
      * 
      * @return an sql2o instance with an assigned DataSource
-     * @throws NamingException if the resource is not configured in the jee server.
-     * @throws SQLException if a DB error occurs
+     * @throws NamingException
+     *             if the resource is not configured in the jee server.
+     * @throws SQLException
+     *             if a DB error occurs
      */
     public static Sql2o getSql2o() throws NamingException, SQLException {
         DataSource ds = getDataSource();
-        Sql2o sql2o = new Sql2o(ds);
-        return sql2o;
+        return new Sql2o(ds);
     }
 
     /**
-     * Opens an sql2o connection and returns it.
-     * Use {@link #getSql2o()} if transactions are needed.
+     * Opens an sql2o connection and returns it. Use {@link #getSql2o()} if transactions are needed.
      * 
      * @return An open sql2o connection
-     * @throws NamingException if the resource is not configured in the jee server.
-     * @throws SQLException if a DB error occurs
+     * @throws NamingException
+     *             if the resource is not configured in the jee server.
+     * @throws SQLException
+     *             if a DB error occurs
      */
     public static Connection openConnection() throws NamingException, SQLException {
-        DataSource ds = getDataSource();
-        Sql2o sql2o = new Sql2o(ds);
-        return sql2o.open();
+        return getSql2o().open();
     }
 
 }

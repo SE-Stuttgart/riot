@@ -28,7 +28,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.response.PermissionResp
  * @author Marcel Lehwald
  *
  */
-@Path("/permissions")
+@Path("permissions")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PermissionService {

@@ -36,7 +36,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
  * @author Marcel Lehwald
  *
  */
-@Path("/users")
+@Path("users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UserService {
