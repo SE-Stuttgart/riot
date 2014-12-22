@@ -57,11 +57,6 @@
     <module name="LeftCurly">
       <property name="maxLineLength" value="200"/>
     </module>
-    <module name="LineLength">
-      <property name="ignorePattern" value="^ *\* *[^ ]+$|^ *@.*|^import"/>
-      <property name="max" value="140"/>
-      <property name="tabWidth" value="4"/>
-    </module>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>
     <module name="MagicNumber">
