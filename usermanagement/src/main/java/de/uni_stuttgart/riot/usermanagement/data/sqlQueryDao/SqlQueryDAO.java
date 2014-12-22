@@ -10,12 +10,12 @@ import java.util.LinkedList;
 
 import javax.sql.DataSource;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 /**
  * 

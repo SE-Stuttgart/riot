@@ -2,13 +2,12 @@ package de.uni_stuttgart.riot.usermanagement.data;
 
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 public interface DAO<T extends Storable> {
     /**

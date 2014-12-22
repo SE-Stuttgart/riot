@@ -6,8 +6,12 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
+
 public class Starter {
-    /*
+    
     public static void main(String[] args) {
         // Login into Usermanagement
         UserManagementClient client = new UserManagementClient("http://localhost:8080/riot.usermanagement/", "Test");
@@ -23,19 +27,19 @@ public class Starter {
         
         // Printing the response
         Response rUsers = client.get(userstarget, MediaType.APPLICATION_JSON);
-        String usersResult = rUsers.readEntity(String.class);
+        UserResponse usersResult = rUsers.readEntity(UserResponse.class);
         System.out.println(usersResult);
         
         // Printing the response
         Response rRoles = client.get(rolestarget, MediaType.APPLICATION_JSON);
-        String rolesResult = rRoles.readEntity(String.class);
+        RoleResponse rolesResult = rRoles.readEntity(RoleResponse.class);
         System.out.println(rolesResult);
         
         // Printing the response
         Response rPermissions = client.get(permissionstarget, MediaType.APPLICATION_JSON);
-        String permissionsResult = rPermissions.readEntity(String.class);
+        PermissionResponse permissionsResult = rPermissions.readEntity(PermissionResponse.class);
         System.out.println(permissionsResult);
         client.logout();
-    }*/
+    }
 
 }

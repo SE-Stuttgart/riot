@@ -3,7 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 
 /**
  * 

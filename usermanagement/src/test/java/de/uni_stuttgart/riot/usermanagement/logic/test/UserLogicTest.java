@@ -7,9 +7,9 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;

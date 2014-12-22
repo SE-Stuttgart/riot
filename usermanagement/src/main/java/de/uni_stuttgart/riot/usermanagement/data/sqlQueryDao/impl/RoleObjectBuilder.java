@@ -3,8 +3,8 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.ObjectBuilder;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 
 /**
  * {@link ObjectBuilder} for {@link Role}. Used in {@link RoleSqlQueryDAO}.

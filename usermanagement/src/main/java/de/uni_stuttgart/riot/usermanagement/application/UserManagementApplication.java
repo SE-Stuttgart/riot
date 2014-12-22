@@ -2,13 +2,7 @@ package de.uni_stuttgart.riot.usermanagement.application;
 
 import javax.ws.rs.ApplicationPath;
 
-import jersey.repackaged.com.google.common.collect.Sets;
-
 import org.glassfish.jersey.server.ResourceConfig;
-
-import de.uni_stuttgart.riot.usermanagement.security.AuthorizationFilterBinding;
-import de.uni_stuttgart.riot.usermanagement.service.rest.exception.AuthorizationExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
 
 /**
  * <p>

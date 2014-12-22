@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
@@ -13,7 +14,6 @@ import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateExcep
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class UserSqlQeryDaoTest extends DaoTestBase {

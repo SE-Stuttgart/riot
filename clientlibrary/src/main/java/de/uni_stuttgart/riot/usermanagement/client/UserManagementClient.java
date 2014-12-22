@@ -7,6 +7,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
+
 /**
  * TODO: This needs to be refactored:
  * <ul>
@@ -19,7 +23,6 @@ import javax.ws.rs.core.Response;
  * 
  */
 public class UserManagementClient {
-    /*
     private static final String LOGIN_PATH = "api/v1/auth/login";
     private static final String REFRESH_PATH = "api/v1/auth/refresh";
     private static final String REFRESH_TOKEN_FIELD = "refreshToken";
@@ -41,13 +44,12 @@ public class UserManagementClient {
     }
 
     public void login(String username, String password) {
-        JSONObject loginData = new JSONObject().put("username", username).put("password", password);
-        this.internalLogin(LOGIN_PATH, loginData);
+    	this.internalLogin(LOGIN_PATH, new LoginRequest(username,password));
     }
 
     private void refresh() {
-        JSONObject loginData = new JSONObject().put(REFRESH_TOKEN_FIELD, this.currentRefreshToken);
-        this.internalLogin(REFRESH_PATH, loginData);
+    	RefreshRequest refreshRequest = new RefreshRequest(this.currentRefreshToken);
+        this.internalLogin(REFRESH_PATH, refreshRequest);
     }
 
     public void logout() {
@@ -60,16 +62,14 @@ public class UserManagementClient {
         this.logedIn = false;
     }
 
-    private void internalLogin(String path, JSONObject entity) {
+    private void internalLogin(String path, Object entity) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(this.serverUrl).path(path);
         System.out.println(target.getUri());
-        Response r = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.entity(entity.toString(), MediaType.APPLICATION_JSON));
-        String s = r.readEntity(String.class);
-        System.out.println(s);
-        JSONObject response = new JSONObject(s);
-        this.currentAuthenticationToken = (String) response.get(ACCESS_TOKEN_FIELD);
-        this.currentRefreshToken = (String) response.get(REFRESH_TOKEN_FIELD);
+        Response r = target.request(MediaType.APPLICATION_JSON_TYPE).put(Entity.entity(entity, MediaType.APPLICATION_JSON));
+        AuthenticationResponse response = r.readEntity(AuthenticationResponse.class);
+        this.currentAuthenticationToken = response.getAccessToken();
+        this.currentRefreshToken = response.getRefreshToken();
         this.logedIn = true;
     }
 
@@ -117,5 +117,5 @@ public class UserManagementClient {
 
     public boolean isLogedIn() {
         return logedIn;
-    }*/
+    }
 }

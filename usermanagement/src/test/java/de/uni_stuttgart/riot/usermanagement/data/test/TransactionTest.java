@@ -1,17 +1,17 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlTransaction;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class TransactionTest extends DaoTestBase {

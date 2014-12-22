@@ -9,14 +9,14 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.LoginRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.RefreshRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
 
 /**
  * The authentication service will handle the authentication of a user based on a username + password and provide access tokens for further

@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.service.rest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,13 +17,14 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.PermissionResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
 
 /**
  * The roles service will handle any access (create, read, update, delete) to the roles.
@@ -53,11 +55,14 @@ public class RoleService {
 
         Collection<RoleResponse> roleResponse = new ArrayList<RoleResponse>();
         for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            roleResponse.add(new RoleResponse(it.next()));
+        	Role role = it.next(); 
+            roleResponse.add(new RoleResponse(role,this.getRolePermissions(role)));
         }
 
         return roleResponse;
     }
+    
+    
 
     /**
      * Get a role.
@@ -73,7 +78,8 @@ public class RoleService {
     @Path("/{roleID}")
     @RequiresAuthentication
     public RoleResponse getRole(@PathParam("roleID") Long roleID) throws UserManagementException {
-        return new RoleResponse(facade.getRole(roleID));
+        Role role = facade.getRole(roleID);
+    	return new RoleResponse(role,this.getRolePermissions(role));
     }
 
     /**
@@ -90,8 +96,8 @@ public class RoleService {
     @RequiresAuthentication
     public RoleResponse addRole(Role role) throws UserManagementException {
         facade.addRole(role);
-
-        return new RoleResponse(facade.getRole(role.getId()));
+        Role r = facade.getRole(role.getId());
+    	return new RoleResponse(r,this.getRolePermissions(r));
     }
 
     /**
@@ -112,8 +118,8 @@ public class RoleService {
     public RoleResponse updateRole(@PathParam("roleID") Long roleID, Role role) throws UserManagementException {
         role.setId(roleID);
         facade.updateRole(role);
-
-        return new RoleResponse(facade.getRole(role.getId()));
+        Role r = facade.getRole(role.getId());
+        return new RoleResponse(r,this.getRolePermissions(r));
     }
 
     /**
@@ -202,4 +208,13 @@ public class RoleService {
         return Response.ok().build();
     }
 
+    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException{
+    	Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
+    	Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+    	for (Permission permission : permissions) {
+			permissionResponses.add(new PermissionResponse(permission));
+		}
+    	return permissionResponses;
+    }
+    
 }

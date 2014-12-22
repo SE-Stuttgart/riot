@@ -1,10 +1,7 @@
-package de.uni_stuttgart.riot.usermanagement.data.storable;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.util.Collection;
 import java.util.LinkedList;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * {@link Role}s can be assigned to {@link User}s to grand certain rights. It can also be used
@@ -41,13 +38,6 @@ public class Role implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.ROLENAME, this.getRoleName()));
-        return params;
     }
 
     @Override

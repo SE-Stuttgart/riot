@@ -1,12 +1,7 @@
-package de.uni_stuttgart.riot.usermanagement.data.storable;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.util.Collection;
 import java.util.LinkedList;
-
-import org.apache.shiro.authz.permission.WildcardPermission;
-
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement.
@@ -44,13 +39,6 @@ public class Permission implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.PERMISSIONVALUE, this.getPermissionValue()));
-        return params;
     }
 
     /**

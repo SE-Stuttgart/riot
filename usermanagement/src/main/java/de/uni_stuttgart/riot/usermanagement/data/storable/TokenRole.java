@@ -3,6 +3,9 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
@@ -44,14 +47,6 @@ public class TokenRole implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
-        result.add(new SearchParameter(SearchFields.ROLEID, this.getRoleID()));
-        result.add(new SearchParameter(SearchFields.TOKENID, this.getTokenID()));
-        return result;
     }
 
     public Long getRoleID() {
