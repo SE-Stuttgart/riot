@@ -16,6 +16,11 @@ import de.uni_stuttgart.riot.rest.ModelManager;
  */
 public class CalendarModelManager implements ModelManager<CalendarEntry> {
 
+    /**
+     * exception message for invalid parameter values.
+     */
+    public static final String INVALID_PAR_EXC = "Invalid parameter value";
+
     /*
      * (non-Javadoc)
      * 
@@ -39,9 +44,29 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
     @Override
     public Collection<CalendarEntry> get() throws DaoException {
         String sql = "SELECT * FROM calendarEntries";
-        // return entries.values();
+
         try (Connection con = ConnectionMgr.openConnection()) {
             return con.createQuery(sql).executeAndFetch(CalendarEntry.class);
+        } catch (NamingException | SQLException e) {
+            throw new DaoException("Could not access calendar entries.", e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.uni_stuttgart.riot.rest.ModelManager#get(int, int)
+     */
+    @Override
+    public Collection<CalendarEntry> get(long offset, int limit) throws DaoException {
+        if (offset < 1 || limit < 1) {
+            throw new DaoException(INVALID_PAR_EXC);
+        }
+
+        String sql = "SELECT * FROM calendarEntries WHERE id >= :offset ORDER BY id ASC LIMIT :limit";
+
+        try (Connection con = ConnectionMgr.openConnection()) {
+            return con.createQuery(sql).addParameter("offset", offset).addParameter("limit", limit).executeAndFetch(CalendarEntry.class);
         } catch (NamingException | SQLException e) {
             throw new DaoException("Could not access calendar entries.", e);
         }
@@ -99,5 +124,4 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
             throw new DaoException("Could not update calendar entry", e);
         }
     }
-
 }

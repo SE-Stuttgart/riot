@@ -14,6 +14,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,8 +38,8 @@ public abstract class BaseResource<E extends ResourceModel> {
     /** Default format for consumption. */
     protected static final String CONSUMED_FORMAT = MediaType.APPLICATION_JSON;
 
-    /** The page size. */
-    // protected int pageSize = 20;
+    /** The maximum page size. */
+    protected static final int MAX_PAGE_SIZE = 20;
 
     // protected static String URI_PATH;
 
@@ -79,17 +80,42 @@ public abstract class BaseResource<E extends ResourceModel> {
     }
 
     /**
-     * Gets the collection fo resources.
+     * Gets the collection for resources.
      *
-     * @return the collection
+     * @param offset
+     *            the beginning item number
+     * @param limit
+     *            maximum number of items to return
+     * @return the collection. If the both parameters are 0, it returns at maximum 20 elements.
      * @throws DaoException
      *             when retrieving the data fails
      */
     @GET
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> get() throws DaoException {
-        // TODO: pagination
-        return modelManager.get();
+    public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DaoException {
+
+        if (offset == 0 && limit == 0) {
+            // the case when GET request has no query parameters (api/resource)
+
+            // id's at persistence layers starts with id 1
+            return modelManager.get(1, MAX_PAGE_SIZE);
+
+        } else if (offset == 0 && limit > 0) {
+            // the case when GET request has only limit query parameter (api/resource?limit=20)
+
+            // sets "limit" to the maximum allowed page size if necessary
+            return modelManager.get(1, limit < MAX_PAGE_SIZE ? limit : MAX_PAGE_SIZE);
+
+        } else if (offset > 0 && limit > 0) {
+            // the case when GET request has both offset and limit query parameters (api/resource?offset=20&limit=10)
+
+            // sets "limit" to the maximum allowed page size if necessary
+            return modelManager.get(offset, limit < MAX_PAGE_SIZE ? limit : MAX_PAGE_SIZE);
+
+        } else {
+            // invalid values (e.g. negative values)
+            throw new BadRequestException("please provide valid parameter values");
+        }
     }
 
     /**
@@ -125,6 +151,9 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
      * @throws DaoException
      *             when update not possible
+     * @throws URISyntaxException
+     *             the URI syntax exception
+     * 
      */
     @PUT
     @Path("{id}")

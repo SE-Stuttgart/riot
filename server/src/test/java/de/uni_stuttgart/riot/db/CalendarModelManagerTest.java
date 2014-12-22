@@ -1,11 +1,17 @@
 package de.uni_stuttgart.riot.db;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -17,6 +23,10 @@ import de.uni_stuttgart.riot.calendar.CalendarModelManager;
 import de.uni_stuttgart.riot.rest.ModelManager;
 import de.uni_stuttgart.riot.rest.RiotApplication;
 
+/**
+ * Tests the operations executed at the persistence layer.
+ *
+ */
 public class CalendarModelManagerTest extends JerseyDBTestBase {
 
     ModelManager<CalendarEntry> modelManager = new CalendarModelManager();
@@ -26,6 +36,31 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         return new RiotApplication();
     }
 
+
+    /**
+     * help method to create test data in DB.
+     * 
+     * @param testDataSize
+     * @return
+     * @throws DaoException
+     *             creation of testData not possible
+     */
+    private HashMap<Long, CalendarEntry> createTestData(final int testDataSize) throws DaoException {
+        // inserting test data
+        HashMap<Long, CalendarEntry> savedElements = new HashMap<Long, CalendarEntry>();
+        for (int i = 0; i < testDataSize; i++) {
+            CalendarEntry created = modelManager.create(new CalendarEntry(i, "Appointment " + i, "getAllTest"));
+            savedElements.put(created.getId(), modelManager.getById(created.getId()));
+        }
+        return savedElements;
+    }
+
+    /**
+     * Test create one entry.
+     * 
+     * @throws DaoException
+     *             when creation not possible
+     */
     @Test
     public void createEntryTest() throws DaoException {
         CalendarEntry model = new CalendarEntry(1, "Appointment 1", "createTest");
@@ -50,6 +85,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      * Test get one entry by id.
      * 
      * @throws DaoException
+     *             when access not possible.
      */
     @Test
     public void getByIdTest() throws DaoException {
@@ -75,6 +111,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      * Test get all.
      * 
      * @throws DaoException
+     *             when access not possible.
      */
     @Test
     public void getAllTest() throws DaoException {
@@ -84,13 +121,8 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         assertNotNull("returned collection is null", retrievedElements);
         assertEquals("collection size not as expected", 0, retrievedElements.size());
 
-        int size = 5;
-        HashMap<Long, CalendarEntry> savedElements = new HashMap<Long, CalendarEntry>();
-
-        for (int i = 0; i < size; i++) {
-            CalendarEntry created = modelManager.create(new CalendarEntry(i, "Appointment " + i, "getAllTest"));
-            savedElements.put(created.getId(), created);
-        }
+        final int size = 5;
+        HashMap<Long, CalendarEntry> savedElements = createTestData(size);
 
         // retrieving all entries from DB
         retrievedElements = modelManager.get();
@@ -108,9 +140,114 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
     }
 
     /**
+     * get entries using pagination.
+     * 
+     * @throws DaoException
+     *             when access not possible.
+     */
+    @Test
+    public void getPaginationTest() throws DaoException {
+        final int pageSize = 2; // LIMIT
+        final int testDataSize = 6; // size of test data
+
+        // --- no test data at database: returned collection shall be empty
+        Collection<CalendarEntry> retrievedElements = modelManager.get(1, pageSize);
+        assertThat(retrievedElements, hasSize(0));
+
+        // creating test data
+        HashMap<Long, CalendarEntry> savedElements = createTestData(testDataSize);
+
+        // --- retrieving first page
+        retrievedElements = modelManager.get(1, pageSize); // OFFSET=1, LIMIT = 2
+        assertThat(retrievedElements, hasSize(pageSize)); // shall return 2 items
+        CalendarEntry elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+        CalendarEntry elem2 = (CalendarEntry) retrievedElements.toArray()[1];
+
+        // returned elements shall be (id=1, id=2)
+        assertThat(Arrays.asList(elem1.getId(), elem2.getId()), containsInAnyOrder((long) 1, (long) 2));
+        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
+        assertThat(savedElements.get(elem2.getId()), equalTo(elem2));
+
+        // --- OFFSET bigger than number of existing elements: returns empty collection
+        retrievedElements = modelManager.get(testDataSize + 1, pageSize); // OFFSET=7, LIMIT = 2
+        assertThat(retrievedElements, hasSize(0));
+
+        // --- LIMIT bigger than existing elements to return (e.g. the very last id as offset)
+        retrievedElements = modelManager.get(testDataSize, pageSize); // OFFSET=6, LIMIT = 2
+        assertThat(retrievedElements, hasSize(1));
+        elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+
+        // returned elements shall be (id=6)
+        assertThat(elem1.getId(), equalTo((long) 6));
+        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // element still the same as created
+    }
+
+    /**
+     * test getting entries using pagination after some entry is deleted.
+     * 
+     * @throws DaoException
+     *             access not possible
+     */
+    @Test
+    public void getPaginationAfterDeletionTest() throws DaoException {
+        final int pageSize = 2; // LIMIT
+        // creating test data
+        HashMap<Long, CalendarEntry> savedElements = createTestData(5);
+
+        // --- Using non-existing id=3 as offset: new offset shall be the next existing id
+        modelManager.delete(3);
+        Collection<CalendarEntry> retrievedElements = modelManager.get(3, pageSize); // OFFSET=3, LIMIT = 2
+        assertThat(retrievedElements, hasSize(pageSize)); // shall still return 2 items
+        CalendarEntry elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+        CalendarEntry elem2 = (CalendarEntry) retrievedElements.toArray()[1];
+
+        // returned elements shall be (id=4, id=5)
+        assertThat(Arrays.asList(elem1.getId(), elem2.getId()), containsInAnyOrder((long) 4, (long) 5));
+        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
+        assertThat(savedElements.get(elem2.getId()), equalTo(elem2));
+
+        // --- Using id before non-existing id=3 as offset: returned size still 2
+        retrievedElements = modelManager.get(2, pageSize); // OFFSET=2, LIMIT = 2
+        assertThat(retrievedElements, hasSize(pageSize));
+        elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+        elem2 = (CalendarEntry) retrievedElements.toArray()[1];
+
+        // returned elements shall be (id=2, id=4)
+        assertThat(Arrays.asList(elem1.getId(), elem2.getId()), containsInAnyOrder((long) 2, (long) 4));
+        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
+        assertThat(savedElements.get(elem2.getId()), equalTo(elem2));
+    }
+
+    /**
+     * test getting entries using pagination with invalid parameters.
+     * 
+     * @throws DaoException
+     *             access not possible
+     */
+    @Test
+    public void getPaginationFailedTest() throws DaoException {
+        // negative offset: throws exception (negative offset and limit values are however already handled at the REST layer)
+        try {
+            modelManager.get(-1, 2); // OFFSET=-1, LIMIT = 2
+            fail("Expected an DaoException to be thrown");
+        } catch (DaoException exception) {
+            assertThat(exception.getMessage(), equalTo(CalendarModelManager.INVALID_PAR_EXC));
+        }
+
+        // negative limit: throws exception
+        try {
+            modelManager.get(1, -1); // OFFSET=1, LIMIT = -1
+            fail("Expected an DaoException to be thrown");
+        } catch (DaoException exception) {
+            assertThat(exception.getMessage(), equalTo(CalendarModelManager.INVALID_PAR_EXC));
+        }
+    }
+
+    /**
      * Test delete one entry.
      * 
      * @throws DaoException
+     *             when deletion not possible
      */
     @Test
     public void deleteTest() throws DaoException {
@@ -143,6 +280,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      * Test update one entry given the id.
      * 
      * @throws DaoException
+     *             when update not possible
      */
     @Test
     public void updateTest() throws DaoException {

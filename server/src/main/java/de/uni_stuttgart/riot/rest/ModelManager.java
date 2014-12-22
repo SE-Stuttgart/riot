@@ -19,7 +19,7 @@ public interface ModelManager<E extends ResourceModel> {
      *            the model id
      * @return the ResourceModel if found, null otherwise
      * @throws DaoException
-     *             when retrieving the data fails.
+     *             when access to persistence layer is not possible.
      */
     E getById(long id) throws DaoException;
 
@@ -28,9 +28,24 @@ public interface ModelManager<E extends ResourceModel> {
      *
      * @return the collection of models.
      * @throws DaoException
-     *             when retrieving the data fails.
+     *             when access to persistence layer is not possible.
+     * 
      */
     Collection<E> get() throws DaoException;
+
+    /**
+     * Gets a collection of models using pagination.
+     * 
+     * @param offset
+     *            the start point (id)
+     * @param limit
+     *            the number of records to return
+     * @return the limited collection of models
+     * @throws DaoException
+     *             when parameters are invalid (< 1) or access to persistence layer is not possible.
+     * 
+     */
+    Collection<E> get(final long offset, final int limit) throws DaoException;
 
     /**
      * Creates a new model if the provided object is valid.

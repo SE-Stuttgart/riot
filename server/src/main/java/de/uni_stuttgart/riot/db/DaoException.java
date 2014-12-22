@@ -11,10 +11,22 @@ public class DaoException extends Exception {
     /**
      * Instantiates a new dao exception.
      *
-     * @param message the message
-     * @param cause the cause
+     * @param message
+     *            the message
+     * @param cause
+     *            the cause
      */
     public DaoException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Instantiates a new dao exception with a specific message.
+     * 
+     * @param message
+     *            the message
+     */
+    public DaoException(String message) {
+        super(message);
     }
 }
