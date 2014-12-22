@@ -15,7 +15,7 @@ public class GetAllUsersException extends LogicException {
      */
     private static final long serialVersionUID = -7161371919988111037L;
 
-    private static final String END_USER_MESSAGE = "Couldn't get all user";
+    private static final String END_USER_MESSAGE = "Couldn't get all users";
 
     /**
      * Constructs a new exception for the case that retrieving all users fails.

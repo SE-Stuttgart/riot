@@ -20,7 +20,7 @@ PRIMARY KEY (userID)
 CREATE TABLE tokens 
 (
 tokenID SERIAL,
-userID bigint  NOT NULL,
+userID bigint unsigned NOT NULL,
 tokenValue varchar(100) unique NOT NULL,
 refreshtokenValue varchar(100) unique  NOT NULL,
 valid boolean NOT NULL,
@@ -47,8 +47,8 @@ PRIMARY KEY (roleID)
 CREATE TABLE users_roles 
 (
 userRoleID SERIAL,
-userID bigint NOT NULL,
-roleID bigint NOT NULL,
+userID bigint unsigned NOT NULL,
+roleID bigint unsigned NOT NULL,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
 FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
 PRIMARY KEY (userRoleID),
@@ -58,8 +58,8 @@ UNIQUE(userID, roleID)
 CREATE TABLE tokens_roles 
 (
 tokenRoleID SERIAL,
-tokenID bigint NOT NULL,
-roleID bigint NOT NULL,
+tokenID bigint unsigned NOT NULL,
+roleID bigint unsigned NOT NULL,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
 FOREIGN KEY (tokenID) REFERENCES tokens(tokenID) ON DELETE CASCADE,
 PRIMARY KEY (tokenRoleID),
@@ -69,8 +69,8 @@ UNIQUE (tokenID, roleID)
 CREATE TABLE roles_permissions 
 (
 rolePermissionID SERIAL,
-permissionID bigint NOT NULL,
-roleID bigint NOT NULL,
+permissionID bigint unsigned NOT NULL,
+roleID bigint unsigned NOT NULL,
 FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
 FOREIGN KEY (permissionID) REFERENCES permissions(permissionID) ON DELETE CASCADE,
 PRIMARY KEY (rolePermissionID),

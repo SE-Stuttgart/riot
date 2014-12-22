@@ -22,6 +22,7 @@ public class UserManagementExceptionMapper implements ExceptionMapper<LogicExcep
 
     @Override
     public Response toResponse(LogicException exception) {
+        exception.printStackTrace();
         return Response.status(Status.BAD_REQUEST)                  //TODO status code
                        .entity(Json.createObjectBuilder()
                                    .add("errorCode", exception.getErrorCode())

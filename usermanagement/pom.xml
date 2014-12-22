@@ -36,14 +36,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- TODO: Do we need this? -->
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901-1.jdbc4</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Server -->
 		<dependency>
 			<groupId>javax</groupId>
