@@ -60,5 +60,10 @@ public class Role extends Storable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Role [roleName=" + roleName + "]";
+	}
+
     
 }

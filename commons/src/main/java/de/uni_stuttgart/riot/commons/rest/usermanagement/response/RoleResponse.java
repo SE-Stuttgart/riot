@@ -34,4 +34,11 @@ public class RoleResponse {
 		this.role = role;
 	}
 
+	@Override
+	public String toString() {
+		return "RoleResponse [role=" + role + ", permissions=" + permissions
+				+ "]";
+	}
+
+	
 }

@@ -1,11 +1,11 @@
-package de.uni_stuttgart.riot.commons.rest.usermanagement;
+package de.uni_stuttgart.riot.usermanagement.client;
 
-public class RequestError {
+public class RequestExceptionWrapper {
 	
 	public int errorCode;
 	public String errorMessage;
 	
-	public RequestError(int errorCode,String errorMessage) {
+	public RequestExceptionWrapper(int errorCode,String errorMessage) {
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
 	}
@@ -18,7 +18,7 @@ public class RequestError {
 		this.errorMessage = errorMassage;
 	}
 
-	public RequestError() {
+	public RequestExceptionWrapper() {
 	}
 
 	public int getErrorCode() {
@@ -29,8 +29,8 @@ public class RequestError {
 		this.errorCode = errorCode;
 	}
 
-	public void throwIT() throws Exception {
-		throw new Exception(this.getErrorCode() +" : " + this.getErrorMessage());
+	public void throwIT() throws RequestException {
+		throw new RequestException(this.getErrorCode() +" : " + this.getErrorMessage());
 	}
 
 }

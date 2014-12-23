@@ -34,4 +34,11 @@ public class UserResponse {
 		this.user = user;
 	}
 
+	@Override
+	public String toString() {
+		return "UserResponse [user=" + user + ", roles=" + roles + "]";
+	}
+	
+	
+
 }

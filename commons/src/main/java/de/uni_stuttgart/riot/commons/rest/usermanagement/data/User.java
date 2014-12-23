@@ -97,4 +97,12 @@ public class User extends Storable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password
+				+ ", passwordSalt=" + passwordSalt + "]";
+	}
+	
+	
+
 }

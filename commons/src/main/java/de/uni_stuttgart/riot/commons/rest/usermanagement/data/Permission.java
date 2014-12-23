@@ -76,5 +76,10 @@ public class Permission extends Storable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Permission [permissionValue=" + permissionValue + "]";
+	}
+
     
 }
