@@ -16,12 +16,12 @@ public class NotificationAdapter extends BaseAdapter {
 
 	private MainActivity mainActivity;
 
-	List<Notification> codeLearnChapterList;
+	List<Notification> notificationList;
 
 	public NotificationAdapter(MainActivity mainActivity,
 			List<Notification> list) {
 		this.mainActivity = mainActivity;
-		codeLearnChapterList = list;
+		notificationList = list;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class NotificationAdapter extends BaseAdapter {
 		if (arg1 == null) {
 			LayoutInflater inflater = (LayoutInflater) mainActivity
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			arg1 = inflater.inflate(R.layout.listitem, arg2, false);
+			arg1 = inflater.inflate(R.layout.notification_item, arg2, false);
 		}
 
 		TextView title = (TextView) arg1.findViewById(R.id.notificationTitle);
@@ -39,7 +39,7 @@ public class NotificationAdapter extends BaseAdapter {
 		TextView date = (TextView) arg1.findViewById(R.id.notificationDate);
 		ImageView typIcon = (ImageView) arg1.findViewById(R.id.typeIcon);
 
-		Notification noti = codeLearnChapterList.get(arg0);
+		Notification noti = notificationList.get(arg0);
 
 		title.setText(noti.getTitle());
 		content.setText(noti.getContent());
@@ -59,13 +59,13 @@ public class NotificationAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return codeLearnChapterList.size();
+		return notificationList.size();
 	}
 
 	@Override
 	public Notification getItem(int arg0) {
 		// TODO Auto-generated method stub
-		return codeLearnChapterList.get(arg0);
+		return notificationList.get(arg0);
 	}
 
 	@Override

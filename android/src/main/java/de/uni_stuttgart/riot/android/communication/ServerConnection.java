@@ -82,9 +82,9 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 	protected void onPostExecute(List<Notification> notificationList) {
 		NotificationAdapter chapterListAdapter = new NotificationAdapter(
 				mainActivity, notificationList);
-		ListView codeLearnLessons = (ListView) mainActivity
+		ListView notification = (ListView) mainActivity
 				.findViewById(R.id.NotificationList);
-		codeLearnLessons.setAdapter(chapterListAdapter);
+		notification.setAdapter(chapterListAdapter);
 	}
 
 }

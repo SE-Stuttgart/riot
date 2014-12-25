@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -30,6 +34,7 @@ public class MainActivity extends Activity {
 
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
+	private ListView notificationList;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
@@ -54,6 +59,8 @@ public class MainActivity extends Activity {
 
 		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.drawer_list_item, mMenuTitles));
+		
+		//ClickListener for the left ActionBar
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -77,8 +84,33 @@ public class MainActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
+		
+		
+		//ClickListener for the Notification List
+		notificationList = (ListView) findViewById(R.id.NotificationList);		
+		notificationList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				System.out.println("longclick");
+				return false;
+			}
+		});
+		
+		notificationList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				System.out.println("click");
+				
+			}
+			
+		});
 
 	}
+	
 
 	/*
 	 * ----------------- REFRESH BUTTON -----------------
@@ -99,10 +131,11 @@ public class MainActivity extends Activity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
+		
 		// Refresh button is only shown in the home screen
 		if (!getActionBar().getTitle().equals("Home")) {
 			menu.findItem(R.id.action_refresh).setVisible(false);
+			notificationList.setAdapter(null);
 		} else {
 			// get the latest Notifications
 			new ServerConnection(this).execute();
