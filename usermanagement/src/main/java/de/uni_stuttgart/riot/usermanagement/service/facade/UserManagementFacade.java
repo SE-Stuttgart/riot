@@ -177,7 +177,7 @@ public class UserManagementFacade {
      */
     public Collection<User> getAllUsers() throws GetAllUsersException {
         ArrayList<User> users = new ArrayList<User>();
-        users.addAll(getAllUsers());
+        users.addAll(userLogic.getAllUsers());
         return users;
     }
 
