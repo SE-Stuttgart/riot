@@ -185,11 +185,6 @@
 				<version>2.13</version>
 				<dependencies>
 					<dependency>
-						<groupId>de.uni-stuttgart.riot</groupId>
-						<artifactId>riot.commons</artifactId>
-						<version>${project.version}</version>
-					</dependency>
-					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
 						<version>5.9</version>
@@ -200,8 +195,8 @@
 						<id>validate</id>
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>checkstyle/conventions.xml</configLocation>
-							<suppressionsLocation>checkstyle/suppressions.xml</suppressionsLocation>
+							<configLocation>${riot.root}/commons/src/main/resources/checkstyle/conventions.xml</configLocation>
+							<suppressionsLocation>${riot.root}/commons/src/main/resources/checkstyle/suppressions.xml</suppressionsLocation>
 							<includeTestSourceDirectory>true</includeTestSourceDirectory>
 							<propertyExpansion>samedir=${riot.root}/commons/src/main/resources/checkstyle</propertyExpansion>
 							<failOnViolation>true</failOnViolation>
