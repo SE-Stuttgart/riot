@@ -153,6 +153,21 @@ public class UserLogic {
         }
     }
 
+	/**
+	 * Get user by token.
+	 * 
+	 * @param token The token of the user.
+	 * @return Returns user.
+	 * @throws GetUserException
+	 */
+	public UMUser getUser(Token token) throws GetUserException {
+		try {
+			return dao.findByUniqueField(new SearchParameter(SearchFields.USERID, token.getUserID()));
+		} catch (Exception e) {
+			throw new GetUserException(e);
+		}
+	}
+
     /**
      * Retrieve all existing users.
      * 

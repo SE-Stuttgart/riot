@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
@@ -82,6 +83,22 @@ public class UserService {
     @RequiresAuthentication
     public UserResponse getUser(@PathParam("userID") Long userID) throws UserManagementException {
         return new UserResponse(facade.getUser(userID));
+    }
+    
+    /**
+     * Get the currently executing user.
+     * 
+     * @return Returns the currently executing user.
+     * @throws UserManagementException
+     */
+    @GET
+    @Path("/self")
+    @RequiresAuthentication
+    public UserResponse getUser() throws UserManagementException {
+    	String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
+    	System.out.println(accessToken);
+    	Token token = facade.getToken(accessToken);
+        return new UserResponse(facade.getUser(token));
     }
 
     /**

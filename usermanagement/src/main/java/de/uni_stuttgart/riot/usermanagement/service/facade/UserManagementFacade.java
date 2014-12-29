@@ -14,6 +14,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
+import de.uni_stuttgart.riot.usermanagement.logic.TokenLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
@@ -31,6 +32,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsF
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.DeleteUserException;
@@ -52,12 +54,14 @@ public class UserManagementFacade {
     private static UserManagementFacade instance = null;
 
     private UserLogic userLogic;
+    private TokenLogic tokenLogic;
     private RoleLogic roleLogic;
     private PermissionLogic permissionLogic;
     private AuthenticationLogic authLogic;
 
     private UserManagementFacade() {
         userLogic = new UserLogic();
+        tokenLogic = new TokenLogic();
         roleLogic = new RoleLogic();
         permissionLogic = new PermissionLogic();
         authLogic = new AuthenticationLogic();
@@ -170,6 +174,17 @@ public class UserManagementFacade {
     }
 
     /**
+     * Get user by token.
+     * 
+     * @param token The token of the user.
+     * @return Returns user.
+     * @throws GetUserException
+     */
+	public User getUser(Token token) throws GetUserException {
+		return (User) userLogic.getUser(token);
+	}
+
+    /**
      * Get all existing users
      * 
      * @return All users in a List
@@ -229,6 +244,17 @@ public class UserManagementFacade {
     public Collection<Token> getActiveTokensFromUser(Long idUser) throws GetActiveTokenException {
         return userLogic.getActiveTokensFromUser(idUser);
     }
+
+    /**
+     * Get token from token value.
+     * 
+     * @param token The token value.
+     * @return Returns token.
+     * @throws GetTokenException 
+     */
+	public Token getToken(String token) throws GetTokenException {
+		return tokenLogic.getToken(token);
+	}
 
     /**
      * Add a new permission
@@ -388,4 +414,5 @@ public class UserManagementFacade {
     public void requiresPermission(String permission) throws AuthorizationException {
         SecurityUtils.getSubject().checkPermission(permission);
     }
+
 }
