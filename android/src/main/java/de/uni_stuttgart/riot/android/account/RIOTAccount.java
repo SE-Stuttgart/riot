@@ -7,60 +7,81 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * A RIOT Android account.
+ */
 public class RIOTAccount {
-    // static stuff
-    private final static String TAG= "RIOTAccount";
 
-    public static final long SYNC_FREQUENCY = 60 * 60;
-    public static final String ACCOUNT_TYPE = "de.uni_stuttgart.riot.android.account.type";
+    /**
+     * The authority of the accounts.
+     */
     public static final String AUTHORITY = "de.uni_stuttgart.riot.android.account.auth";
 
-    private static RIOTAccount riot_acc;
+    private static final String TAG = "RIOTAccount";
 
-    // get function for singleton
-    public static RIOTAccount getRIOTAccount(Context ctx)
-    {
-        if(riot_acc == null)
-            riot_acc = new RIOTAccount(ctx);
-        return riot_acc;
-    }
+    private static final long SYNC_FREQUENCY = 60 * 60;
+    private static final String ACCOUNT_TYPE = "de.uni_stuttgart.riot.android.account.type";
 
-    // constructor for singleton
-    private RIOTAccount(Context ctx)
-    {
-        this.ctx = ctx;
-        getOrCreateAccount();
-    }
-
-    public Account getAccount()
-    {
-        getOrCreateAccount();
-        return account;
-    }
+    /**
+     * Singleton instance holder.
+     */
+    private static RIOTAccount riotAccount;
 
     private Account account;
     private Context ctx;
 
-    private void getOrCreateAccount()
-    {
-        if(account != null)
-        {
+    /**
+     * Private singleton constructor.
+     * 
+     * @param ctx
+     *            The Android context.
+     */
+    private RIOTAccount(Context ctx) {
+        this.ctx = ctx;
+        getOrCreateAccount();
+    }
+
+    /**
+     * Get function for singleton. FIXME Is it really a good idea to use a singleton pattern here?
+     * 
+     * @param ctx
+     *            The Android context.
+     * @return The single instance.
+     */
+    public static RIOTAccount getRIOTAccount(Context ctx) {
+        if (riotAccount == null) {
+            riotAccount = new RIOTAccount(ctx);
+        }
+        return riotAccount;
+    }
+
+    /**
+     * Gets the underlying Android account.
+     * 
+     * @return The underlying Android account.
+     */
+    public Account getAccount() {
+        getOrCreateAccount();
+        return account;
+    }
+
+    private void getOrCreateAccount() {
+        if (account != null) {
             return;
         }
 
         // search account
         AccountManager accountManager = AccountManager.get(ctx);
-        Account allAccounts[] = accountManager.getAccountsByType(ACCOUNT_TYPE);
-        for(int i = 0 ; i < allAccounts.length ; i++) {
-            account = allAccounts[i];
+        Account[] allAccounts = accountManager.getAccountsByType(ACCOUNT_TYPE);
+        if (allAccounts.length > 0) {
+            account = allAccounts[0];
             Log.v(TAG, "Found account: " + account);
             return;
         }
 
         // if we reach this line there is no account, so create one
         account = new Account(AUTHORITY, ACCOUNT_TYPE);
-        if (accountManager.addAccountExplicitly(account, null, null))
-        {
+        if (accountManager.addAccountExplicitly(account, null, null)) {
             // Inform the system that this account supports sync
             ContentResolver.setIsSyncable(account, AUTHORITY, 1);
 
@@ -71,11 +92,10 @@ public class RIOTAccount {
             // on other scheduled syncs and network utilization.
             ContentResolver.addPeriodicSync(account, AUTHORITY, new Bundle(), SYNC_FREQUENCY);
 
-            Log.v(TAG, "New Account added"+account);
+            Log.v(TAG, "New Account added" + account);
             return;
         }
         account = null;
     }
-
 
 }

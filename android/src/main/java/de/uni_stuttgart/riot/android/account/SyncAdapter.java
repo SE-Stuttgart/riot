@@ -21,9 +21,12 @@ import android.provider.CalendarContract.Calendars;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-
+/**
+ * FIXME Provide description FIXME Clean up this class and fix checkstyle errors.
+ * CHECKSTYLE:OFF
+ */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-    private final static String TAG = "SyncAdapter";
+    private static final  String TAG = "SyncAdapter";
     private boolean bool_added = false;
     private String my_calendar_id = new String();
 

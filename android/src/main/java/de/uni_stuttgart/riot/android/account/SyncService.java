@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-
+/**
+ * The service responsible for syncing with the server.
+ */
 public class SyncService extends Service {
     private static final String TAG = "SyncService";
 
-    private static final Object syncAdapterLock = new Object();
     private static SyncAdapter syncAdapter;
 
     /**
@@ -17,9 +18,9 @@ public class SyncService extends Service {
      */
     @Override
     public void onCreate() {
-        //super.onCreate();
+        // super.onCreate();
         Log.i(TAG, "Service created");
-        synchronized (syncAdapterLock) {
+        synchronized (SyncService.class) {
             if (syncAdapter == null) {
                 syncAdapter = new SyncAdapter(getApplicationContext());
                 Log.i(TAG, "New syncAdapter created");
@@ -32,7 +33,7 @@ public class SyncService extends Service {
      * Logging-only destructor.
      */
     public void onDestroy() {
-        //super.onDestroy();
+        // super.onDestroy();
         syncAdapter = null;
         Log.i(TAG, "Service destroyed");
     }
@@ -43,4 +44,3 @@ public class SyncService extends Service {
     }
 
 }
-

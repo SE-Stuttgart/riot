@@ -8,19 +8,21 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 
+/**
+ * FIXME What is this class doing here?
+ */
 public class MyFragment extends Fragment {
 
-	private ListView textView;
+    private ListView textView;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View view = inflater.inflate(R.layout.fragment_layout, container, false);
-		String menu = getArguments().getString("Menu");
-		//textView = (ListView) view.findViewById(R.id.LISTE);
-		//textView.setText(menu);		
-		
-		return view;
-	}
+        View view = inflater.inflate(R.layout.fragment_layout, container, false);
+        String menu = getArguments().getString("Menu");
+        // textView = (ListView) view.findViewById(R.id.LISTE);
+        // textView.setText(menu);
+
+        return view;
+    }
 }

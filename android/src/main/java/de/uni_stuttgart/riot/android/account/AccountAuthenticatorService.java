@@ -27,99 +27,94 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * Service to authenticate FIXME complete description.
+ */
 public class AccountAuthenticatorService extends Service {
 
-	private static final String TAG = "AccountService";
-	private static AccountAuthenticator accountAuthenticator;
+    private static final String TAG = "AccountService";
+    private static AccountAuthenticator accountAuthenticator;
 
-	private AccountAuthenticator getAuthenticator() {
-		if (accountAuthenticator != null)
-			return accountAuthenticator;
-		return accountAuthenticator = new AccountAuthenticator(this);
-	}
+    private AccountAuthenticator getAuthenticator() {
+        if (accountAuthenticator == null) {
+            accountAuthenticator = new AccountAuthenticator(this);
+        }
+        return accountAuthenticator;
+    }
 
-	@Override
-	public void onCreate() {
-		Log.i(TAG, "Service created");
-	}
+    @Override
+    public void onCreate() {
+        Log.i(TAG, "Service created");
+    }
 
-	@Override
-	public void onDestroy() {
-		Log.i(TAG, "Service destroyed");
-	}
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "Service destroyed");
+    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		if (intent.getAction().equals(
-				android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT))
-			return getAuthenticator().getIBinder();
-		return null;
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        if (intent.getAction().equals(android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT)) {
+            return getAuthenticator().getIBinder();
+        }
+        return null;
+    }
 
-	public class AccountAuthenticator extends AbstractAccountAuthenticator {
-		private Context context;
+    /**
+     * FIXME Provide description.
+     */
+    public class AccountAuthenticator extends AbstractAccountAuthenticator {
+        private Context context;
 
-		public AccountAuthenticator(Context context) {
-			super(context);
-			this.context = context;
-		}
+        /**
+         * Creates a new AccountAuthenticator.
+         * 
+         * @param context
+         *            The Android context.
+         */
+        public AccountAuthenticator(Context context) {
+            super(context);
+            this.context = context;
+        }
 
-		@Override
-		public Bundle editProperties(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				String s) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Bundle editProperties(AccountAuthenticatorResponse accountAuthenticatorResponse, String s) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Bundle addAccount(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				String s, String s2, String[] strings, Bundle options)
-				throws NetworkErrorException {
-			/*
-			 * Intent intent = new Intent(context, Main.class);
-			 * intent.putExtra(AccountManager
-			 * .KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-			 * accountAuthenticatorResponse); Bundle bundle = new Bundle();
-			 * bundle.putParcelable(AccountManager.KEY_INTENT, intent); return
-			 * bundle;
-			 */
-			return null;
-		}
+        @Override
+        public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String s, String s2, String[] strings, Bundle options) throws NetworkErrorException {
+            /*
+             * Intent intent = new Intent(context, Main.class); intent.putExtra(AccountManager .KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
+             * accountAuthenticatorResponse); Bundle bundle = new Bundle(); bundle.putParcelable(AccountManager.KEY_INTENT, intent); return
+             * bundle;
+             */
+            return null;
+        }
 
-		@Override
-		public Bundle confirmCredentials(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				Account account, Bundle bundle) throws NetworkErrorException {
-			return null;
-		}
+        @Override
+        public Bundle confirmCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, Bundle bundle) throws NetworkErrorException {
+            return null;
+        }
 
-		@Override
-		public Bundle getAuthToken(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				Account account, String s, Bundle bundle)
-				throws NetworkErrorException {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public String getAuthTokenLabel(String s) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public String getAuthTokenLabel(String s) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Bundle updateCredentials(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				Account account, String s, Bundle bundle)
-				throws NetworkErrorException {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Bundle updateCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Bundle hasFeatures(
-				AccountAuthenticatorResponse accountAuthenticatorResponse,
-				Account account, String[] strings) throws NetworkErrorException {
-			throw new UnsupportedOperationException();
-		}
-	}
+        @Override
+        public Bundle hasFeatures(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String[] strings) throws NetworkErrorException {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
