@@ -122,6 +122,7 @@ public class CalendarEntry implements ResourceModel {
         this.location = location;
     }
 
+    // CHECKSTYLE:OFF (auto-generated code only)
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -138,42 +139,57 @@ public class CalendarEntry implements ResourceModel {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CalendarEntry other = (CalendarEntry) obj;
-        if (allDayEvent != other.allDayEvent)
+        if (allDayEvent != other.allDayEvent) {
             return false;
+        }
         if (description == null) {
-            if (other.description != null)
+            if (other.description != null) {
                 return false;
-        } else if (!description.equals(other.description))
+            }
+        } else if (!description.equals(other.description)) {
             return false;
+        }
         if (endTime == null) {
-            if (other.endTime != null)
+            if (other.endTime != null) {
                 return false;
-        } else if (!endTime.equals(other.endTime))
+            }
+        } else if (!endTime.equals(other.endTime)) {
             return false;
-        if (id != other.id)
+        }
+        if (id != other.id) {
             return false;
+        }
         if (location == null) {
-            if (other.location != null)
+            if (other.location != null) {
                 return false;
-        } else if (!location.equals(other.location))
+            }
+        } else if (!location.equals(other.location)) {
             return false;
+        }
         if (startTime == null) {
-            if (other.startTime != null)
+            if (other.startTime != null) {
                 return false;
-        } else if (!startTime.equals(other.startTime))
+            }
+        } else if (!startTime.equals(other.startTime)) {
             return false;
+        }
         if (title == null) {
-            if (other.title != null)
+            if (other.title != null) {
                 return false;
-        } else if (!title.equals(other.title))
+            }
+        } else if (!title.equals(other.title)) {
             return false;
+        }
         return true;
     }
 

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Represents a single calendar event
+ * Represents a single calendar event.
  * 
  * @author Ana
  *
@@ -19,6 +19,16 @@ public class CalendarEvent {
     private String description;
     private String location;
 
+    /**
+     * Creates a new calendar event.
+     * 
+     * @param title
+     *            The title/description of the event.
+     * @param startTime
+     *            The start time.
+     * @param endTime
+     *            The end time.
+     */
     public CalendarEvent(String title, Date startTime, Date endTime) {
         super();
         this.id = UUID.randomUUID().toString();

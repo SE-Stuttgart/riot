@@ -18,6 +18,8 @@ public interface ModelManager<E extends ResourceModel> {
      * @param id
      *            the model id
      * @return the ResourceModel if found, null otherwise
+     * @throws DaoException
+     *             when retrieving the data fails.
      */
     E getById(long id) throws DaoException;
 
@@ -26,6 +28,7 @@ public interface ModelManager<E extends ResourceModel> {
      *
      * @return the collection of models.
      * @throws DaoException
+     *             when retrieving the data fails.
      */
     Collection<E> get() throws DaoException;
 
@@ -35,6 +38,8 @@ public interface ModelManager<E extends ResourceModel> {
      * @param model
      *            the model to be created
      * @return the newly created model (including its set id)
+     * @throws DaoException
+     *             when writing the data fails.
      */
     E create(E model) throws DaoException;
 
@@ -44,6 +49,8 @@ public interface ModelManager<E extends ResourceModel> {
      * @param id
      *            the id
      * @return true if the specified row was deleted, false if no such row exists.
+     * @throws DaoException
+     *             when deleting fails.
      */
     boolean delete(long id) throws DaoException;
 
@@ -53,6 +60,8 @@ public interface ModelManager<E extends ResourceModel> {
      * @param model
      *            the new model
      * @return true if the specified row was updated, false otherwise.
+     * @throws DaoException
+     *             when updating the data fails.
      */
     boolean update(E model) throws DaoException;
 

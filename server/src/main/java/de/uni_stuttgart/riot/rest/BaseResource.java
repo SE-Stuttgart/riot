@@ -83,6 +83,7 @@ public abstract class BaseResource<E extends ResourceModel> {
      *
      * @return the collection
      * @throws DaoException
+     *             when retrieving the data fails
      */
     @GET
     @Produces(PRODUCED_FORMAT)
@@ -129,7 +130,7 @@ public abstract class BaseResource<E extends ResourceModel> {
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Response update(@PathParam("id") long id, E model) throws URISyntaxException, DaoException {
+    public Response update(@PathParam("id") long id, E model) throws DaoException {
         if (model == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
