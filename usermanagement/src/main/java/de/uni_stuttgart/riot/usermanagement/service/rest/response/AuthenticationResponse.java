@@ -12,6 +12,7 @@ public class AuthenticationResponse {
 
     private String accessToken;
     private String refreshToken;
+    private UserResponse user;
 
     public AuthenticationResponse() {
 
@@ -24,10 +25,13 @@ public class AuthenticationResponse {
      *            The valid access token generated when the user was successfully authenticated.
      * @param refreshToken
      *            The valid refresh token generated when the user was successfully authenticated.
+     * @param user
+     *            The user.
      */
-    public AuthenticationResponse(String accessToken, String refreshToken) {
+    public AuthenticationResponse(String accessToken, String refreshToken, UserResponse user) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.user = user;
     }
 
     public String getAccessToken() {
@@ -44,6 +48,14 @@ public class AuthenticationResponse {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public UserResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
     }
 
 }

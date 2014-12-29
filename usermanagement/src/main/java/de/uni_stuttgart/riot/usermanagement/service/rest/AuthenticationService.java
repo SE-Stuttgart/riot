@@ -10,6 +10,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
@@ -17,6 +18,7 @@ import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 import de.uni_stuttgart.riot.usermanagement.service.rest.request.LoginRequest;
 import de.uni_stuttgart.riot.usermanagement.service.rest.request.RefreshRequest;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
 
 /**
  * The authentication service will handle the authentication of a user based on a username + password and provide access tokens for further
@@ -42,8 +44,13 @@ public class AuthenticationService {
     @PUT
     @Path("/login")
     public AuthenticationResponse login(LoginRequest request) throws LoginException {
-        Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
-        return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue());
+        try {
+            Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
+            UserResponse user = new UserResponse(UserManagementFacade.getInstance().getUser(token));
+            return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
+        } catch (UserManagementException e) {
+            throw new LoginException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -58,8 +65,13 @@ public class AuthenticationService {
     @PUT
     @Path("/refresh")
     public AuthenticationResponse refresh(RefreshRequest request) throws RefreshException {
-        Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
-        return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue());
+        try {
+            Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
+            UserResponse user = new UserResponse(UserManagementFacade.getInstance().getUser(token));
+            return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
+        } catch (UserManagementException e) {
+            throw new RefreshException(e.getMessage(), e);
+        }
     }
 
     /**
