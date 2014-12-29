@@ -12,7 +12,7 @@ import javax.naming.spi.InitialContextFactory;
 
 import org.junit.rules.ExternalResource;
 
-/**
+/*
  * Source: http://stackoverflow.com/questions/17083142/junit-testing-jndi-initialcontext-outside-the-application-server
  * 
  * Note that this implementation is not thread-safe anymore and might fail during integration-tests!

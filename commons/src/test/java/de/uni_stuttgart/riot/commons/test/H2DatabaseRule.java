@@ -37,9 +37,6 @@ public class H2DatabaseRule extends JNDIRule {
         temporaryFolder.delete();
     }
 
-    /**
-     * @return The JDBC DataSource.
-     */
     public DataSource getDataSource() {
         return dataSource;
     }

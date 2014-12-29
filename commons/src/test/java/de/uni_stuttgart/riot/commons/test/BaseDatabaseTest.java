@@ -7,8 +7,11 @@ import org.junit.ClassRule;
 /**
  * Base class for tests that use a database.
  */
-public class BaseDatabaseTest {
+public abstract class BaseDatabaseTest {
 
+    /**
+     * This rule will manage the database.
+     */
     @ClassRule
     public static H2DatabaseRule database = new H2DatabaseRule();
 

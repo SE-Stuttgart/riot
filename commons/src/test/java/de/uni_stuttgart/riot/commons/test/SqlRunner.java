@@ -20,13 +20,35 @@ import javax.sql.DataSource;
 
 import org.glassfish.jersey.message.internal.NullOutputStream;
 
+/**
+ * Helper class for running SQL scripts on JDBC connections.
+ */
 public class SqlRunner implements Closeable {
-    public static final String DELIMITER_LINE_REGEX = "(?i)DELIMITER.+", DELIMITER_LINE_SPLIT_REGEX = "(?i)DELIMITER", DEFAULT_DELIMITER = ";";
-    private final boolean autoCommit, stopOnError;
+
+    private static final String DELIMITER_LINE_REGEX = "(?i)DELIMITER.+";
+    private static final String DELIMITER_LINE_SPLIT_REGEX = "(?i)DELIMITER";
+    private static final String DEFAULT_DELIMITER = ";";
+    private final boolean autoCommit;
+    private final boolean stopOnError;
     private final Connection connection;
     private String delimiter = SqlRunner.DEFAULT_DELIMITER;
-    private final PrintWriter out, err;
+    private final PrintWriter out;
+    private final PrintWriter err;
 
+    /**
+     * Creates a new SqlRunner. Do not forget to close it!
+     * 
+     * @param connection
+     *            The JDBC connection.
+     * @param out
+     *            Stream for normal logging.
+     * @param err
+     *            Stream for error logging.
+     * @param autoCommit
+     *            Whether to run the scripts with auto commit.
+     * @param stopOnError
+     *            Whether to stop once an error occurs.
+     */
     public SqlRunner(final Connection connection, final PrintWriter out, final PrintWriter err, final boolean autoCommit, final boolean stopOnError) {
         if (connection == null) {
             throw new RuntimeException("SqlRunner requires an SQL Connection");
@@ -41,26 +63,78 @@ public class SqlRunner implements Closeable {
         this.err = err;
     }
 
+    /**
+     * Creates a new SqlRunner that redirects to {@link System#out} and {@link System#err}. Do not forget to close it!
+     * 
+     * @param dataSource
+     *            The JDBC data source.
+     * @param silent
+     *            If set to <tt>true</tt>, the default output is suppressed and only {@link System#err} will be used.
+     * @throws SQLException
+     *             If the JDBC data source cannot be used for opening a connection.
+     */
     public SqlRunner(final DataSource dataSource, final boolean silent) throws SQLException {
         this(dataSource.getConnection(), new PrintWriter(silent ? new NullOutputStream() : System.out), new PrintWriter(System.err), true, false);
     }
 
+    /**
+     * Creates a new SqlRunner uses no normal logging and prints errors to {@link System#err}. Do not forget to close it!
+     * 
+     * @param dataSource
+     *            The JDBC data source.
+     * @throws SQLException
+     *             If the JDBC data source cannot be used for opening a connection.
+     */
     public SqlRunner(final DataSource dataSource) throws SQLException {
         this(dataSource, true);
     }
 
+    /**
+     * Runs the script with the given file name. The file should be placed on the classpath.
+     * 
+     * @param resourceName
+     *            The name of the classpath resource (must be a file containing SQL command).
+     * @throws SQLException
+     *             When running the script fails.
+     */
     public void runScript(final String resourceName) throws SQLException {
         runScript(new InputStreamReader(SqlRunner.class.getResourceAsStream(resourceName)));
     }
 
+    /**
+     * Loads the script from the given URL and runs it.
+     * 
+     * @param url
+     *            The URL to load the script from.
+     * @throws SQLException
+     *             When running the script fails.
+     * @throws IOException
+     *             If the URL cannot be resolved.
+     */
     public void runScript(final URL url) throws SQLException, IOException {
         runScript(url.openStream());
     }
 
+    /**
+     * Reads a script from the given stream and runs it.
+     * 
+     * @param stream
+     *            The stream to read from.
+     * @throws SQLException
+     *             When running the script fails.
+     */
     public void runScript(final InputStream stream) throws SQLException {
         runScript(new InputStreamReader(stream));
     }
 
+    /**
+     * Reads a script and runs it.
+     * 
+     * @param reader
+     *            The reader to read from.
+     * @throws SQLException
+     *             When running the script fails.
+     */
     public void runScript(final Reader reader) throws SQLException {
         final boolean originalAutoCommit = this.connection.getAutoCommit();
         try {
@@ -73,14 +147,22 @@ public class SqlRunner implements Closeable {
         }
     }
 
-    private void runScript(final Connection conn, final Reader reader) {
-        StringBuffer command = null;
+    /**
+     * Reads a script and runs it on the given connection.
+     * 
+     * @param conn
+     *            The JDBC connection.
+     * @param reader
+     *            The reader to read from.
+     */
+    private void runScript(final Connection conn, final Reader reader) { // NOCS
+        StringBuilder command = null;
         try {
             final LineNumberReader lineReader = new LineNumberReader(reader);
             String line = null;
             while ((line = lineReader.readLine()) != null) {
                 if (command == null) {
-                    command = new StringBuffer();
+                    command = new StringBuilder();
                 }
                 String trimmedLine = line.trim();
 
@@ -168,20 +250,22 @@ public class SqlRunner implements Closeable {
                         }
                         command = null;
                     } finally {
-                        if (rs != null)
+                        if (rs != null) {
                             try {
                                 rs.close();
                             } catch (final Exception e) {
                                 err.println("Failed to close result: " + e.getMessage());
                                 err.flush();
                             }
-                        if (stmt != null)
+                        }
+                        if (stmt != null) {
                             try {
                                 stmt.close();
                             } catch (final Exception e) {
                                 err.println("Failed to close statement: " + e.getMessage());
                                 err.flush();
                             }
+                        }
                     }
                 } else {
 
