@@ -31,7 +31,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<platform.version>4.1.1.4</platform.version>
 		<android.plugin.version>3.8.2</android.plugin.version>
-		<riot.root>${basedir}</riot.root>
+		<riot.root>${project.parent.basedir}</riot.root>
 	</properties>
 
 	<dependencies>

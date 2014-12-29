@@ -16,7 +16,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<riot.root>${basedir}</riot.root>
+		<riot.root>${project.parent.basedir}</riot.root>
 	</properties>
 
 	<dependencies>

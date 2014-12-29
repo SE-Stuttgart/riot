@@ -189,6 +189,11 @@
 						<artifactId>riot.commons</artifactId>
 						<version>${project.version}</version>
 					</dependency>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>5.9</version>
+					</dependency>
 				</dependencies>
 				<executions>
 					<execution>
