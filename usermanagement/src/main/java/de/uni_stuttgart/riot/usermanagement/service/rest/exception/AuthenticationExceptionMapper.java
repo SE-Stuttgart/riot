@@ -8,19 +8,16 @@ import javax.ws.rs.ext.Provider;
 import org.apache.shiro.authc.AuthenticationException;
 
 /**
- * 
+ * Maps {@link AuthenticationException} to 401 responses.
  * 
  * @author Marcel Lehwald
- *
  */
 @Provider
 public class AuthenticationExceptionMapper implements ExceptionMapper<AuthenticationException> {
 
     @Override
     public Response toResponse(AuthenticationException exception) {
-        return Response.status(Status.UNAUTHORIZED)
-                       .entity("")
-                       .build();
+        return Response.status(Status.UNAUTHORIZED).entity("").build();
     }
 
 }

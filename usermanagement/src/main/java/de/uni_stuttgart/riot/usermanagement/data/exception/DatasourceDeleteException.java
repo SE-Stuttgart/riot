@@ -17,14 +17,37 @@ public class DatasourceDeleteException extends DatasourceException {
     private static final long serialVersionUID = 5218235116831140076L;
 
     /**
-     * Default-Constructor.
+     * Constructor for DatasourceDeleteException.
      * 
-     * @param massage
-     *            Error text
+     * @param message
+     *            The message that should be shown to the user.
      */
-    public DatasourceDeleteException(String massage) {
-        super(massage);
+    public DatasourceDeleteException(String message) {
+        super(message);
     }
+
+    /**
+     * Constructor for DatasourceDeleteException.
+     * 
+     * @param message
+     *            The message that should be shown to the user.
+     * @param cause
+     *            The root cause
+     */
+    public DatasourceDeleteException(String message, Exception cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructor for DatasourceDeleteException.
+     * 
+     * @param cause
+     *            The root cause of the error.
+     */
+    public DatasourceDeleteException(Throwable cause) {
+        super(cause);
+    }
+
 
     @Override
     public int getErrorCode() {

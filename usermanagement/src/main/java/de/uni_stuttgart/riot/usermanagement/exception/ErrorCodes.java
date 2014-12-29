@@ -1,11 +1,14 @@
 package de.uni_stuttgart.riot.usermanagement.exception;
 
 /**
- * Contains the error codes for all user management exceptions.
+ * Contains the error codes for all user management exceptions.<br>
+ * FIXME Replace this by a proper enum, or stop using error codes in the first place (they are unnecessary, just send the name of the
+ * exception, it will be just as unique).
  * 
  * @author Niklas Schnabel
- *
+ * 
  */
+// CHECKSTYLE:OFF
 public class ErrorCodes {
 
     public static final int DATASOURCE_DELETE = 0;

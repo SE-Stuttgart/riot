@@ -1,8 +1,7 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,7 +15,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
@@ -49,14 +47,7 @@ public class RoleService {
     @RequiresAuthentication
     public Collection<RoleResponse> getRoles() throws UserManagementException {
         // TODO limit returned roles
-        Collection<Role> roles = facade.getAllRoles();
-
-        Collection<RoleResponse> roleResponse = new ArrayList<RoleResponse>();
-        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            roleResponse.add(new RoleResponse(it.next()));
-        }
-
-        return roleResponse;
+        return facade.getAllRoles().stream().map(RoleResponse::new).collect(Collectors.toList());
     }
 
     /**
@@ -136,7 +127,7 @@ public class RoleService {
     }
 
     /**
-     * Get permissions of a role.
+     * Get permissions of a role. FIXME This method seems to have the wrong name (has nothing to do with users?).
      * 
      * @param roleID
      *            The role ID.
@@ -150,14 +141,7 @@ public class RoleService {
     @RequiresAuthentication
     public Collection<PermissionResponse> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
         // TODO limit returned permissions
-        Collection<Permission> permissions = facade.getAllPermissionsOfRole(roleID);
-
-        Collection<PermissionResponse> permissionResponse = new ArrayList<PermissionResponse>();
-        for (Iterator<Permission> it = permissions.iterator(); it.hasNext();) {
-            permissionResponse.add(new PermissionResponse(it.next()));
-        }
-
-        return permissionResponse;
+        return facade.getAllPermissionsOfRole(roleID).stream().map(PermissionResponse::new).collect(Collectors.toList());
     }
 
     /**

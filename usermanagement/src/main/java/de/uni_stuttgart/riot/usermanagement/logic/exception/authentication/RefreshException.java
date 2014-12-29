@@ -4,7 +4,7 @@ import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
 /**
- * Exception is thrown, if an error occurs while creating a new tokens with a given refresh token
+ * Exception is thrown, if an error occurs while creating a new tokens with a given refresh token.
  * 
  * @author Niklas Schnabel
  *

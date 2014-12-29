@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public abstract class VoidQueryExecuter extends QueryExecuter{
 

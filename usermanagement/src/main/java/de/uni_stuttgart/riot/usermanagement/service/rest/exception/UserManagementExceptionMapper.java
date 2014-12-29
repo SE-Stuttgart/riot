@@ -10,9 +10,8 @@ import javax.ws.rs.ext.Provider;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
 /**
- * The UserManagementExceptionMapper class will handle any user management exceptions thrown inside a REST service call and return 
- * a proper response message. This automatic mapping makes the catch of any user management exceptions inside the service call
- * unnecessary.
+ * The UserManagementExceptionMapper class will handle any user management exceptions thrown inside a REST service call and return a proper
+ * response message. This automatic mapping makes the catch of any user management exceptions inside the service call unnecessary.
  * 
  * @author Marcel Lehwald
  *
@@ -22,14 +21,9 @@ public class UserManagementExceptionMapper implements ExceptionMapper<LogicExcep
 
     @Override
     public Response toResponse(LogicException exception) {
-        exception.printStackTrace();
-        return Response.status(Status.BAD_REQUEST)                  //TODO status code
-                       .entity(Json.createObjectBuilder()
-                                   .add("errorCode", exception.getErrorCode())
-                                   .add("errorMessage", exception.getEndUserMessage())
-                                   .build())
-                       .type(MediaType.APPLICATION_JSON)
-                       .build();
+        exception.printStackTrace(); // NOCS FIXME Proper logging
+        return Response.status(Status.BAD_REQUEST) // TODO status code
+                .entity(Json.createObjectBuilder().add("errorCode", exception.getErrorCode()).add("errorMessage", exception.getEndUserMessage()).build()).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

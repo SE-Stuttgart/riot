@@ -1,7 +1,7 @@
 -- Passwords:
--- 	Yoda: YodaPW
---	R2D2: R2D2PW
--- 	Vader: VaderPW
+--  Yoda: YodaPW
+--  R2D2: R2D2PW
+--  Vader: VaderPW
 INSERT INTO users(username, password, password_salt, hash_iterations)
     VALUES ('Yoda','yPYMjqXzWOPKaAKNJXfEw7Gu3EnckZmoWUuEhOqz/7IqGd4Ub+3/X3uANlO0mkIOqIMhxhUi/ieU1KZt2BK+eg==', '108bgacl42gihhrdlfcm8e6ls6gm2q45q00boauiv5kkduf1ainv', 200000),
      ('R2D2','xGWcc3nOCCgWwtRoo/2pu2/nynq1wCGuDKz8SwDtbWI+Jmv4UHNEFOK0RFLxfWUEfCsRfgspbKKdfMxY6/Ndwg==', '3uuc05ili6e8j18lqehv1piugel2bteviv6m351q1rvnn7e49gk', 200000), 

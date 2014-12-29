@@ -2,23 +2,25 @@ package de.uni_stuttgart.riot.usermanagement.security;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
-import jersey.repackaged.com.google.common.base.Stopwatch;
 
 import org.apache.shiro.crypto.hash.Sha512Hash;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
-
 /**
+ * Helper class for authentication (cryptography).
  * 
  * @author Niklas Schnabel
  *
  */
 public class AuthenticationUtil {
-    private static SecureRandom random = new SecureRandom();
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    private static final int ACCESS_TOKEN_BITS = 130;
+    private static final int SALT_BITS = 130;
+    private static final int RADIX = 32;
+
+    private AuthenticationUtil() {
+    }
 
     /**
      * Generate a new access token.
@@ -26,7 +28,7 @@ public class AuthenticationUtil {
      * @return The token
      */
     public static String generateAccessToken() {
-        return new BigInteger(130, random).toString(32); // generate 130 bit token
+        return new BigInteger(ACCESS_TOKEN_BITS, RANDOM).toString(RADIX); // generate 130 bit token
     }
 
     /**
@@ -35,7 +37,7 @@ public class AuthenticationUtil {
      * @return The salt
      */
     public static String generateSalt() {
-        return new BigInteger(256, random).toString(32); // generate 256 bit salt
+        return new BigInteger(SALT_BITS, RANDOM).toString(RADIX); // generate 256 bit salt
     }
 
     /**
@@ -54,26 +56,4 @@ public class AuthenticationUtil {
         return passwordHash.toBase64(); // using Base64 to get a more compact form of the hash
     }
 
-    public static void main(String[] args) {
-        // generate salt and hashes for the "insertTestValues.sql"
-
-        Collection<UMUser> users = new ArrayList<UMUser>();
-        users.add(new UMUser("Yoda", "YodaPW", generateSalt(), 200000));
-        users.add(new UMUser("R2D2", "R2D2PW", generateSalt(), 200000));
-        users.add(new UMUser("Vader", "VaderPW", generateSalt(), 200000));
-
-        for (UMUser user : users) {
-            Stopwatch watch = new Stopwatch();
-            watch.start();
-            String pw = getHashedString(user.getHashedPassword(), user.getPasswordSalt(), user.getHashIterations());
-
-            System.out.println("Time to hash (" + user.getHashIterations() + " hash iterations): " + watch.elapsed(TimeUnit.MILLISECONDS) + " ms");
-            System.out.println("Username: " + user.getUsername());
-            System.out.println("Raw PW: " + user.getHashedPassword());
-            System.out.println("Salt: " + user.getPasswordSalt());
-            System.out.println("Hashed PW: " + pw);
-            System.out.println();
-        }
-
-    }
 }

@@ -39,7 +39,8 @@ public class AuthenticationService {
      * @param request
      *            The login request containing username and password.
      * @return Returns a new access and refresh token on success.
-     * @throws GenerateTokenException
+     * @throws LoginException
+     *             When the operation fails.
      */
     @PUT
     @Path("/login")
@@ -60,7 +61,8 @@ public class AuthenticationService {
      * @param request
      *            The refresh request containing a refresh token.
      * @return Returns a new access and refresh token on success.
-     * @throws GenerateTokenException
+     * @throws RefreshException
+     *             When the operation fails.
      */
     @PUT
     @Path("/refresh")
@@ -79,6 +81,7 @@ public class AuthenticationService {
      * 
      * @return Returns an empty response.
      * @throws LogoutException
+     *             When the operation fails.
      */
     @PUT
     @Path("/logout")

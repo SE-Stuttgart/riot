@@ -11,16 +11,6 @@ public abstract class UserManagementException extends Exception {
     private static final long serialVersionUID = 1182375069868647185L;
 
     /**
-     * Constructor for UserManagementException. As message the message of the root cause will be used.
-     * 
-     * @param cause
-     *            The root cause of the error
-     */
-    public UserManagementException(Exception cause) {
-        super(cause.getMessage(), cause);
-    }
-
-    /**
      * Constructor for UserManagementException.
      * 
      * @param message
@@ -42,6 +32,12 @@ public abstract class UserManagementException extends Exception {
         super(message, cause);
     }
 
+    /**
+     * Constructor for UserManagementException.
+     * 
+     * @param cause
+     *            The root cause of the error.
+     */
     public UserManagementException(Throwable cause) {
         super(cause);
     }

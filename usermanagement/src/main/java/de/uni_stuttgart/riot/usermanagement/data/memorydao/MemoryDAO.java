@@ -14,19 +14,18 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
 
 /**
  * 
- * DAO that uses the memory as datasource. 
- * <br>
+ * DAO that uses the memory as datasource. <br>
  * <b>This DAO is for test usage only!</b>
  * 
  * @author Jonas Tangermann
  *
- * @param <T> Subtype of {@link Storable} that should be stored.
+ * @param <T>
+ *            Subtype of {@link Storable} that should be stored.
  */
 public class MemoryDAO<T extends Storable> implements DAO<T> {
 
     /**
-     * Structure for storing the objects.
-     * <br>
+     * Structure for storing the objects. <br>
      * Key = object id ( {@link Storable#getId()})
      */
     private final HashMap<Long, T> store;
@@ -40,8 +39,8 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
 
     /**
      * Returns the structure which holds all stored objects.
-     * @return
-     *      store structure
+     * 
+     * @return store structure
      */
     public HashMap<Long, T> getStore() {
         return store;
@@ -87,7 +86,7 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
     }
 
     /**
-     * Adds t into result if and only if all searchParams could be found in {@link Storable#getSearchParam()}. 
+     * Adds t into result if and only if all searchParams could be found in {@link Storable#getSearchParam()}.
      */
     private void andSearch(T t, LinkedList<T> result, Collection<SearchParameter> searchParams) {
         if (t.getSearchParam().containsAll(searchParams)) {
@@ -96,7 +95,7 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
     }
 
     /**
-     * Adds t into result if and only if at least one searchParams could could be found in {@link Storable#getSearchParam()}. 
+     * Adds t into result if and only if at least one searchParams could could be found in {@link Storable#getSearchParam()}.
      */
     private void orSearch(T t, LinkedList<T> result, Collection<SearchParameter> searchParams) {
         Collection<SearchParameter> tParam = t.getSearchParam();
@@ -116,7 +115,9 @@ public class MemoryDAO<T extends Storable> implements DAO<T> {
     @Override
     public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
         for (T t : this.store.values()) {
-            if(t.getSearchParam().contains(searchParameter)) return t;
+            if (t.getSearchParam().contains(searchParameter)) {
+                return t;
+            }
         }
         throw new DatasourceFindException("No such Element");
     }

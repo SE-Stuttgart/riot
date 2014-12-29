@@ -1,30 +1,35 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
+/**
+ * Wrapper around a {@link User}.
+ * 
+ * @author Philipp
+ *
+ */
 public class UserResponse {
 
-    private User user;
-    private Collection<RoleResponse> roles;
+    private final User user;
+    private final Collection<RoleResponse> roles;
 
-    public UserResponse() {
-
-    }
-
-    public UserResponse(User user) throws UserManagementException {
+    /**
+     * Creates a new {@link UserResponse} and retrieves the user's roles.
+     * 
+     * @param user
+     *            The user to be wrapped.
+     */
+    public UserResponse(User user) {
         this.user = user;
-        this.roles = new ArrayList<RoleResponse>();
-
-        Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            this.roles.add(new RoleResponse(it.next()));
+        try {
+            this.roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId()).stream().map(RoleResponse::new).collect(Collectors.toList());
+        } catch (UserManagementException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -32,24 +37,12 @@ public class UserResponse {
         return user.getId();
     }
 
-    public void setId(Long id) {
-        user.setId(id);
-    }
-
     public String getUsername() {
         return user.getUsername();
     }
 
-    public void setUsername(String username) {
-        user.setUsername(username);
-    }
-
     public Collection<RoleResponse> getRoles() {
         return roles;
-    }
-
-    public void setRoles(Collection<RoleResponse> roles) {
-        this.roles = roles;
     }
 
 }

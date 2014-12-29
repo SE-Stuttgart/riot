@@ -4,7 +4,7 @@ import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
 /**
- * Exception is thrown, if an error occurs while logging in a user
+ * Exception is thrown, if an error occurs while logging in a user.
  * 
  * @author Niklas Schnabel
  *

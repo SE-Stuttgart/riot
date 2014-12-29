@@ -3,7 +3,6 @@ package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 import javax.sql.DataSource;
 
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 
 /**

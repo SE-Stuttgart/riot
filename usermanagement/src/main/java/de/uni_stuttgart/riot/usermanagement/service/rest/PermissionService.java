@@ -1,8 +1,7 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -47,14 +46,7 @@ public class PermissionService {
     @RequiresAuthentication
     public Collection<PermissionResponse> getPermissions() throws UserManagementException {
         // TODO limit returned permissions
-        Collection<Permission> permissions = facade.getAllPermissions();
-
-        Collection<PermissionResponse> permissionResponse = new ArrayList<PermissionResponse>();
-        for (Iterator<Permission> it = permissions.iterator(); it.hasNext();) {
-            permissionResponse.add(new PermissionResponse(it.next()));
-        }
-
-        return permissionResponse;
+        return facade.getAllPermissions().stream().map(PermissionResponse::new).collect(Collectors.toList());
     }
 
     /**

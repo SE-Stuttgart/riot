@@ -1,30 +1,32 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
-import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
+/**
+ * Wrapper around a {@link Role}.
+ */
 public class RoleResponse {
 
     private Role role;
     private Collection<PermissionResponse> permissions;
 
-    public RoleResponse() {
-
-    }
-
-    public RoleResponse(Role role) throws UserManagementException {
+    /**
+     * Creates a wrapper around the role and retrieves its permissions.
+     * 
+     * @param role
+     *            The role to be wrapped.
+     */
+    public RoleResponse(Role role) {
         this.role = role;
-        this.permissions = new ArrayList<PermissionResponse>();
-
-        Collection<Permission> roles = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        for (Iterator<Permission> it = roles.iterator(); it.hasNext();) {
-            this.permissions.add(new PermissionResponse(it.next()));
+        try {
+            this.permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId()).stream().map(PermissionResponse::new).collect(Collectors.toList());
+        } catch (GetPermissionsFromRoleException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -32,16 +34,8 @@ public class RoleResponse {
         return role.getId();
     }
 
-    public void setId(Long id) {
-        role.setId(id);
-    }
-
     public String getRoleName() {
         return role.getRoleName();
-    }
-
-    public void setRoleName(String roleName) {
-        role.setRoleName(roleName);
     }
 
     public Collection<PermissionResponse> getPermissions() {

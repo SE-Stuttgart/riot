@@ -1,8 +1,7 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,8 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
@@ -42,9 +39,10 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserService {
 
+    private final UserManagementFacade facade = UserManagementFacade.getInstance();
+
     @Context
     private UriInfo uriInfo;
-    UserManagementFacade facade = UserManagementFacade.getInstance();
 
     /**
      * Get all users.
@@ -58,14 +56,7 @@ public class UserService {
     @RequiresAuthentication
     public Collection<UserResponse> getUsers() throws UserManagementException {
         // TODO limit returned users
-        Collection<User> users = facade.getAllUsers();
-
-        Collection<UserResponse> userResponse = new ArrayList<UserResponse>();
-        for (Iterator<User> it = users.iterator(); it.hasNext();) {
-            userResponse.add(new UserResponse(it.next()));
-        }
-
-        return userResponse;
+        return facade.getAllUsers().stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
     /**
@@ -180,14 +171,7 @@ public class UserService {
     @RequiresAuthentication
     public Collection<RoleResponse> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned roles
-        Collection<Role> roles = facade.getAllRolesFromUser(userID);
-
-        Collection<RoleResponse> roleResponse = new ArrayList<RoleResponse>();
-        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
-            roleResponse.add(new RoleResponse(it.next()));
-        }
-
-        return roleResponse;
+        return facade.getAllRolesFromUser(userID).stream().map(RoleResponse::new).collect(Collectors.toList());
     }
 
     /**
@@ -247,14 +231,7 @@ public class UserService {
     @RequiresAuthentication
     public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
-        Collection<Token> tokens = facade.getActiveTokensFromUser(userID);
-
-        Collection<TokenResponse> tokenResponse = new ArrayList<TokenResponse>();
-        for (Iterator<Token> it = tokens.iterator(); it.hasNext();) {
-            tokenResponse.add(new TokenResponse(it.next()));
-        }
-
-        return tokenResponse;
+        return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
     }
 
 }

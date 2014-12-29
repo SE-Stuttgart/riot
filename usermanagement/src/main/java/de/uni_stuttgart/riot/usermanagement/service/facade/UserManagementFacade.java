@@ -68,9 +68,9 @@ public class UserManagementFacade {
     }
 
     /**
-     * Get the instance of the facade
+     * Get the instance of the facade.
      * 
-     * @return Instance of the facade
+     * @return Instance of the facade.
      */
     public static UserManagementFacade getInstance() {
         if (instance == null) {
@@ -80,7 +80,7 @@ public class UserManagementFacade {
     }
 
     /**
-     * Generate one bearer and one refresh token
+     * Generate one bearer and one refresh token.
      * 
      * @param username
      *            User name of the user. Is used for authentication.
@@ -100,7 +100,7 @@ public class UserManagementFacade {
      * @param refreshToken
      *            The refresh token used for generating the new tokens
      * @return Contains the generated bearer and refresh token
-     * @throws LoginException
+     * @throws RefreshException
      *             Thrown if any errors occur
      */
     public Token refreshToken(String refreshToken) throws RefreshException {
@@ -108,7 +108,7 @@ public class UserManagementFacade {
     }
 
     /**
-     * Log an user out be invalidating the bearer and refresh token
+     * Log an user out be invalidating the bearer and refresh token.
      * 
      * @param currentBearerToken
      *            The current bearer token used to authenticate the user. Will no longer be valid after calling this method.
@@ -123,35 +123,38 @@ public class UserManagementFacade {
      * Add a new user.
      * 
      * @param username
-     *            The user name of the user
+     *            The user name of the user,
      * @param clearTextPassword
-     *            The password of the user as clear text
-     * @return The added user
+     *            The password of the user as clear text,
+     * @return The added user,
      * @throws AddUserException
+     *             Thrown if any errors occur
      */
     public User addUser(String username, String clearTextPassword) throws AddUserException {
         return (User) userLogic.addUser(username, clearTextPassword);
     }
 
     /**
-     * Delete an existing user
+     * Delete an existing user.
      * 
      * @param id
      *            Id of the user
      * @throws DeleteUserException
+     *             Thrown if any errors occur
      */
     public void deleteUser(Long id) throws DeleteUserException {
         userLogic.deleteUser(id);
     }
 
     /**
-     * Update the data of an existing user
+     * Update the data of an existing user.
      * 
      * @param user
-     *            New user data
+     *            New user data.
      * @param clearTextPassword
      *            The password of the user as clear text. If the password should not be updated use null.
      * @throws UpdateUserException
+     *             Thrown if any errors occur
      */
     public void updateUser(User user, String clearTextPassword) throws UpdateUserException {
         if (user instanceof UMUser) {
@@ -162,12 +165,13 @@ public class UserManagementFacade {
     }
 
     /**
-     * Get a single user
+     * Get a single user.
      * 
      * @param id
-     *            Id of the user to get
-     * @return User with the given id
+     *            Id of the user to get.
+     * @return User with the given id.
      * @throws GetUserException
+     *             Thrown if any errors occur
      */
     public User getUser(Long id) throws GetUserException {
         return (User) userLogic.getUser(id);
@@ -176,19 +180,21 @@ public class UserManagementFacade {
     /**
      * Get user by token.
      * 
-     * @param token The token of the user.
+     * @param token
+     *            The token of the user.
      * @return Returns user.
      * @throws GetUserException
      */
-	public User getUser(Token token) throws GetUserException {
-		return (User) userLogic.getUser(token);
-	}
+    public User getUser(Token token) throws GetUserException {
+        return (User) userLogic.getUser(token);
+    }
 
     /**
-     * Get all existing users
+     * Get all existing users.
      * 
-     * @return All users in a List
+     * @return All users in a List.
      * @throws GetAllUsersException
+     *             Thrown if any errors occur
      */
     public Collection<User> getAllUsers() throws GetAllUsersException {
         ArrayList<User> users = new ArrayList<User>();
@@ -197,49 +203,54 @@ public class UserManagementFacade {
     }
 
     /**
-     * Add a new role to an existing user
+     * Add a new role to an existing user.
      * 
      * @param userId
-     *            The id of the user
+     *            The id of the user.
      * @param roleId
-     *            The id of the role
+     *            The id of the role.
      * @throws AddRoleToUserException
+     *             Thrown if any errors occur
      */
     public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
         userLogic.addRoleToUser(userId, roleId);
     }
 
     /**
-     * Get all roles from a specific user
+     * Get all roles from a specific user.
      * 
      * @param id
      *            The id of the user to get roles from
      * @return A list with all roles of the given user
      * @throws GetRolesFromUserException
+     *             Thrown if any errors occur
      */
     public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
         return userLogic.getAllRolesFromUser(id);
     }
 
     /**
-     * Remove a role from a specific user
+     * Remove a role from a specific user.
      * 
      * @param idUser
      *            The id of the user
      * @param idRole
      *            The id of the role to remove
      * @throws RemoveRoleFromUserException
+     *             Thrown if any errors occur
      */
     public void removeRoleFromUser(Long idUser, Long idRole) throws RemoveRoleFromUserException {
         userLogic.removeRoleFromUser(idUser, idRole);
     }
 
     /**
-     * Get all active tokens of a specific user
+     * Get all active tokens of a specific user.
      * 
      * @param idUser
      *            The id of the user
+     * @return All active tokens of the user.
      * @throws GetActiveTokenException
+     *             Thrown if any errors occur
      */
     public Collection<Token> getActiveTokensFromUser(Long idUser) throws GetActiveTokenException {
         return userLogic.getActiveTokensFromUser(idUser);
@@ -248,169 +259,198 @@ public class UserManagementFacade {
     /**
      * Get token from token value.
      * 
-     * @param token The token value.
+     * @param token
+     *            The token value.
      * @return Returns token.
-     * @throws GetTokenException 
+     * @throws GetTokenException
      */
-	public Token getToken(String token) throws GetTokenException {
-		return tokenLogic.getToken(token);
-	}
+    public Token getToken(String token) throws GetTokenException {
+        return tokenLogic.getToken(token);
+    }
 
     /**
-     * Add a new permission
+     * Add a new permission.
      * 
      * @param permission
      *            The new permission
      * @throws AddPermissionException
+     *             Thrown if any errors occur
      */
     public void addPermission(Permission permission) throws AddPermissionException {
         permissionLogic.addPermission(permission);
     }
 
     /**
-     * Delete an existing permission
+     * Delete an existing permission.
      * 
      * @param id
      *            The id of the permission to delete
      * @throws DeletePermissionException
+     *             Thrown if any errors occur
      */
     public void deletePermission(Long id) throws DeletePermissionException {
         permissionLogic.deletePermission(id);
     }
 
     /**
-     * Update an existing permission
+     * Update an existing permission.
      * 
      * @param id
      *            The id of the permission to update
      * @param permission
      *            The data of the new permission
      * @throws UpdatePermissionException
+     *             Thrown if any errors occur
      */
     public void updatePermission(Long id, Permission permission) throws UpdatePermissionException {
         permissionLogic.updatePermission(id, permission);
     }
 
     /**
-     * Get an existing permission
+     * Get an existing permission.
      * 
      * @param id
      *            The id of the permission to get
-     * @return
+     * @return The permission.
      * @throws GetPermissionException
+     *             Thrown if any errors occur
      */
     public Permission getPermission(Long id) throws GetPermissionException {
         return permissionLogic.getPermission(id);
     }
 
     /**
-     * Get all existing permissions
+     * Get all existing permissions.
      * 
      * @return All permissions in a list
      * @throws GetAllPermissionsException
+     *             Thrown if any errors occur
      */
     public Collection<Permission> getAllPermissions() throws GetAllPermissionsException {
         return permissionLogic.getAllPermissions();
     }
 
     /**
-     * Add a new role
+     * Add a new role.
      * 
      * @param role
      *            The role to add
      * @throws AddRoleException
+     *             Thrown if any errors occur
      */
     public void addRole(Role role) throws AddRoleException {
         roleLogic.addRole(role);
     }
 
     /**
-     * Delete an existing role
+     * Delete an existing role.
      * 
      * @param id
      *            The id of the role to delete
      * @throws DeleteRoleException
+     *             Thrown if any errors occur
      */
     public void deleteRole(Long id) throws DeleteRoleException {
         roleLogic.deleteRole(id);
     }
 
     /**
-     * Update an existing role
+     * Update an existing role.
      * 
-     * @param id
-     *            The id of the role to update
      * @param role
      *            The new data for the role
      * @throws UpdateRoleException
+     *             Thrown if any errors occur
      */
     public void updateRole(Role role) throws UpdateRoleException {
         roleLogic.updateRole(role);
     }
 
     /**
-     * Get a single role
+     * Get a single role.
      * 
      * @param id
      *            The id of the role to get
      * @return The role
      * @throws GetRoleException
+     *             Thrown if any errors occur
      */
     public Role getRole(Long id) throws GetRoleException {
         return roleLogic.getRole(id);
     }
 
     /**
-     * Get all existing roles
+     * Get all existing roles.
      * 
      * @return All existing roles in a list
      * @throws GetAllRolesException
+     *             Thrown if any errors occur.
      */
     public Collection<Role> getAllRoles() throws GetAllRolesException {
         return roleLogic.getAllRoles();
     }
 
     /**
-     * Get all permissions belonging to a role
+     * Get all permissions belonging to a role.
      * 
      * @param roleId
      *            The id of the role
+     * @return All permissions of the role.
      * @throws GetPermissionsFromRoleException
+     *             Thrown if any errors occur
      */
     public Collection<Permission> getAllPermissionsOfRole(Long roleId) throws GetPermissionsFromRoleException {
         return roleLogic.getAllPermissionsFromRole(roleId);
     }
 
     /**
-     * Add an existing permission to an existing role
+     * Add an existing permission to an existing role.
      * 
      * @param roleId
      *            The id of the role
-     * @param permission
+     * @param permissionId
      *            The id of the permission, which should be added
      * @throws AddPermissionToRoleException
+     *             Thrown if any errors occur
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         roleLogic.addPermissionToRole(roleId, permissionId);
     }
 
     /**
-     * Remove a permission from a role
+     * Remove a permission from a role.
      * 
-     * @param rolId
+     * @param roleId
      *            The id of the role
      * @param permissionId
      *            The id of the permission, which should be removed
      * @throws RemovePermissionFromRoleException
+     *             Thrown if any errors occur
      */
     public void deletePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         roleLogic.removePermissionFromRole(roleId, permissionId);
     }
 
+    /**
+     * Checks if the given role is held by the current user, and fails if not.
+     * 
+     * @param role
+     *            The role.
+     * @throws AuthorizationException
+     *             If the role is not held.
+     */
     public void requiresRole(String role) throws AuthorizationException {
         SecurityUtils.getSubject().checkRole(role);
     }
 
+    /**
+     * Checks if the given permission is held by the current user, and fails if not.
+     * 
+     * @param permission
+     *            The permission.
+     * @throws AuthorizationException
+     *             If the permission is not held.
+     */
     public void requiresPermission(String permission) throws AuthorizationException {
         SecurityUtils.getSubject().checkPermission(permission);
     }

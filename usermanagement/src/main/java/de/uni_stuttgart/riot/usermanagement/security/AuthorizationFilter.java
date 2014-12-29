@@ -21,7 +21,7 @@ import org.apache.shiro.authz.aop.RoleAnnotationHandler;
  * of shiro to be usable as part of the JAX-RS implementation of jersey. The class will hook into the request call of a HTTP request and
  * grant or deny access based on the roles, permissions and actions of a subject (user).
  * 
- * @param <T> 
+ * @param <T>
  * @author Marcel Lehwald
  *
  */
@@ -34,8 +34,10 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
     /**
      * Create the AuthorizationFilter.
      * 
-     * @param authzSpec  
-     * @param handler  
+     * @param authzSpec
+     *            The annotation handled by this filter.
+     * @param handler
+     *            The handler.
      */
     public AuthorizationFilter(T authzSpec, AuthorizingAnnotationHandler handler) {
         this.authzSpec = authzSpec;
@@ -43,10 +45,12 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
     }
 
     /**
-     *  Creates an AuthorizationFilter.
-     *  
-     * @param authzSpec 
-     * @param <T> 
+     * Creates an AuthorizationFilter.
+     * 
+     * @param authzSpec
+     *            The annotation handled by this filter.
+     * @param <T>
+     *            The type of the annotation handled by this filter.
      * @return Returns an AuthorizationFilter.
      */
     public static <T extends Annotation> AuthorizationFilter<T> valueOf(T authzSpec) {
@@ -72,7 +76,7 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
         } catch (UnauthorizedException e) {
             requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // NOCS FIXME Replace by proper logging.
             requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
         }
     }

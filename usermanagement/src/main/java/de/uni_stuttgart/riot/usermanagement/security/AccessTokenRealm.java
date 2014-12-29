@@ -22,9 +22,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.JdbcUtils;
 
 /**
- * The AccessTokenRealm provides authentication and authorization capabilities for using an access token with a 
- * REST API. The realm will use the JDBC interface for connecting to a database as a storing mechanism for the
- * tokens, user data, roles and permissions.
+ * The AccessTokenRealm provides authentication and authorization capabilities for using an access token with a REST API. The realm will use
+ * the JDBC interface for connecting to a database as a storing mechanism for the tokens, user data, roles and permissions.
  * 
  * @author Marcel Lehwald
  *
@@ -45,12 +44,12 @@ public class AccessTokenRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        AccessToken tokenImpl = (AccessToken)token;
+        AccessToken tokenImpl = (AccessToken) token;
         String accessToken = tokenImpl.getToken();
 
         Connection connection = null;
         SimpleAuthenticationInfo info = null;
-       try {
+        try {
             connection = dataSource.getConnection();
 
             String principal = getPrincipal(connection, accessToken);
@@ -78,36 +77,12 @@ public class AccessTokenRealm extends AuthorizingRealm {
      * @throws SQLException
      */
     private String getPrincipal(Connection connection, String accessToken) throws SQLException {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        String principal = null;
-
-        try {
-            // prepare query
-            ps = connection.prepareStatement(authenticationQuery);
+        try (PreparedStatement ps = connection.prepareStatement(authenticationQuery)) {
             ps.setString(1, accessToken);
-
-            // execute query
-            rs = ps.executeQuery();
-
-            // Loop over results - although we are only expecting one result, since usernames should be unique
-            boolean foundResult = false;
-            while (rs.next()) {
-                // Check to ensure only one row is processed
-                if (foundResult) {
-                    throw new AuthenticationException("More than one user row found for provided token");
-                }
-
-                principal = rs.getString(1);
-
-                foundResult = true;
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString(1) : null;
             }
-        } finally {
-            JdbcUtils.closeResultSet(rs);
-            JdbcUtils.closeStatement(ps);
         }
-
-        return principal;
     }
 
     @Override
@@ -142,10 +117,13 @@ public class AccessTokenRealm extends AuthorizingRealm {
     /**
      * Get all roles associated with an access token.
      * 
-     * @param connection An open database connection.
-     * @param token The token which will be used to lookup the associated roles.
+     * @param connection
+     *            An open database connection.
+     * @param token
+     *            The token which will be used to lookup the associated roles.
      * @return Returns a list of roles associated with the token.
-     * @throws SQLException When an SQL error occurs.
+     * @throws SQLException
+     *             When an SQL error occurs.
      */
     protected Set<String> getRoles(Connection connection, String token) throws SQLException {
         PreparedStatement ps = null;
@@ -177,10 +155,13 @@ public class AccessTokenRealm extends AuthorizingRealm {
     /**
      * Get all permissions of a list of roles.
      * 
-     * @param connection An open database connection.
-     * @param roles The roles which will be used to lookup the associated permissions.
+     * @param connection
+     *            An open database connection.
+     * @param roles
+     *            The roles which will be used to lookup the associated permissions.
      * @return Returns a list of permission associated with the roles.
-     * @throws SQLException When an SQL error occurs.
+     * @throws SQLException
+     *             When an SQL error occurs.
      */
     protected Set<String> getPermissions(Connection connection, Collection<String> roles) throws SQLException {
         PreparedStatement ps = null;

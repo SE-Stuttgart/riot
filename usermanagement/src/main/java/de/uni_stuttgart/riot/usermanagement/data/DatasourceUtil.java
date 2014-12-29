@@ -4,13 +4,30 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-public class DatasourceUtil {
+/**
+ * Helper for opening database connections.
+ */
+public final class DatasourceUtil {
 
     private static final String JNDI_PATH = "jdbc/riot";
 
+    /**
+     * No instantiation possible.
+     */
+    private DatasourceUtil() {
+    }
+
+    /**
+     * Retrieves the JDBC data source.
+     * 
+     * @return The JDBC data source.
+     * @throws NamingException
+     *             If the JDBC data source cannot be found.
+     */
     public static DataSource getDataSource() throws NamingException {
         InitialContext in;
         in = new InitialContext();
-        return (DataSource) in.lookup(JNDI_PATH); // FIXME correct jndi path
+        return (DataSource) in.lookup(JNDI_PATH);
     }
+
 }
