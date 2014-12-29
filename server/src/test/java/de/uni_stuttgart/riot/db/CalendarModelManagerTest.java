@@ -36,7 +36,6 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         return new RiotApplication();
     }
 
-
     /**
      * help method to create test data in DB.
      * 
@@ -103,7 +102,8 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         assertEquals(created, retrieved);
 
         // retrieving an element that does not exist: shall return null
-        retrieved = modelManager.getById(11);
+        long notExistingId = 11;
+        retrieved = modelManager.getById(notExistingId);
         Assert.assertNull("returned obj is not null", retrieved);
     }
 

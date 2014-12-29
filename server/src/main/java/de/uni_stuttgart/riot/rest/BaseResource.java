@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.rest;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.ws.rs.BadRequestException;
@@ -112,15 +111,13 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param model
      *            the model
      * @return an HTTP created (201) response if successful
-     * @throws URISyntaxException
-     *             the URI syntax exception
      * @throws DaoException
      *             when creation not possible
      */
     @POST
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Response create(E model) throws URISyntaxException, DaoException {
+    public Response create(E model) throws DaoException {
         if (model == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
@@ -139,8 +136,6 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
      * @throws DaoException
      *             when update not possible
-     * @throws URISyntaxException
-     *             the URI syntax exception
      * 
      */
     @PUT

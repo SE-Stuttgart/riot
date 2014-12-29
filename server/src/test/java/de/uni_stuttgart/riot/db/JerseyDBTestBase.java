@@ -21,6 +21,11 @@ public class JerseyDBTestBase extends JerseyTest {
         return database.getDataSource();
     }
 
+    /**
+     * creates calendarEntries Tables used at Tests.
+     * 
+     * @throws Exception
+     */
     @Before
     public void setupTestData() throws Exception {
         try (SqlRunner sqlRunner = new SqlRunner(getDataSource())) {
