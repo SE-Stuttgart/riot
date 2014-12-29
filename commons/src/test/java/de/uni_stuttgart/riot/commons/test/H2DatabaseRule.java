@@ -17,7 +17,7 @@ public class H2DatabaseRule extends JNDIRule {
     private DataSource dataSource;
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() throws Throwable { // NOCS
         super.before();
         temporaryFolder.create();
 

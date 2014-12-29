@@ -92,9 +92,7 @@ public class MainActivity extends Activity {
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
-    /**
-     * Prepare the OptionsMenu / Refreshbutton on the right side.
-     */
+    // Prepare the OptionsMenu / Refreshbutton on the right side.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -102,9 +100,7 @@ public class MainActivity extends Activity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     * Define displaying settings for the options menu.
-     */
+    // Define displaying settings for the options menu.
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 
@@ -122,9 +118,7 @@ public class MainActivity extends Activity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    /**
-     * Actions for the option buttons.
-     */
+    // Actions for the option buttons.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
@@ -195,9 +189,7 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(mTitle);
     }
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during onPostCreate() and onConfigurationChanged()...
-     */
+    // When using the ActionBarDrawerToggle, you must call it during onPostCreate() and onConfigurationChanged()...
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

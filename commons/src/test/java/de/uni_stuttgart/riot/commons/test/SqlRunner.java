@@ -21,7 +21,9 @@ import javax.sql.DataSource;
 import org.glassfish.jersey.message.internal.NullOutputStream;
 
 /**
- * Helper class for running SQL scripts on JDBC connections.
+ * Helper class for running SQL scripts on JDBC connections. <br>
+ * FIXME This class needs to be refactored! <br>
+ * CHECKSTYLE:OFF
  */
 public class SqlRunner implements Closeable {
 

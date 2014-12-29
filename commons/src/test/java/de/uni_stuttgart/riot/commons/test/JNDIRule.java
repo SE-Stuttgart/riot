@@ -22,7 +22,7 @@ public class JNDIRule extends ExternalResource {
     private static Context context;
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() throws Throwable { // NOCS
         super.before();
         context = mock(Context.class);
         System.setProperty(Context.INITIAL_CONTEXT_FACTORY, MockInitialContextFactory.class.getName());

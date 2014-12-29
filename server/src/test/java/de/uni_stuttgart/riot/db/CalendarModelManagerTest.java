@@ -26,11 +26,6 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         return new RiotApplication();
     }
 
-    /**
-     * Test create one entry.
-     * 
-     * @throws DaoException
-     */
     @Test
     public void createEntryTest() throws DaoException {
         CalendarEntry model = new CalendarEntry(1, "Appointment 1", "createTest");

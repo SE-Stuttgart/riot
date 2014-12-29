@@ -4,7 +4,7 @@ import de.uni_stuttgart.riot.rest.ResourceModel;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class CalendarEntry.
+ * The Class ContactEntry.
  */
 public class ContactEntry implements ResourceModel {
 
@@ -13,6 +13,12 @@ public class ContactEntry implements ResourceModel {
     private String lastName;
     private String email;
     private String phoneNumber;
+    
+    /**
+     * Default constructor for JSON deserialization.
+     */
+    public ContactEntry() {
+    }
 
     /**
      * Creates a new ContactEntry.

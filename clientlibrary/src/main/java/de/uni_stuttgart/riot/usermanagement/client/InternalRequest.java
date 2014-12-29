@@ -2,8 +2,16 @@ package de.uni_stuttgart.riot.usermanagement.client;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * FIXME Explain what this interface is for?
+ */
 public interface InternalRequest {
-    
-    public Response doRequest();
+
+    /**
+     * FIXME.
+     * 
+     * @return FIXME
+     */
+    Response doRequest();
 
 }

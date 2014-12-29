@@ -184,6 +184,7 @@ public class UserManagementFacade {
      *            The token of the user.
      * @return Returns user.
      * @throws GetUserException
+     *             When getting the user fails.
      */
     public User getUser(Token token) throws GetUserException {
         return (User) userLogic.getUser(token);
@@ -263,6 +264,7 @@ public class UserManagementFacade {
      *            The token value.
      * @return Returns token.
      * @throws GetTokenException
+     *             When getting the token fails.
      */
     public Token getToken(String token) throws GetTokenException {
         return tokenLogic.getToken(token);

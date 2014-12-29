@@ -19,10 +19,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
+import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.User;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
 import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
 import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
@@ -75,20 +75,20 @@ public class UserService {
     public UserResponse getUser(@PathParam("userID") Long userID) throws UserManagementException {
         return new UserResponse(facade.getUser(userID));
     }
-    
+
     /**
      * Get the currently executing user.
      * 
      * @return Returns the currently executing user.
      * @throws UserManagementException
+     *             When getting the user fails.
      */
     @GET
     @Path("/self")
     @RequiresAuthentication
     public UserResponse getUser() throws UserManagementException {
-    	String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
-    	System.out.println(accessToken);
-    	Token token = facade.getToken(accessToken);
+        String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
+        Token token = facade.getToken(accessToken);
         return new UserResponse(facade.getUser(token));
     }
 
