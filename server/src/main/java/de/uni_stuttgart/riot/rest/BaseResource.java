@@ -39,7 +39,7 @@ public abstract class BaseResource<E extends ResourceModel> {
     protected static final String CONSUMED_FORMAT = MediaType.APPLICATION_JSON;
 
     /** The maximum page size. */
-    protected static final int MAX_PAGE_SIZE = 20;
+    protected static final int DEFAULT_PAGE_SIZE = 20;
 
     // protected static String URI_PATH;
 
@@ -94,19 +94,15 @@ public abstract class BaseResource<E extends ResourceModel> {
     @Produces(PRODUCED_FORMAT)
     public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DaoException {
 
-        if(limit < 0 || offset < 0){
+        if (limit < 0 || offset < 0) {
             throw new BadRequestException("please provide valid parameter values");
-        }
-        else if (limit == 0) {
+        } else if (limit == 0) {
             // the case when GET request has no query parameters (api/resource)
-            return modelManager.get(offset, MAX_PAGE_SIZE);
+            return modelManager.get(offset, DEFAULT_PAGE_SIZE);
 
         } else {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
-
-            // sets "limit" to the maximum allowed page size if necessary
-            return modelManager.get(offset, limit < MAX_PAGE_SIZE ? limit : MAX_PAGE_SIZE);
-
+            return modelManager.get(offset, limit);
         }
     }
 

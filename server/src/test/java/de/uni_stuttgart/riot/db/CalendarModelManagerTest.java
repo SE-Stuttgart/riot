@@ -223,7 +223,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
             modelManager.get(-1, 2); // OFFSET=-1, LIMIT = 2
             fail("Expected an DaoException to be thrown");
         } catch (DaoException exception) {
-            assertThat(exception.getMessage(), equalTo(CalendarModelManager.INVALID_PAR_EXC));
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
         }
 
         // negative limit: throws exception
@@ -231,7 +231,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
             modelManager.get(1, -1); // OFFSET=1, LIMIT = -1
             fail("Expected an DaoException to be thrown");
         } catch (DaoException exception) {
-            assertThat(exception.getMessage(), equalTo(CalendarModelManager.INVALID_PAR_EXC));
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
         }
     }
 

@@ -264,17 +264,6 @@ public class BaseResourceTest extends JerseyTest {
         });
         assertThat(models, hasSize(pageSize));
 
-        // limit bigger than intern maximum page size = 20: shall return only 20 elements
-        // inserting additional test data
-        for (int i = ModelManagerImpl.testData.size() + 1; i <= BaseResource.MAX_PAGE_SIZE + 1; i++) {
-            ModelManagerImpl.testData.put((long) i, new TestModel(i));
-        }
-        resp = target("tests").queryParam("offset", 1).queryParam("limit", BaseResource.MAX_PAGE_SIZE + 1).request(MediaType.APPLICATION_JSON).get();
-        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-        models = resp.readEntity(new GenericType<List<TestModel>>() {
-        });
-        assertThat(models, hasSize(BaseResource.MAX_PAGE_SIZE));
-
         // using only limit parameter: api/resource?limit=2
         resp = target("tests").queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());

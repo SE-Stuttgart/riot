@@ -16,11 +16,6 @@ import de.uni_stuttgart.riot.rest.ModelManager;
  */
 public class CalendarModelManager implements ModelManager<CalendarEntry> {
 
-    /**
-     * exception message for invalid parameter values.
-     */
-    public static final String INVALID_PAR_EXC = "Invalid parameter value";
-
     /*
      * (non-Javadoc)
      * 
@@ -60,7 +55,7 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
     @Override
     public Collection<CalendarEntry> get(long offset, int limit) throws DaoException {
         if (offset < 0 || limit < 1) {
-            throw new DaoException(INVALID_PAR_EXC);
+            throw new DaoException("Invalid parameter value");
         }
 
         String sql = "SELECT * FROM calendarEntries LIMIT :limit OFFSET :offset";
