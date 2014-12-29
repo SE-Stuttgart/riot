@@ -94,27 +94,19 @@ public abstract class BaseResource<E extends ResourceModel> {
     @Produces(PRODUCED_FORMAT)
     public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DaoException {
 
-        if (offset == 0 && limit == 0) {
+        if(limit < 0 || offset < 0){
+            throw new BadRequestException("please provide valid parameter values");
+        }
+        else if (limit == 0) {
             // the case when GET request has no query parameters (api/resource)
+            return modelManager.get(offset, MAX_PAGE_SIZE);
 
-            // id's at persistence layers starts with id 1
-            return modelManager.get(1, MAX_PAGE_SIZE);
-
-        } else if (offset == 0 && limit > 0) {
+        } else {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
-
-            // sets "limit" to the maximum allowed page size if necessary
-            return modelManager.get(1, limit < MAX_PAGE_SIZE ? limit : MAX_PAGE_SIZE);
-
-        } else if (offset > 0 && limit > 0) {
-            // the case when GET request has both offset and limit query parameters (api/resource?offset=20&limit=10)
 
             // sets "limit" to the maximum allowed page size if necessary
             return modelManager.get(offset, limit < MAX_PAGE_SIZE ? limit : MAX_PAGE_SIZE);
 
-        } else {
-            // invalid values (e.g. negative values)
-            throw new BadRequestException("please provide valid parameter values");
         }
     }
 

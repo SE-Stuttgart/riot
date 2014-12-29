@@ -151,14 +151,14 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         final int testDataSize = 6; // size of test data
 
         // --- no test data at database: returned collection shall be empty
-        Collection<CalendarEntry> retrievedElements = modelManager.get(1, pageSize);
+        Collection<CalendarEntry> retrievedElements = modelManager.get(0, pageSize);
         assertThat(retrievedElements, hasSize(0));
 
         // creating test data
         HashMap<Long, CalendarEntry> savedElements = createTestData(testDataSize);
 
         // --- retrieving first page
-        retrievedElements = modelManager.get(1, pageSize); // OFFSET=1, LIMIT = 2
+        retrievedElements = modelManager.get(0, pageSize); // OFFSET=0, LIMIT = 2
         assertThat(retrievedElements, hasSize(pageSize)); // shall return 2 items
         CalendarEntry elem1 = (CalendarEntry) retrievedElements.toArray()[0];
         CalendarEntry elem2 = (CalendarEntry) retrievedElements.toArray()[1];
@@ -172,14 +172,10 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         retrievedElements = modelManager.get(testDataSize + 1, pageSize); // OFFSET=7, LIMIT = 2
         assertThat(retrievedElements, hasSize(0));
 
-        // --- LIMIT bigger than existing elements to return (e.g. the very last id as offset)
+        // using the number of items as offset means skipping all items, zero items should be returned
         retrievedElements = modelManager.get(testDataSize, pageSize); // OFFSET=6, LIMIT = 2
-        assertThat(retrievedElements, hasSize(1));
-        elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+        assertThat(retrievedElements, hasSize(0));
 
-        // returned elements shall be (id=6)
-        assertThat(elem1.getId(), equalTo((long) 6));
-        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // element still the same as created
     }
 
     /**
@@ -194,26 +190,22 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         // creating test data
         HashMap<Long, CalendarEntry> savedElements = createTestData(5);
 
-        // --- Using non-existing id=3 as offset: new offset shall be the next existing id
+        // skip 3 entries, get max 2 remaining
         modelManager.delete(3);
         Collection<CalendarEntry> retrievedElements = modelManager.get(3, pageSize); // OFFSET=3, LIMIT = 2
-        assertThat(retrievedElements, hasSize(pageSize)); // shall still return 2 items
+        assertThat("(should return 1 as only 4 items available", retrievedElements, hasSize(1)); // shall still return 2 items
         CalendarEntry elem1 = (CalendarEntry) retrievedElements.toArray()[0];
+
+        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
+
+        // using an offset of 2 should return 2 items
+        retrievedElements = modelManager.get(2, pageSize); // OFFSET=2, LIMIT = 2
+        assertThat("using an offset of 2 should return 2 items", retrievedElements, hasSize(pageSize));
+        elem1 = (CalendarEntry) retrievedElements.toArray()[0];
         CalendarEntry elem2 = (CalendarEntry) retrievedElements.toArray()[1];
 
-        // returned elements shall be (id=4, id=5)
+        // returned elements shall be the last 2
         assertThat(Arrays.asList(elem1.getId(), elem2.getId()), containsInAnyOrder((long) 4, (long) 5));
-        assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
-        assertThat(savedElements.get(elem2.getId()), equalTo(elem2));
-
-        // --- Using id before non-existing id=3 as offset: returned size still 2
-        retrievedElements = modelManager.get(2, pageSize); // OFFSET=2, LIMIT = 2
-        assertThat(retrievedElements, hasSize(pageSize));
-        elem1 = (CalendarEntry) retrievedElements.toArray()[0];
-        elem2 = (CalendarEntry) retrievedElements.toArray()[1];
-
-        // returned elements shall be (id=2, id=4)
-        assertThat(Arrays.asList(elem1.getId(), elem2.getId()), containsInAnyOrder((long) 2, (long) 4));
         assertThat(savedElements.get(elem1.getId()), equalTo(elem1)); // elements still the same as created
         assertThat(savedElements.get(elem2.getId()), equalTo(elem2));
     }

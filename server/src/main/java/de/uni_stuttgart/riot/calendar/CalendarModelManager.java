@@ -59,11 +59,11 @@ public class CalendarModelManager implements ModelManager<CalendarEntry> {
      */
     @Override
     public Collection<CalendarEntry> get(long offset, int limit) throws DaoException {
-        if (offset < 1 || limit < 1) {
+        if (offset < 0 || limit < 1) {
             throw new DaoException(INVALID_PAR_EXC);
         }
 
-        String sql = "SELECT * FROM calendarEntries WHERE id >= :offset ORDER BY id ASC LIMIT :limit";
+        String sql = "SELECT * FROM calendarEntries LIMIT :limit OFFSET :offset";
 
         try (Connection con = ConnectionMgr.openConnection()) {
             return con.createQuery(sql).addParameter("offset", offset).addParameter("limit", limit).executeAndFetch(CalendarEntry.class);
