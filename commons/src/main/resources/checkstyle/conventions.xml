@@ -188,6 +188,9 @@
     <property name="fileExtensions" value="java"/>
   </module>
    <module name="SuppressWithNearbyCommentFilter">
-    <property name="commentFormat" value="NOCHECKSTYLE (\w+)"/>
+    <property name="commentFormat" value="NO(CHECKSTYLE|CS)(\w*)"/>
+  </module>
+  <module name="SuppressionFilter">
+    <property name="file" value="${samedir}/suppressions.xml" />
   </module>
 </module>

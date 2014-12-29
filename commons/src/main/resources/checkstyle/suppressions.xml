@@ -7,4 +7,7 @@
 <suppressions>
     <suppress checks="JavadocPackage" files="[\\/]src[\\/]test[\\/]"/>
     <suppress checks="JavadocType" files="[\\/]src[\\/]test[\\/]"/>
+    <suppress checks="IllegalThrows" files="[\\/]src[\\/]test[\\/]"/>
+    <suppress checks="." files="de[\\/]uni_stuttgart[\\/]riot[\\/]usermanagement[\\/]data"/>
+    <suppress checks="." files="de[\\/]uni_stuttgart[\\/]riot[\\/]usermanagement[\\/]logic"/>
 </suppressions> 
