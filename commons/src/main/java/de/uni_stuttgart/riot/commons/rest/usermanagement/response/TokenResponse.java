@@ -22,6 +22,8 @@ public class TokenResponse {
         this.token = token;
     }
 
+    public TokenResponse() {
+	}
     public Long getId() {
         return token.getId();
     }

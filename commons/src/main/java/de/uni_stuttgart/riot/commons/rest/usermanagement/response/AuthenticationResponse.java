@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.response;
 
-
 /**
  * The authentication response message for the client used in {@link AuthenticationService}.
  * 
@@ -28,8 +27,11 @@ public class AuthenticationResponse {
         this.refreshToken = refreshToken;
         this.user = user;
     }
+    
+    public AuthenticationResponse() {
+	}
 
-    public String getAccessToken() {
+	public String getAccessToken() {
         return accessToken;
     }
 

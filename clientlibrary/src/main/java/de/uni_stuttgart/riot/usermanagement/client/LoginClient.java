@@ -13,7 +13,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.Authentication
 
 public class LoginClient {
 
-	private static final String PREFIX = "/riot.usermanagement/api/v1/";
+	private static final String PREFIX = "/riot/api/v1/";
 
 	private static final String LOGOUT_PATH = PREFIX + "auth/logout";
 	private static final String LOGIN_PATH =  PREFIX +"auth/login";
@@ -60,6 +60,7 @@ public class LoginClient {
 
 	void internalLogin(String path, Object entity) throws RequestException {
 		WebTarget target = client.target(this.serverUrl).path(path);
+		System.out.println(target.getUri());
 		Response r = target.request(MediaType.APPLICATION_JSON).put(Entity.entity(entity, MediaType.APPLICATION_JSON));
 		if(r.getStatus() >= 400){
 			if(r.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)){

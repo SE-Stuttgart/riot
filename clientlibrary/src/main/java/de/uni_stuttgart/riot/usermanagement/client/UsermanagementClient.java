@@ -10,7 +10,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 public class UsermanagementClient {
 
-	private final String PREFIX = "/riot.usermanagement/api/v1/";
+	private final String PREFIX = "/riot/api/v1/";
 	
 	private final String GET_USERS = PREFIX + "users";
 	private final String GET_ROLES = PREFIX + "roles"; 

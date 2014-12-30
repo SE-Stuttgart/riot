@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.uni_stuttgart.riot.usermanagement.service.rest.request;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.request;
 
 /**
  * A request for a user.

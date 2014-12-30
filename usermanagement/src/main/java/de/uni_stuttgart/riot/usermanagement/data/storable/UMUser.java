@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
@@ -12,7 +13,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  * @author Jonas Tangermann
  *
  */
-public class UMUser extends User implements Storable {
+public class UMUser extends User {
 
     private String hashedPassword;
     private String passwordSalt;
@@ -43,27 +44,6 @@ public class UMUser extends User implements Storable {
         this.setHashIterations(-1);
     }
 
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
-        result.add(new SearchParameter(SearchFields.USERNAME, this.getUsername()));
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("User [id=");
-        builder.append(id);
-        builder.append(", username=");
-        builder.append(username);
-        builder.append(", hashedPassword=");
-        builder.append(hashedPassword);
-        builder.append(", passwordSalt=");
-        builder.append(passwordSalt);
-        builder.append("]");
-        return builder.toString();
-    }
 
     public String getHashedPassword() {
         return hashedPassword;
@@ -81,17 +61,50 @@ public class UMUser extends User implements Storable {
         this.passwordSalt = passwordSalt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof UMUser) {
-            UMUser u = (UMUser) o;
-            return this.id == u.getId() && this.username.equals(u.username) && this.hashedPassword.equals(u.hashedPassword) && this.passwordSalt.equals(u.passwordSalt);
-        } else {
-            return false;
-        }
-    }
 
-    public int getHashIterations() {
+    @Override
+	public String toString() {
+		return "UMUser [hashedPassword=" + hashedPassword + ", passwordSalt="
+				+ passwordSalt + ", hashIterations=" + hashIterations + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + hashIterations;
+		result = prime * result
+				+ ((hashedPassword == null) ? 0 : hashedPassword.hashCode());
+		result = prime * result
+				+ ((passwordSalt == null) ? 0 : passwordSalt.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UMUser other = (UMUser) obj;
+		if (hashIterations != other.hashIterations)
+			return false;
+		if (hashedPassword == null) {
+			if (other.hashedPassword != null)
+				return false;
+		} else if (!hashedPassword.equals(other.hashedPassword))
+			return false;
+		if (passwordSalt == null) {
+			if (other.passwordSalt != null)
+				return false;
+		} else if (!passwordSalt.equals(other.passwordSalt))
+			return false;
+		return true;
+	}
+
+	public int getHashIterations() {
         return hashIterations;
     }
 

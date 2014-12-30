@@ -18,15 +18,19 @@ public class PermissionResponse {
      *            The wrapped Permission.
      */
     public PermissionResponse(Permission permission) {
-        this.permission = permission;
+        this.setPermission(permission);
     }
+    
+    public PermissionResponse() {
+	}
 
-    public Long getId() {
-        return permission.getId();
-    }
+	public Permission getPermission() {
+		return permission;
+	}
 
-    public String getPermissionValue() {
-        return permission.getPermissionValue();
-    }
+	public void setPermission(Permission permission) {
+		this.permission = permission;
+	}
+
 
 }

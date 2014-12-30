@@ -10,9 +10,7 @@ import java.util.LinkedList;
  * @author Jonas Tangermann
  *
  */
-public class Permission implements Storable {
-
-    private long id;
+public class Permission extends Storable {
 
     /**
      * The permission string that is interpreted as {@link WildcardPermission}.
@@ -33,7 +31,7 @@ public class Permission implements Storable {
      *            the permission string in {@link WildcardPermission} format.
      */
     public Permission(String permissionValue) {
-        this.id = -1L;
+        super(-1L);
         this.setPermissionValue(permissionValue);
     }
 
@@ -46,14 +44,10 @@ public class Permission implements Storable {
      *            the permission string in {@link WildcardPermission} format.
      */
     public Permission(long id, String permissionValue) {
-        this.id = id;
+        super(id);
         this.setPermissionValue(permissionValue);
     }
 
-    @Override
-    public long getId() {
-        return this.id;
-    }
 
     /**
      * Getter for {@link Permission#permissionValue}.
@@ -64,7 +58,33 @@ public class Permission implements Storable {
         return permissionValue;
     }
 
-    /**
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((permissionValue == null) ? 0 : permissionValue.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Permission other = (Permission) obj;
+		if (permissionValue == null) {
+			if (other.permissionValue != null)
+				return false;
+		} else if (!permissionValue.equals(other.permissionValue))
+			return false;
+		return true;
+	}
+
+	/**
      * Setter for {@link Permission#permissionValue}.
      * 
      * @param permissionValue
@@ -73,55 +93,4 @@ public class Permission implements Storable {
     public void setPermissionValue(String permissionValue) {
         this.permissionValue = permissionValue;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (id ^ (id >>> 32)); // NOCS
-        result = prime * result + ((permissionValue == null) ? 0 : permissionValue.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Permission other = (Permission) obj;
-        if (id != other.id) {
-            return false;
-        }
-        if (permissionValue == null) {
-            if (other.permissionValue != null) {
-                return false;
-            }
-        } else if (!permissionValue.equals(other.permissionValue)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Permission [permissionID=");
-        builder.append(id);
-        builder.append(", permissionValue=");
-        builder.append(permissionValue);
-        builder.append("]");
-        return builder.toString();
-    }
-
-    @Override
-    public void setId(long id) {
-        this.id = id;
-    }
-
 }

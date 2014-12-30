@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.data.storable;
+package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 /**
  * The User class holds all basic information regarding to a user.
@@ -6,18 +6,16 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
  * @author Niklas Schnabel
  *
  */
-public class User {
+public class User extends Storable {
 
-    // TODO This class should be moved to a better place than this. Maybe the commons project would be the right place
 
-    protected long id;
     protected String username;
 
     /**
      * Constructs a new user.
      */
     public User() {
-        id = -1;
+        super(-1L);
         username = null;
     }
 
@@ -28,7 +26,7 @@ public class User {
      *            The name of the user
      */
     public User(String username) {
-        this.id = -1;
+    	super(-1L);
         this.username = username;
     }
 
@@ -41,27 +39,8 @@ public class User {
      *            The name of the user
      */
     public User(long id, String username) {
-        this.id = id;
+    	super(id);
         this.username = username;
-    }
-
-    /**
-     * Returns the id.
-     * 
-     * @return the id
-     */
-    public long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the id.
-     * 
-     * @param id
-     *            the id to set
-     */
-    public void setId(long id) {
-        this.id = id;
     }
 
     /**
