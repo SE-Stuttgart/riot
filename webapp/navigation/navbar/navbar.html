@@ -1,0 +1,31 @@
+<nav class="navbar navbar-default navbar-default" role="navigation" ng-controller="NavbarCtrl">
+  <!-- brand -->
+  <div class="navbar-header">
+    <a href="index.html" class="navbar-brand">riot - Universität Stuttgart</a>
+    <button type="button" class="btn btn-default btn-sm navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+      <span class="fa fa-bars"></span>
+    </button>
+  </div>
+
+  <div class="navbar-collapse">
+    <div class="navbar-right">
+      <div ng-include="'navigation/navbar/login-form/login-form.html'"></div>
+    </div>
+
+    <ul class="nav navbar-nav navbar-right">
+      <!-- signed in -->
+      <li>
+        <a>Signed in as <strong ng-bind="user.username"></strong></a>
+      </li>
+
+      <!-- alerts -->
+      <li alerts></li>
+
+      <!-- user -->
+      <li user></li>
+    </ul>
+
+    <!-- sidebar -->
+    <span ng-include="'navigation/sidebar/sidebar.html'"></span>
+  </div>
+</nav>

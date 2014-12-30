@@ -48,6 +48,10 @@ Run the following commands in the root directory of the webapp to load the requi
     npm install
     bower install
 
+## Project Structure
+
+The project follows the best practice guidelines for AngularJS where specific functions are grouped together into a component. Each component consists of its own folder which contains the necessary angular views, controllers, directives, tests and much more. A component can further be separated into sub-components. This structure allows a clean development process where developers should firstly consider the separation of concern before developing and create new components accordingly.
+
 ### Grunt
 
 The project uses [grunt](http://gruntjs.com/) for performing repetitive tasks like minification, compilation and unit testing. The following grunt tasks are available:
@@ -57,6 +61,6 @@ The project uses [grunt](http://gruntjs.com/) for performing repetitive tasks li
  - grunt **test**: Run the unit tests.
 
 ### Yeoman
-For further automation the [Yeoman](http://yeoman.io/) project is used. The project structure uses the [angular generator](https://github.com/yeoman/generator-angular) which has additional generators for adding new angular controllers, directives, filters and much more. Read the github page of the angular generator for further details.
+For further automation the [Yeoman](http://yeoman.io/) project is used. The project structure uses the [cg-angular](https://github.com/cgross/generator-cg-angular) which has additional generators for adding new angular views, directives, filters and much more. Read the github page of the angular generator for further details.
 
 This means for common tasks you will simply run a command and don't need to create and integrate the files manually.
