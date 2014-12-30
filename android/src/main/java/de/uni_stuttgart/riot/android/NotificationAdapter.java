@@ -47,7 +47,7 @@ public class NotificationAdapter extends BaseAdapter {
 
 		if (noti.getType().equals(NotificationType.ERROR)) {
 			typIcon.setImageResource(R.drawable.error_icon);
-		} else if (noti.getType().equals(NotificationType.NOTIFCATION)) {
+		} else if (noti.getType().equals(NotificationType.WARNING)) {
 			typIcon.setImageResource(R.drawable.notification_icon);
 		} else if (noti.getType().equals(NotificationType.APPOINTMENT)) {
 			typIcon.setImageResource(R.drawable.appointment_icon);

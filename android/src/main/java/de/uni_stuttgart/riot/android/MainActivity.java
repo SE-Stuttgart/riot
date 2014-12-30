@@ -25,7 +25,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
+import de.uni_stuttgart.riot.android.communication.NotificationFragment;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
+import de.uni_stuttgart.riot.android.database.FilterDataObjects;
+import de.uni_stuttgart.riot.android.database.FilterDatabase;
 import de.uni_stuttgart.riot.android.database.LanguageDatabase;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 
@@ -41,11 +44,17 @@ public class MainActivity extends Activity {
 
 	private LanguageDatabase dbHandler;
 	private Locale locale;
+	
+	private FilterDataObjects filterObjects;
+	
+	private Filter errorFilter;
+	private Filter warningFilter;
+	private Filter appointmentFilter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	
+
 		setLanguage();
 		setContentView(R.layout.activity_main);
 
@@ -59,8 +68,8 @@ public class MainActivity extends Activity {
 
 		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 				R.layout.drawer_list_item, mMenuTitles));
-		
-		//ClickListener for the left ActionBar
+
+		// ClickListener for the left ActionBar
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,33 +93,23 @@ public class MainActivity extends Activity {
 		if (savedInstanceState == null) {
 			selectItem(0);
 		}
-		
-		
-		//ClickListener for the Notification List
-		notificationList = (ListView) findViewById(R.id.NotificationList);		
-		notificationList.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				System.out.println("longclick");
-				return false;
-			}
-		});
-		
+		// ClickListener for the Notification List
+		notificationList = (ListView) findViewById(R.id.NotificationList);
 		notificationList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				System.out.println("click");
-				
-			}
-			
-		});
 
+			}
+		});
+		
+		
+		//FilterDatabase stuff		
+		filterObjects = new FilterDataObjects(this);
 	}
-	
 
 	/*
 	 * ----------------- REFRESH BUTTON -----------------
@@ -132,6 +131,11 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		
+		//get the values for the each filter from the database
+		menu.findItem(R.id.filter_error).setChecked(filterObjects.getFilterStatus(NotificationType.ERROR));
+		menu.findItem(R.id.filter_warning).setChecked(filterObjects.getFilterStatus(NotificationType.WARNING));
+		menu.findItem(R.id.filter_appointment).setChecked(filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
+
 		// Refresh button is only shown in the home screen
 		if (!getActionBar().getTitle().equals("Home")) {
 			menu.findItem(R.id.action_refresh).setVisible(false);
@@ -154,7 +158,17 @@ public class MainActivity extends Activity {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
+		
 		switch (item.getItemId()) {
+		case R.id.filter_error:
+			filterObjects.setFilter(new Filter(item,NotificationType.ERROR,false));		
+			return true;
+		case R.id.filter_appointment:
+			filterObjects.setFilter(new Filter(item,NotificationType.APPOINTMENT,false));
+			return true;
+		case R.id.filter_warning:
+			filterObjects.setFilter(new Filter(item,NotificationType.WARNING,false));
+			return true;
 		case R.id.action_refresh:
 			new ServerConnection(this).execute();
 		default:
@@ -167,7 +181,7 @@ public class MainActivity extends Activity {
 	 */
 
 	/**
-	 *Method for changing the language
+	 * Method for changing the language
 	 */
 	private void setLanguage() {
 		dbHandler = new LanguageDatabase(this);
@@ -197,7 +211,7 @@ public class MainActivity extends Activity {
 
 		// Opens the main fragment
 		if (position == 0) {
-			fragment = new MyFragment();
+			fragment = new NotificationFragment();
 			startFragment(position, fragment);
 		}
 

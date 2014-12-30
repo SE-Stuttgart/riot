@@ -61,7 +61,7 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 				
 				Notification n3 = new Notification();
 				n3.setTitle("Refuel car.");
-				n3.setType(NotificationType.NOTIFCATION);
+				n3.setType(NotificationType.WARNING);
 				n3.setId(testNotification.getId());
 				n3.setContent(testNotification.getContent());
 				n3.setDate(new Date());
