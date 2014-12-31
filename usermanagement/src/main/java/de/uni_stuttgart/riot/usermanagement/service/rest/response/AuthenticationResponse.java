@@ -15,6 +15,12 @@ public class AuthenticationResponse {
     private UserResponse user;
 
     /**
+     * Default-Constructor for JAXB.
+     */
+    public AuthenticationResponse() {
+    }
+
+    /**
      * Create a authentication response.
      * 
      * @param accessToken

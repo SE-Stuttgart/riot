@@ -8,12 +8,20 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsF
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
- * Wrapper around a {@link Role}.
+ * Wrapper around a {@link Role}.<br>
+ * FIXME These wrapper classes should not be necessary. Instead, use JAXB annotations to tell, which attributes are to be sent to the
+ * client. CHECKSTYLE:OFF
  */
 public class RoleResponse {
 
     private Role role;
     private Collection<PermissionResponse> permissions;
+
+    /**
+     * Default-Constructor for JAXB.
+     */
+    public RoleResponse() {
+    }
 
     /**
      * Creates a wrapper around the role and retrieves its permissions.
@@ -34,8 +42,16 @@ public class RoleResponse {
         return role.getId();
     }
 
+    public void setId(Long id) {
+        role.setId(id);
+    }
+
     public String getRoleName() {
         return role.getRoleName();
+    }
+
+    public void setRoleName(String roleName) {
+        role.setRoleName(roleName);
     }
 
     public Collection<PermissionResponse> getPermissions() {

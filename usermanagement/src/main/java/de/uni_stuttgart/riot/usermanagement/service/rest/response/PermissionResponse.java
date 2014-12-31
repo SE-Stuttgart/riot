@@ -3,19 +3,18 @@ package de.uni_stuttgart.riot.usermanagement.service.rest.response;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 
 /**
- * Wrapper around {@link Permission} to only expose the desired fields over REST.
- * FIXME Do we need this class in the first place?
+ * Wrapper around a {@link Permission}.<br>
+ * FIXME These wrapper classes should not be necessary. Instead, use JAXB annotations to tell, which attributes are to be sent to the
+ * client. CHECKSTYLE:OFF
  */
 public class PermissionResponse {
 
     private Permission permission;
 
-    /**
-     * Creates a new PermissionResponse.
-     * 
-     * @param permission
-     *            The wrapped Permission.
-     */
+    public PermissionResponse() {
+
+    }
+
     public PermissionResponse(Permission permission) {
         this.permission = permission;
     }
@@ -24,8 +23,16 @@ public class PermissionResponse {
         return permission.getId();
     }
 
+    public void setId(Long id) {
+        permission.setId(id);
+    }
+
     public String getPermissionValue() {
         return permission.getPermissionValue();
+    }
+
+    public void setPermissionValue(String permissionValue) {
+        permission.setPermissionValue(permissionValue);
     }
 
 }
