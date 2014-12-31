@@ -21,6 +21,7 @@
 		<module>server</module>
 		<module>clientlibrary</module>
 		<module>android</module>
+		<module>integration-tests</module>
 	</modules>
 
 	<dependencies>
