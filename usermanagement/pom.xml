@@ -104,16 +104,4 @@
 		</plugins>
 	</build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<configuration>
-					<propertyExpansion>samedir=${project.parent.basedir}/riot.commons/src/main/resources/checkstyle</propertyExpansion>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
 </project>
