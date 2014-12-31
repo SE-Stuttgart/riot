@@ -8,14 +8,14 @@
   </div>
 
   <div class="navbar-collapse">
-    <div class="navbar-right">
+    <div class="navbar-right" ng-if="!isAuthenticated()">
       <div ng-include="'views/navigation/navbar/login-form/login-form.html'"></div>
     </div>
 
-    <ul class="nav navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right" ng-if="isAuthenticated()">
       <!-- signed in -->
       <li>
-        <a>Signed in as <strong ng-bind="user.username"></strong></a>
+        <a>Signed in as <strong ng-bind="user().user.username"></strong></a>
       </li>
 
       <!-- alerts -->
@@ -26,6 +26,8 @@
     </ul>
 
     <!-- sidebar -->
-    <span ng-include="'views/navigation/sidebar/sidebar.html'"></span>
+    <div ng-if="isAuthenticated()">
+      <div ng-include="'views/navigation/sidebar/sidebar.html'"></div>
+    </div>
   </div>
 </nav>

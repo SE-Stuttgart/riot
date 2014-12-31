@@ -1,7 +1,8 @@
-angular.module('riot').controller('LoginFormCtrl',function($scope){
+angular.module('riot').controller('LoginFormCtrl', function($scope, Auth) {
   $scope.username = 'Yoda';
   $scope.password = 'YodaPW';
-  $scope.submitLogin = function(username, password) {
 
+  $scope.submit = function(username, password) {
+    Auth.login(username, password);
   };
 });
