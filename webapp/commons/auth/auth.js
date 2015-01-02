@@ -1,7 +1,7 @@
 angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStorageService) {
-  var user = {};
-  var accessToken = '';
-  var refreshToken = '';
+  var user = null;
+  var accessToken = null;
+  var refreshToken = null;
 
   var storage = {
     load: function() {
@@ -28,7 +28,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     getRefreshToken: function() {
       return refreshToken;
     },
-    hasToken: function() {
+    hasAuthentication: function() {
       return accessToken !== null;
     },
     isAuthenticated: function() {
@@ -43,7 +43,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
       return false;
     },
     reset: function() {
-      user = {};
+      user = null;
       accessToken = null;
       refreshToken = null;
 
@@ -63,8 +63,6 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
           var errorMessage = data.errorMessage || 'Unknown error';
           var errorCode = data.errorCode || -1;
-
-          service.reset();
 
           deferred.reject(errorMessage + ' (Error Code: ' + errorCode + ')');
         });
@@ -124,7 +122,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
       return deferred.promise;
     },
-    refresh: function(refreshToken) {
+    refresh: function() {
       var deferred = $q.defer();
 
       $http.put('http://localhost:8080/riot/api/v1/auth/refresh', {
@@ -157,7 +155,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   $rootScope.user = service.getUser;
   $rootScope.accessToken = service.getAccessToken;
   $rootScope.refreshToken = service.getRefreshToken;
-  $rootScope.hasToken = service.hasToken;
+  $rootScope.hasAuthentication = service.hasAuthentication;
   $rootScope.isAuthenticated = service.isAuthenticated;
   $rootScope.hasRole = service.hasRole;
   $rootScope.hasPermission = service.hasPermission;
@@ -167,7 +165,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
   //init
   storage.load();
-  if (service.hasToken()) {
+  if (service.hasAuthentication()) {
     service.getSelf();
   }
 

@@ -1,17 +1,11 @@
 angular.module('riot').factory('AuthenticationInterceptor', function($q, $injector) {
-  var errorCount = 0;
+  var processingRefreshRequest = false;
   var interceptor = {
     request: function(config) {
       var Auth = $injector.get('Auth');
-      if (Auth.hasToken()) {
-        config.headers['Access-Token'] = Auth.getAccessToken();
-      }
+      config.headers['Access-Token'] = Auth.getAccessToken() || '';
 
       return config;
-    },
-    response: function(response) {
-      errorCount = 0;
-      return response;
     },
     responseError: function(response) {
       if (response.status === 401) {
@@ -19,18 +13,34 @@ angular.module('riot').factory('AuthenticationInterceptor', function($q, $inject
         var $http = $injector.get('$http');
         var deferred = $q.defer();
 
-        //refresh tokens
-        if (errorCount++ === 0) {
-          Auth.refresh(Auth.refreshToken).then(deferred.resolve, deferred.reject);
+        if (!processingRefreshRequest) {
+          processingRefreshRequest = true;
 
-          return deferred.promise.then(function(data) {
-            //send the previous request again
-            return $http(response.config);
-          });
-        }
-        else {
-          errorCount = 0;
-          Auth.reset();
+          //reauthenticate using the refresh token
+          Auth.refresh(Auth.refreshToken).then(
+            deferred.resolve,
+            deferred.reject
+          );
+
+          return deferred.promise.then(
+            function(data) {
+              //send the original request again
+              return $http(response.config)
+                .success(function() {
+                  processingRefreshRequest = false;
+                })
+                .error(function(data, status) {
+                  processingRefreshRequest = false;
+                  
+                  if (status === 401) {
+                    Auth.reset();
+                  }
+                });
+            },
+            function() {
+              Auth.reset();
+              return $q.reject(response);
+            });
         }
       }
 
