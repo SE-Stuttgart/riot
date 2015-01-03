@@ -28,8 +28,6 @@ import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.communication.NotificationFragment;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
-import de.uni_stuttgart.riot.android.database.FilterDatabase;
-import de.uni_stuttgart.riot.android.database.LanguageDatabase;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 
 public class MainActivity extends Activity {
@@ -41,8 +39,7 @@ public class MainActivity extends Activity {
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
-
-	private LanguageDatabase dbHandler;
+	
 	private Locale locale;
 	
 	private FilterDataObjects filterObjects;
@@ -54,8 +51,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		setLanguage();
+		//this.deleteDatabase("RIOT");
 		setContentView(R.layout.activity_main);
 
 		mTitle = getTitle();
@@ -107,8 +103,10 @@ public class MainActivity extends Activity {
 		});
 		
 		
-		//FilterDatabase stuff		
+		//Database stuff		
 		filterObjects = new FilterDataObjects(this);
+		
+		//setLanguage();
 	}
 
 	/*
@@ -131,14 +129,17 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		
-		//get the values for the each filter from the database
+//		//get the values for the each filter from the database
 		menu.findItem(R.id.filter_error).setChecked(filterObjects.getFilterStatus(NotificationType.ERROR));
 		menu.findItem(R.id.filter_warning).setChecked(filterObjects.getFilterStatus(NotificationType.WARNING));
 		menu.findItem(R.id.filter_appointment).setChecked(filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
 
-		// Refresh button is only shown in the home screen
+		// Refresh button, filter buttons and the notification list is only shown in the home screen
 		if (!getActionBar().getTitle().equals("Home")) {
 			menu.findItem(R.id.action_refresh).setVisible(false);
+			for(int i= 0; i<menu.size(); i++){
+				menu.getItem(i).setVisible(false);
+			}
 			notificationList.setAdapter(null);
 		} else {
 			// get the latest Notifications
@@ -184,11 +185,10 @@ public class MainActivity extends Activity {
 	 * Method for changing the language
 	 */
 	private void setLanguage() {
-		dbHandler = new LanguageDatabase(this);
-		if (dbHandler.getCount() == 0) {
+		if (filterObjects.getDatabase().getCount() == 0) {
 			locale = new Locale("en");
 		} else {
-			locale = new Locale(dbHandler.getLanguage());
+			locale = new Locale(filterObjects.getDatabase().getLanguage());
 		}
 		Locale.setDefault(locale);
 		Configuration config = new Configuration();
@@ -228,7 +228,7 @@ public class MainActivity extends Activity {
 
 		// Opens the language fragment
 		if (position == 3) {
-			fragment = new LanguageFragment();
+			fragment = new LanguageFragment(filterObjects);
 			startFragment(position, fragment);
 		}
 

@@ -6,16 +6,15 @@ import de.uni_stuttgart.riot.android.NotificationType;
 import android.content.Context;
 import android.view.MenuItem;
 
-/**
- * 
- * @author Florian
- *
- */
 public class FilterDataObjects {
-	private FilterDatabase filterDatabase;
+	private RIOTDatabase database;
 
 	public FilterDataObjects(MainActivity mainActivity) {
-		filterDatabase = new FilterDatabase(mainActivity);
+		database = new RIOTDatabase(mainActivity);
+	}
+
+	public RIOTDatabase getDatabase() {
+		return database;
 	}
 
 	/**
@@ -24,20 +23,17 @@ public class FilterDataObjects {
 	 */
 	public void setFilter(Filter filter) {
 
-		boolean isChecked = false;
-
 		if (filter.getItem().isChecked() == false) {
 			filter.getItem().setChecked(true);
 
-			isChecked = !isChecked;
-			filterDatabase.updateFilterSetting(filter.getItem().getTitle(),
-					filter.getType(), isChecked);
+			database.updateFilterSetting(filter.getItem().getTitle(),
+					filter.getType(), filter.getItem().isChecked());
 
 		} else {
 			filter.getItem().setChecked(false);
 
-			filterDatabase.updateFilterSetting(filter.getItem().getTitle(),
-					filter.getType(), isChecked);
+			database.updateFilterSetting(filter.getItem().getTitle(),
+					filter.getType(), filter.getItem().isChecked());
 		}
 
 	}
@@ -48,7 +44,7 @@ public class FilterDataObjects {
 	 * @return true = ischecked, false = unchecked
 	 */
 	public boolean getFilterStatus(NotificationType type) {
-		return filterDatabase.getFilterSettings(type);
+		return database.getFilterSettings(type);		
 	}
 
 }

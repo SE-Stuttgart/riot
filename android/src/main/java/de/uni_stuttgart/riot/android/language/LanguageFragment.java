@@ -8,12 +8,17 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.database.LanguageDatabase;
+import de.uni_stuttgart.riot.android.MainActivity;
+import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 
 public class LanguageFragment extends Fragment {
 
-	private LanguageDatabase dbHandler;
+	private FilterDataObjects filterObjects;
 	private RadioGroup buttonGroup;
+	
+	public LanguageFragment(FilterDataObjects filterObjects) {
+		this.filterObjects = filterObjects;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -21,7 +26,7 @@ public class LanguageFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.fragment_language, container,
 				false);
-		
+
 		buttonGroup = (RadioGroup) view.findViewById(R.id.lang_group);
 
 		buttonGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -29,15 +34,17 @@ public class LanguageFragment extends Fragment {
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				switch (checkedId) {
 				case R.id.lang_en:
-					dbHandler = new LanguageDatabase(getActivity());
-					dbHandler.deleteAllLanguages();
-					dbHandler.addLanguage("en", "Supports the english language");
+
+					filterObjects.getDatabase().deleteAllLanguages();
+					filterObjects.getDatabase().addLanguage("en",
+							"Supports the english language");
 					break;
 
 				case R.id.lang_de:
-					dbHandler = new LanguageDatabase(getActivity());
-					dbHandler.deleteAllLanguages();
-					dbHandler.addLanguage("de", "Supports the german language");
+
+					filterObjects.getDatabase().deleteAllLanguages();
+					filterObjects.getDatabase().addLanguage("de",
+							"Supports the german language");
 					break;
 				default:
 					break;
