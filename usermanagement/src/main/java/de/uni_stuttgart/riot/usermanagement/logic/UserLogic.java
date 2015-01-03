@@ -31,6 +31,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserExceptio
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
+import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 
 /**
  * Contains all logic regarding an user.
@@ -69,12 +70,18 @@ public class UserLogic {
             Validate.notEmpty(username, "username must not be empty");
             Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
 
-            UMUser user = new UMUser(username);
-            hashPassword(user, clearTextPassword);
+            PasswordValidator pv = new PasswordValidator();
+            if (pv.validate(clearTextPassword)) {
+                UMUser user = new UMUser(username);
+                hashPassword(user, clearTextPassword);
 
-            dao.insert(user);
+                dao.insert(user);
 
-            return user;
+                return user;
+            } else {
+                throw new AddUserException("The password does not meet the requirements");
+            }
+
         } catch (Exception e) {
             throw new AddUserException(e);
         }
@@ -112,7 +119,12 @@ public class UserLogic {
             }
 
             if (StringUtils.isNotEmpty(clearTextPassword)) {
-                hashPassword(user, clearTextPassword);
+                PasswordValidator pv = new PasswordValidator();
+                if (pv.validate(clearTextPassword)) {
+                    hashPassword(user, clearTextPassword);
+                } else {
+                    throw new AddUserException("The password does not meet the requirements");
+                }
             }
 
             dao.update(user);
@@ -153,20 +165,21 @@ public class UserLogic {
         }
     }
 
-	/**
-	 * Get user by token.
-	 * 
-	 * @param token The token of the user.
-	 * @return Returns user.
-	 * @throws GetUserException
-	 */
-	public UMUser getUser(Token token) throws GetUserException {
-		try {
-			return dao.findByUniqueField(new SearchParameter(SearchFields.USERID, token.getUserID()));
-		} catch (Exception e) {
-			throw new GetUserException(e);
-		}
-	}
+    /**
+     * Get user by token.
+     * 
+     * @param token
+     *            The token of the user.
+     * @return Returns user.
+     * @throws GetUserException
+     */
+    public UMUser getUser(Token token) throws GetUserException {
+        try {
+            return dao.findByUniqueField(new SearchParameter(SearchFields.USERID, token.getUserID()));
+        } catch (Exception e) {
+            throw new GetUserException(e);
+        }
+    }
 
     /**
      * Retrieve all existing users.

@@ -39,4 +39,6 @@ public class ErrorCodes {
 
     public static final int GET_TOKEN = 31;
     public static final int LOGOUT = 32;
+
+    public static final int PASSWORD_VALIDATION = 41;
 }
