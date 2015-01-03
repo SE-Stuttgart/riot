@@ -1,4 +1,4 @@
-angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStorageService) {
+angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStorageService, User) {
   var user = null;
   var accessToken = null;
   var refreshToken = null;
@@ -48,26 +48,6 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
       refreshToken = null;
 
       storage.clear();
-    },
-    getSelf: function() { //TODO move in user service
-      var deferred = $q.defer();
-
-      $http.get('http://localhost:8080/riot/api/v1/users/self')
-        .success(function(data, status) {
-          user = data;
-
-          deferred.resolve();
-        })
-        .error(function(data, status) {
-          data = data || {};
-
-          var errorMessage = data.errorMessage || 'Unknown error';
-          var errorCode = data.errorCode || -1;
-
-          deferred.reject(errorMessage + ' (Error Code: ' + errorCode + ')');
-        });
-
-      return deferred.promise;
     },
     login: function(username, password) {
       var deferred = $q.defer();
@@ -155,7 +135,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   $rootScope.user = service.getUser;
   $rootScope.accessToken = service.getAccessToken;
   $rootScope.refreshToken = service.getRefreshToken;
-  $rootScope.hasAuthentication = service.hasAuthentication;
+  $rootScope.hasCredentials = service.hasAuthentication;
   $rootScope.isAuthenticated = service.isAuthenticated;
   $rootScope.hasRole = service.hasRole;
   $rootScope.hasPermission = service.hasPermission;
@@ -166,7 +146,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   //init
   storage.load();
   if (service.hasAuthentication()) {
-    service.getSelf();
+    user = User.self().$object;
   }
 
   return service;

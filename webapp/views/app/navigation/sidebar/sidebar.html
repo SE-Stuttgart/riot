@@ -1,0 +1,42 @@
+<div class="sidebar" role="navigation" ng-controller="SidebarCtrl">
+  <ul class="nav">
+    <li ng-class="{active:isActive('app.dashboard')}">
+      <a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a>
+    </li>
+
+    <li ng-class="{active:isActive('app.devices')}">
+      <a ui-sref="app.devices"><i class="fa fa-table"></i> Devices</a>
+    </li>
+
+    <li ng-class="{active:isActive('app.calendar')}">
+      <a ui-sref="app.calendar"><i class="fa fa-edit"></i> Calendar</a>
+    </li>
+
+    <li>
+      <a><i class="fa fa-bookmark"></i> Foo</a>
+      <ul class="nav nav-second-level">
+        <li>
+          <a>sub</a>
+        </li>
+        <li>
+          <a>links</a>
+        </li>
+        <li>
+          <a>foo</a>
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      <a><i class="fa fa-cloud"></i> Bar</a>
+      <ul class="nav nav-second-level">
+        <li>
+          <a>other</a>
+        </li>
+        <li>
+          <a>options</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

@@ -1,10 +1,9 @@
-describe('user', function() {
+describe('User', function() {
 
   beforeEach(module('riot'));
 
-  it('should ...', inject(function(user) {
+  it('should ...', inject(function(User) {
 
-	//expect(user.doSomething()).toEqual('something');
 
   }));
 

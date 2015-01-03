@@ -1,6 +1,11 @@
-angular.module('riot').factory('user',function() {
+angular.module('riot').factory('User', function(Restangular) {
+  var resource = Restangular.service('users');
 
-	var user = {};
+  resource.self = function() {
+    return resource.one('self').get();
+  };
 
-	return user;
+  console.log(resource);
+
+  return resource;
 });

@@ -4,15 +4,22 @@
 @fa-font-path: "bower_components/font-awesome/fonts";
 /* Component LESS */
 
-@import "views/dashboard/dashboard.less";
-@import "views/calendar/calendar.less";
-@import "views/devices/devices.less";
+@import "views/app/app.less";
+@import "views/app/navigation/navbar/user/user.less";
+@import "views/app/navigation/navbar/alerts/alerts.less";
+@import "views/app/navigation/navbar/navbar.less";
+@import "views/app/navigation/sidebar/sidebar.less";
+@import "views/app/dashboard/dashboard.less";
+@import "views/app/calendar/calendar.less";
+@import "views/app/devices/devices.less";
+@import "views/app/profile/profile.less";
 @import "views/admin/admin.less";
-@import "views/navigation/navbar/user/user.less";
-@import "views/navigation/navbar/alerts/alerts.less";
-@import "views/navigation/navbar/navbar.less";
-@import "views/navigation/sidebar/sidebar.less";
-@import "views/navigation/navbar/login-form/login-form.less";
+@import "views/landing/landing.less";
+@import "views/landing/navigation/navigation.less";
+@import "views/landing/navigation/login-form/login-form.less";
+@import "views/landing/home/home.less";
+@import "views/landing/register/register.less";
+@import "views/landing/about/about.less";
 /* Add Component LESS Above */
 /* Required for Angular UI Bootstrap */
 
@@ -41,23 +48,4 @@ body {
 }
 .margin-top-30 {
   margin-top: 3.0em;
-}
-.wrapper {
-  width: 100%;
-}
-.page-wrapper {
-  padding: 0 15px;
-  min-height: 568px;
-  background-color: #ffffff;
-}
-@media(min-width:768px) {
-  .page-wrapper {
-    position: inherit;
-    margin: 0 0 0 250px;
-    padding: 0 30px;
-    border-left: 1px solid #e7e7e7;
-  }
-}
-.page-wrapper-folded {
-  margin: 0 0 0 0 !important;
 }

@@ -14,14 +14,14 @@
     "angular": "~1.2",
     "angular-ui-router": "~0.2",
     "angular-animate": "~1.2",
-    "angular-resource": "~1.2",
     "angular-cookies": "~1.2",
     "angular-mocks": "~1.2",
     "angular-ui-utils": "~0.1",
     "angular-bootstrap": "~0.10",
+    "angular-local-storage": "~0.1.5",
     "moment": "~2.5",
     "less.js": "~1.6",
     "font-awesome": "~4.0",
-    "angular-local-storage": "~0.1.5"
+    "restangular": "~1.4.0"
   }
 }

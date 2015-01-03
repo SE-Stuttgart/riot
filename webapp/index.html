@@ -20,36 +20,38 @@
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
     <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+    <script src="bower_components/restangular/dist/restangular.js"></script>
     <!-- Add New Bower Component JS Above -->
 
     <!-- Main App JS -->
     <script src="app.js"></script>
-    <script src="views/dashboard/dashboard.js"></script>
-    <script src="views/calendar/calendar.js"></script>
-    <script src="views/devices/devices.js"></script>
-    <script src="views/admin/admin.js"></script>
     <script src="commons/auth/auth.js"></script>
     <script src="commons/auth/authentication-interceptor.js"></script>
+    <script src="commons/resources/config.js"></script>
     <script src="commons/resources/user/user.js"></script>
     <script src="commons/resources/calendar/calendar.js"></script>
-    <script src="views/navigation/navbar/user/user.js"></script>
-    <script src="views/navigation/navbar/alerts/alerts.js"></script>
-    <script src="views/navigation/navbar/navbar.js"></script>
-    <script src="views/navigation/sidebar/sidebar.js"></script>
-    <script src="views/navigation/navbar/login-form/login-form.js"></script>
+    <script src="views/landing/landing.js"></script>
+    <script src="views/landing/navigation/navigation.js"></script>
+    <script src="views/landing/navigation/login-form/login-form.js"></script>
+    <script src="views/landing/home/home.js"></script>
+    <script src="views/landing/register/register.js"></script>
+    <script src="views/landing/about/about.js"></script>
+    <script src="views/admin/admin.js"></script>
+    <script src="views/app/dashboard/dashboard.js"></script>
+    <script src="views/app/calendar/calendar.js"></script>
+    <script src="views/app/devices/devices.js"></script>
+    <script src="views/app/app.js"></script>
+    <script src="views/app/navigation/navbar/user/user.js"></script>
+    <script src="views/app/navigation/navbar/alerts/alerts.js"></script>
+    <script src="views/app/navigation/navbar/navbar.js"></script>
+    <script src="views/app/navigation/sidebar/sidebar.js"></script>
+    <script src="views/app/profile/profile.js"></script>
     <!-- Add New Component JS Above -->
 
-    <div class="wrapper">
-      <!-- navigation -->
-      <div ng-include="'views/navigation/navbar/navbar.html'"></div>
-
-      <!-- views -->
-      <div class="page-wrapper" ui-view></div>
-    </div>
+    <div ui-view></div>
 
   </body>
 </html>

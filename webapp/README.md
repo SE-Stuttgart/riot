@@ -25,9 +25,7 @@ It may be necessary to install the legacy package of node with the following com
 ### Install on Windows
 
  - Downlod the [installer](http://nodejs.org/download/) (the .msi package)
- - **Important:** Node has to be added to the `PATH` in Windows. See the following image:
-
-![NodeJS Installer](Node_Path.png)
+ - **Important:** Node has to be added to the `PATH` in Windows.
 
 After the installation is complete:
 

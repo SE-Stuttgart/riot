@@ -38,7 +38,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush();
 
     //verify
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
@@ -73,7 +73,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush(2);
 
     //verify token
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken2');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken2');
@@ -106,7 +106,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush();
 
     //verify
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
@@ -139,7 +139,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush(2);
 
     //verify token
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken2');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken2');
@@ -150,7 +150,7 @@ describe('AuthenticationInterceptor', function() {
 
     //verify
     expect(callback.error).toHaveBeenCalled();
-    expect(Auth.hasAuthentication()).toBe(false);
+    expect(Auth.hasCredentials()).toBe(false);
     expect(Auth.isAuthenticated()).toBe(false);
     expect(Auth.getAccessToken()).toBeNull();
     expect(Auth.getRefreshToken()).toBeNull();
@@ -177,7 +177,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush();
 
     //verify
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
@@ -210,7 +210,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush(2);
 
     //verify token
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken2');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken2');
@@ -243,7 +243,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.flush();
 
     //verify
-    expect(Auth.hasAuthentication()).toBe(true);
+    expect(Auth.hasCredentials()).toBe(true);
     expect(Auth.isAuthenticated()).toBe(true);
     expect(Auth.getAccessToken()).toBe('mock_accessToken');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
@@ -273,7 +273,7 @@ describe('AuthenticationInterceptor', function() {
 
     //verify
     expect(callback.error).toHaveBeenCalled();
-    expect(Auth.hasAuthentication()).toBe(false);
+    expect(Auth.hasCredentials()).toBe(false);
     expect(Auth.isAuthenticated()).toBe(false);
     expect(Auth.getAccessToken()).toBeNull();
     expect(Auth.getRefreshToken()).toBeNull();
