@@ -76,7 +76,6 @@ public class AuthorizationFilter<T extends Annotation> implements ContainerReque
         } catch (UnauthorizedException e) {
             requestContext.abortWith(Response.status(Response.Status.FORBIDDEN).build());
         } catch (Exception e) {
-            e.printStackTrace(); // NOCS FIXME Replace by proper logging.
             requestContext.abortWith(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
         }
     }

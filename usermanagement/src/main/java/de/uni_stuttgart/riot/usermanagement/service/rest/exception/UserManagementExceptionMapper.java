@@ -21,7 +21,6 @@ public class UserManagementExceptionMapper implements ExceptionMapper<LogicExcep
 
     @Override
     public Response toResponse(LogicException exception) {
-        exception.printStackTrace(); // NOCS FIXME Proper logging
         return Response.status(Status.BAD_REQUEST) // TODO status code
                 .entity(Json.createObjectBuilder().add("errorCode", exception.getErrorCode()).add("errorMessage", exception.getEndUserMessage()).build()).type(MediaType.APPLICATION_JSON).build();
     }
