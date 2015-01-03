@@ -1,9 +1,12 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
+
+import javax.validation.constraints.AssertTrue;
 
 import org.junit.Test;
 
@@ -28,7 +31,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
                 true);
         dao.insert(testToken);
         Token findToken = dao.findBy(testToken.getId());
-        assertEquals(testToken, findToken);
+        assertEquals(testToken.getTokenValue(), findToken.getTokenValue());
     }
 
     @Test

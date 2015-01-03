@@ -7,10 +7,10 @@ INSERT INTO users(username, password, password_salt, hash_iterations)
      ('R2D2','xGWcc3nOCCgWwtRoo/2pu2/nynq1wCGuDKz8SwDtbWI+Jmv4UHNEFOK0RFLxfWUEfCsRfgspbKKdfMxY6/Ndwg==', '3uuc05ili6e8j18lqehv1piugel2bteviv6m351q1rvnn7e49gk', 200000), 
      ('Vader','catB93X7ygpJ1NjjFQlgXicAc1JUNGiZeZ0OOL95gsR8xZXLaer3EY/IXtDKFCL9Ye6RZfaILPF6FINQcgNpEg==', 're46m591d4el6t3d9ljq52itve8ml7jmf5c6i1pniuie6qqe0t', 200000);
 
-INSERT INTO tokens(userID, tokenvalue, refreshtokenValue,valid, issuedate, expirationdate)
-    VALUES ( 1, 'token1','token1R', true,TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
-     ( 2, 'token2','token2R', true,TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54'),
-     ( 3, 'token3','token3R', true, TIMESTAMP '2004-10-19 10:23:54', TIMESTAMP '2024-10-19 10:23:54');
+INSERT INTO tokens(userID, tokenvalue, refreshtokenValue,valid, expirationdate)
+    VALUES ( 1, 'token1','token1R', true, TIMESTAMP '2024-10-19 10:23:54'),
+     ( 2, 'token2','token2R', true, TIMESTAMP '2024-10-19 10:23:54'),
+     ( 3, 'token3','token3R', true, TIMESTAMP '2024-10-19 10:23:54');
     
 INSERT INTO roles(rolename)
     VALUES ( 'Master'),

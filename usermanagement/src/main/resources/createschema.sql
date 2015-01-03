@@ -24,7 +24,7 @@ userID bigint unsigned NOT NULL,
 tokenValue varchar(100) unique NOT NULL,
 refreshtokenValue varchar(100) unique  NOT NULL,
 valid boolean NOT NULL,
-issueDate timestamp NOT NULL,
+issueDate timestamp NOT NULL default CURRENT_TIMESTAMP,
 expirationDate timestamp NOT NULL,
 PRIMARY KEY (tokenID),
 FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE

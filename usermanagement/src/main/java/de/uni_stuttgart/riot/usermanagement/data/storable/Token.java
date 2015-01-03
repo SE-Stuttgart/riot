@@ -10,6 +10,7 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 /**
  * Holds the Token that is used to authenticate a user and the associated refresh token
  * that could be used to retrieve a new token without the need of submitting the (username,password) credentials again.  
+ * Attention, issueTime is set by database on insert
  * @author Jonas Tangermann
  *
  */
