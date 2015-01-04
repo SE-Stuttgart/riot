@@ -42,7 +42,7 @@ public class UserLogicTest extends LogicTestBase {
 
     @Test
     public void testAddUser_valid() throws Exception {
-        UMUser user1 = ul.addUser("newUserName", "pw");
+        UMUser user1 = ul.addUser("newUserName", "pwW123!");
         UMUser user2 = ul.getUser(user1.getId());
         assertEquals(user1, user2);
     }
@@ -124,7 +124,7 @@ public class UserLogicTest extends LogicTestBase {
         UMUser user = ul.getUser(1L);
         String pwHashBefore = user.getHashedPassword();
 
-        ul.updateUser(user, "newPw");
+        ul.updateUser(user, "newPw1!");
 
         UMUser user2 = ul.getUser(1L);
         assertNotEquals(pwHashBefore, user2.getHashedPassword());
