@@ -3,10 +3,9 @@ package de.uni_stuttgart.riot.android.database;
 import de.uni_stuttgart.riot.android.Filter;
 import de.uni_stuttgart.riot.android.MainActivity;
 import de.uni_stuttgart.riot.android.NotificationType;
-import android.content.Context;
-import android.view.MenuItem;
 
 public class FilterDataObjects {
+
 	private RIOTDatabase database;
 
 	public FilterDataObjects(MainActivity mainActivity) {
@@ -19,6 +18,7 @@ public class FilterDataObjects {
 
 	/**
 	 * We set the filter settings into the database.
+	 * 
 	 * @param filter
 	 */
 	public void setFilter(Filter filter) {
@@ -35,16 +35,17 @@ public class FilterDataObjects {
 			database.updateFilterSetting(filter.getItem().getTitle(),
 					filter.getType(), filter.getItem().isChecked());
 		}
-
 	}
 
 	/**
 	 * Get the checked value for a filter
-	 * @param type The type of the notification
+	 * 
+	 * @param type
+	 *            The type of the notification
 	 * @return true = ischecked, false = unchecked
 	 */
 	public boolean getFilterStatus(NotificationType type) {
-		return database.getFilterSettings(type);		
+		return database.getFilterSettings(type);
 	}
 
 }

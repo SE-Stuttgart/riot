@@ -18,7 +18,7 @@
     <string name="settings">Einstellungen</string>
 
     <!-- Fragment main (all entries for main please insert here) -->
-     <string name="refresh">Aktualisieren</string>
+    <string name="refresh">Aktualisieren</string>
     <string name="filter_appointment">Termine</string>
     <string name="filter_error">Fehler</string>
     <string name="filter_warning">Warnungen</string>
@@ -37,6 +37,10 @@
     <string name="add_event">Event hinzufügen</string>
     <string name="acc_username">Benutzername:</string>
     <string name="acc_password">Passwort:</string>
-
+    
+    <!-- Fragment filter (all entries for language please insert here) -->
+    <string name="desc_filter_error">Zeigt alle Fehler Meldungen an</string>
+    <string name="desc_filter_appointment">Zeigt alle Termine an</string>
+    <string name="desc_filter_warning">Zeigt alle Warnungen an</string>
 
 </resources>

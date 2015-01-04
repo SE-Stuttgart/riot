@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -11,47 +10,45 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnDragListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.communication.NotificationFragment;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
+import de.uni_stuttgart.riot.android.filter.FilterFragment;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 
 public class MainActivity extends Activity {
-	private final static String TAG = "Main";
-
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ListView notificationList;
 	private ActionBarDrawerToggle mDrawerToggle;
 	private CharSequence mTitle;
 	private String[] mMenuTitles;
-	
+
 	private Locale locale;
-	
+
 	private FilterDataObjects filterObjects;
-	
-	private Filter errorFilter;
-	private Filter warningFilter;
-	private Filter appointmentFilter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//this.deleteDatabase("RIOT");
+
+		// Database stuff
+		filterObjects = new FilterDataObjects(this);
+		
+		// Sets the language
+		setLanguage();
+
+		// this.deleteDatabase("RIOT");
 		setContentView(R.layout.activity_main);
 
 		mTitle = getTitle();
@@ -101,12 +98,7 @@ public class MainActivity extends Activity {
 
 			}
 		});
-		
-		
-		//Database stuff		
-		filterObjects = new FilterDataObjects(this);
-		
-		//setLanguage();
+
 	}
 
 	/*
@@ -128,16 +120,20 @@ public class MainActivity extends Activity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		
-//		//get the values for the each filter from the database
-		menu.findItem(R.id.filter_error).setChecked(filterObjects.getFilterStatus(NotificationType.ERROR));
-		menu.findItem(R.id.filter_warning).setChecked(filterObjects.getFilterStatus(NotificationType.WARNING));
-		menu.findItem(R.id.filter_appointment).setChecked(filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
 
-		// Refresh button, filter buttons and the notification list is only shown in the home screen
+		// //get the values for the each filter from the database
+		menu.findItem(R.id.filter_error).setChecked(
+				filterObjects.getFilterStatus(NotificationType.ERROR));
+		menu.findItem(R.id.filter_warning).setChecked(
+				filterObjects.getFilterStatus(NotificationType.WARNING));
+		menu.findItem(R.id.filter_appointment).setChecked(
+				filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
+
+		// Refresh button, filter buttons and the notification list is only
+		// shown in the home screen
 		if (!getActionBar().getTitle().equals("Home")) {
 			menu.findItem(R.id.action_refresh).setVisible(false);
-			for(int i= 0; i<menu.size(); i++){
+			for (int i = 0; i < menu.size(); i++) {
 				menu.getItem(i).setVisible(false);
 			}
 			notificationList.setAdapter(null);
@@ -159,16 +155,19 @@ public class MainActivity extends Activity {
 		if (mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-		
+
 		switch (item.getItemId()) {
 		case R.id.filter_error:
-			filterObjects.setFilter(new Filter(item,NotificationType.ERROR,false));		
+			filterObjects.setFilter(new Filter(item, NotificationType.ERROR,
+					false));
 			return true;
 		case R.id.filter_appointment:
-			filterObjects.setFilter(new Filter(item,NotificationType.APPOINTMENT,false));
+			filterObjects.setFilter(new Filter(item,
+					NotificationType.APPOINTMENT, false));
 			return true;
 		case R.id.filter_warning:
-			filterObjects.setFilter(new Filter(item,NotificationType.WARNING,false));
+			filterObjects.setFilter(new Filter(item, NotificationType.WARNING,
+					false));
 			return true;
 		case R.id.action_refresh:
 			new ServerConnection(this).execute();
@@ -217,7 +216,8 @@ public class MainActivity extends Activity {
 
 		// Opens the filter fragment
 		if (position == 1) {
-			// TODO: Filter Fragment
+			fragment = new FilterFragment(filterObjects);
+			startFragment(position, fragment);
 		}
 
 		// Opens the account fragment

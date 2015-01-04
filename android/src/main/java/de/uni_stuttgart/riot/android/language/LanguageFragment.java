@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.android.language;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.MainActivity;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 
 public class LanguageFragment extends Fragment {
@@ -35,9 +35,11 @@ public class LanguageFragment extends Fragment {
 				switch (checkedId) {
 				case R.id.lang_en:
 
+					
 					filterObjects.getDatabase().deleteAllLanguages();
 					filterObjects.getDatabase().addLanguage("en",
 							"Supports the english language");
+					restartActivity();
 					break;
 
 				case R.id.lang_de:
@@ -45,6 +47,7 @@ public class LanguageFragment extends Fragment {
 					filterObjects.getDatabase().deleteAllLanguages();
 					filterObjects.getDatabase().addLanguage("de",
 							"Supports the german language");
+					restartActivity();
 					break;
 				default:
 					break;
@@ -54,4 +57,12 @@ public class LanguageFragment extends Fragment {
 
 		return view;
 	}
+	
+	
+	private void restartActivity() {
+		Intent intent = getActivity().getIntent();
+		getActivity().finish();
+		getActivity().startActivity(intent);
+	}
+
 }
