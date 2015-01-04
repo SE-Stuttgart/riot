@@ -121,6 +121,7 @@ public class UserLogic {
             if (StringUtils.isNotEmpty(clearTextPassword)) {
                 PasswordValidator pv = new PasswordValidator();
                 if (pv.validate(clearTextPassword)) {
+                    user.setLoginAttemptCount(0);
                     hashPassword(user, clearTextPassword);
                 } else {
                     throw new AddUserException("The password does not meet the requirements");
@@ -327,7 +328,7 @@ public class UserLogic {
      */
     private void hashPassword(UMUser user, String clearTextPassword) {
         // TODO Read amount of iterations from some sort of centralized configuration file/database
-        user.setHashIterations(2000000);
+        user.setHashIterations(200000);
 
         user.setPasswordSalt(AuthenticationUtil.generateSalt());
 

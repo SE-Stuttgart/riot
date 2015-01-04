@@ -19,11 +19,11 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 public class UserQueryBuilder extends StorableQueryBuilder implements QueryBuilder<UMUser> {
 
     private static final String DELETE_QUERY = "DELETE FROM users WHERE users.userID = ?";
-    private static final String INSERT_QUERY = "INSERT INTO users(username, password, password_salt, hash_iterations)VALUES (?, ?, ?, ?)";
-    private static final String UPDATE_QUERY = "UPDATE users SET username=?, password=?, password_salt=?, hash_iterations=? WHERE userID = ?;";
-    private static final String FIND_ID_QUERY = "SELECT userid, username, password, password_salt, hash_iterations FROM users WHERE userID = ?;";
-    private static final String FIND_PARAM_QUERY = "SELECT userid, username, password, password_salt, hash_iterations FROM users ";
-    private static final String FIND_ALL_QUERY = "SELECT userid, username, password, password_salt, hash_iterations FROM users";
+    private static final String INSERT_QUERY = "INSERT INTO users(username, password, password_salt, hash_iterations, loginAttemptCount) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE_QUERY = "UPDATE users SET username=?, password=?, password_salt=?, hash_iterations=?, loginAttemptCount=? WHERE userID = ?;";
+    private static final String FIND_ID_QUERY = "SELECT userid, username, password, password_salt, hash_iterations, loginAttemptCount FROM users WHERE userID = ?;";
+    private static final String FIND_PARAM_QUERY = "SELECT userid, username, password, password_salt, hash_iterations, loginAttemptCount FROM users ";
+    private static final String FIND_ALL_QUERY = "SELECT userid, username, password, password_salt, hash_iterations, loginAttemptCount FROM users";
 
     @Override
     public PreparedStatement buildDelete(UMUser t, Connection connection) throws SQLException {
@@ -37,6 +37,7 @@ public class UserQueryBuilder extends StorableQueryBuilder implements QueryBuild
         stmt.setString(2, t.getHashedPassword());
         stmt.setString(3, t.getPasswordSalt());
         stmt.setInt(4, t.getHashIterations());
+        stmt.setInt(5, t.getLoginAttemptCount());
         return stmt;
     }
 
@@ -47,7 +48,8 @@ public class UserQueryBuilder extends StorableQueryBuilder implements QueryBuild
         stmt.setString(2, t.getHashedPassword());
         stmt.setString(3, t.getPasswordSalt());
         stmt.setInt(4, t.getHashIterations());
-        stmt.setLong(5, t.getId());
+        stmt.setInt(5, t.getLoginAttemptCount());
+        stmt.setLong(6, t.getId());
         return stmt;
     }
 

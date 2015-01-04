@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.logic.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -12,7 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
 import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
+import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
@@ -24,6 +28,9 @@ import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
  *
  */
 public class AuthenticationLogicTest extends LogicTestBase {
+
+    private static final String WRONG_USERNAME_EXCEPTION = "de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException: Wrong Username/Password";
+    private static final String PASSWORD_TOO_MANY_TIMES_WRONG = "de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException: Password was too many times wrong. Please change the password.";
 
     private AuthenticationLogic al = new AuthenticationLogic();
 
@@ -86,6 +93,79 @@ public class AuthenticationLogicTest extends LogicTestBase {
     @Test(expected = LoginException.class)
     public void testLogin_nullPassword() throws Exception {
         al.login("Invalid", null);
+    }
+
+    @Test
+    public void testLogin_maxRetries() throws Exception {
+        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+            try {
+                al.login("Yoda", "Invalid");
+            } catch (LoginException e) {
+                assertEquals(WRONG_USERNAME_EXCEPTION, e.getMessage());
+            }
+        }
+
+        try {
+            al.login("Yoda", "Invalid");
+        } catch (LoginException e) {
+            assertEquals(PASSWORD_TOO_MANY_TIMES_WRONG, e.getMessage());
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testLogin_maxRetriesReset() throws Exception {
+        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES - 1; i++) {
+            try {
+                al.login("Yoda", "Invalid");
+            } catch (LoginException e) {
+                assertEquals(WRONG_USERNAME_EXCEPTION, e.getMessage());
+            }
+        }
+
+        // reset the login retry count with a correct login
+        al.login("Yoda", "YodaPW");
+
+        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES - 1; i++) {
+            try {
+                al.login("Yoda", "Invalid");
+            } catch (LoginException e) {
+                assertEquals(WRONG_USERNAME_EXCEPTION, e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void testLogin_maxRetriesUpdateUser() throws Exception {
+        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+            try {
+                al.login("Yoda", "Invalid");
+            } catch (LoginException e) {
+                assertEquals(WRONG_USERNAME_EXCEPTION, e.getMessage());
+            }
+        }
+
+        // reset the login retry count through updating of the user password
+        UserLogic ul = new UserLogic();
+        UMUser user = ul.getUser("Yoda");
+        ul.updateUser(user, "newPW12!");
+
+        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+            try {
+                al.login("Yoda", "Invalid");
+            } catch (LoginException e) {
+                assertEquals(WRONG_USERNAME_EXCEPTION, e.getMessage());
+            }
+        }
+
+        try {
+            al.login("Yoda", "Invalid");
+        } catch (LoginException e) {
+            assertEquals(PASSWORD_TOO_MANY_TIMES_WRONG, e.getMessage());
+            return;
+        }
+        fail();
     }
 
     /*

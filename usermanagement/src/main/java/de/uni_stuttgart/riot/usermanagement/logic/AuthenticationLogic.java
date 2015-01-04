@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.naming.NamingException;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 
@@ -24,6 +25,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
 /**
@@ -39,6 +41,11 @@ public class AuthenticationLogic {
 
     // If the token already exists in the db, how often should be tried to generate a unique token
     private static final int TOKEN_GENERATION_MAX_RETRIES = 20;
+
+    /**
+     * How often can a user enter a wrong password for a single user name?
+     */
+    public static final int MAX_LOGIN_RETRIES = 5;
 
     private DAO<Token> dao;
 
@@ -71,12 +78,25 @@ public class AuthenticationLogic {
             UserLogic ul = new UserLogic();
 
             UMUser user = ul.getUser(username);
+
+            if (user.getLoginAttemptCount() > MAX_LOGIN_RETRIES) {
+                throw new LoginException("Password was too many times wrong. Please change the password.");
+            }
+
             String hashedPassword = AuthenticationUtil.getHashedString(password, user.getPasswordSalt(), user.getHashIterations());
 
-            subject.login(new UsernamePasswordToken(username, hashedPassword));
+            try {
+                subject.login(new UsernamePasswordToken(username, hashedPassword));
+            } catch (AuthenticationException e) {
+                incLoginRetryCount(ul, user);
+                throw new LoginException("Wrong Username/Password", e);
+            }
 
             if (subject.isAuthenticated()) {
                 try {
+                    // reset user attempt counter, so the user has again the maximum number of login retries
+                    user.setLoginAttemptCount(0);
+                    ul.updateUser(user, null);
 
                     Token token = generateAndSaveTokens(user.getId());
 
@@ -93,8 +113,8 @@ public class AuthenticationLogic {
                 } catch (Exception e) {
                     throw new LoginException(e);
                 }
-
             } else {
+                incLoginRetryCount(ul, user);
                 throw new LoginException("Wrong Username/Password");
             }
         } catch (Exception e) {
@@ -205,5 +225,15 @@ public class AuthenticationLogic {
         }
 
         return token;
+    }
+
+    /**
+     * @param ul
+     * @param user
+     * @throws UpdateUserException
+     */
+    private void incLoginRetryCount(UserLogic ul, UMUser user) throws UpdateUserException {
+        user.setLoginAttemptCount(user.getLoginAttemptCount() + 1);
+        ul.updateUser(user, null);
     }
 }

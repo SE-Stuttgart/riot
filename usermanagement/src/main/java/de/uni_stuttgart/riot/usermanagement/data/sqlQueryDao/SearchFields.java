@@ -54,7 +54,9 @@ public enum SearchFields {
 
     REFRESHTOKEN("refreshtokenValue"),
 
-    TOKENVALID("valid");
+    TOKENVALID("valid"),
+
+    LOGINATTEMPTCOUNT("loginAttemptCount");
 
     private final String text;
 

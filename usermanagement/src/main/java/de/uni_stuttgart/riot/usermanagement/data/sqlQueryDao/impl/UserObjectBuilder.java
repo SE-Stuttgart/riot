@@ -16,7 +16,7 @@ public class UserObjectBuilder implements ObjectBuilder<UMUser> {
 
     @Override
     public UMUser build(ResultSet resultSet) throws SQLException {
-        return new UMUser(resultSet.getLong(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+        return new UMUser(resultSet.getLong(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5), resultSet.getInt(6));
     }
 
 }

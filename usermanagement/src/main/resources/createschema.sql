@@ -14,6 +14,7 @@ username varchar(50) unique NOT NULL,
 password varchar(256) NOT NULL,
 password_salt varchar(256) NOT NULL,
 hash_iterations int NOT NULL,
+loginAttemptCount int NOT NULL,
 PRIMARY KEY (userID)
 );
 

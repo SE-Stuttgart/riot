@@ -14,35 +14,132 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public class UMUser extends User implements Storable {
 
+    /** The hashed password. */
     private String hashedPassword;
+
+    /** The password salt. */
     private String passwordSalt;
+
+    /** The hash iterations. */
     private int hashIterations;
 
+    /** The login attemp count. */
+    private int loginAttemptCount;
+
+    /**
+     * Instantiates a new UM user.
+     */
     public UMUser() {
         super();
     }
 
+    /**
+     * Instantiates a new UM user.
+     *
+     * @param id
+     *            the id
+     * @param username
+     *            the username
+     * @param hashedPassword
+     *            the hashed password
+     * @param passwordSalt
+     *            the password salt
+     * @param hashIterations
+     *            the hash iterations
+     */
     public UMUser(long id, String username, String hashedPassword, String passwordSalt, int hashIterations) {
         super(id, username);
         this.setHashedPassword(hashedPassword);
         this.setPasswordSalt(passwordSalt);
         this.setHashIterations(hashIterations);
+        this.setLoginAttemptCount(0);
     }
 
+    /**
+     * Instantiates a new UM user.
+     *
+     * @param id
+     *            the id
+     * @param username
+     *            the username
+     * @param hashedPassword
+     *            the hashed password
+     * @param passwordSalt
+     *            the password salt
+     * @param hashIterations
+     *            the hash iterations
+     * @param loginAttemptCount
+     *            the login attemp count
+     */
+    public UMUser(long id, String username, String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
+        super(id, username);
+        this.setHashedPassword(hashedPassword);
+        this.setPasswordSalt(passwordSalt);
+        this.setHashIterations(hashIterations);
+        this.setLoginAttemptCount(loginAttemptCount);
+    }
+
+    /**
+     * Instantiates a new UM user.
+     *
+     * @param username
+     *            the username
+     * @param hashedPassword
+     *            the hashed password
+     * @param passwordSalt
+     *            the password salt
+     * @param hashIterations
+     *            the hash iterations
+     * @param loginAttemptCount
+     *            the login attemp count
+     */
+    public UMUser(String username, String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
+        super(username);
+        this.setHashedPassword(hashedPassword);
+        this.setPasswordSalt(passwordSalt);
+        this.setHashIterations(hashIterations);
+        this.setLoginAttemptCount(loginAttemptCount);
+    }
+
+    /**
+     * Instantiates a new UM user.
+     *
+     * @param username
+     *            the username
+     * @param hashedPassword
+     *            the hashed password
+     * @param passwordSalt
+     *            the password salt
+     * @param hashIterations
+     *            the hash iterations
+     */
     public UMUser(String username, String hashedPassword, String passwordSalt, int hashIterations) {
         super(username);
         this.setHashedPassword(hashedPassword);
         this.setPasswordSalt(passwordSalt);
         this.setHashIterations(hashIterations);
+        this.setLoginAttemptCount(0);
     }
 
+    /**
+     * Instantiates a new UM user.
+     *
+     * @param username
+     *            the username
+     */
     public UMUser(String username) {
         super(username);
         this.setHashedPassword(null);
         this.setPasswordSalt(null);
         this.setHashIterations(-1);
+        this.setLoginAttemptCount(0);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.uni_stuttgart.riot.usermanagement.data.storable.Storable#getSearchParam()
+     */
     @Override
     public Collection<SearchParameter> getSearchParam() {
         LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
@@ -50,6 +147,11 @@ public class UMUser extends User implements Storable {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -61,42 +163,104 @@ public class UMUser extends User implements Storable {
         builder.append(hashedPassword);
         builder.append(", passwordSalt=");
         builder.append(passwordSalt);
+        builder.append(", hashIterations=");
+        builder.append(hashIterations);
+        builder.append(", loginAttemptCount=");
+        builder.append(loginAttemptCount);
         builder.append("]");
         return builder.toString();
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
-
-    public String getPasswordSalt() {
-        return passwordSalt;
-    }
-
-    public void setPasswordSalt(String passwordSalt) {
-        this.passwordSalt = passwordSalt;
-    }
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (o instanceof UMUser) {
             UMUser u = (UMUser) o;
-            return this.id == u.getId() && this.username.equals(u.username) && this.hashedPassword.equals(u.hashedPassword) && this.passwordSalt.equals(u.passwordSalt);
+            return this.id == u.getId() && this.username.equals(u.username) && this.hashedPassword.equals(u.hashedPassword) && //
+                    this.passwordSalt.equals(u.passwordSalt) && this.hashIterations == u.hashIterations && this.loginAttemptCount == u.loginAttemptCount;
         } else {
             return false;
         }
     }
 
+    /**
+     * Gets the hashed password.
+     *
+     * @return the hashed password
+     */
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    /**
+     * Sets the hashed password.
+     *
+     * @param hashedPassword
+     *            the new hashed password
+     */
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
+
+    /**
+     * Gets the password salt.
+     *
+     * @return the password salt
+     */
+    public String getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    /**
+     * Sets the password salt.
+     *
+     * @param passwordSalt
+     *            the new password salt
+     */
+    public void setPasswordSalt(String passwordSalt) {
+        this.passwordSalt = passwordSalt;
+    }
+
+    /**
+     * Gets the hash iterations.
+     *
+     * @return the hash iterations
+     */
     public int getHashIterations() {
         return hashIterations;
     }
 
+    /**
+     * Sets the hash iterations.
+     *
+     * @param hashIterations
+     *            the new hash iterations
+     */
     public void setHashIterations(int hashIterations) {
         this.hashIterations = hashIterations;
+    }
+
+    /**
+     * Gets the login attemp count.
+     *
+     * @return the login attemp count
+     */
+    public int getLoginAttemptCount() {
+        return loginAttemptCount;
+    }
+
+    /**
+     * Sets the login attemp count.
+     *
+     * @param loginAttempCount
+     *            the new login attemp count
+     */
+    public void setLoginAttemptCount(int loginAttempCount) {
+        this.loginAttemptCount = loginAttempCount;
     }
 
 }
