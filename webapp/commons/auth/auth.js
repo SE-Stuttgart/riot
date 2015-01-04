@@ -28,7 +28,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     getRefreshToken: function() {
       return refreshToken;
     },
-    hasAuthentication: function() {
+    hasCredentials: function() {
       return accessToken !== null;
     },
     isAuthenticated: function() {
@@ -48,6 +48,8 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
       refreshToken = null;
 
       storage.clear();
+
+      $rootScope.$broadcast('auth-logout');
     },
     login: function(username, password) {
       var deferred = $q.defer();
@@ -64,6 +66,8 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
           user = data.user;
 
           storage.save();
+
+          $rootScope.$broadcast('auth-login');
 
           deferred.resolve();
         })
@@ -116,6 +120,8 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
           storage.save();
 
+          $rootScope.$broadcast('auth-refresh');
+
           deferred.resolve();
         })
         .error(function(data, status) {
@@ -123,6 +129,8 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
           var errorMessage = data.errorMessage || 'Unknown error';
           var errorCode = data.errorCode || -1;
+
+          service.reset();
 
           deferred.reject(errorMessage + ' (Error Code: ' + errorCode + ')');
         });
@@ -135,7 +143,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   $rootScope.user = service.getUser;
   $rootScope.accessToken = service.getAccessToken;
   $rootScope.refreshToken = service.getRefreshToken;
-  $rootScope.hasCredentials = service.hasAuthentication;
+  $rootScope.hasCredentials = service.hasCredentials;
   $rootScope.isAuthenticated = service.isAuthenticated;
   $rootScope.hasRole = service.hasRole;
   $rootScope.hasPermission = service.hasPermission;
@@ -145,8 +153,15 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
   //init
   storage.load();
-  if (service.hasAuthentication()) {
-    user = User.self().$object;
+  if (service.hasCredentials()) {
+    User.self().then(
+      function(u) {
+        user = u;
+        $rootScope.$broadcast('auth-login');
+      },
+      function() {
+        service.reset();
+      });
   }
 
   return service;

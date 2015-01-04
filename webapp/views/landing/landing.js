@@ -8,6 +8,8 @@ angular.module('riot').config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/landing');
 });
 
-angular.module('riot').controller('LandingCtrl', function($scope, $state) {
-
+angular.module('riot').controller('LandingCtrl', function($scope, $rootScope, $state) {
+  $rootScope.$on('auth-login', function(e, args) {
+    $state.go('app.dashboard');
+  });
 });

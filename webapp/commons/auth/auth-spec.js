@@ -4,6 +4,13 @@ describe('Auth', function() {
 
   beforeEach(module('riot'));
 
+  beforeEach(module(function ($urlRouterProvider) {
+    //disable router to avoid HTTP requests for templates
+    $urlRouterProvider.otherwise(function() {
+      return false;
+    });
+  }));
+
   beforeEach(inject(function($httpBackend) {
     //mock http call
     $httpBackend.when('GET', urlPrefix + '/users/self').respond(200, {
@@ -186,11 +193,11 @@ describe('Auth', function() {
 
     //verify
     expect(callback.error).toHaveBeenCalled();
-    expect(Auth.hasCredentials()).toBe(true);
-    expect(Auth.isAuthenticated()).toBe(true);
-    expect(Auth.getAccessToken()).toBe('mock_accessToken');
-    expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
-    expect(Auth.getUser().username).toBe('mock_user');
+    expect(Auth.hasCredentials()).toBe(false);
+    expect(Auth.isAuthenticated()).toBe(false);
+    expect(Auth.getAccessToken()).toBeNull();
+    expect(Auth.getRefreshToken()).toBeNull();
+    expect(Auth.getUser()).toBeNull();
   }));
 
   it('should successfully logout', inject(function($httpBackend, Auth) {

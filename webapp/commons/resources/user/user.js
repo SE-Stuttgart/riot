@@ -5,7 +5,5 @@ angular.module('riot').factory('User', function(Restangular) {
     return resource.one('self').get();
   };
 
-  console.log(resource);
-
   return resource;
 });

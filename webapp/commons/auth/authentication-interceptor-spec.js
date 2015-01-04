@@ -4,6 +4,13 @@ describe('AuthenticationInterceptor', function() {
 
   beforeEach(module('riot'));
 
+  beforeEach(module(function ($urlRouterProvider) {
+    //disable router to avoid HTTP requests for templates
+    $urlRouterProvider.otherwise(function() {
+      return false;
+    });
+  }));
+
   beforeEach(inject(function($httpBackend, Auth) {
     //mock http call
     $httpBackend.when('GET', urlPrefix + '/users/self').respond(200, {
@@ -18,10 +25,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.verifyNoOutstandingRequest();
   }));
 
-  it('should successfully reauthenticate and resend', inject(function($httpBackend, Auth) {
-    //==================
-    // Step 1: login
-    //==================
+  var login = inject(function($httpBackend, Auth) {
     //mock http login call
     $httpBackend.expect('PUT', urlPrefix + '/auth/login').respond(200, {
       accessToken: 'mock_accessToken',
@@ -43,6 +47,13 @@ describe('AuthenticationInterceptor', function() {
     expect(Auth.getAccessToken()).toBe('mock_accessToken');
     expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
     expect(Auth.getUser().username).toBe('mock_user');
+  });
+
+  it('should successfully reauthenticate and resend', inject(function($httpBackend, Auth, User) {
+    //==================
+    // Step 1: login
+    //==================
+    login();
 
     //==================
     // Step 2: get user
@@ -67,7 +78,7 @@ describe('AuthenticationInterceptor', function() {
     });
 
     //get user data
-    Auth.getSelf().then(callback.success, callback.error);
+    User.self().then(callback.success, callback.error);
 
     //flush http responses for reauthentication
     $httpBackend.flush(2);
@@ -86,31 +97,11 @@ describe('AuthenticationInterceptor', function() {
     expect(callback.success).toHaveBeenCalled();
   }));
 
-  it('should successfully reauthenticate and fail resend with 401 error', inject(function($httpBackend, Auth) {
+  it('should successfully reauthenticate and fail resend with 401 error', inject(function($httpBackend, Auth, User) {
     //==================
     // Step 1: login
     //==================
-    //mock http login call
-    $httpBackend.expect('PUT', urlPrefix + '/auth/login').respond(200, {
-      accessToken: 'mock_accessToken',
-      refreshToken: 'mock_refreshToken',
-      user: {
-        username: 'mock_user'
-      }
-    });
-
-    //login
-    Auth.login('Yoda', 'YodaPW');
-
-    //flush http responses
-    $httpBackend.flush();
-
-    //verify
-    expect(Auth.hasCredentials()).toBe(true);
-    expect(Auth.isAuthenticated()).toBe(true);
-    expect(Auth.getAccessToken()).toBe('mock_accessToken');
-    expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
-    expect(Auth.getUser().username).toBe('mock_user');
+    login();
 
     //==================
     // Step 2: get user
@@ -133,7 +124,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.expect('GET', urlPrefix + '/users/self').respond(401);
 
     //get user data
-    Auth.getSelf().then(callback.success, callback.error);
+    User.self().then(callback.success, callback.error);
 
     //flush http responses for reauthentication
     $httpBackend.flush(2);
@@ -157,31 +148,11 @@ describe('AuthenticationInterceptor', function() {
     expect(Auth.getUser()).toBeNull();
   }));
 
-  it('should successfully reauthenticate and fail resend with other error', inject(function($httpBackend, Auth) {
+  it('should successfully reauthenticate and fail resend with other error', inject(function($httpBackend, Auth, User) {
     //==================
     // Step 1: login
     //==================
-    //mock http login call
-    $httpBackend.expect('PUT', urlPrefix + '/auth/login').respond(200, {
-      accessToken: 'mock_accessToken',
-      refreshToken: 'mock_refreshToken',
-      user: {
-        username: 'mock_user'
-      }
-    });
-
-    //login
-    Auth.login('Yoda', 'YodaPW');
-
-    //flush http responses
-    $httpBackend.flush();
-
-    //verify
-    expect(Auth.hasCredentials()).toBe(true);
-    expect(Auth.isAuthenticated()).toBe(true);
-    expect(Auth.getAccessToken()).toBe('mock_accessToken');
-    expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
-    expect(Auth.getUser().username).toBe('mock_user');
+    login();
 
     //==================
     // Step 2: get user
@@ -204,7 +175,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.expect('GET', urlPrefix + '/users/self').respond(400);
 
     //get user data
-    Auth.getSelf().then(callback.success, callback.error);
+    User.self().then(callback.success, callback.error);
 
     //flush http responses for reauthentication
     $httpBackend.flush(2);
@@ -223,31 +194,11 @@ describe('AuthenticationInterceptor', function() {
     expect(callback.error).toHaveBeenCalled();
   }));
 
-  it('should fail reauthenticate', inject(function($httpBackend, Auth) {
+  it('should fail reauthenticate', inject(function($httpBackend, Auth, User) {
     //==================
     // Step 1: login
     //==================
-    //mock http login call
-    $httpBackend.expect('PUT', urlPrefix + '/auth/login').respond(200, {
-      accessToken: 'mock_accessToken',
-      refreshToken: 'mock_refreshToken',
-      user: {
-        username: 'mock_user'
-      }
-    });
-
-    //login
-    Auth.login('Yoda', 'YodaPW');
-
-    //flush http responses
-    $httpBackend.flush();
-
-    //verify
-    expect(Auth.hasCredentials()).toBe(true);
-    expect(Auth.isAuthenticated()).toBe(true);
-    expect(Auth.getAccessToken()).toBe('mock_accessToken');
-    expect(Auth.getRefreshToken()).toBe('mock_refreshToken');
-    expect(Auth.getUser().username).toBe('mock_user');
+    login();
 
     //==================
     // Step 2: get user
@@ -266,7 +217,7 @@ describe('AuthenticationInterceptor', function() {
     $httpBackend.expect('PUT', urlPrefix + '/auth/refresh').respond(400);
 
     //get user data
-    Auth.getSelf().then(callback.success, callback.error);
+    User.self().then(callback.success, callback.error);
 
     //flush http responses
     $httpBackend.flush(2);
