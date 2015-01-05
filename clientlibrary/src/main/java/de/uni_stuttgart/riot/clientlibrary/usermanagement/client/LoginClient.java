@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.client;
+package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -23,7 +23,6 @@ public class LoginClient {
 	private String currentRefreshToken;
 	private final String deviceName;
 
-	private final Client client;
 	private final String serverUrl;
 	private boolean logedIn;
 
@@ -33,7 +32,6 @@ public class LoginClient {
 		this.currentRefreshToken = "noToken";
 		this.serverUrl = serverUrl;
 		this.logedIn = false;
-		this.client = ClientBuilder.newClient();
 	}
 
 	public String getServerUrl() {
@@ -49,26 +47,26 @@ public class LoginClient {
 		this.internalLogin(REFRESH_PATH, refreshRequest);
 	}
 
-	public void logout() {
+	public void logout() throws RequestException {		
+		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(this.serverUrl).path(LOGOUT_PATH);
-		System.out.println(target.getUri());
-		Response r = target.request().header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).put(null);
-		String s = r.readEntity(String.class);
-		System.out.println(s);
-		this.logedIn = false;
+		this.put(target, null);
 	}
 
 	void internalLogin(String path, Object entity) throws RequestException {
+		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(this.serverUrl).path(path);
 		System.out.println(target.getUri());
 		Response r = target.request(MediaType.APPLICATION_JSON).put(Entity.entity(entity, MediaType.APPLICATION_JSON));
 		if(r.getStatus() >= 400){
 			if(r.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)){
 				RequestExceptionWrapper error = r.readEntity(RequestExceptionWrapper.class);
+				r.close();
 				error.throwIT();
 			} else {
 				String result = r.readEntity(String.class);
-				RequestExceptionWrapper error = new RequestExceptionWrapper(r.getStatus(), result);
+				RequestExceptionWrapper error = new RequestExceptionWrapper(r.getStatus(), result);	
+				r.close();
 				error.throwIT();
 			}
 		} else{
@@ -76,12 +74,15 @@ public class LoginClient {
 			this.currentAuthenticationToken = response.getAccessToken();
 			this.currentRefreshToken = response.getRefreshToken();
 			this.logedIn = true;
+			System.out.println(this.currentAuthenticationToken);
 		} 
+		r.close();
 	}
 
 	Response put(final WebTarget target, final Entity entity) throws RequestException {
 		return this.doRequest(new InternalRequest() {
 			public Response doRequest() {
+				System.out.println(target.getUri());
 				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).put(entity);
 			}
 		});
@@ -98,12 +99,13 @@ public class LoginClient {
 	Response delete(final WebTarget target) throws RequestException {
 		return this.doRequest(new InternalRequest() {
 			public Response doRequest() {
+				System.out.println(target.getUri());
 				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).delete();
 			}
 		});
 	}
 
-	protected Response get(final WebTarget target) throws RequestException {
+	 Response get(final WebTarget target) throws RequestException {
 		return this.doRequest(new InternalRequest() {
 			public Response doRequest() {
 				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).get();
@@ -113,7 +115,7 @@ public class LoginClient {
 
 	Response doRequest(InternalRequest r) throws RequestException {
 		Response response = r.doRequest();
-		System.out.println(response.getStatusInfo().toString());		
+		System.out.println(response.getStatusInfo().toString());
 		if(response.getStatus() >= 402){
 			if(response.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)){
 				RequestExceptionWrapper error = response.readEntity(RequestExceptionWrapper.class);
@@ -137,7 +139,7 @@ public class LoginClient {
 	}
 
 	Client getClient() {
-		return client;
+		return ClientBuilder.newClient();
 	}
 
 }

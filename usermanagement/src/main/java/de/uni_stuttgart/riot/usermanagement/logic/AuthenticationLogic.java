@@ -79,7 +79,7 @@ public class AuthenticationLogic {
                 try {
 
                     Token token = generateAndSaveTokens(user.getId());
-
+         
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
                     DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
@@ -180,7 +180,7 @@ public class AuthenticationLogic {
         int retries = TOKEN_GENERATION_MAX_RETRIES;
         Exception lastException = null;
 
-        Timestamp issueTime = new Timestamp(System.currentTimeMillis());
+        Timestamp issueTime = new Timestamp(System.currentTimeMillis()-1000000);//FIXME use git - master 
         Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
 
         do {

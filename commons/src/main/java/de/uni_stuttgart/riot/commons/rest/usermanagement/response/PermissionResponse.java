@@ -31,6 +31,4 @@ public class PermissionResponse {
 	public void setPermission(Permission permission) {
 		this.permission = permission;
 	}
-
-
 }

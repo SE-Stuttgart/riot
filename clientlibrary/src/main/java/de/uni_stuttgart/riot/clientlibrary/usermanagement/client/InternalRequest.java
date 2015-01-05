@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.client;
+package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
 import javax.ws.rs.core.Response;
 

@@ -10,12 +10,11 @@ public class RoleResponse {
     private Collection<PermissionResponse> permissions;
 
     public RoleResponse() {
-
     }
 
-    public RoleResponse(Role role, Collection<PermissionResponse> rolePermis) {
+    public RoleResponse(Role role, Collection<PermissionResponse> permissions) {
         this.setRole(role);
-        this.permissions = rolePermis;
+        this.permissions = permissions;
     }
 
     public Collection<PermissionResponse> getPermissions() {
@@ -39,6 +38,4 @@ public class RoleResponse {
 		return "RoleResponse [role=" + role + ", permissions=" + permissions
 				+ "]";
 	}
-
-	
 }
