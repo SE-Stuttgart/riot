@@ -10,19 +10,16 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>riot.usermanagement</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>riot.server-commons</artifactId>
 
-	<name>riot.usermanagement</name>
+	<name>riot.server-commons</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<shiro.version>1.2.3</shiro.version>
 		<riot.root>${project.parent.basedir}</riot.root>
 	</properties>
 
 	<dependencies>
-
 		<!-- Commons -->
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
@@ -32,18 +29,6 @@
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.commons</artifactId>
-			<version>${project.parent.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.uni-stuttgart.riot</groupId>
-			<artifactId>riot.server-commons</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.uni-stuttgart.riot</groupId>
-			<artifactId>riot.server-commons</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
@@ -59,21 +44,17 @@
 			<artifactId>jersey-server</artifactId>
 		</dependency>
 
-		<!-- Shiro -->
+		<!-- Database -->
 		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-			<version>${shiro.version}</version>
+			<groupId>org.sql2o</groupId>
+			<artifactId>sql2o</artifactId>
 		</dependency>
+
+		<!-- Apache Commons Lang -->
 		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-			<version>${shiro.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-			<version>${shiro.version}</version>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
 		</dependency>
 
 		<!-- Testing -->
@@ -83,23 +64,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- Server-Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -112,6 +84,18 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
