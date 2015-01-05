@@ -12,6 +12,7 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.MainActivity;
 import de.uni_stuttgart.riot.android.NotificationAdapter;
 import de.uni_stuttgart.riot.android.NotificationType;
+import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -21,9 +22,11 @@ import android.widget.Toast;
 public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> {
 
 	private MainActivity mainActivity;
+	private FilterDataObjects filterObjects;
 
-	public ServerConnection(MainActivity mainActivity) {
+	public ServerConnection(MainActivity mainActivity, FilterDataObjects filterObjects) {
 		this.mainActivity = mainActivity;
+		this.filterObjects = filterObjects;
 	}
 
 	@Override
@@ -43,30 +46,17 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 						"Server Connection Error", 5).show();
 			} else {
 
-				Notification n1 = new Notification();
-				n1.setTitle("FIRE!!!");
-				n1.setType(NotificationType.ERROR);
-				n1.setId(testNotification.getId());
-				n1.setContent(testNotification.getContent());
-				n1.setDate(new Date());
-				notificationList.add(n1);
-				
-				Notification n2 = new Notification();
-				n2.setTitle("Work starts at 08:00");
-				n2.setType(NotificationType.APPOINTMENT);
-				n2.setId(testNotification.getId());
-				n2.setContent(testNotification.getContent());
-				n2.setDate(new Date());
-				notificationList.add(n2);
-				
-				Notification n3 = new Notification();
-				n3.setTitle("Refuel car.");
-				n3.setType(NotificationType.WARNING);
-				n3.setId(testNotification.getId());
-				n3.setContent(testNotification.getContent());
-				n3.setDate(new Date());
+				Notification n1 = new Notification(1, "FIRE!!!", testNotification.getContent(), NotificationType.ERROR, new Date());	
+				notificationList.add(n1);				
+				Notification n2 = new Notification(2, "Work starts at 08:00", testNotification.getContent(), NotificationType.APPOINTMENT, new Date());
+				notificationList.add(n2);				
+				Notification n3 = new Notification(3, "Training at 18:00", testNotification.getContent(), NotificationType.APPOINTMENT, new Date());
 				notificationList.add(n3);
-			
+				Notification n4 = new Notification(4, "Buy some food.", testNotification.getContent(), NotificationType.WARNING, new Date());
+				notificationList.add(n4);
+				Notification n5 = new Notification(5, "Refuel car.", testNotification.getContent(), NotificationType.WARNING, new Date());
+				notificationList.add(n5);
+							
 				return notificationList;
 			}
 
@@ -79,12 +69,9 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 	}
 
 	@Override
-	protected void onPostExecute(List<Notification> notificationList) {
-		NotificationAdapter chapterListAdapter = new NotificationAdapter(
-				mainActivity, notificationList);
-		ListView notification = (ListView) mainActivity
-				.findViewById(R.id.NotificationList);
-		notification.setAdapter(chapterListAdapter);
+	protected void onPostExecute(List<Notification> notificationList) {	
+		filterObjects.getDatabase().updateNotificationEntries(notificationList);
+		filterObjects.getDatabase().filterNotifications();
 	}
 
 }

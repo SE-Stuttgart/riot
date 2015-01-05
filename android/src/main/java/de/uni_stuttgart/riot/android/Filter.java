@@ -4,14 +4,22 @@ import android.view.MenuItem;
 
 public class Filter {
 
+	private int id;
 	private MenuItem item;
 	private NotificationType type;
 	private boolean isChecked;
 	
-	public Filter(MenuItem item, NotificationType type, boolean isChecked) {
+	public Filter(int id, MenuItem item, NotificationType type, boolean isChecked) {
+		this.id = id;
 		this.item = item;
 		this.type = type;
 		this.isChecked = isChecked;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	public MenuItem getItem() {
 		return item;

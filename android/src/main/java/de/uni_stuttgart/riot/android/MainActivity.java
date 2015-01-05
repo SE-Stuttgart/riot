@@ -43,12 +43,12 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		// Database stuff
+		// this.deleteDatabase("Database");
 		filterObjects = new FilterDataObjects(this);
-		
+
 		// Sets the language
 		setLanguage();
 
-		// this.deleteDatabase("RIOT");
 		setContentView(R.layout.activity_main);
 
 		mTitle = getTitle();
@@ -99,7 +99,10 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		// get the latest Notifications
+		new ServerConnection(this, filterObjects).execute();
 	}
+
 
 	/*
 	 * ----------------- REFRESH BUTTON -----------------
@@ -138,8 +141,6 @@ public class MainActivity extends Activity {
 			}
 			notificationList.setAdapter(null);
 		} else {
-			// get the latest Notifications
-			new ServerConnection(this).execute();
 			menu.findItem(R.id.action_refresh).setVisible(true);
 		}
 
@@ -158,19 +159,19 @@ public class MainActivity extends Activity {
 
 		switch (item.getItemId()) {
 		case R.id.filter_error:
-			filterObjects.setFilter(new Filter(item, NotificationType.ERROR,
+			filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR,
 					false));
 			return true;
 		case R.id.filter_appointment:
-			filterObjects.setFilter(new Filter(item,
+			filterObjects.setFilter(new Filter(2, item,
 					NotificationType.APPOINTMENT, false));
 			return true;
 		case R.id.filter_warning:
-			filterObjects.setFilter(new Filter(item, NotificationType.WARNING,
-					false));
+			filterObjects.setFilter(new Filter(3, item,
+					NotificationType.WARNING, false));
 			return true;
 		case R.id.action_refresh:
-			new ServerConnection(this).execute();
+			new ServerConnection(this, filterObjects).execute();
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -209,9 +210,10 @@ public class MainActivity extends Activity {
 		Fragment fragment;
 
 		// Opens the main fragment
-		if (position == 0) {
+		if (position == 0) {			
 			fragment = new NotificationFragment();
 			startFragment(position, fragment);
+			filterObjects.getDatabase().filterNotifications();
 		}
 
 		// Opens the filter fragment
@@ -255,6 +257,7 @@ public class MainActivity extends Activity {
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
 		mDrawerToggle.syncState();
+
 	}
 
 	@Override

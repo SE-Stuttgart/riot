@@ -1,10 +1,23 @@
 package de.uni_stuttgart.riot.android.database;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.ListView;
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.Filter;
+import de.uni_stuttgart.riot.android.MainActivity;
+import de.uni_stuttgart.riot.android.NotificationAdapter;
 import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.communication.Notification;
 
@@ -29,8 +42,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	private final static String LANGUAGE_COLUMN_ID = "id";
 	private final static String LANGUAGE_COLUMN_DESC = "description";
 
-	public RIOTDatabase(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERION);
+	private MainActivity mainActivity;
+
+	public RIOTDatabase(MainActivity mainActivity) {
+		super(mainActivity, DATABASE_NAME, null, DATABASE_VERION);
+		this.mainActivity = mainActivity;
 	}
 
 	/**
@@ -38,9 +54,9 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	 */
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_FILTER_TABLE = "CREATE TABLE IF NOT EXISTS "
-				+ TABLE_FILTER + "(" + FILTER_COLUMN_ID + " TEXT PRIMARY KEY,"
-				+ FILTER_COLUMN_TYPE + " TEXT," + FILTER_COLUMN_CHECKED
-				+ " INTEGER)";
+				+ TABLE_FILTER + "(" + FILTER_COLUMN_ID
+				+ " INTEGER PRIMARY KEY," + FILTER_COLUMN_TYPE + " TEXT,"
+				+ FILTER_COLUMN_CHECKED + " INTEGER)";
 
 		String CREATE_NOTIFICATION_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NOTIFICATION + "(" + NOTIFICATION_COLUMN_ID
@@ -78,41 +94,81 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	 * @param isChecked
 	 * @return
 	 */
-	public void updateFilterSetting(CharSequence id, NotificationType type,
-			boolean isChecked) {
+	public void updateFilterSetting(Filter filter) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		int newIsChecked;
-
-		// 1 = checked, 0 = unchecked
-		if (isChecked == true) {
-			newIsChecked = 1;
-		} else {
-			newIsChecked = 0;
-		}
-
 		ContentValues values = new ContentValues();
-		values.put(FILTER_COLUMN_ID, id.toString());
-		values.put(FILTER_COLUMN_TYPE, type.toString());
-		values.put(FILTER_COLUMN_CHECKED, newIsChecked);
+		values.put(FILTER_COLUMN_ID, filter.getId());
+		values.put(FILTER_COLUMN_TYPE, filter.getType().toString());
+		values.put(FILTER_COLUMN_CHECKED, filter.getItem().isChecked());
 
 		Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FILTER + " WHERE "
-				+ FILTER_COLUMN_ID + " = ?", new String[] { id.toString() });
+				+ FILTER_COLUMN_ID + " = ?",
+				new String[] { String.valueOf(filter.getId()) });
 
 		if (cursor.moveToFirst()) {
-			System.out.println("Eintrag update");
+			System.out.println("Filter Eintrag update");
 			db.update(TABLE_FILTER, // table
 					values, // column/value
 					FILTER_COLUMN_ID + " = ?", // selections
-					new String[] { id.toString() });
+					new String[] { String.valueOf(filter.getId()) });
 		} else {
-			System.out.println("Eintrag neu anlegen");
+			System.out.println("Filter Eintrag neu anlegen");
 			db.insert(TABLE_FILTER, null, values);
 		}
+		
+		filterNotifications();
 
 		cursor.close();
 		db.close();
+	}
+	
+	public void filterNotifications(){
+		SQLiteDatabase db = this.getWritableDatabase();
+		String filteredNotifications = "SELECT * FROM " + TABLE_NOTIFICATION
+				+ " INNER JOIN " + TABLE_FILTER + " ON " + TABLE_NOTIFICATION
+				+ "." + NOTIFICATION_COLUMN_TYPE + " == " + TABLE_FILTER + "."
+				+ FILTER_COLUMN_TYPE + " AND " + TABLE_FILTER + "."
+				+ FILTER_COLUMN_CHECKED + "== 1";
+
+		Cursor cursor = db.rawQuery(filteredNotifications, null);
+		List<Notification> notificationList = new ArrayList<Notification>();
+
+		if (cursor.moveToFirst()) {
+			do {
+				int id = cursor.getInt(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_ID));
+
+				String title = cursor.getString(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_TITLE));
+
+				String content = cursor.getString(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_CONTENT));
+
+				String type = cursor.getString(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_TYPE));
+				// System.out.println("test" + type);
+				String date = cursor.getString(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_DATE));
+				// System.out.println("test" + date);
+
+				// TODO: richtiges Datum verwenden
+				Notification notificiation = new Notification(id, title,
+						content, NotificationType.valueOf(type), new Date());
+				notificationList.add(notificiation);
+
+			} while (cursor.moveToNext());
+			
+			cursor.close();
+			db.close();
+		}
+
+		NotificationAdapter chapterListAdapter = new NotificationAdapter(
+				mainActivity, notificationList);
+		ListView notification = (ListView) mainActivity
+				.findViewById(R.id.NotificationList);
+		notification.setAdapter(chapterListAdapter);
 	}
 
 	/**
@@ -153,29 +209,54 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		return isChecked;
 	}
 
-	public void updateNotificationEntries(Notification notification) {
+	/**
+	 * 
+	 * @param notificationList
+	 */
+
+	public void updateNotificationEntries(List<Notification> notificationList) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		ContentValues values = new ContentValues();
-		values.put(NOTIFICATION_COLUMN_TITLE, notification.getTitle());
-		values.put(NOTIFICATION_COLUMN_TYPE, notification.getType().toString());
-		values.put(NOTIFICATION_COLUMN_ID, notification.getId());
-		values.put(NOTIFICATION_COLUMN_CONTENT, notification.getContent());
-		values.put(NOTIFICATION_COLUMN_DATE, notification.getDate().toString());
+		for (Notification notification : notificationList) {
+			ContentValues values = new ContentValues();
+			values.put(NOTIFICATION_COLUMN_ID, notification.getId());
+			values.put(NOTIFICATION_COLUMN_TITLE, notification.getTitle());
+			values.put(NOTIFICATION_COLUMN_TYPE, notification.getType()
+					.toString());
+			values.put(NOTIFICATION_COLUMN_CONTENT, notification.getContent());
+			values.put(NOTIFICATION_COLUMN_DATE, notification.getDate()
+					.toString());
+
+			Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NOTIFICATION
+					+ " WHERE " + NOTIFICATION_COLUMN_ID + " = ?",
+					new String[] { String.valueOf(notification.getId()) });
+
+			if (cursor.moveToFirst()) {
+				System.out.println("Notification Eintrag update");
+				db.update(TABLE_NOTIFICATION, // table
+						values, // column/value
+						NOTIFICATION_COLUMN_ID + " = ?", // selections
+						new String[] { String.valueOf(notification.getId()) });
+			} else {
+				System.out.println("Notification Eintrag neu anlegen");
+				db.insert(TABLE_NOTIFICATION, null, values);
+			}
+
+			cursor.close();
+		}
 
 		db.close();
 	}
 
-	public boolean getNotificationEntries(NotificationType type) {
-		return true;
-	}
 
 	/**
 	 * Add a new language into the table language.
 	 * 
-	 * @param id String like "en" or "de"
-	 * @param description set the description
+	 * @param id
+	 *            String like "en" or "de"
+	 * @param description
+	 *            set the description
 	 */
 	public void addLanguage(String id, String description) {
 		SQLiteDatabase db = this.getWritableDatabase();

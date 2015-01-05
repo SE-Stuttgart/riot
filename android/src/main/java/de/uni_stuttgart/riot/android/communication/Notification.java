@@ -6,17 +6,29 @@ import de.uni_stuttgart.riot.android.NotificationType;
 
 public class Notification {
 
-	private String id;
+	private int id;
 	private String title;
 	private String content;
 	private NotificationType type;
 	private Date date;
+	
+	public Notification(){
+		
+	}
+	
+	public Notification(int id, String title, String content, NotificationType type, Date date){
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		this.type = type;
+		this.date = date;
+	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public String getId() {
+	public int getId() {
 		return this.id;
 	}
 

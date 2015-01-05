@@ -26,14 +26,12 @@ public class FilterDataObjects {
 		if (filter.getItem().isChecked() == false) {
 			filter.getItem().setChecked(true);
 
-			database.updateFilterSetting(filter.getItem().getTitle(),
-					filter.getType(), filter.getItem().isChecked());
+			database.updateFilterSetting(filter);
 
 		} else {
 			filter.getItem().setChecked(false);
 
-			database.updateFilterSetting(filter.getItem().getTitle(),
-					filter.getType(), filter.getItem().isChecked());
+			database.updateFilterSetting(filter);
 		}
 	}
 
@@ -45,7 +43,7 @@ public class FilterDataObjects {
 	 * @return true = ischecked, false = unchecked
 	 */
 	public boolean getFilterStatus(NotificationType type) {
-		return database.getFilterSettings(type);
+		return database.getFilterSettings(type);		
 	}
 
 }
