@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		// Database stuff
-		// this.deleteDatabase("Database");
+		//this.deleteDatabase("Database");
 		filterObjects = new FilterDataObjects(this);
 
 		// Sets the language
@@ -142,6 +142,7 @@ public class MainActivity extends Activity {
 			notificationList.setAdapter(null);
 		} else {
 			menu.findItem(R.id.action_refresh).setVisible(true);
+			filterObjects.getDatabase().filterNotifications();
 		}
 
 		return super.onPrepareOptionsMenu(menu);
