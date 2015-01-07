@@ -1,6 +1,5 @@
-package de.uni_stuttgart.riot.usermanagement.data.exception;
+package de.uni_stuttgart.riot.server.commons.db.exception;
 
-import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 
 /**
  * Superclass for all errors according the datasource.
@@ -8,7 +7,7 @@ import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
  * @author Jonas Tangermann
  *
  */
-public abstract class DatasourceException extends UserManagementException {
+public abstract class DatasourceException extends Exception{
 
     private static final long serialVersionUID = -509609274709680393L;
 
@@ -43,5 +42,6 @@ public abstract class DatasourceException extends UserManagementException {
     public DatasourceException(Throwable cause) {
         super(cause);
     }
+    
 
 }

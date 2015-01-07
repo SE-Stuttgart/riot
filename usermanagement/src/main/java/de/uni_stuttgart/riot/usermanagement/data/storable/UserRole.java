@@ -3,16 +3,11 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
-<<<<<<< HEAD
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-=======
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
->>>>>>> One single QueryBuilder
 
 /**
  * {@link UserRole} represents the n:m relation between {@link UMUser} and {@link Role}. Thus this class only maps User to Role not adding any

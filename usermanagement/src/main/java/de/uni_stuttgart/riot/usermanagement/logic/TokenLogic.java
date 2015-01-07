@@ -6,11 +6,17 @@ import javax.naming.NamingException;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryDAO;
+=======
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+>>>>>>> Moved db frameworkt to server-commons
 import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
 
 public class TokenLogic {

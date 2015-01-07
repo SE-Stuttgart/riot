@@ -1,16 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
-<<<<<<< HEAD
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
-=======
-import java.util.Collection;
-import java.util.LinkedList;
-
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
->>>>>>> One single QueryBuilder
 
 /**
  * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}. Thus this class only maps Roles to

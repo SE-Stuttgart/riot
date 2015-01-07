@@ -1,6 +1,5 @@
-package de.uni_stuttgart.riot.usermanagement.data.exception;
+package de.uni_stuttgart.riot.server.commons.db.exception;
 
-import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 
 /**
  * Exception for errors during the deletion of Objects in the datasource.
@@ -46,12 +45,6 @@ public class DatasourceDeleteException extends DatasourceException {
      */
     public DatasourceDeleteException(Throwable cause) {
         super(cause);
-    }
-
-
-    @Override
-    public int getErrorCode() {
-        return ErrorCodes.DATASOURCE_DELETE;
     }
 
 }

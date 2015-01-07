@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import org.apache.shiro.authz.permission.WildcardPermission;
 
+import de.uni_stuttgart.riot.commons.model.Storable;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 /**
@@ -53,6 +54,7 @@ public class Permission extends Storable {
     }
 
     @Override
+<<<<<<< HEAD:commons/src/main/java/de/uni_stuttgart/riot/commons/rest/usermanagement/data/Permission.java
     public Collection<SearchParameter> getSearchParam() {
         LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
         params.add(new SearchParameter(SearchFields.PERMISSIONVALUE, this.getPermissionValue()));
@@ -60,6 +62,12 @@ public class Permission extends Storable {
     }
 
 
+=======
+    public long getId() {
+        return this.id;
+    }
+
+>>>>>>> Moved db frameworkt to server-commons:usermanagement/src/main/java/de/uni_stuttgart/riot/usermanagement/data/storable/Permission.java
     /**
      * Getter for {@link Permission#permissionValue}.
      * 

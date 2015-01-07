@@ -105,7 +105,7 @@ public class AuthenticationLogic {
                     ul.updateUser(user, null);
 
                     Token token = generateAndSaveTokens(user.getId());
-         
+
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
                     DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);

@@ -9,11 +9,11 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 

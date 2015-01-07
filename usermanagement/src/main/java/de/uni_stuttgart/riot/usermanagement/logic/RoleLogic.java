@@ -12,13 +12,22 @@ import org.apache.commons.lang.StringUtils;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
+=======
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RolePermissionSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
+>>>>>>> Moved db frameworkt to server-commons
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;

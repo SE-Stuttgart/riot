@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.model.Storable;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 
@@ -61,15 +62,6 @@ public class Token implements Storable {
         return this.id;
     }
 
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.TOKENVALUE, this.getTokenValue()));
-        params.add(new SearchParameter(SearchFields.USERID, this.getUserID()));
-        params.add(new SearchParameter(SearchFields.ISSUETIME, this.getIssueTime()));
-        params.add(new SearchParameter(SearchFields.EXPIRATIONTIME, this.getExpirationTime()));
-        return params;
-    }
 
     public String getTokenValue() {
         return tokenValue;

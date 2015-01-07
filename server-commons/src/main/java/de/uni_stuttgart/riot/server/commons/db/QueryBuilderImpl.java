@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
+package de.uni_stuttgart.riot.server.commons.db;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -6,10 +6,7 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
-import de.uni_stuttgart.riot.server.commons.db.SQLQueryUtil;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Storable;
+import de.uni_stuttgart.riot.commons.model.Storable;
 
 public class QueryBuilderImpl implements QueryBuilder{
 

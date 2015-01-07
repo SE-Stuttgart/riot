@@ -7,12 +7,12 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class RoleSqlQueryDaoTest extends DaoTestBase{

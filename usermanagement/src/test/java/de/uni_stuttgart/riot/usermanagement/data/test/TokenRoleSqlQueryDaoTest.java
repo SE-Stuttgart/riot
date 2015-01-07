@@ -7,11 +7,11 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceDeleteException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenRoleSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 

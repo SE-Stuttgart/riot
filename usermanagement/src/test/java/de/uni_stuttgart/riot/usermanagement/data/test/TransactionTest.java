@@ -8,11 +8,12 @@ import javax.naming.NamingException;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlTransaction;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.TransactionInterface;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.SqlTransaction;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
@@ -43,7 +44,7 @@ public class TransactionTest extends DaoTestBase {
 
     @Test
     public void transactionRollbackTest() throws DatasourceUpdateException, SQLException, DatasourceFindException, NamingException {
-        SqlTransaction transaction = new SqlTransaction();
+    	SqlTransaction transaction = new SqlTransaction();
         DAO<UMUser> userDAO = transaction.getUserDao();
         UMUser yoda = userDAO.findBy(1L);
         yoda.setUsername("Yoda2");
@@ -61,7 +62,7 @@ public class TransactionTest extends DaoTestBase {
 
     @Test
     public void transactionCommitTest() throws DatasourceUpdateException, SQLException, DatasourceFindException, NamingException {
-        SqlTransaction transaction = new SqlTransaction();
+    	SqlTransaction transaction = new SqlTransaction();
         DAO<UMUser> userDAO = transaction.getUserDao();
         UMUser yoda = userDAO.findBy(1L);
         yoda.setUsername("Yoda2");

@@ -34,6 +34,14 @@ import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
+<<<<<<< HEAD
+=======
+import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
+import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
+import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
+>>>>>>> Moved db frameworkt to server-commons
 
 /**
  * The users service will handle any access (create, read, update, delete) to the users.

@@ -1,12 +1,11 @@
-package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
+package de.uni_stuttgart.riot.usermanagement.data.dao.impl;
 
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.sql2o.Connection;
 
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 
 /**

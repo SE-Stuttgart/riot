@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.usermanagement.data.exception;
+package de.uni_stuttgart.riot.server.commons.db.exception;
 
 /**
  * Exception for errors during the retrieval of Objects in the datasource.
@@ -47,8 +47,4 @@ public class DatasourceFindException extends DatasourceException {
         super(cause);
     }
 
-    @Override
-    public int getErrorCode() {
-        return 0;
-    }
 }

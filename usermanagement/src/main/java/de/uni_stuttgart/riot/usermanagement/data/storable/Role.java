@@ -4,6 +4,7 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.model.Storable;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 
@@ -42,13 +43,6 @@ public class Role implements Storable {
     @Override
     public long getId() {
         return this.id;
-    }
-
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.ROLENAME, this.getRoleName()));
-        return params;
     }
 
     @Override
