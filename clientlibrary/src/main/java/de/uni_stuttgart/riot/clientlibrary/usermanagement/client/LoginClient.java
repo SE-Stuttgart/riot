@@ -1,11 +1,22 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
@@ -13,7 +24,9 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.Authentication
 
 public class LoginClient {
 
-	private static final String PREFIX = "/riot/api/v1/";
+	private static final String APPLICATION_JSON = "application/json";
+
+    private static final String PREFIX = "/riot/api/v1/";
 
 	private static final String LOGOUT_PATH = PREFIX + "auth/logout";
 	private static final String LOGIN_PATH =  PREFIX +"auth/login";
@@ -22,6 +35,10 @@ public class LoginClient {
 	private String currentAuthenticationToken;
 	private String currentRefreshToken;
 	private final String deviceName;
+	protected final ObjectMapper jsonMapper = new ObjectMapper(); 
+    private final HttpClient client = HttpClientBuilder.create().build();
+
+
 
 	private final String serverUrl;
 	private boolean logedIn;
@@ -38,108 +55,120 @@ public class LoginClient {
 		return serverUrl;
 	}
 
-	public void login(String username, String password) throws RequestException {
+	public void login(String username, String password) throws RequestException, ClientProtocolException, IOException {
 		this.internalLogin(LOGIN_PATH, new LoginRequest(username,password));
 	}
 
-	void refresh() throws RequestException {
+	void refresh() throws RequestException, ClientProtocolException, IOException {
 		RefreshRequest refreshRequest = new RefreshRequest(this.currentRefreshToken);
 		this.internalLogin(REFRESH_PATH, refreshRequest);
 	}
 
-	public void logout() throws RequestException {		
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(this.serverUrl).path(LOGOUT_PATH);
-		this.put(target, null);
+	public void logout() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {		
+		this.put(this.serverUrl + LOGOUT_PATH, null);
 	}
 
-	void internalLogin(String path, Object entity) throws RequestException {
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(this.serverUrl).path(path);
-		System.out.println(target.getUri());
-		Response r = target.request(MediaType.APPLICATION_JSON).put(Entity.entity(entity, MediaType.APPLICATION_JSON));
-		if(r.getStatus() >= 400){
-			if(r.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)){
-				RequestExceptionWrapper error = r.readEntity(RequestExceptionWrapper.class);
-				r.close();
+	void internalLogin(String path, Object entity) throws RequestException, ClientProtocolException, IOException {
+		HttpPut put = new HttpPut(serverUrl + path);
+        put.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+        StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
+        jsonEntity.setContentType(APPLICATION_JSON);
+        put.setEntity(jsonEntity);
+        HttpResponse r = LoginClient.this.client.execute(put);
+		int status = r.getStatusLine().getStatusCode();
+		String mediaType = r.getEntity().getContentType().getValue();
+		if(status >= 400){
+			if(mediaType.equals(APPLICATION_JSON)){
+				RequestExceptionWrapper error = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), RequestExceptionWrapper.class);
 				error.throwIT();
 			} else {
-				String result = r.readEntity(String.class);
-				RequestExceptionWrapper error = new RequestExceptionWrapper(r.getStatus(), result);	
-				r.close();
+				String result = EntityUtils.toString(r.getEntity());
+				RequestExceptionWrapper error = new RequestExceptionWrapper(status, result);	
 				error.throwIT();
 			}
 		} else{
-			AuthenticationResponse response = r.readEntity(AuthenticationResponse.class);
+			AuthenticationResponse response = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), AuthenticationResponse.class);
 			this.currentAuthenticationToken = response.getAccessToken();
 			this.currentRefreshToken = response.getRefreshToken();
 			this.logedIn = true;
 			System.out.println(this.currentAuthenticationToken);
 		} 
-		r.close();
 	}
 
-	Response put(final WebTarget target, final Entity entity) throws RequestException {
-		return this.doRequest(new InternalRequest() {
-			public Response doRequest() {
-				System.out.println(target.getUri());
-				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).put(entity);
+	HttpResponse put(final String target, final Object entity) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
+	    return this.doRequest(new InternalRequest() {
+			public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
+				System.out.println(target);
+				HttpPut put = new HttpPut(target);
+				put.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+				StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
+				jsonEntity.setContentType(APPLICATION_JSON);
+                put.setEntity(jsonEntity);
+				return LoginClient.this.client.execute(put);
 			}
 		});
 	}
 
-	Response post(final WebTarget target, final Entity entity) throws RequestException {
+	HttpResponse post(final String target, final Object entity) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
 		return this.doRequest(new InternalRequest() {
-			public Response doRequest() {
-				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).post(entity);
+			public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+				HttpPost post = new HttpPost(target);
+				post.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+                StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
+                jsonEntity.setContentType(APPLICATION_JSON);
+                post.setEntity(jsonEntity);
+                return LoginClient.this.client.execute(post);
 			}
 		});
 	}
 
-	Response delete(final WebTarget target) throws RequestException {
+	HttpResponse delete(final String target) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
 		return this.doRequest(new InternalRequest() {
-			public Response doRequest() {
-				System.out.println(target.getUri());
-				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).delete();
+			public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+				HttpDelete delete = new HttpDelete(target);
+				delete.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+				return LoginClient.this.client.execute(delete);
 			}
 		});
 	}
 
-	 Response get(final WebTarget target) throws RequestException {
+	HttpResponse get(final String target) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
 		return this.doRequest(new InternalRequest() {
-			public Response doRequest() {
-				return target.request(MediaType.APPLICATION_JSON).header(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken).get();
+			public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+				HttpGet get = new HttpGet(target);
+				get.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+				return LoginClient.this.client.execute(get);
 			}
 		});
 	}
 
-	Response doRequest(InternalRequest r) throws RequestException {
-		Response response = r.doRequest();
-		System.out.println(response.getStatusInfo().toString());
-		if(response.getStatus() >= 402){
-			if(response.getMediaType().equals(MediaType.APPLICATION_JSON_TYPE)){
-				RequestExceptionWrapper error = response.readEntity(RequestExceptionWrapper.class);
-				error.throwIT();
-			} else {
-				String result = response.readEntity(String.class);
-				RequestExceptionWrapper error = new RequestExceptionWrapper(response.getStatus(), result);
-				error.throwIT();
-			}
-		}
-		if (response.getStatus() == 401) {
-			this.refresh();
-			return response;
-		} else {
-			return response;
-		}
+	HttpResponse doRequest(InternalRequest r) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
+	    HttpResponse response = r.doRequest();
+        int status = response.getStatusLine().getStatusCode();
+        String mediatype = response.getEntity().getContentType().getValue();
+        if(status >= 402){
+            if(mediatype.equals(APPLICATION_JSON)){
+                RequestExceptionWrapper error = LoginClient.this.jsonMapper.readValue(response.getEntity().getContent(), RequestExceptionWrapper.class);
+                error.throwIT();
+            } else {
+                String result = EntityUtils.toString(response.getEntity());
+                RequestExceptionWrapper error = new RequestExceptionWrapper(status, result);
+                error.throwIT();
+            }
+        }
+        if (status == 401) {
+            this.refresh();
+            return response;
+        } else {
+            return response;
+        }
 	}
 
 	public boolean isLogedIn() {
 		return logedIn;
 	}
 
-	Client getClient() {
-		return ClientBuilder.newClient();
+	HttpClient getClient() {
+		return HttpClientBuilder.create().build();
 	}
-
 }

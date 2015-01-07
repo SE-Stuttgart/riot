@@ -1,11 +1,19 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.http.HttpResponse;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.type.TypeReference;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
@@ -48,11 +56,11 @@ public class UsermanagementClient {
 		this.loginClient = loginClient;
 	}
 	
-	public UserResponse updateUser(long userID, UserRequest userRequest) throws RequestException{
-		Entity<UserRequest> entity = Entity.entity(userRequest, MediaType.APPLICATION_JSON);
-		Response response = this.loginClient.put(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PUT_UPDATE_USER+userID), entity);
-		UserResponse result = response.readEntity(UserResponse.class);
-		return result;	}
+	public UserResponse updateUser(long userID, UserRequest userRequest) throws RequestException, JsonParseException, JsonMappingException, IllegalStateException, IOException {
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+ PUT_UPDATE_USER+userID, userRequest);
+		UserResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), UserResponse.class);
+		return result;	
+	}
 	
 	public UserResponse updateRole(long roleID, Role role){
 		return null;
@@ -61,7 +69,7 @@ public class UsermanagementClient {
 	public UserResponse updatePermission(long permissionID, Permission permission){
 		return null;
 	}
-	
+	/*
 	public int removeUserRole(long userID, long roleID) throws RequestException{
 		Response response = this.loginClient.delete(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PREFIX+"users/"+userID+DELETE_USER_ROLE+roleID));
 		int result = response.getStatus();
@@ -154,11 +162,10 @@ public class UsermanagementClient {
 		response.close();
 		return result;
 	}
-	
-	public Collection<PermissionResponse> getPermissions() throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_PERMISSIONS));
-		Collection<PermissionResponse> result = response.readEntity(new GenericType<Collection<PermissionResponse>>(){});
-		response.close();
+	*/
+	public Collection<PermissionResponse> getPermissions() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_PERMISSIONS);
+		Collection<PermissionResponse> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),new TypeReference<Collection<PermissionResponse>>() { });
 		return result;
 	}
 
