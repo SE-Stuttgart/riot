@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
 
-import java.sql.Connection;
+import org.sql2o.Connection;
+
 
 public abstract class QueryExecuter {
 

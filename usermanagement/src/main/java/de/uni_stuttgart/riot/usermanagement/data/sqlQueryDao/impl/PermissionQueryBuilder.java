@@ -1,12 +1,14 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import org.sql2o.Connection;
+import org.sql2o.Query;
+
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
@@ -25,19 +27,19 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
     private static final String FIND_ALL_QUERY = "SELECT permissionID,permissionValue FROM permissions;";
 
     @Override
-    public PreparedStatement buildDelete(Permission t, Connection connection) throws SQLException {
+    public Query buildDelete(Permission t, Connection connection) throws SQLException {
         return super.buildDelete(t, connection, DELETE_QUERY);
     }
 
-    @Override
-    public PreparedStatement buildInsert(Permission t, Connection connection) throws SQLException {
+    @Override // FIXME bool flag for insert key return
+    public Query buildInsert(Permission t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
         stmt.setString(1, t.getPermissionValue());
         return stmt;
     }
 
     @Override
-    public PreparedStatement buildUpdate(Permission t, Connection connection) throws SQLException {
+    public Query buildUpdate(Permission t, Connection connection) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(UPDATE_QUERY);
         stmt.setString(1, t.getPermissionValue());
         stmt.setLong(2, t.getId());
@@ -45,17 +47,17 @@ public class PermissionQueryBuilder extends StorableQueryBuilder implements Quer
     }
 
     @Override
-    public PreparedStatement buildFindByID(Long id, Connection connection) throws SQLException {
+    public Query buildFindByID(Long id, Connection connection) throws SQLException {
         return super.buildFindByID(id, connection, FIND_ID_QUERY);
     }
 
     @Override
-    public PreparedStatement buildFindBySearchParam(Collection<SearchParameter> params, Connection connection, boolean or) throws SQLException {
+    public Query buildFindBySearchParam(Collection<SearchParameter> params, Connection connection, boolean or) throws SQLException {
         return super.buildFindBySearchParam(params, connection, FIND_PARAM_QUERY, or);
     }
 
     @Override
-    public PreparedStatement buildFindAll(Connection connection) throws SQLException {
+    public Query buildFindAll(Connection connection) throws SQLException {
         return super.buildFindAll(connection, FIND_ALL_QUERY);
     }
 

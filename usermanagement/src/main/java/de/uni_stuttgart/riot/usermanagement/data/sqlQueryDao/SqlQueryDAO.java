@@ -1,14 +1,11 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 
-import javax.sql.DataSource;
+import org.sql2o.Connection;
+import org.sql2o.Query;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
@@ -27,10 +24,8 @@ import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceUpdateExcep
  */
 public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
 
-    private final DataSource ds;
     private final Connection connection;
     private final QueryBuilder<T> queryBuilder;
-    private final ObjectBuilder<T> objectBuilder;
     private final boolean transaction;
 
     /**
@@ -43,38 +38,27 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
      * @param objectBuilder
      *            the objectbuilder for T
      */
-    public SqlQueryDAO(DataSource ds, QueryBuilder<T> queryBuilder, ObjectBuilder<T> objectBuilder) {
-        this.ds = ds;
+    public SqlQueryDAO(QueryBuilder<T> queryBuilder, ObjectBuilder<T> objectBuilder) {
         this.connection = null;
         this.queryBuilder = queryBuilder;
-        this.objectBuilder = objectBuilder;
         this.transaction = false;
     }
 
+    protected abstract Class<T> getMyClazz();
+
     protected SqlQueryDAO(Connection connection, QueryBuilder<T> queryBuilder, ObjectBuilder<T> objectBuilder) throws SQLException {
-        this.ds = null;
         this.transaction = true;
         this.connection = connection;
-        this.connection.setAutoCommit(false);
         this.queryBuilder = queryBuilder;
-        this.objectBuilder = objectBuilder;
-    }
-
-    private Connection getConnection() throws SQLException {
-        if (connection == null) {
-            return this.ds.getConnection();
-        } else {
-            return connection;
-        }
     }
 
     @Override
     public void delete(T t) throws DatasourceDeleteException {
         try {
-            VoidQueryExecuter ex = new VoidQueryExecuter(this.getConnection()) {
+            VoidQueryExecuter ex = new VoidQueryExecuter(this.connection) {
                 public void executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildDelete(t, this.getConnection());
-                    stmt.execute();
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildDelete(t, SqlQueryDAO.this.connection);
+                    stmt.executeUpdate();
                     stmt.close();
                 }
             };
@@ -87,22 +71,14 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public void insert(T t) throws DatasourceInsertException {
         try {
-            VoidQueryExecuter ex = new VoidQueryExecuter(this.getConnection()) {
+            VoidQueryExecuter ex = new VoidQueryExecuter(this.connection) {
                 public void executeInternal() throws Exception {
-                    try (PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildInsert(t, this.getConnection())) {
-                        if (stmt.executeUpdate() == 0) {
+                    try (Query stmt = SqlQueryDAO.this.queryBuilder.buildInsert(t, SqlQueryDAO.this.connection)) {
+                        long key = stmt.executeUpdate().getKey(Long.class);
+                        if (key == 0) {
                             throw new DatasourceInsertException("Error on inserting new value");
                         }
-                        try (ResultSet rSet = stmt.getGeneratedKeys()) {
-                            if (rSet.next()) {
-                                t.setId(rSet.getLong(1));
-                            } else {
-                                throw new DatasourceInsertException("Error on getting the id-value");
-                            }
-                            rSet.close();
-                        }
-                        stmt.close();
-
+                        t.setId(key);
                     }
                 }
             };
@@ -115,10 +91,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public void update(T t) throws DatasourceUpdateException {
         try {
-            VoidQueryExecuter ex = new VoidQueryExecuter(this.getConnection()) {
+            VoidQueryExecuter ex = new VoidQueryExecuter(this.connection) {
                 public void executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildUpdate(t, this.getConnection());
-                    int res = stmt.executeUpdate();
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildUpdate(t, SqlQueryDAO.this.connection);
+                    int res = stmt.executeUpdate().getResult();
                     if (res == 0) {
                         throw new DatasourceUpdateException("Nothing to update!");
                     }
@@ -134,18 +110,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public T findBy(long id) throws DatasourceFindException {
         try {
-            SingleQueryExecuter<T> exc = new SingleQueryExecuter<T>(this.getConnection()) {
+            SingleQueryExecuter<T> exc = new SingleQueryExecuter<T>(this.connection) {
                 public T executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindByID(id, this.getConnection());
-                    ResultSet resultSet = stmt.executeQuery();
-                    if (resultSet.next()) {
-                        T result = SqlQueryDAO.this.objectBuilder.build(resultSet);
-                        stmt.close();
-                        return result;
-                    } else {
-                        stmt.close();
-                        throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
-                    }
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildFindByID(id, SqlQueryDAO.this.connection);
+                    return stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
                 }
             };
             return exc.execute(this.isTransaction());
@@ -157,16 +125,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public Collection<T> findBy(Collection<SearchParameter> searchParams, boolean or) throws DatasourceFindException {
         try {
-            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.getConnection()) {
+            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.connection) {
                 public Collection<T> executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, this.getConnection(), or);
-                    ResultSet resultSet = stmt.executeQuery();
-                    LinkedList<T> res = new LinkedList<T>();
-                    while (resultSet.next()) {
-                        res.add(SqlQueryDAO.this.objectBuilder.build(resultSet));
-                    }
-                    stmt.close();
-                    return res;
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, SqlQueryDAO.this.connection, or);
+                    return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
                 }
             };
             return exc.execute(this.isTransaction());
@@ -178,16 +140,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public Collection<T> findAll() throws DatasourceFindException {
         try {
-            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.getConnection()) {
+            CollectionQueryExecuter<T> exc = new CollectionQueryExecuter<T>(this.connection) {
                 public Collection<T> executeInternal() throws Exception {
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindAll(this.getConnection());
-                    ResultSet resultSet = stmt.executeQuery();
-                    ArrayList<T> res = new ArrayList<T>();
-                    while (resultSet.next()) {
-                        res.add(SqlQueryDAO.this.objectBuilder.build(resultSet));
-                    }
-                    stmt.close();
-                    return res;
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildFindAll(SqlQueryDAO.this.connection);
+                    return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
                 }
             };
             return exc.execute(this.isTransaction());
@@ -199,20 +155,12 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     @Override
     public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
         try {
-            SingleQueryExecuter<T> exc = new SingleQueryExecuter<T>(this.getConnection()) {
+            SingleQueryExecuter<T> exc = new SingleQueryExecuter<T>(this.connection) {
                 public T executeInternal() throws Exception {
                     Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
                     searchParams.add(searchParameter);
-                    PreparedStatement stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, this.getConnection(), false);
-                    ResultSet resultSet = stmt.executeQuery();
-                    if (resultSet.next()) {
-                        T result = SqlQueryDAO.this.objectBuilder.build(resultSet);
-                        stmt.close();
-                        return result;
-                    } else {
-                        stmt.close();
-                        throw new DatasourceFindException("No such Element");
-                    }
+                    Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(searchParams, SqlQueryDAO.this.connection, false);
+                    return stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
                 }
             };
             return exc.execute(this.isTransaction());

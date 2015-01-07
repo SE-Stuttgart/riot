@@ -1,12 +1,14 @@
 package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Storable;
+import org.sql2o.Connection;
+import org.sql2o.Query;
+
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.QueryBuilder;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
@@ -17,19 +19,15 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
  */
 public abstract class StorableQueryBuilder {
 
-    public PreparedStatement buildDelete(Storable t, Connection connection, String query) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        stmt.setLong(1, t.getId());
-        return stmt;
+    public Query buildDelete(Storable t, Connection connection, String query) throws SQLException {
+        return connection.createQuery(query).addParameter("id", t.getId());
     }
 
-    public PreparedStatement buildFindByID(Long id, Connection connection, String query) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        stmt.setLong(1, id);
-        return stmt;
+    public Query buildFindByID(Long id, Connection connection, String query) throws SQLException {
+        return connection.createQuery(query).addParameter("id",id);
     }
 
-    public PreparedStatement buildFindBySearchParam(Collection<SearchParameter> params, Connection connection, String query, boolean or) throws SQLException {
+    public Query buildFindBySearchParam(Collection<SearchParameter> params, Connection connection, String query, boolean or) throws SQLException {
         query += this.getWherePart(params, or);
         PreparedStatement stmt = connection.prepareStatement(query);
         Iterator<SearchParameter> i = params.iterator();
@@ -59,7 +57,7 @@ public abstract class StorableQueryBuilder {
         return res.toString();
     }
 
-    public PreparedStatement buildFindAll(Connection connection, String findAllQuery) throws SQLException {
+    public Query buildFindAll(Connection connection, String findAllQuery) throws SQLException {
         return connection.prepareStatement(findAllQuery);
     }
 }

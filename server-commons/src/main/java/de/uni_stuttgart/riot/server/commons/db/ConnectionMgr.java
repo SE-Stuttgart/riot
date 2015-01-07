@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.db;
+package de.uni_stuttgart.riot.server.commons.db;
 
 import java.sql.SQLException;
 
@@ -58,5 +58,9 @@ public abstract class ConnectionMgr {
     public static Connection openConnection() throws NamingException, SQLException {
         return getSql2o().open();
     }
+
+	public static Connection beginTransaction() throws NamingException, SQLException {
+        return getSql2o().beginTransaction();
+	}
 
 }

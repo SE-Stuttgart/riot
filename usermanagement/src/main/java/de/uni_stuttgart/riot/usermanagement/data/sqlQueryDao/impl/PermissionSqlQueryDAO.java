@@ -20,11 +20,16 @@ public class PermissionSqlQueryDAO extends SqlQueryDAO<Permission> {
      * @param ds The datasource to be used by the dao
      */
     public PermissionSqlQueryDAO(DataSource ds) {
-        super(ds, new PermissionQueryBuilder(), new PermissionObjectBuilder());
+        super(new PermissionQueryBuilder(), new PermissionObjectBuilder());
     }
 
     public PermissionSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection,  new PermissionQueryBuilder(), new PermissionObjectBuilder());
+        super(new PermissionQueryBuilder(), new PermissionObjectBuilder());
     }
 
+    protected Class<Permission> getMyClazz(){
+    	return Permission.class;
+    }
+
+    
 }

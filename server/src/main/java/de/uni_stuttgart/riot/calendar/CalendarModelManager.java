@@ -7,9 +7,9 @@ import javax.naming.NamingException;
 
 import org.sql2o.Connection;
 
-import de.uni_stuttgart.riot.db.ConnectionMgr;
 import de.uni_stuttgart.riot.db.DaoException;
 import de.uni_stuttgart.riot.rest.ModelManager;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 
 /**
  * The Class CalendarModelManager.
