@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,9 @@ import org.apache.shiro.subject.Subject;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
@@ -54,10 +58,12 @@ public class AuthenticationLogic {
      */
     public AuthenticationLogic() {
         try {
-            dao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
+            dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection());
         } catch (NamingException e) {
             throw new RuntimeException(e);
-        }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+		}
     }
 
     /**
@@ -102,7 +108,7 @@ public class AuthenticationLogic {
          
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection());
 
                     // assign the token the same roles as the user has
                     for (Role role : roles) {
@@ -141,7 +147,7 @@ public class AuthenticationLogic {
             // test, if token is valid
             if (token != null && token.isValid()) {
 
-                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection());
 
                 // generate a new token and save it in the db
                 Token newToken = generateAndSaveTokens(token.getUserID());

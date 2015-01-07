@@ -1,10 +1,12 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.naming.NamingException;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
@@ -29,10 +31,12 @@ public class PermissionLogic {
      */
     public PermissionLogic() {
         try {
-            dao = new PermissionSqlQueryDAO(DatasourceUtil.getDataSource());
+            dao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection());
         } catch (NamingException e) {
             e.printStackTrace();
-        }
+        } catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
 
     public void addPermission(Permission permission) throws AddPermissionException {

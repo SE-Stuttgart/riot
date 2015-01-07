@@ -1,8 +1,5 @@
-package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
+package de.uni_stuttgart.riot.server.commons.db;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
-import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 
 /**
  * Enum for all searchable fields.

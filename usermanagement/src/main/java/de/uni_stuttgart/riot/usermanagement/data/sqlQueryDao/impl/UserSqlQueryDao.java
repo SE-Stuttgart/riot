@@ -17,7 +17,7 @@ public class UserSqlQueryDao extends SqlQueryDAO<UMUser> {
 
 
     public UserSqlQueryDao(Connection connection) throws SQLException {
-        super(connection, new UserQueryBuilder(), new UserObjectBuilder());
+        super(connection);
     }
 
 	@Override

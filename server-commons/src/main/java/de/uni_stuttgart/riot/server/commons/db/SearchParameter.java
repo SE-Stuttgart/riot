@@ -1,6 +1,5 @@
-package de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao;
+package de.uni_stuttgart.riot.server.commons.db;
 
-import de.uni_stuttgart.riot.usermanagement.data.DAO;
 
 /**
  * Search parameter, used in {@link DAO#findBy(java.util.Collection, boolean)}.
