@@ -49,7 +49,12 @@ public class Permission extends Storable {
     }
 
 
-    /**
+    @Override
+	public String toString() {
+		return "Permission [permissionValue=" + permissionValue + "]";
+	}
+
+	/**
      * Getter for {@link Permission#permissionValue}.
      * 
      * @return Permission string in {@link WildcardPermission} format.

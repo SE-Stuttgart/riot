@@ -65,7 +65,7 @@ public class LoginClient {
 	}
 
 	public void logout() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {		
-		this.put(this.serverUrl + LOGOUT_PATH, null);
+		this.put(this.serverUrl + LOGOUT_PATH, "");
 	}
 
 	void internalLogin(String path, Object entity) throws RequestException, ClientProtocolException, IOException {
@@ -133,6 +133,7 @@ public class LoginClient {
 	}
 
 	HttpResponse get(final String target) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
+		System.out.println(target);
 		return this.doRequest(new InternalRequest() {
 			public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
 				HttpGet get = new HttpGet(target);
@@ -145,8 +146,11 @@ public class LoginClient {
 	HttpResponse doRequest(InternalRequest r) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
 	    HttpResponse response = r.doRequest();
         int status = response.getStatusLine().getStatusCode();
-        String mediatype = response.getEntity().getContentType().getValue();
-        if(status >= 402){
+        String mediatype = "";
+        if(response.getEntity().getContentType() != null){
+        	mediatype = response.getEntity().getContentType().getValue();
+        }
+        if(status >= 402 || status == 400){
             if(mediatype.equals(APPLICATION_JSON)){
                 RequestExceptionWrapper error = LoginClient.this.jsonMapper.readValue(response.getEntity().getContent(), RequestExceptionWrapper.class);
                 error.throwIT();

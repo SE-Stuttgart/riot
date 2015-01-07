@@ -28,6 +28,11 @@ public class PermissionResponse {
 		return permission;
 	}
 
+	@Override
+	public String toString() {
+		return "PermissionResponse [permission=" + permission + "]";
+	}
+
 	public void setPermission(Permission permission) {
 		this.permission = permission;
 	}

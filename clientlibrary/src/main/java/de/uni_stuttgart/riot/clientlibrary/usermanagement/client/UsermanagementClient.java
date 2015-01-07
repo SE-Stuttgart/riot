@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -24,12 +20,12 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 public class UsermanagementClient {
 
-	private final String PREFIX = "/riot/api/v1/";
+	private final String PREFIX = "riot/api/v1/";
 	
 	private final String GET_USERS = PREFIX + "users";
 	private final String GET_ROLES = PREFIX + "roles"; 
 	private final String GET_PERMISSIONS = PREFIX + "permissions";
-	private final String GET_USER_ROLES = PREFIX + "/roles";
+	private final String GET_USER_ROLES =  "/roles";
 
 	private final String GET_USER = PREFIX + "users/"; 
 	private final String GET_ROLE = PREFIX + "roles/"; 
@@ -48,7 +44,7 @@ public class UsermanagementClient {
 	private final String DELETE_USER = PREFIX + "users/"; 
 	private final String DELETE_ROLE = PREFIX + "roles/";
 	private final String DELETE_PERMISSION = PREFIX + "permissions"; 
-	private final String DELETE_USER_ROLE = PREFIX + "/roles/"; 
+	private final String DELETE_USER_ROLE =  "/roles/"; 
 	
 	private final LoginClient loginClient;
 	
@@ -62,107 +58,101 @@ public class UsermanagementClient {
 		return result;	
 	}
 	
-	public UserResponse updateRole(long roleID, Role role){
-		return null;
-	}
-	
-	public UserResponse updatePermission(long permissionID, Permission permission){
-		return null;
-	}
-	/*
-	public int removeUserRole(long userID, long roleID) throws RequestException{
-		Response response = this.loginClient.delete(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PREFIX+"users/"+userID+DELETE_USER_ROLE+roleID));
-		int result = response.getStatus();
+	public RoleResponse updateRole(long roleID, Role role) throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, RequestException, IOException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PUT_UPDATE_ROLE+roleID, role);
+		RoleResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),RoleResponse.class);
 		return result;
 	}
 	
-	public int removeUser(long userID) throws RequestException{
-		Response response = this.loginClient.delete(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(DELETE_USER+userID));
-		int result = response.getStatus();
+	public PermissionResponse updatePermission(long permissionID, Permission permission) throws JsonParseException, JsonMappingException, IllegalStateException, IOException, RequestException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PUT_UPDATE_PERMISSION+permissionID, permission);
+		PermissionResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),PermissionResponse.class);
 		return result;
 	}
 	
-	public int removeRole(long roleID) throws RequestException{
-		Response response = this.loginClient.delete(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(DELETE_ROLE+roleID));
-		int result = response.getStatus();
+	public int removeUserRole(long userID, long roleID) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl()+PREFIX+"users/"+userID+DELETE_USER_ROLE+roleID);
+		int result = response.getStatusLine().getStatusCode();
 		return result;
 	}
 	
-	public int removePermission(long permissionID) throws RequestException{
-		Response response = this.loginClient.delete(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(DELETE_PERMISSION+permissionID));
-		int result = response.getStatus();
+	public int removeUser(long userID) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl()+DELETE_USER+userID);
+		int result = response.getStatusLine().getStatusCode();
 		return result;
 	}
 	
-	public UserResponse addUser(UserRequest userRequest) throws RequestException{
-		Entity<UserRequest> entity = Entity.entity(userRequest, MediaType.APPLICATION_JSON);
-		Response response = this.loginClient.put(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PUT_ADD_USER), entity);
-		UserResponse result = response.readEntity(UserResponse.class);
+	public int removeRole(long roleID) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl()+DELETE_ROLE+roleID);
+		int result = response.getStatusLine().getStatusCode();
 		return result;
 	}
 	
-	public RoleResponse addRole(Role role) throws RequestException{
-		Entity<Role> entity = Entity.entity(role, MediaType.APPLICATION_JSON);
-		Response response = this.loginClient.put(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PUT_ADD_ROLE), entity);
-		RoleResponse result = response.readEntity(RoleResponse.class);
+	public int removePermission(long permissionID) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl()+DELETE_PERMISSION+permissionID);
+		int result = response.getStatusLine().getStatusCode();
 		return result;
 	}
 	
-	public int addUserRole(long userID, long roleID) throws RequestException{
-		Response response = this.loginClient.put(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PREFIX+"users/"+userID+PUT_ADD_USER_ROLE+roleID), null);
-		int result = response.getStatus();
+	public UserResponse addUser(UserRequest userRequest) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PUT_ADD_USER, userRequest);
+		UserResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),UserResponse.class);
 		return result;
 	}
 	
-	public PermissionResponse addRole(Permission permission) throws RequestException{
-		Entity<Permission> entity = Entity.entity(permission, MediaType.APPLICATION_JSON);
-		Response response = this.loginClient.put(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(PUT_ADD_PERMISSION), entity);
-		PermissionResponse result = response.readEntity(PermissionResponse.class);
+	public RoleResponse addRole(Role role) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PUT_ADD_ROLE, role);
+		RoleResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),RoleResponse.class);
 		return result;
 	}
 	
-	public Collection<RoleResponse> getUserRoles(long userid) throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(userid+GET_USER_ROLES));
-		Collection<RoleResponse> result = response.readEntity(new GenericType<Collection<RoleResponse>>(){});
-		response.close();
+	public int addUserRole(long userID, long roleID) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PREFIX+"users/"+userID+PUT_ADD_USER_ROLE+roleID, "");
+		return response.getStatusLine().getStatusCode();
+	}
+	
+	public PermissionResponse addPermission(Permission permission) throws RequestException, JsonParseException, JsonMappingException, IllegalStateException, IOException{
+		HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl()+PUT_ADD_PERMISSION, permission);
+		PermissionResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),PermissionResponse.class);
 		return result;
 	}
 	
-	public UserResponse getUser(long id) throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_USER+id));
-		UserResponse result = response.readEntity(UserResponse.class);
-		response.close();
+	public Collection<RoleResponse> getUserRoles(long userid) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_USER+userid+GET_USER_ROLES);
+		Collection<RoleResponse> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),new TypeReference<Collection<RoleResponse>>() { });
 		return result;
 	}
 	
-	public RoleResponse getRole(long id) throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_ROLE+id));
-		RoleResponse result = response.readEntity(RoleResponse.class);
-		response.close();
+	public UserResponse getUser(long id) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_USER+id);
+		UserResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),UserResponse.class);
 		return result;
 	}
 	
-	public PermissionResponse getPermission(long id) throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_PERMISSION+id));
-		PermissionResponse result = response.readEntity(PermissionResponse.class);
-		response.close();
+	public RoleResponse getRole(long id) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_ROLE+id);
+		RoleResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),RoleResponse.class);
 		return result;
 	}
 	
-	public Collection<UserResponse> getUsers() throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_USERS));
-		Collection<UserResponse> result = response.readEntity(new GenericType<Collection<UserResponse>>(){});
-		response.close();
+	public PermissionResponse getPermission(long id) throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_PERMISSION+id);
+		PermissionResponse result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),PermissionResponse.class);
 		return result;
 	}
 	
-	public Collection<RoleResponse> getRoles() throws RequestException{
-		Response response = this.loginClient.get(this.loginClient.getClient().target(this.loginClient.getServerUrl()).path(GET_ROLES));
-		Collection<RoleResponse> result = response.readEntity(new GenericType<Collection<RoleResponse>>(){});
-		response.close();
+	public Collection<UserResponse> getUsers() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_USERS);
+		Collection<UserResponse> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),new TypeReference<Collection<UserResponse>>() { });
 		return result;
 	}
-	*/
+	
+	public Collection<RoleResponse> getRoles() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
+		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_ROLES);
+		Collection<RoleResponse> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),new TypeReference<Collection<RoleResponse>>() { });
+		return result;
+	}
+	
 	public Collection<PermissionResponse> getPermissions() throws RequestException, JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException{
 		HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl()+GET_PERMISSIONS);
 		Collection<PermissionResponse> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),new TypeReference<Collection<PermissionResponse>>() { });

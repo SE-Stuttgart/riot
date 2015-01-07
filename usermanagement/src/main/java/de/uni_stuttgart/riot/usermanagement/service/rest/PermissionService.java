@@ -62,8 +62,8 @@ public class PermissionService {
     @GET
     @Path("/{permissionID}")
     @RequiresAuthentication
-    public Permission getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
-        return facade.getPermission(permissionID);
+    public PermissionResponse getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
+        return new PermissionResponse(facade.getPermission(permissionID));
     }
 
     /**
