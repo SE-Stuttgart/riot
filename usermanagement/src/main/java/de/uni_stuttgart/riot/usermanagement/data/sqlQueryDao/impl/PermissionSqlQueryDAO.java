@@ -16,8 +16,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
  */
 public class PermissionSqlQueryDAO extends SqlQueryDAO<Permission> {
 
-    public PermissionSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public PermissionSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
 
     protected Class<Permission> getMyClazz(){

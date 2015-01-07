@@ -17,8 +17,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 public class TokenRoleSqlQueryDAO extends SqlQueryDAO<TokenRole> {
 
 
-    public TokenRoleSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public TokenRoleSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
 
     @Override

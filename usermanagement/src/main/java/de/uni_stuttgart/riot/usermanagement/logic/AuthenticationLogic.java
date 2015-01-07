@@ -58,7 +58,7 @@ public class AuthenticationLogic {
      */
     public AuthenticationLogic() {
         try {
-            dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection());
+            dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(),false);
         } catch (NamingException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -108,7 +108,7 @@ public class AuthenticationLogic {
          
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection());
+                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
                     // assign the token the same roles as the user has
                     for (Role role : roles) {
@@ -147,7 +147,7 @@ public class AuthenticationLogic {
             // test, if token is valid
             if (token != null && token.isValid()) {
 
-                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection());
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
                 // generate a new token and save it in the db
                 Token newToken = generateAndSaveTokens(token.getUserID());

@@ -1,11 +1,12 @@
 package de.uni_stuttgart.riot.server.commons.db;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-
 
 import org.apache.commons.lang.StringUtils;
 
@@ -62,17 +63,29 @@ public final class SQLQueryUtil {
 	public static String buildInsertStatement(Class<?> clazz, String tableName) {
 		List<String> nameList = new ArrayList<String>();
 		List<String> valuesList = new ArrayList<String>();
-
-		for (Field field : clazz.getDeclaredFields()) {
+		
+		for (Field field : getAllFields(clazz, new LinkedList<Field>())) {
 			if (!"id".equalsIgnoreCase(field.getName())) {
 				nameList.add(field.getName());
 				valuesList.add(":" + field.getName());
 			}
 		}
-
 		String names = StringUtils.join(nameList, ", ");
 		String values = StringUtils.join(valuesList, ", ");
 		return "INSERT INTO " + tableName + "(" + names + ") VALUES (" + values + ")";
+	}
+	
+	public static Collection<Field> getAllFields(Class clazz, Collection<Field> current){
+		for (Field field : clazz.getDeclaredFields()) {
+			if (!"id".equalsIgnoreCase(field.getName()) && !Modifier.isStatic(field.getModifiers())) {
+				current.add(field);
+			}
+		}
+		Class superClazz = clazz.getSuperclass();
+		if(superClazz != null){
+			getAllFields(superClazz, current);
+		}
+		return current;
 	}
 
 	/**
@@ -87,7 +100,7 @@ public final class SQLQueryUtil {
 	public static String buildUpdateStatement(Class<?> clazz, String tableName) {
 		List<String> nameValueList = new ArrayList<String>();
 
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : getAllFields(clazz, new LinkedList<Field>())) {
 			if (!"id".equalsIgnoreCase(field.getName())) {
 				nameValueList.add(field.getName() + " = :" + field.getName());
 			}
@@ -98,7 +111,7 @@ public final class SQLQueryUtil {
 	}
 
 	public static String buildGetById(String tableName){
-		return "SELECT FROM "+tableName+" WHERE id = :id";
+		return "SELECT * FROM "+tableName+" WHERE id = :id";
 	}
 	
 	public static String buildDelete(String tableName){
@@ -117,10 +130,12 @@ public final class SQLQueryUtil {
 		StringBuffer res = new StringBuffer();
 		res.append("WHERE ");
 		Iterator<SearchParameter> i = params.iterator();
+		int x = 0;
 		while (i.hasNext()) {
 			SearchParameter current = i.next();
 			res.append(current.getValueName());
-			res.append(" = "+current.getValue()); //FIXME injection
+			res.append(" = :"+current.getValueName()+x);
+			x = x + 1;
 			if (i.hasNext()) {
 				if (or) {
 					res.append(" OR ");

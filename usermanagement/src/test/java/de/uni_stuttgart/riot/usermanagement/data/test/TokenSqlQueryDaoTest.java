@@ -1,12 +1,10 @@
 package de.uni_stuttgart.riot.usermanagement.data.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Date;
-
-import javax.validation.constraints.AssertTrue;
 
 import org.junit.Test;
 
@@ -21,8 +19,8 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 public class TokenSqlQueryDaoTest extends DaoTestBase{
 
     @Test
-    public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException {
-        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+    public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException, SQLException {
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(),false);
         Token testToken = new Token(new Long(42),
                 new Long(1),
                 "TestToken", "R",
@@ -35,8 +33,8 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException {
-        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(),false);
         Token findToken = dao.findBy(new Long(1));
         findToken.setTokenValue("testvalue");
         dao.update(findToken);
@@ -45,22 +43,22 @@ public class TokenSqlQueryDaoTest extends DaoTestBase{
     }
 
     @Test(expected = DatasourceFindException.class)
-    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException{
-        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(),false);
         Token Token = dao.findBy(new Long(1));
         dao.delete(Token);
         dao.findBy(new Long(1));
     }
 
     @Test(expected = DatasourceUpdateException.class)
-    public void errorUpdateTest() throws DatasourceUpdateException{
-        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+    public void errorUpdateTest() throws DatasourceUpdateException, SQLException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(),false);
         dao.update(new Token(new Long(32), new Long(34), "","", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),true));
     }
 
     @Test
-    public void findAllTest() throws DatasourceFindException{
-        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(getDataSource());
+    public void findAllTest() throws DatasourceFindException, SQLException{
+        TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(),false);
         Collection<Token> Token = dao.findAll();
         assertEquals(3, Token.size());
     }

@@ -22,7 +22,7 @@ public class TokenLogic {
 	 */
 	public TokenLogic() {
 		try {
-			dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection());
+			dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(),false);
 		} catch (NamingException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {

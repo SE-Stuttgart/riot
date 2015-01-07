@@ -17,7 +17,7 @@ public abstract class SingleQueryExecuter<T> extends QueryExecuter{
                 return this.executeInternal();
             } catch (Exception e) {
                 this.getConnection().rollback();
-                this.getConnection().close();
+                //this.getConnection().close();
                 throw e;
             }
         } else {

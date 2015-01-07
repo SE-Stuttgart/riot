@@ -50,7 +50,7 @@ public class UserLogic {
      */
     public UserLogic() {
         try {
-            dao = new UserSqlQueryDao(ConnectionMgr.openConnection());
+            dao = new UserSqlQueryDao(ConnectionMgr.openConnection(),false);
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -211,7 +211,7 @@ public class UserLogic {
      */
     public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
         try {
-            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
             UserRole ur = new UserRole(userId, roleId);
             roleDao.insert(ur);
         } catch (Exception e) {
@@ -233,8 +233,8 @@ public class UserLogic {
         }
 
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection());
-            DAO<Role> roleDao = new RoleSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            DAO<Role> roleDao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
             // get all roles with the given user id
             Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
@@ -266,7 +266,7 @@ public class UserLogic {
      */
     public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(new SearchParameter(SearchFields.USERID, userId));
@@ -298,7 +298,7 @@ public class UserLogic {
         }
 
         try {
-            DAO<Token> tokenDao = new TokenSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<Token> tokenDao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
             // get all active tokens with the given user id
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();

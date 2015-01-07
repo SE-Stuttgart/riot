@@ -17,8 +17,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 public class RoleSqlQueryDAO extends SqlQueryDAO<Role> {
 
 
-    public RoleSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public RoleSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
 
     @Override

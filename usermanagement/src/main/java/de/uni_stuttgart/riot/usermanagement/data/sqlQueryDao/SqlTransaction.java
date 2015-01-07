@@ -30,27 +30,27 @@ public class SqlTransaction {
     }
 
     public DAO<UMUser> getUserDao() throws SQLException {
-        return new UserSqlQueryDao(connection);
+        return new UserSqlQueryDao(connection,true);
     }
 
     public DAO<Token> getTokenDao() throws SQLException {
-        return new TokenSqlQueryDAO(connection);
+        return new TokenSqlQueryDAO(connection,true);
     }
 
     public DAO<Role> getRoleDao() throws SQLException {
-        return new RoleSqlQueryDAO(connection);
+        return new RoleSqlQueryDAO(connection,true);
     }
 
     public DAO<RolePermission> getRolePermissionDao() throws SQLException {
-        return new RolePermissionSqlQueryDAO(connection);
+        return new RolePermissionSqlQueryDAO(connection,true);
     }
 
     public DAO<Permission> getPermissionDao() throws SQLException {
-        return new PermissionSqlQueryDAO(connection);
+        return new PermissionSqlQueryDAO(connection,true);
     }
 
     public DAO<TokenRole> getTokenRoleDao() throws SQLException {
-        return new TokenRoleSqlQueryDAO(connection);
+        return new TokenRoleSqlQueryDAO(connection,true);
     }
 
     public void commit() throws SQLException {

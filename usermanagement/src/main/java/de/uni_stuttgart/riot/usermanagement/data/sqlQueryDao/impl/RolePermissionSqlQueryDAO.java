@@ -17,8 +17,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 public class RolePermissionSqlQueryDAO extends SqlQueryDAO<RolePermission> {
 
 
-    public RolePermissionSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public RolePermissionSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
     
     @Override

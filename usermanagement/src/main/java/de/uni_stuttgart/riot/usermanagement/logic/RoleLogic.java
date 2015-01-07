@@ -44,7 +44,7 @@ public class RoleLogic {
      */
     public RoleLogic() {
         try {
-            dao = new RoleSqlQueryDAO(ConnectionMgr.openConnection());
+            dao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -148,8 +148,8 @@ public class RoleLogic {
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
 
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection());
-            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
             // find all permissions belonging to a role
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
@@ -185,7 +185,7 @@ public class RoleLogic {
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
             RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.insert(rp);
         } catch (Exception e) {
@@ -208,7 +208,7 @@ public class RoleLogic {
                 throw new RemovePermissionFromRoleException("Role id and permission id can not be null");
             }
 
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection());
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
 
             // get the permission to remove
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();

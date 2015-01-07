@@ -31,7 +31,7 @@ public class PermissionLogic {
      */
     public PermissionLogic() {
         try {
-            dao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection());
+            dao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (SQLException e) {

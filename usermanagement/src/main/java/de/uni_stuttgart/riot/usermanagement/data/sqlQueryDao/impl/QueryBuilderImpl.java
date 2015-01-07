@@ -15,7 +15,7 @@ public class QueryBuilderImpl implements QueryBuilder{
 
 	@Override
 	public Query buildDelete(String tableName, Storable t, Connection connection) throws SQLException {
-		return connection.createQuery(SQLQueryUtil.buildDelete(tableName)).bind(t);
+		return connection.createQuery(SQLQueryUtil.buildDelete(tableName)).addParameter("id", t.getId());
 	}
 
 	@Override
@@ -35,7 +35,13 @@ public class QueryBuilderImpl implements QueryBuilder{
 
 	@Override
 	public Query buildFindBySearchParam(String tableName, Collection<SearchParameter> params, Connection connection, boolean or) throws SQLException {
-		return connection.createQuery(SQLQueryUtil.buildFindByParam(params, or, tableName));
+		Query q = connection.createQuery(SQLQueryUtil.buildFindByParam(params, or, tableName));
+		int x = 0;
+		for (SearchParameter searchParameter : params) {
+			q.addParameter(searchParameter.getValueName()+x, searchParameter.getValue());
+			x = x + 1;
+		}
+		return q;
 	}
 
 	@Override

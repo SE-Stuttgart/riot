@@ -17,8 +17,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 public class TokenSqlQueryDAO extends SqlQueryDAO<Token> {
 
 
-    public TokenSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public TokenSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
     
 

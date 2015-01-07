@@ -16,8 +16,8 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 public class UserSqlQueryDao extends SqlQueryDAO<UMUser> {
 
 
-    public UserSqlQueryDao(Connection connection) throws SQLException {
-        super(connection);
+    public UserSqlQueryDao(Connection connection, boolean transaction) throws SQLException {
+        super(connection,transaction);
     }
 
 	@Override

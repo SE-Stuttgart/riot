@@ -9,72 +9,72 @@ roles;
 
 CREATE TABLE users 
 (
-userID SERIAL NOT NULL,
+id SERIAL NOT NULL,
 username varchar(50) unique NOT NULL,
-password varchar(256) NOT NULL,
-password_salt varchar(256) NOT NULL,
-hash_iterations int NOT NULL,
+hashedPassword varchar(256) NOT NULL,
+passwordSalt varchar(256) NOT NULL,
+hashIterations int NOT NULL,
 loginAttemptCount int NOT NULL,
-PRIMARY KEY (userID)
+PRIMARY KEY (id)
 );
 
 CREATE TABLE tokens 
 (
-tokenID SERIAL,
+id SERIAL,
 userID bigint unsigned NOT NULL,
 tokenValue varchar(100) unique NOT NULL,
 refreshtokenValue varchar(100) unique  NOT NULL,
 valid boolean NOT NULL,
-issueDate timestamp NOT NULL default CURRENT_TIMESTAMP,
-expirationDate timestamp NOT NULL,
-PRIMARY KEY (tokenID),
-FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE
+issueTime timestamp NOT NULL default CURRENT_TIMESTAMP,
+expirationTime timestamp NOT NULL,
+PRIMARY KEY (id),
+FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE permissions
 (
-permissionID SERIAL,
+id SERIAL,
 permissionValue varchar(50) NOT NULL,
-PRIMARY KEY (permissionID)
+PRIMARY KEY (id)
 );
 
 CREATE TABLE roles 
 (
-roleID SERIAL,
+id SERIAL,
 roleName varchar(50) NOT NULL,
-PRIMARY KEY (roleID)
+PRIMARY KEY (id)
 );
 
 CREATE TABLE users_roles 
 (
-userRoleID SERIAL,
+id SERIAL,
 userID bigint unsigned NOT NULL,
 roleID bigint unsigned NOT NULL,
-FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
-FOREIGN KEY (userID) REFERENCES users(userID) ON DELETE CASCADE,
-PRIMARY KEY (userRoleID),
+FOREIGN KEY (roleID) REFERENCES roles(id) ON DELETE CASCADE,
+FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE,
+PRIMARY KEY (id),
 UNIQUE(userID, roleID)
 );
 
 CREATE TABLE tokens_roles 
 (
-tokenRoleID SERIAL,
+id SERIAL,
 tokenID bigint unsigned NOT NULL,
 roleID bigint unsigned NOT NULL,
-FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
-FOREIGN KEY (tokenID) REFERENCES tokens(tokenID) ON DELETE CASCADE,
-PRIMARY KEY (tokenRoleID),
+FOREIGN KEY (roleID) REFERENCES roles(id) ON DELETE CASCADE,
+FOREIGN KEY (tokenID) REFERENCES tokens(id) ON DELETE CASCADE,
+PRIMARY KEY (id),
 UNIQUE (tokenID, roleID)
 );
 
 CREATE TABLE roles_permissions 
 (
-rolePermissionID SERIAL,
+id SERIAL,
 permissionID bigint unsigned NOT NULL,
 roleID bigint unsigned NOT NULL,
-FOREIGN KEY (roleID) REFERENCES roles(roleID) ON DELETE CASCADE,
-FOREIGN KEY (permissionID) REFERENCES permissions(permissionID) ON DELETE CASCADE,
-PRIMARY KEY (rolePermissionID),
+FOREIGN KEY (roleID) REFERENCES roles(id) ON DELETE CASCADE,
+FOREIGN KEY (permissionID) REFERENCES permissions(id) ON DELETE CASCADE,
+PRIMARY KEY (id),
 UNIQUE (permissionID, roleID) 
 );
 

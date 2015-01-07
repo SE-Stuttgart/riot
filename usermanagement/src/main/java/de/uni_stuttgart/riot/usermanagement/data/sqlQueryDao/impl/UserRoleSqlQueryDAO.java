@@ -19,8 +19,8 @@ public class UserRoleSqlQueryDAO extends SqlQueryDAO<UserRole> {
      * @param ds The datasource to be used by the dao
      * @throws SQLException 
      */
-    public UserRoleSqlQueryDAO(Connection connection) throws SQLException {
-        super(connection);
+    public UserRoleSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+        super(connection, transaction);
     }
 
 	@Override
