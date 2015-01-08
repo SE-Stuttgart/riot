@@ -54,7 +54,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     login: function(username, password) {
       var deferred = $q.defer();
 
-      $http.put('http://localhost:8080/riot/api/v1/auth/login', {
+      $http.put('https://localhost:8181/riot/api/v1/auth/login', {
           username: username,
           password: password
         })
@@ -87,7 +87,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     logout: function() {
       var deferred = $q.defer();
 
-      $http.put('http://localhost:8080/riot/api/v1/auth/logout', {})
+      $http.put('https://localhost:8181/riot/api/v1/auth/logout', {})
         .success(function(data, status) {
           service.reset();
 
@@ -109,7 +109,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     refresh: function() {
       var deferred = $q.defer();
 
-      $http.put('http://localhost:8080/riot/api/v1/auth/refresh', {
+      $http.put('https://localhost:8181/riot/api/v1/auth/refresh', {
           refreshToken: refreshToken
         })
         .success(function(data, status) {

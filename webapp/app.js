@@ -19,8 +19,8 @@ angular.module('riot').run(function($rootScope, $state, Auth) {
       }
       //check permissions
       else if (premissions) {
-        for (var i = 0; i < roles.length; i++) {
-          grant = grant || $rootScope.hasPermission(roles[i]);
+        for (var j = 0; j < roles.length; j++) {
+          grant = grant || $rootScope.hasPermission(roles[j]);
         }
       }
       //check authentication

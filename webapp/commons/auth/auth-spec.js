@@ -1,6 +1,6 @@
 describe('Auth', function() {
 
-  var urlPrefix = 'http://localhost:8080/riot/api/v1';
+  var urlPrefix = 'https://localhost:8181/riot/api/v1';
 
   beforeEach(module('riot'));
 
