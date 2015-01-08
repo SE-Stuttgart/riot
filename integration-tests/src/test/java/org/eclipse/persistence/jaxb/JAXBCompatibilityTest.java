@@ -6,27 +6,27 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.LoginRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.RefreshRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.PermissionResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.TokenResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 /**
  * This test ensures that the entities used for the REST interface are compatible with the JAXB requirements. If they are not, Jersey will
  * only return a 500 Internal Server Error without any meaningful error message in the log file. This test is placed in the JAXB package and
  * uses internal JAXB APIs to directly validate the classes with the EclipseLink JAXB implementation, which is used by GlassFish internally.
- * 
+ *
  * @author Philipp Keck
  */
 public class JAXBCompatibilityTest {
 
     /**
      * Tests the given classes by instantiating a JAXBContext for them.
-     * 
+     *
      * @param classesToBeBound
      *            The classes.
      * @return The context, if successful (can be ignored).
