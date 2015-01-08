@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
@@ -23,7 +23,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.Refre
 import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 /**
- * 
+ *
  * @author Niklas Schnabel
  *
  */

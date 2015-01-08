@@ -8,6 +8,8 @@ import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.usermanagement.data.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
@@ -15,8 +17,6 @@ import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;

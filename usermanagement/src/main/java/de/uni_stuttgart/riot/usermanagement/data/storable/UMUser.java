@@ -3,16 +3,17 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
 import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
 
 /**
  * The User class holds all basic information regarding to a user for the user management.
- * 
+ *
  * @author Jonas Tangermann
  *
  */
-public class UMUser extends User implements Storable {
+public class UMUser extends User {
 
     /** The hashed password. */
     private String hashedPassword;
@@ -137,26 +138,14 @@ public class UMUser extends User implements Storable {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see de.uni_stuttgart.riot.usermanagement.data.storable.Storable#getSearchParam()
-     */
-    @Override
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> result = new LinkedList<SearchParameter>();
-        result.add(new SearchParameter(SearchFields.USERNAME, this.getUsername()));
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("User [id=");
-        builder.append(id);
+        builder.append(this.getId());
         builder.append(", username=");
         builder.append(username);
         builder.append(", hashedPassword=");
@@ -173,19 +162,32 @@ public class UMUser extends User implements Storable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof UMUser) {
-            UMUser u = (UMUser) o;
-            return this.id == u.getId() && this.username.equals(u.username) && this.hashedPassword.equals(u.hashedPassword) && //
-                    this.passwordSalt.equals(u.passwordSalt) && this.hashIterations == u.hashIterations && this.loginAttemptCount == u.loginAttemptCount;
-        } else {
-            return false;
-        }
-    }
+    public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UMUser other = (UMUser) obj;
+		if (hashIterations != other.hashIterations)
+			return false;
+		if (hashedPassword == null) {
+			if (other.hashedPassword != null)
+				return false;
+		} else if (!hashedPassword.equals(other.hashedPassword))
+			return false;
+		if (passwordSalt == null) {
+			if (other.passwordSalt != null)
+				return false;
+		} else if (!passwordSalt.equals(other.passwordSalt))
+			return false;
+		return true;
+	}
 
     /**
      * Gets the hashed password.

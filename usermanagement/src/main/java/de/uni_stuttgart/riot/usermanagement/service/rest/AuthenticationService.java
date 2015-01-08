@@ -1,5 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -9,16 +12,23 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.LoginRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.RefreshRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.AuthenticationResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
 
 /**
  * The authentication service will handle the authentication of a user based on a username + password and provide access tokens for further
@@ -47,7 +57,8 @@ public class AuthenticationService {
     public AuthenticationResponse login(LoginRequest request) throws LoginException {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
-            UserResponse user = new UserResponse(UserManagementFacade.getInstance().getUser(token));
+            User u = UserManagementFacade.getInstance().getUser(token);
+            UserResponse user = new UserResponse(u,this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new LoginException(e.getMessage(), e);
@@ -69,7 +80,8 @@ public class AuthenticationService {
     public AuthenticationResponse refresh(RefreshRequest request) throws RefreshException {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
-            UserResponse user = new UserResponse(UserManagementFacade.getInstance().getUser(token));
+            User u =UserManagementFacade.getInstance().getUser(token);
+            UserResponse user = new UserResponse(u,this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new RefreshException(e.getMessage(), e);
@@ -91,5 +103,25 @@ public class AuthenticationService {
         UserManagementFacade.getInstance().logout(accessToken);
 
         return Response.ok().build();
+    }
+    
+    /*************/
+    //FIXME
+    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
+    	Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
+    	Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
+    	for (Role role : roles) {
+			roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
+		}
+    	return roleResponses;
+    }
+    
+    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException{
+    	Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
+    	Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+    	for (Permission permission : permissions) {
+			permissionResponses.add(new PermissionResponse(permission));
+		}
+    	return permissionResponses;
     }
 }

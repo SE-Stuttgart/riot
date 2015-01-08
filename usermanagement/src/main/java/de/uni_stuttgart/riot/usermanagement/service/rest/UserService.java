@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -19,14 +21,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
-import de.uni_stuttgart.riot.usermanagement.data.storable.User;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.TokenResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
 
 /**
  * The users service will handle any access (create, read, update, delete) to the users.
@@ -55,8 +62,16 @@ public class UserService {
     @GET
     @RequiresAuthentication
     public Collection<UserResponse> getUsers() throws UserManagementException {
-        // TODO limit returned users
-        return facade.getAllUsers().stream().map(UserResponse::new).collect(Collectors.toList());
+    	 // TODO limit returned users
+        Collection<User> users = facade.getAllUsers();
+
+        Collection<UserResponse> userResponse = new LinkedList<UserResponse>();
+        for (Iterator<User> it = users.iterator(); it.hasNext();) {
+            User u = it.next();
+        	userResponse.add(new UserResponse(u,this.getUserRoles(u)));
+        }
+
+        return userResponse;
     }
 
     /**
@@ -73,7 +88,8 @@ public class UserService {
     @Path("/{userID}")
     @RequiresAuthentication
     public UserResponse getUser(@PathParam("userID") Long userID) throws UserManagementException {
-        return new UserResponse(facade.getUser(userID));
+        User u = facade.getUser(userID);
+    	return new UserResponse(u,this.getUserRoles(u));
     }
 
     /**
@@ -89,7 +105,8 @@ public class UserService {
     public UserResponse getUser() throws UserManagementException {
         String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
         Token token = facade.getToken(accessToken);
-        return new UserResponse(facade.getUser(token));
+        User u = facade.getUser(token);
+        return new UserResponse(u,this.getUserRoles(u));
     }
 
     /**
@@ -106,7 +123,7 @@ public class UserService {
     @RequiresAuthentication
     public UserResponse addUser(UserRequest userRequest) throws UserManagementException {
         User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
-        return new UserResponse(user);
+        return new UserResponse(user,this.getUserRoles(user));
     }
 
     /**
@@ -134,7 +151,7 @@ public class UserService {
         facade.updateUser(user, userRequest.getPassword());
 
         // the user contains after it is updated all the information it is updated with
-        return new UserResponse(user);
+        return new UserResponse(user,this.getUserRoles(user));
     }
 
     /**
@@ -170,8 +187,16 @@ public class UserService {
     @Path("/{userID}/roles")
     @RequiresAuthentication
     public Collection<RoleResponse> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
-        // TODO limit returned roles
-        return facade.getAllRolesFromUser(userID).stream().map(RoleResponse::new).collect(Collectors.toList());
+    	// TODO limit returned roles
+        Collection<Role> roles = facade.getAllRolesFromUser(userID);
+
+        Collection<RoleResponse> roleResponse = new LinkedList<RoleResponse>();
+        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {            
+            Role r = it.next();
+            roleResponse.add(new RoleResponse(r,this.getRolePermissions(r)));
+        }
+
+        return roleResponse;
     }
 
     /**
@@ -232,6 +257,24 @@ public class UserService {
     public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
+    }
+
+    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
+    	Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
+    	Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
+    	for (Role role : roles) {
+			roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
+		}
+    	return roleResponses;
+    }
+    
+    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException{
+    	Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
+    	Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+    	for (Permission permission : permissions) {
+			permissionResponses.add(new PermissionResponse(permission));
+		}
+    	return permissionResponses;
     }
 
 }

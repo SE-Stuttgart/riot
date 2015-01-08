@@ -15,11 +15,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.PermissionResponse;
 
 /**
  * The permissions service will handle any access (create, read, update, delete) to the permissions.
@@ -62,8 +62,8 @@ public class PermissionService {
     @GET
     @Path("/{permissionID}")
     @RequiresAuthentication
-    public Permission getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
-        return facade.getPermission(permissionID);
+    public PermissionResponse getPermission(@PathParam("permissionID") Long permissionID) throws UserManagementException {
+        return new PermissionResponse(facade.getPermission(permissionID));
     }
 
     /**
