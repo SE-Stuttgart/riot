@@ -14,19 +14,140 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
+import android.provider.CalendarContract.Calendars;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.provider.CalendarContract.Calendars;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
-import java.util.regex.Pattern;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+class MySSLSocketFactory extends SSLSocketFactory {
+    SSLContext sslContext = SSLContext.getInstance("TLS");
+
+    public MySSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+        super(truststore);
+
+        TrustManager tm = new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            }
+
+            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            }
+
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+        };
+
+        sslContext.init(null, new TrustManager[] { tm }, null);
+    }
+
+    @Override
+    public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
+        return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
+    }
+
+    @Override
+    public Socket createSocket() throws IOException {
+        return sslContext.getSocketFactory().createSocket();
+    }
+}
+
+class MyCalendarEventEntry
+{
+    MyCalendarEventEntry()
+    {}
+
+    MyCalendarEventEntry(Cursor eventCursor)
+    {
+        id = eventCursor.getLong(0);
+        title = eventCursor.getString(1);
+        begin = new java.util.Date(eventCursor.getLong(2));
+        end = new java.util.Date(eventCursor.getLong(3));
+        desc = eventCursor.getString(4);
+        loc = eventCursor.getString(5);
+        all_day = eventCursor.getInt(6);
+        dirty = eventCursor.getInt(7);
+        sync_id = eventCursor.getInt(8);
+        deleted = eventCursor.getInt(9)==1;
+        System.out.println("Title:"+title+" Begin:"+begin+" - "+end+" Desc: "+desc+" dirty:"+dirty+" SID:"+sync_id+" ["+id+"]");
+  }
+
+    long id;
+    String title;
+    java.util.Date begin;
+    java.util.Date end;
+    String desc;
+    String loc;
+    int all_day;
+    int dirty;
+    long sync_id;
+    boolean deleted;
+
+    JSONObject getJSON()
+    {
+        JSONObject entry = new JSONObject();
+        try {
+            entry.put("title", title);
+            entry.put("location", loc);
+            entry.put("description", desc);
+            entry.put("startTime", begin);
+            entry.put("endTime", end);
+            entry.put("allDayEvent", all_day);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return entry;
+    }
+}
 
 /**
  * FIXME Provide description FIXME Clean up this class and fix checkstyle errors.
  * CHECKSTYLE:OFF
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final  String TAG = "SyncAdapter";
+    private static final String TAG = "SyncAdapter";
+    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot";
     private boolean bool_added = false;
     private String my_calendar_id = new String();
 
@@ -35,34 +156,212 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.v(TAG, "SyncAdapter created");
     }
 
+    public void CreateEventOnServer(ContentResolver contentResolver, MyCalendarEventEntry entry)
+    {
+        entry.sync_id = DoCreateEventOnServer(entry.getJSON());
+        if(entry.sync_id > 0)
+        {
+            //TODO mark undirty and set id
+            updateEventSyncID(contentResolver, entry.id, entry.sync_id);
+            Log.v(TAG, "Event ["+entry.id+"] synced with: "+entry.sync_id);
+        }
+    }
+
+    public int DoCreateEventOnServer(JSONObject entry) {
+
+        HttpClient httpClient = createHttpClient();
+
+        HttpPost httpReq = new HttpPost(API_URL+"/api/v1/calendar/");
+        httpReq.setHeader("Content-Type", "application/json");
+        HttpResponse response = null;
+        String result = null;
+        try {
+            StringEntity entity = new StringEntity(entry.toString());
+            httpReq.setEntity(entity);
+            response = httpClient.execute(httpReq);
+            HttpEntity entity1 = response.getEntity();
+            result = EntityUtils.toString(entity1);
+
+            Log.v(TAG, result);
+            if(response.getStatusLine().getStatusCode() == 201) {
+                return (new JSONObject(result)).getInt("id");
+            }
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+    public void UpdateEventOnServer(ContentResolver contentResolver, MyCalendarEventEntry entry)
+    {
+        if(DoUpdateEventOnServer(entry))
+        {
+            //TODO mark undirty and set id
+            updateEventSyncID(contentResolver, entry.id, entry.sync_id);
+            Log.v(TAG, "Event ["+entry.id+"] synced with: "+entry.sync_id);
+        }
+    }
+
+    boolean DoUpdateEventOnServer(MyCalendarEventEntry entry) {
+        HttpClient httpClient = createHttpClient();
+
+        try {
+            HttpPut httpReq = new HttpPut(API_URL+"/api/v1/calendar/"+entry.sync_id);
+            httpReq.setHeader("Content-Type", "application/json");
+            HttpResponse response;
+
+            StringEntity entity = new StringEntity(entry.getJSON().toString());
+            httpReq.setEntity(entity);
+            response = httpClient.execute(httpReq);
+
+            Log.v(TAG, response.toString());
+            if(response.getStatusLine().getStatusCode() == 204) {
+                return true;
+            }
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void DeleteEventOnServer(ContentResolver contentResolver, MyCalendarEventEntry entry)
+    {
+        if(DoDeleteEventOnServer(entry))
+        {
+            //TODO mark undirty and set id
+            updateEventSyncID(contentResolver, entry.id, entry.sync_id);
+            Log.v(TAG, "Event ["+entry.id+"] deleted ("+entry.sync_id+")");
+        }
+    }
+
+    boolean DoDeleteEventOnServer(MyCalendarEventEntry entry) {
+        HttpClient httpClient = createHttpClient();
+
+        try {
+            HttpDelete httpReq = new HttpDelete(API_URL+"/api/v1/calendar/"+entry.sync_id);
+            httpReq.setHeader("Content-Type", "application/json");
+            HttpResponse response;
+
+            response = httpClient.execute(httpReq);
+
+            Log.v(TAG, response.toString());
+            if(response.getStatusLine().getStatusCode() == 204) {
+                return true;
+            }
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public JSONArray ReadEventsFromServer()
+    {
+        JSONArray data = null;
+        HttpClient httpClient = createHttpClient();
+
+        HttpGet httpReq = new HttpGet(API_URL+"/api/v1/calendar/");
+        httpReq.setHeader("Content-Type", "application/json");
+        HttpResponse response = null;
+        String result = null;
+        try {
+            response = httpClient.execute(httpReq);
+            HttpEntity entity1 = response.getEntity();
+            result = EntityUtils.toString(entity1);
+            data = new JSONArray(result);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //return result;
+        Log.v(TAG, data.toString());
+        return data;
+    }
+
+    public HttpClient createHttpClient() {
+        try {
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(null, null);
+
+            SSLSocketFactory sf = new MySSLSocketFactory(trustStore);
+            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+            HttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            registry.register(new Scheme("https", sf, 443));
+
+            ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+            return new DefaultHttpClient(ccm, params);
+        } catch (Exception e) {
+            return new DefaultHttpClient();
+        }
+    }
+
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Performing sync for authority " + authority);
+        syncCalendar(getContext().getContentResolver());
 
-        //TODO
-        readCalendar(getContext().getContentResolver());
+//      TODO need to use an other lib!
+//        UserManagementClient cl = new UserManagementClient(URL, "htc");
+//        cl.login("Yoda","YodaPW");
+//        Client client = ClientBuilder.newClient();
+//        cl.get(client.target("api/v1/calendar/"), "");
 
     }
 
-    public static void readCalendar(ContentResolver contentResolver) {
-        Cursor cursor;
 
-        //ContentResolver contentResolver = context.getContentResolver();
-
+    HashSet<String> getCalendarIds(ContentResolver contentResolver)
+    {
         // Fetch a list of all calendars synced with the device, their display names and whether the
-
-        cursor = contentResolver.query(Calendars.CONTENT_URI,
+        Cursor cursor = contentResolver.query(Calendars.CONTENT_URI,
                 (new String[] { Calendars._ID , Calendars.NAME, Calendars.ACCOUNT_TYPE, Calendars.ACCOUNT_NAME}), null, null, null);
 
         HashSet<String> calendarIds = new HashSet<String>();
-
         try
         {
-            System.out.println("Count="+cursor.getCount());
+            System.out.println("Found #"+cursor.getCount()+" calendars");
             if(cursor.getCount() > 0)
             {
-                System.out.println("the control is just inside of the cursor.count loop");
                 while (cursor.moveToNext()) {
 
                     String _id = cursor.getString(0);
@@ -83,152 +382,81 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         {
             e.printStackTrace();
         }
+        cursor.close();
+        return calendarIds;
+    }
 
+    Cursor getEvents(ContentResolver contentResolver, long calendarId)
+    {
+        Uri url = CalendarContract.Events.CONTENT_URI.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(Calendars.ACCOUNT_NAME,RIOTAccount.AUTHORITY)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, RIOTAccount.ACCOUNT_TYPE)
+                .build();
+
+        Cursor eventCursor = contentResolver.query(url,
+                new String[]  {CalendarContract.Events._ID, CalendarContract.Events.TITLE, CalendarContract.Events.DTSTART, CalendarContract.Events.DTEND, CalendarContract.Events.DESCRIPTION, CalendarContract.Events.EVENT_LOCATION, CalendarContract.Events.ALL_DAY, CalendarContract.Events.DIRTY, CalendarContract.Events._SYNC_ID, CalendarContract.Events.DELETED}, //projection
+                CalendarContract.Events.CALENDAR_ID + " = ?", //selection
+                new String[] {Long.toString(calendarId)}, //selection args
+                CalendarContract.Events.DTSTART+" ASC");
+        return eventCursor;
+    }
+
+    public boolean updateEventSyncID(ContentResolver contentResolver, long event_id, long sync_id)
+    {
+        ContentValues cv = new ContentValues();
+        cv.put(CalendarContract.Events._SYNC_ID, sync_id);
+        cv.put(CalendarContract.Events.DIRTY, 0);
+        //cv.put(CalendarContract.Events.TITLE, "fuuuu");
+        String cs[] = new String[]{Long.toString(event_id)};
+
+        Uri calendarsURI = CalendarContract.Events.CONTENT_URI
+                .buildUpon()
+                .appendQueryParameter(Calendars.ACCOUNT_NAME,RIOTAccount.AUTHORITY)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, RIOTAccount.ACCOUNT_TYPE)
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .build();
+
+        int ret = contentResolver.update(calendarsURI, cv, CalendarContract.Events._ID + " = ? ", cs);
+
+        Log.v(TAG, "Event id("+event_id+") updated sid:"+sync_id+" done:"+ret);
+        return ret>=1;
+    }
+
+    public void syncCalendar(ContentResolver contentResolver)
+    {
+        //JSONArray online_calendars = ReadEventsFromServer();
 
         // For each calendar, display all the events from the previous week to the end of next week.
-        for (String id : calendarIds) {
-            Uri.Builder builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon();
-            //Uri.Builder builder = Uri.parse("content://com.android.calendar/calendars").buildUpon();
-            long now = new java.util.Date().getTime();
+        for (String id : getCalendarIds(contentResolver) ) {
+            Log.d(TAG,"Get all events from calendar "+id);
 
-            ContentUris.appendId(builder, now - DateUtils.DAY_IN_MILLIS * 10000);
-            ContentUris.appendId(builder, now + DateUtils.DAY_IN_MILLIS * 10000);
-
-            Cursor eventCursor = contentResolver.query(builder.build(),
-                    new String[]  {CalendarContract.Events.TITLE, CalendarContract.Events.DTSTART, CalendarContract.Events.DTEND, CalendarContract.Events.DESCRIPTION}, //projection
-                    CalendarContract.Events.CALENDAR_ID + " = ?", //selection
-                    new String[] {id}, //selection args
-                    CalendarContract.Events.DTSTART+" ASC");
+            Cursor eventCursor = getEvents(contentResolver, Long.valueOf(id));
 
             System.out.println("eventCursor count="+eventCursor.getCount());
-            if(eventCursor.getCount()>0)
+            for(eventCursor.moveToFirst(); !eventCursor.isAfterLast() ; eventCursor.moveToNext())
             {
+                MyCalendarEventEntry evt = new MyCalendarEventEntry(eventCursor);
 
-                if(eventCursor.moveToFirst())
+                if(evt.sync_id == 0 && evt.dirty == 1) {
+                    Log.v(TAG, "Create on Server");
+                    CreateEventOnServer(contentResolver, evt);
+                }
+                else if(evt.sync_id > 0 && evt.dirty == 1)
                 {
-                    do
-                    {
-                        Object mbeg_date,beg_date,beg_time,end_date,end_time;
-
-                        final String title = eventCursor.getString(0);
-                        final java.util.Date begin = new java.util.Date(eventCursor.getLong(1));
-                        final java.util.Date end = new java.util.Date(eventCursor.getLong(2));
-                        final String desc = eventCursor.getString(3);
-
-            /*  System.out.println("Title: " + title + " Begin: " + begin + " End: " + end +
-                        " All Day: " + allDay);
-            */
-                        System.out.println("Title:"+title);
-                        System.out.println("Begin:"+begin);
-                        System.out.println("End:"+end);
-                        System.out.println("Desc:"+desc);
-
-                /* the calendar control metting-begin events Respose  sub-string (starts....hare) */
-/*
-                        Pattern p = Pattern.compile(" ");
-                        String[] items = p.split(begin.toString());
-                        String scalendar_metting_beginday,scalendar_metting_beginmonth,scalendar_metting_beginyear,scalendar_metting_begindate,scalendar_metting_begintime,scalendar_metting_begingmt;
-
-                        scalendar_metting_beginday = items[0];
-                        scalendar_metting_beginmonth = items[1];
-                        scalendar_metting_begindate = items[2];
-                        scalendar_metting_begintime = items[3];
-                        scalendar_metting_begingmt = items[4];
-                        scalendar_metting_beginyear = items[5];
-
-
-                        String  calendar_metting_beginday = scalendar_metting_beginday;
-                        String  calendar_metting_beginmonth = scalendar_metting_beginmonth.toString().trim();
-
-                        int  calendar_metting_begindate = Integer.parseInt(scalendar_metting_begindate.trim());
-
-                        String calendar_metting_begintime = scalendar_metting_begintime.toString().trim();
-                        String calendar_metting_begingmt = scalendar_metting_begingmt;
-                        int calendar_metting_beginyear = Integer.parseInt(scalendar_metting_beginyear.trim());
-
-
-                        System.out.println("calendar_metting_beginday="+calendar_metting_beginday);
-
-                        System.out.println("calendar_metting_beginmonth ="+calendar_metting_beginmonth);
-
-                        System.out.println("calendar_metting_begindate ="+calendar_metting_begindate);
-
-                        System.out.println("calendar_metting_begintime="+calendar_metting_begintime);
-
-                        System.out.println("calendar_metting_begingmt ="+calendar_metting_begingmt);
-
-                        System.out.println("calendar_metting_beginyear ="+calendar_metting_beginyear);
-
-                      // the calendar control metting-begin events Respose  sub-string (starts....ends)
-
-                    // the calendar control metting-end events Respose  sub-string (starts....hare)
-
-                        Pattern p1 = Pattern.compile(" ");
-                        String[] enditems = p.split(end.toString());
-                        String scalendar_metting_endday,scalendar_metting_endmonth,scalendar_metting_endyear,scalendar_metting_enddate,scalendar_metting_endtime,scalendar_metting_endgmt;
-
-                        scalendar_metting_endday = enditems[0];
-                        scalendar_metting_endmonth = enditems[1];
-                        scalendar_metting_enddate = enditems[2];
-                        scalendar_metting_endtime = enditems[3];
-                        scalendar_metting_endgmt = enditems[4];
-                        scalendar_metting_endyear = enditems[5];
-
-
-                        String  calendar_metting_endday = scalendar_metting_endday;
-                        String  calendar_metting_endmonth = scalendar_metting_endmonth.toString().trim();
-
-                        int  calendar_metting_enddate = Integer.parseInt(scalendar_metting_enddate.trim());
-
-                        String calendar_metting_endtime = scalendar_metting_endtime.toString().trim();
-                        String calendar_metting_endgmt = scalendar_metting_endgmt;
-                        int calendar_metting_endyear = Integer.parseInt(scalendar_metting_endyear.trim());
-
-
-                        System.out.println("calendar_metting_beginday="+calendar_metting_endday);
-
-                        System.out.println("calendar_metting_beginmonth ="+calendar_metting_endmonth);
-
-                        System.out.println("calendar_metting_begindate ="+calendar_metting_enddate);
-
-                        System.out.println("calendar_metting_begintime="+calendar_metting_endtime);
-
-                        System.out.println("calendar_metting_begingmt ="+calendar_metting_endgmt);
-
-                        System.out.println("calendar_metting_beginyear ="+calendar_metting_endyear);
-
-                      // the calendar control metting-end events Respose  sub-string (starts....ends)
-
-                        System.out.println("only date begin of events="+begin.getDate());
-                        System.out.println("only begin time of events="+begin.getHours() + ":" +begin.getMinutes() + ":" +begin.getSeconds());
-
-                        System.out.println("only date begin of events="+end.getDate());
-                        System.out.println("only begin time of events="+end.getHours() + ":" +end.getMinutes() + ":" +end.getSeconds());
-
-                        beg_date = begin.getDate();
-                        mbeg_date = begin.getDate()+"/"+calendar_metting_beginmonth+"/"+calendar_metting_beginyear;
-                        beg_time = begin.getHours();
-
-                        System.out.println("the vaule of mbeg_date="+mbeg_date.toString().trim());
-                        end_date = end.getDate();
-                        end_time = end.getHours();
-
-
-/*                        CallHandlerUI.metting_begin_date.add(beg_date.toString());
-                        CallHandlerUI.metting_begin_mdate.add(mbeg_date.toString());
-
-                        CallHandlerUI.metting_begin_mtime.add(calendar_metting_begintime.toString());
-
-                        CallHandlerUI.metting_end_date.add(end_date.toString());
-                        CallHandlerUI.metting_end_time.add(end_time.toString());
-                        CallHandlerUI.metting_end_mtime.add(calendar_metting_endtime.toString());
-*/
-
-                    }
-                    while(eventCursor.moveToNext());
+                    Log.v(TAG, "Update on Server");
+                    UpdateEventOnServer(contentResolver, evt);
+                }
+                else if(evt.sync_id > 0 && evt.deleted)
+                {
+                    Log.v(TAG, "Delete on Server");
+                    DeleteEventOnServer(contentResolver, evt);
+                }
+                else
+                {
+                    Log.v(TAG, "Nothing to update");
                 }
             }
-            break;
         }
     }
 

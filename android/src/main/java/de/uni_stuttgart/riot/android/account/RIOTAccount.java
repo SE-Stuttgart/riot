@@ -20,7 +20,7 @@ public class RIOTAccount {
     private static final String TAG = "RIOTAccount";
 
     private static final long SYNC_FREQUENCY = 60 * 60;
-    private static final String ACCOUNT_TYPE = "de.uni_stuttgart.riot.android.account.type";
+    public static final String ACCOUNT_TYPE = "de.uni_stuttgart.riot.android.account.type";
 
     /**
      * Singleton instance holder.
