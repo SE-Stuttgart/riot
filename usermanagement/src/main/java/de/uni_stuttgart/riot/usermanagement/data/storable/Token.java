@@ -2,12 +2,8 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import de.uni_stuttgart.riot.commons.model.Storable;
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 
 /**
  * Holds the Token that is used to authenticate a user and the associated refresh token

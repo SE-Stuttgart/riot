@@ -1,10 +1,12 @@
 package de.uni_stuttgart.riot.commons.model;
 
-import java.util.Collection;
-
 /**
  * 
- * Interface for all classes that should be stored at some point.
+ * Storables are simple data objects which are used for serialization and deserialization in the REST API and for all classes that should be
+ * stored at some point.
+ * 
+ * All storables must have an id field, so that it can be identified uniquely.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -15,11 +17,14 @@ public interface Storable {
      * 
      * @return unique id
      */
-    public long getId();
-    
+    long getId();
+
     /**
-     * Setter for the unique id
+     * Setter for the unique id.
+     * 
+     * @param id
+     *            the new id
      */
-    public void setId(long id);
+    void setId(long id);
 
 }

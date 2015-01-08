@@ -6,8 +6,7 @@ import java.util.LinkedList;
 import org.apache.shiro.authz.permission.WildcardPermission;
 
 import de.uni_stuttgart.riot.commons.model.Storable;
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement. Permissions can be assigned to {@link UMUser}s over
  * {@link Role}s. The permission value is used internaly by the shiro framework. It can be used by calling //FIXME.
@@ -53,21 +52,6 @@ public class Permission extends Storable {
         this.setPermissionValue(permissionValue);
     }
 
-    @Override
-<<<<<<< HEAD:commons/src/main/java/de/uni_stuttgart/riot/commons/rest/usermanagement/data/Permission.java
-    public Collection<SearchParameter> getSearchParam() {
-        LinkedList<SearchParameter> params = new LinkedList<SearchParameter>();
-        params.add(new SearchParameter(SearchFields.PERMISSIONVALUE, this.getPermissionValue()));
-        return params;
-    }
-
-
-=======
-    public long getId() {
-        return this.id;
-    }
-
->>>>>>> Moved db frameworkt to server-commons:usermanagement/src/main/java/de/uni_stuttgart/riot/usermanagement/data/storable/Permission.java
     /**
      * Getter for {@link Permission#permissionValue}.
      * 

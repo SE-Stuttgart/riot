@@ -2,10 +2,26 @@ package de.uni_stuttgart.riot.server.commons.db;
 
 import java.sql.SQLException;
 
+/**
+ * Interface for SQL Transactions.
+ *
+ */
 public interface TransactionInterface {
 
-	public abstract void commit() throws SQLException;
+    /**
+     * commits changes.
+     * 
+     * @throws SQLException
+     *             if operation not possible
+     */
+    void commit() throws SQLException;
 
-	public abstract void rollback() throws SQLException;
+    /**
+     * rolls back changes.
+     * 
+     * @throws SQLException
+     *             if operation not possible
+     */
+    void rollback() throws SQLException;
 
 }

@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.server.commons.db;
 
-
 /**
  * Enum for all searchable fields.
  * 
@@ -49,10 +48,17 @@ public enum SearchFields {
      */
     TOKENID("tokenID"),
 
+    /**
+     * Search field for:.
+     */
     REFRESHTOKEN("refreshtokenValue"),
-
+    /**
+     * Search field for:.
+     */
     TOKENVALID("valid"),
-
+    /**
+     * Search field for:.
+     */
     LOGINATTEMPTCOUNT("loginAttemptCount");
 
     private final String text;

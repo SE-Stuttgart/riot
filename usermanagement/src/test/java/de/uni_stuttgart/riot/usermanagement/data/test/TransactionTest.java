@@ -9,7 +9,6 @@ import javax.naming.NamingException;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.server.commons.db.DAO;
-import de.uni_stuttgart.riot.server.commons.db.TransactionInterface;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.SqlTransaction;
@@ -22,7 +21,7 @@ public class TransactionTest extends DaoTestBase {
     @Test
     public void transactionErrorTest() throws DatasourceFindException, SQLException {
         try {
-         // Open Transaction
+            // Open Transaction
             SqlTransaction transaction = new SqlTransaction();
             // Getting the DAO's
             DAO<UMUser> userDAO = transaction.getUserDao();
@@ -36,7 +35,7 @@ public class TransactionTest extends DaoTestBase {
             // Close Transaction
             transaction.commit();
         } catch (Exception e) {
-            DAO<UMUser> userDAO1 = new UserSqlQueryDao(this.getConn(),false);
+            DAO<UMUser> userDAO1 = new UserSqlQueryDao(this.getConn(), false);
             UMUser yoda1 = userDAO1.findBy(1L);
             assertEquals("Yoda", yoda1.getUsername());
         }
@@ -44,7 +43,7 @@ public class TransactionTest extends DaoTestBase {
 
     @Test
     public void transactionRollbackTest() throws DatasourceUpdateException, SQLException, DatasourceFindException, NamingException {
-    	SqlTransaction transaction = new SqlTransaction();
+        SqlTransaction transaction = new SqlTransaction();
         DAO<UMUser> userDAO = transaction.getUserDao();
         UMUser yoda = userDAO.findBy(1L);
         yoda.setUsername("Yoda2");
@@ -53,7 +52,7 @@ public class TransactionTest extends DaoTestBase {
         vader.setUsername("Vader2");
         userDAO.update(vader);
         transaction.rollback();
-        userDAO = new UserSqlQueryDao(this.getConn(),false);
+        userDAO = new UserSqlQueryDao(this.getConn(), false);
         UMUser yodaF = userDAO.findBy(1L);
         UMUser vaderF = userDAO.findBy(3L);
         assertEquals("Yoda", yodaF.getUsername());
@@ -62,7 +61,7 @@ public class TransactionTest extends DaoTestBase {
 
     @Test
     public void transactionCommitTest() throws DatasourceUpdateException, SQLException, DatasourceFindException, NamingException {
-    	SqlTransaction transaction = new SqlTransaction();
+        SqlTransaction transaction = new SqlTransaction();
         DAO<UMUser> userDAO = transaction.getUserDao();
         UMUser yoda = userDAO.findBy(1L);
         yoda.setUsername("Yoda2");
@@ -71,7 +70,7 @@ public class TransactionTest extends DaoTestBase {
         vader.setUsername("Vader2");
         userDAO.update(vader);
         transaction.commit();
-        userDAO = new UserSqlQueryDao(this.getConn(),false);
+        userDAO = new UserSqlQueryDao(this.getConn(), false);
         UMUser yodaF = userDAO.findBy(1L);
         UMUser vaderF = userDAO.findBy(3L);
         assertEquals("Yoda2", yodaF.getUsername());

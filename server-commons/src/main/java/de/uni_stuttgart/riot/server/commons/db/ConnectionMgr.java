@@ -47,7 +47,7 @@ public abstract class ConnectionMgr {
     }
 
     /**
-     * Opens an sql2o connection and returns it. Use {@link #getSql2o()} if transactions are needed.
+     * Opens an sql2o connection and returns it. Use {@link #beginTransaction()} if transactions are needed.
      * 
      * @return An open sql2o connection
      * @throws NamingException
@@ -59,8 +59,17 @@ public abstract class ConnectionMgr {
         return getSql2o().open();
     }
 
-	public static Connection beginTransaction() throws NamingException, SQLException {
+    /**
+     * Begins a transaction. A commit or rollback must be call to close the transaction.
+     * 
+     * @return connection instance to use in the transaction.
+     * @throws NamingException
+     *             if the resource is not configured in the jee server.
+     * @throws SQLException
+     *             if a DB error occurs
+     */
+    public static Connection beginTransaction() throws NamingException, SQLException {
         return getSql2o().beginTransaction();
-	}
+    }
 
 }

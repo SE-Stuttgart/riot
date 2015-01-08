@@ -1,8 +1,8 @@
 package de.uni_stuttgart.riot.server.commons.db;
 
-
 /**
  * Search parameter, used in {@link DAO#findBy(java.util.Collection, boolean)}.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -13,8 +13,11 @@ public class SearchParameter {
 
     /**
      * Constructor.
-     * @param searchField search attribute
-     * @param value value
+     * 
+     * @param searchField
+     *            search attribute
+     * @param value
+     *            value
      */
     public SearchParameter(SearchFields searchField, Object value) {
         this.value = value;
@@ -23,6 +26,7 @@ public class SearchParameter {
 
     /**
      * Getter for searchField.
+     * 
      * @return the valueName
      */
     public String getValueName() {
@@ -31,6 +35,7 @@ public class SearchParameter {
 
     /**
      * Getter for value.
+     * 
      * @return the value
      */
     public Object getValue() {
@@ -58,20 +63,26 @@ public class SearchParameter {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (!(obj instanceof SearchParameter))
+        }
+        if (!(obj instanceof SearchParameter)) {
             return false;
+        }
         SearchParameter other = (SearchParameter) obj;
-        if (searchField != other.searchField)
+        if (searchField != other.searchField) {
             return false;
+        }
         if (value == null) {
-            if (other.value != null)
+            if (other.value != null) {
                 return false;
-        } else if (!value.equals(other.value))
+            }
+        } else if (!value.equals(other.value)) {
             return false;
+        }
         return true;
     }
 
