@@ -4,6 +4,12 @@ import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
+/**
+ * Wrapper around a {@link Role}.<br>
+ * FIXME These wrapper classes should not be necessary. Instead, use JAXB
+ * annotations to tell, which attributes are to be sent to the client.
+ * CHECKSTYLE:OFF
+ */
 public class RoleResponse {
 
     private Role role;

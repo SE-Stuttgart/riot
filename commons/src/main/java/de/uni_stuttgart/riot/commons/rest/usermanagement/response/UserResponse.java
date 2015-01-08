@@ -4,6 +4,12 @@ import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
+/**
+ * Wrapper around a {@link User}.<br>
+ * FIXME These wrapper classes should not be necessary. Instead, use JAXB
+ * annotations to tell, which attributes are to be sent to the client.
+ * CHECKSTYLE:OFF
+ */
 public class UserResponse {
 
     private User user;
@@ -38,7 +44,7 @@ public class UserResponse {
 	public String toString() {
 		return "UserResponse [user=" + user + ", roles=" + roles + "]";
 	}
-	
-	
+
+
 
 }
