@@ -20,20 +20,24 @@ public class PermissionResponse {
     public PermissionResponse(Permission permission) {
         this.setPermission(permission);
     }
-    
+
+    /**
+     * Constructor.
+     */
     public PermissionResponse() {
-	}
 
-	public Permission getPermission() {
-		return permission;
-	}
+    }
 
-	@Override
-	public String toString() {
-		return "PermissionResponse [permission=" + permission + "]";
-	}
+    public Permission getPermission() {
+        return permission;
+    }
 
-	public void setPermission(Permission permission) {
-		this.permission = permission;
-	}
+    @Override
+    public String toString() {
+        return "PermissionResponse [permission=" + permission + "]";
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
+    }
 }

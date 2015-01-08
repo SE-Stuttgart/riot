@@ -26,7 +26,7 @@ public class User extends Storable {
      *            The name of the user
      */
     public User(String username) {
-    	super(-1L);
+        super(-1L);
         this.username = username;
     }
 
@@ -39,7 +39,7 @@ public class User extends Storable {
      *            The name of the user
      */
     public User(long id, String username) {
-    	super(id);
+        super(id);
         this.username = username;
     }
 
@@ -62,9 +62,9 @@ public class User extends Storable {
         this.username = username;
     }
 
-	@Override
-	public String toString() {
-		return "User [username=" + username + "]";
-	}
+    @Override
+    public String toString() {
+        return "User [username=" + username + "]";
+    }
 
 }

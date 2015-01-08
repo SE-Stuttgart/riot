@@ -27,11 +27,15 @@ public class AuthenticationResponse {
         this.refreshToken = refreshToken;
         this.user = user;
     }
-    
-    public AuthenticationResponse() {
-	}
 
-	public String getAccessToken() {
+    /**
+     * Constructor.
+     */
+    public AuthenticationResponse() {
+
+    }
+
+    public String getAccessToken() {
         return accessToken;
     }
 

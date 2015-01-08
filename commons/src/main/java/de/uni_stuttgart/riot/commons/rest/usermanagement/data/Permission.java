@@ -50,11 +50,11 @@ public class Permission extends Storable {
 
 
     @Override
-	public String toString() {
-		return "Permission [permissionValue=" + permissionValue + "]";
-	}
+    public String toString() {
+        return "Permission [permissionValue=" + permissionValue + "]";
+    }
 
-	/**
+    /**
      * Getter for {@link Permission#permissionValue}.
      * 
      * @return Permission string in {@link WildcardPermission} format.
@@ -64,32 +64,38 @@ public class Permission extends Storable {
     }
 
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((permissionValue == null) ? 0 : permissionValue.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((permissionValue == null) ? 0 : permissionValue.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Permission other = (Permission) obj;
-		if (permissionValue == null) {
-			if (other.permissionValue != null)
-				return false;
-		} else if (!permissionValue.equals(other.permissionValue))
-			return false;
-		return true;
-	}
 
-	/**
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Permission other = (Permission) obj;
+        if (permissionValue == null) {
+            if (other.permissionValue != null) {
+                return false;
+            }
+        } else if (!permissionValue.equals(other.permissionValue)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Setter for {@link Permission#permissionValue}.
      * 
      * @param permissionValue

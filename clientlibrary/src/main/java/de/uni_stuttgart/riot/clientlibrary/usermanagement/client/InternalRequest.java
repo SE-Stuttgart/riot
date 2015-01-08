@@ -9,14 +9,18 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
 /**
- * FIXME Explain what this interface is for?
+ * Interface for encapsulation of put,get,post,delete requests.
+ * (Used in {@link LoginClient} to add equivalent behavior to all requests)
  */
 public interface InternalRequest {
 
     /**
-     * FIXME.
-     * 
-     * @return FIXME
+     * Executes a http request.
+     * @return {@link HttpResponse}
+     * @throws JsonGenerationException .
+     * @throws JsonMappingException .
+     * @throws UnsupportedEncodingException .
+     * @throws IOException .
      */
     HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException;
 

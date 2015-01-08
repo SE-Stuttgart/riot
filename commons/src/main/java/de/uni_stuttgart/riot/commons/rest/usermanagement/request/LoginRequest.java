@@ -10,14 +10,22 @@ public class LoginRequest {
 
     private String username;
     private String password;
-    
+
+    /**
+     * Constructor.
+     * @param username .
+     * @param password .
+     */
     public LoginRequest(String username, String password) {
-    	this.username = username;
-    	this.password = password;
+        this.username = username;
+        this.password = password;
     }
-    
+
+    /**
+     * Default Constructor.
+     */
     public LoginRequest() {
-	}
+    }
 
     public String getUsername() {
         return username;

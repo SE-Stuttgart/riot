@@ -1,36 +1,55 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
+/**
+ * //FIXME.
+ * @author tajoa
+ *
+ */
 public class RequestExceptionWrapper {
-	
-	public int errorCode;
-	public String errorMessage;
-	
-	public RequestExceptionWrapper(int errorCode,String errorMessage) {
-		this.errorCode = errorCode;
-		this.errorMessage = errorMessage;
-	}
-	
-	public String getErrorMessage() {
-		return errorMessage;
-	}
 
-	public void setErrorMessage(String errorMassage) {
-		this.errorMessage = errorMassage;
-	}
+    private int errorCode;
+    private String errorMessage;
 
-	public RequestExceptionWrapper() {
-	}
+    /**
+     * Constructor.
+     * @param errorCode .
+     * @param errorMessage .
+     */
+    public RequestExceptionWrapper(int errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+    
+    /**
+     * Default Constructor.
+     */
+    public RequestExceptionWrapper() {
+    }
 
-	public int getErrorCode() {
-		return errorCode;
-	}
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public void setErrorCode(int errorCode) {
-		this.errorCode = errorCode;
-	}
+    public void setErrorMessage(String errorMassage) {
+        this.errorMessage = errorMassage;
+    }
 
-	public void throwIT() throws RequestException {
-		throw new RequestException(this.getErrorCode() +" : " + this.getErrorMessage());
-	}
+   
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    /**
+     * Encapsulates into {@link RequestException} and thros it.
+     * @throws RequestException .
+     */
+    public void throwIT() throws RequestException {
+        throw new RequestException(this.getErrorCode() + " : " + this.getErrorMessage());
+    }
 
 }

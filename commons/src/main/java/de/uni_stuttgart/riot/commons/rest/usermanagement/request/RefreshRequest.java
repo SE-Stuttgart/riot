@@ -11,14 +11,20 @@ public class RefreshRequest {
 
     private String refreshToken;
 
-    
+    /**
+     * Constructor.
+     * @param refreshToken .
+     */
     public RefreshRequest(String refreshToken) {
-    	this.refreshToken = refreshToken;
-	}
-    
+        this.refreshToken = refreshToken;
+    }
+
+    /**
+     * Constructor.
+     */
     public RefreshRequest() {
-	}
-	
+    }
+
     public String getRefreshToken() {
         return refreshToken;
     }
