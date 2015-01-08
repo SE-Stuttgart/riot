@@ -139,7 +139,11 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(searchParameter);
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), searchParams, SqlQueryDAO.this.connection, false);
-            return stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
+            T result =  stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
+            if (result == null) {
+                throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
+            }
+            return result;
         } catch (Exception e) {
             throw new DatasourceFindException(e);
         }
