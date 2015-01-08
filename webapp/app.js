@@ -25,7 +25,7 @@ angular.module('riot').run(function($rootScope, $state, Auth) {
       }
       //check authentication
       else if (authenticated) {
-        grant = $rootScope.hasCredentials();
+        grant = $rootScope.isAuthenticated();
       }
 
       if (!grant) {

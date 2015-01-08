@@ -5,14 +5,15 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ProfileCtrl', function($scope, User) {
+angular.module('riot').controller('ProfileCtrl', function($scope, User, Restangular) {
   $scope.editUser = User.self().$object;
+
   $scope.save = function() {
     $scope.editUser.put();
-    var obj = User.self();
-    $scope.user = obj.$object;
-    obj.then(function(user) {
-      $scope.editUser = user;
-    });
+    User.self().then(
+      function(u) {
+        $scope.editUser = u;
+        $scope.user = Restangular.copy(u);
+      });
   };
 });

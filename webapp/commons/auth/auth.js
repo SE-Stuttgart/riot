@@ -28,11 +28,8 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     getRefreshToken: function() {
       return refreshToken;
     },
-    hasCredentials: function() {
-      return accessToken !== null;
-    },
     isAuthenticated: function() {
-      return !$.isEmptyObject(user);
+      return accessToken != null && refreshToken != null;
     },
     hasRole: function(role) {
       console.error("TODO check role");
@@ -143,7 +140,6 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   $rootScope.user = service.getUser;
   $rootScope.accessToken = service.getAccessToken;
   $rootScope.refreshToken = service.getRefreshToken;
-  $rootScope.hasCredentials = service.hasCredentials;
   $rootScope.isAuthenticated = service.isAuthenticated;
   $rootScope.hasRole = service.hasRole;
   $rootScope.hasPermission = service.hasPermission;
@@ -153,16 +149,13 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
 
   //init
   storage.load();
-  if (service.hasCredentials()) {
-    User.self().then(
-      function(u) {
-        user = u;
-        $rootScope.$broadcast('auth-login');
-      },
-      function() {
-        service.reset();
-      });
-  }
+  User.self().then(
+    function(u) {
+      user = u;
+    },
+    function() {
+      service.reset();
+    });
 
   return service;
 });
