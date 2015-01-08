@@ -6,11 +6,9 @@
 
     <string-array name="menu_array">
         <item>Home</item>
-        <item>Filter</item>
         <item>RIOT-Konto</item>
         <item>Sprache</item>
-        <item>Zurücksetzen</item>
-        <item>etc.</item>
+        <item>Standortinformationen</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -37,10 +35,19 @@
     <string name="add_event">Event hinzufügen</string>
     <string name="acc_username">Benutzername:</string>
     <string name="acc_password">Passwort:</string>
-    
+
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Zeigt alle Fehler Meldungen an</string>
     <string name="desc_filter_appointment">Zeigt alle Termine an</string>
     <string name="desc_filter_warning">Zeigt alle Warnungen an</string>
+
+    <!-- Fragment location (all entries for language please insert here) -->
+    <string name="location_show">Verfügbare Standorte anzeigen</string>
+    <string name="location_hide">Verfügbare Standorte ausblenden</string>
+    <string name="location_current_position">Aktueller Standort</string>
+    <string name="location_latitude">Breitengrad</string>
+    <string name="location_longitude">Längengrad</string>
+    <string name="location_distance">Entfernung von aktueller Position nach</string>
+    <string name="location_store_distance">Benachrichtigung wird angezeigt in einer Reichweite von</string>
 
 </resources>

@@ -6,11 +6,9 @@
 
     <string-array name="menu_array">
         <item>Home</item>
-        <item>Filter</item>
         <item>RIOT-Account</item>
         <item>Language</item>
-        <item>Reset</item>
-        <item>etc.</item>
+        <item>Location</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -36,10 +34,19 @@
     <string name="add_event">Add Event</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
-    
+
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Show only Error messages if selected</string>
     <string name="desc_filter_appointment">Show only Appointments if selected</string>
     <string name="desc_filter_warning">Show only Warning messages if selected</string>
+
+    <!-- Fragment location (all entries for language please insert here) -->
+    <string name="location_show">Show available Location</string>
+    <string name="location_hide">Hide available Location</string>
+    <string name="location_current_position">Current position</string>
+    <string name="location_latitude">Latitude</string>
+    <string name="location_longitude">Longitude</string>
+    <string name="location_distance">Distance from current position to</string>
+    <string name="location_store_distance">Notify within a range of</string>
 
 </resources>

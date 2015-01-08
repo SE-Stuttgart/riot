@@ -12,6 +12,11 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    
+    <!-- Required to get access to location sensors -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Required for fetching feed data. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -43,6 +48,7 @@
         package. In that case, this element could be omitted here.
         -->
         <service android:name="de.uni_stuttgart.riot.android.account.AccountAuthenticatorService" >
+
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -54,35 +60,42 @@
         </service>
 
         <!-- this is used for the notification if anything is changed concerning our calendar -->
-        <receiver android:name="de.uni_stuttgart.riot.android.account.CalendarChangedReceiver">
+        <receiver android:name="de.uni_stuttgart.riot.android.account.CalendarChangedReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.PROVIDER_CHANGED"/>
-                <data android:scheme="content"/>
-                <data android:host="com.android.calendar"/>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+
+                <data android:scheme="content" />
+                <data android:host="com.android.calendar" />
             </intent-filter>
         </receiver>
 
+        <!--
+        This service implements our SyncAdapter. It needs to be exported, so that the system
+        sync framework can access it.
+        -->
+        <service
+            android:name="de.uni_stuttgart.riot.android.account.SyncService"
+            android:exported="true" >
 
-        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system
-        sync framework can access it. -->
-        <service android:name="de.uni_stuttgart.riot.android.account.SyncService"
-            android:exported="true">
-            <!-- This intent filter is required. It allows the system to launch our sync service
-            as needed. -->
+            <!--
+            This intent filter is required. It allows the system to launch our sync service
+            as needed.
+            -->
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
             <!-- This points to a required XML file which describes our SyncAdapter. -->
-            <meta-data android:name="android.content.SyncAdapter"
+            <meta-data
+                android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <provider android:name="de.uni_stuttgart.riot.android.account.DummyProvider"
+        <provider
+            android:name="de.uni_stuttgart.riot.android.account.DummyProvider"
             android:authorities="de.uni_stuttgart.riot.android.account.auth"
             android:exported="false"
             android:multiprocess="true" >
         </provider>
-
     </application>
 
 </manifest>

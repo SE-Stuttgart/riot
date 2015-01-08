@@ -23,8 +23,8 @@ import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.communication.NotificationFragment;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
-import de.uni_stuttgart.riot.android.filter.FilterFragment;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
+import de.uni_stuttgart.riot.android.location.LocationFragment;
 
 /**
  * The main window.
@@ -220,28 +220,22 @@ public class MainActivity extends Activity {
 			filterObjects.getDatabase().filterNotifications();
 		}
 
-		// Opens the filter fragment
-		if (position == 1) {
-			fragment = new FilterFragment(filterObjects);
-			startFragment(position, fragment);
-		}
-
 		// Opens the account fragment
-		if (position == 2) {
+		if (position == 1) {
 			fragment = new AccountFragment();
 			startFragment(position, fragment);
 		}
 
 		// Opens the language fragment
-		if (position == 3) {
+		if (position == 2) {
 			fragment = new LanguageFragment(filterObjects);
 			startFragment(position, fragment);
 		}
 
-		// Opens the reset fragment
-		if (position == 4) {
-			// TODO: Reset settings (delete Account, delete Filter settings, and
-			// so on)
+		// Opens the location fragment
+		if (position == 3) {
+			fragment = new LocationFragment(filterObjects);
+			startFragment(position, fragment);
 		}
 	}
 

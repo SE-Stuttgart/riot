@@ -1,15 +1,11 @@
 package de.uni_stuttgart.riot.android.database;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -20,6 +16,7 @@ import de.uni_stuttgart.riot.android.MainActivity;
 import de.uni_stuttgart.riot.android.NotificationAdapter;
 import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.communication.Notification;
+import de.uni_stuttgart.riot.android.location.MyLocation;
 
 public class RIOTDatabase extends SQLiteOpenHelper {
 
@@ -41,6 +38,12 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	private final static String TABLE_LANGUAGE = "language";
 	private final static String LANGUAGE_COLUMN_ID = "id";
 	private final static String LANGUAGE_COLUMN_DESC = "description";
+	
+	private final static String TABLE_LOCATION = "location";
+	private final static String LOCATION_COLUMN_ID = "id";
+	private final static String LOCATION_COLUMN_DESC = "description";
+	private final static String LOCATION_COLUMN_LONGITUDE = "longitude";
+	private final static String LOCATION_COLUMN_LATITUDE = "latitude";
 
 	private MainActivity mainActivity;
 
@@ -68,10 +71,17 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		String CREATE_LANGUAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_LANGUAGE + "(" + LANGUAGE_COLUMN_ID
 				+ " TEXT PRIMARY KEY," + LANGUAGE_COLUMN_DESC + " TEXT)";
+		
+		String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS "
+				+ TABLE_LOCATION + "(" + LOCATION_COLUMN_ID
+				+ " TEXT PRIMARY KEY," + LOCATION_COLUMN_DESC + " TEXT,"
+				+ LOCATION_COLUMN_LATITUDE + " TEXT,"
+				+ LOCATION_COLUMN_LONGITUDE + " TEXT )";
 
 		db.execSQL(CREATE_FILTER_TABLE);
 		db.execSQL(CREATE_NOTIFICATION_TABLE);
 		db.execSQL(CREATE_LANGUAGE_TABLE);
+		db.execSQL(CREATE_LOCATION_TABLE);
 	}
 
 	// Upgrading database
@@ -81,6 +91,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_FILTER);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATION);
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_LANGUAGE);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
 
 		// Create table again
 		onCreate(db);
@@ -317,5 +328,65 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 		String id = cursor.getString(0);
 		return id;
+	}
+	
+	public void updateLocation(MyLocation location) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(LOCATION_COLUMN_ID, location.getPlace());
+		values.put(LOCATION_COLUMN_DESC, location.getAddress());
+		values.put(LOCATION_COLUMN_LATITUDE, location.getLatitude());
+		values.put(LOCATION_COLUMN_LONGITUDE, location.getLongitude());
+
+		Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_LOCATION
+				+ " WHERE " + LOCATION_COLUMN_ID + " = ?",
+				new String[] { location.getPlace() });
+
+		if (cursor.moveToFirst()) {
+			db.update(TABLE_LOCATION, // table
+					values, // column/value
+					LOCATION_COLUMN_ID + " = ?", // selections
+					new String[] { location.getPlace() });
+		} else {
+			db.insert(TABLE_LOCATION, null, values);
+		}
+
+		cursor.close();
+		db.close();
+	}
+	
+	public List<MyLocation> getLocation() {
+		SQLiteDatabase db = this.getReadableDatabase();
+		List<MyLocation> myLocation = new LinkedList<MyLocation>();
+
+		Cursor cursor = db.query(TABLE_LOCATION, new String[] {
+				LOCATION_COLUMN_ID, LOCATION_COLUMN_DESC,
+				LOCATION_COLUMN_LATITUDE, LOCATION_COLUMN_LONGITUDE }, null,
+				null, null, null, null);
+
+		while (cursor.moveToNext()) {
+			String place = cursor.getString(0);
+			String address = cursor.getString(1);
+			double latitude = Double.valueOf(cursor.getString(2));
+			double longitude = Double.valueOf(cursor.getString(3));
+
+			myLocation.add(new MyLocation(place, address, latitude, longitude));
+		}
+		cursor.close();
+		db.close();
+
+		return myLocation;
+	}
+
+	public int getLocationCount() {
+		String countQuery = "SELECT  * FROM " + TABLE_LOCATION;
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery(countQuery, null);
+		int i = cursor.getCount();
+		cursor.close();
+
+		// return count
+		return i;
 	}
 }
