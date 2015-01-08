@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android;
+package de.uni_stuttgart.riot.android.communication;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -11,18 +11,13 @@ import de.enpro.android.riot.R;
 /**
  * FIXME What is this class doing here?
  */
-public class MyFragment extends Fragment {
-
-    private ListView textView;
+public class NotificationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater
+				.inflate(R.layout.activity_main, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_layout, container, false);
-        String menu = getArguments().getString("Menu");
-        // textView = (ListView) view.findViewById(R.id.LISTE);
-        // textView.setText(menu);
-
-        return view;
-    }
+		return view;
+	}
 }

@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -16,207 +15,275 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
-import de.uni_stuttgart.riot.android.database.LanguageDatabase;
+import de.uni_stuttgart.riot.android.communication.NotificationFragment;
+import de.uni_stuttgart.riot.android.communication.ServerConnection;
+import de.uni_stuttgart.riot.android.database.FilterDataObjects;
+import de.uni_stuttgart.riot.android.filter.FilterFragment;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 
 /**
  * The main window.
  */
 public class MainActivity extends Activity {
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	private ListView notificationList;
+	private ActionBarDrawerToggle mDrawerToggle;
+	private CharSequence mTitle;
+	private String[] mMenuTitles;
 
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mTitle;
-    private String[] mMenuTitles;
+	private Locale locale;
 
-    private LanguageDatabase dbHandler;
-    private Locale locale;
+	private FilterDataObjects filterObjects;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setLanguage();
-        setContentView(R.layout.activity_main);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        mTitle = getTitle();
-        mMenuTitles = getResources().getStringArray(R.array.menu_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		// Database stuff
+		//this.deleteDatabase("Database");
+		filterObjects = new FilterDataObjects(this);
 
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		// Sets the language
+		setLanguage();
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
+		setContentView(R.layout.activity_main);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+		mTitle = getTitle();
+		mMenuTitles = getResources().getStringArray(R.array.menu_array);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-            public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
-                invalidateOptionsMenu();
-            }
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+				GravityCompat.START);
 
-            public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle("Settings");
-                invalidateOptionsMenu();
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.drawer_list_item, mMenuTitles));
 
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
-    }
+		// ClickListener for the left ActionBar
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-    private void setLanguage() {
-        dbHandler = new LanguageDatabase(this);
-        if (dbHandler.getCount() == 0) {
-            locale = new Locale("en");
-        } else {
-            locale = new Locale(dbHandler.getLanguage());
-        }
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-    }
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 
-    // Prepare the OptionsMenu / Refreshbutton on the right side.
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
+			public void onDrawerClosed(View view) {
+				getActionBar().setTitle(mTitle);
+				invalidateOptionsMenu();
+			}
 
-    // Define displaying settings for the options menu.
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+			public void onDrawerOpened(View drawerView) {
+				getActionBar().setTitle("Settings");
+				invalidateOptionsMenu();
+			}
+		};
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        // boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+		if (savedInstanceState == null) {
+			selectItem(0);
+		}
 
-        // Refresh button is only shown in the home screen
-        if (!getActionBar().getTitle().equals("Home")) {
-            menu.findItem(R.id.action_refresh).setVisible(false);
-        } else {
-            menu.findItem(R.id.action_refresh).setVisible(true);
-        }
+		// ClickListener for the Notification List
+		notificationList = (ListView) findViewById(R.id.NotificationList);
+		notificationList.setOnItemClickListener(new OnItemClickListener() {
 
-        // menu.findItem(R.id.action_settings).setVisible(!homeScreenNotDisplayed);
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				System.out.println("click");
 
-        return super.onPrepareOptionsMenu(menu);
-    }
+			}
+		});
 
-    // Actions for the option buttons.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        switch (item.getItemId()) {
-        case R.id.action_refresh:
-            // TODO: refresh
-            // Toast.makeText(getApplicationContext(),
-            // "TODO: implement refresh",
-            // Toast.LENGTH_LONG).show();
-            getEventList();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
+		// get the latest Notifications
+		new ServerConnection(this, filterObjects).execute();
+	}
 
-    /**
-     * TODO Missing description.
-     */
-    private void getEventList() {
-        ArrayList<String> meineListe = new ArrayList<String>();
-        meineListe.add("TEST");
-        meineListe.add("TEST1");
-        meineListe.add("TEST2");
-        ListAdapter listenAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, meineListe);
-        ListView meineListView = (ListView) findViewById(R.id.LISTE);
-        meineListView.setAdapter(listenAdapter);
-    }
 
-    private void selectItem(int position) {
-        Fragment fragment;
+	/*
+	 * ----------------- REFRESH BUTTON -----------------
+	 */
 
-        // Opens the main fragment
-        if (position == 0) {
-            fragment = new MyFragment();
-            startFragment(position, fragment);
-        }
+	/**
+	 * Prepare the refresh button on the right side
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
 
-        // Opens the filter fragment
-        if (position == 1) {
-            // TODO: Filter Fragment
-        }
+	/**
+	 * Define displaying settings for the refresh button
+	 */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
 
-        // Opens the account fragment
-        if (position == 2) {
-            fragment = new AccountFragment();
-            startFragment(position, fragment);
-        }
+		// //get the values for the each filter from the database
+		menu.findItem(R.id.filter_error).setChecked(
+				filterObjects.getFilterStatus(NotificationType.ERROR));
+		menu.findItem(R.id.filter_warning).setChecked(
+				filterObjects.getFilterStatus(NotificationType.WARNING));
+		menu.findItem(R.id.filter_appointment).setChecked(
+				filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
 
-        // Opens the language fragment
-        if (position == 3) {
-            fragment = new LanguageFragment();
-            startFragment(position, fragment);
-        }
+		// Refresh button, filter buttons and the notification list is only
+		// shown in the home screen
+		if (!getActionBar().getTitle().equals("Home")) {
+			menu.findItem(R.id.action_refresh).setVisible(false);
+			for (int i = 0; i < menu.size(); i++) {
+				menu.getItem(i).setVisible(false);
+			}
+			notificationList.setAdapter(null);
+		} else {
+			menu.findItem(R.id.action_refresh).setVisible(true);
+			filterObjects.getDatabase().filterNotifications();
+		}
 
-        // Opens the reset fragment
-        if (position == 4) { // NOCS FIXME There must be a better way for this.
-            // TODO: Reset settings (delete Account, delete Filter settings, and
-            // so on)
-        }
-    }
+		return super.onPrepareOptionsMenu(menu);
+	}
 
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
-    }
+	/**
+	 * Actions for the refresh button (right upper corner). It can later be
+	 * extended with more options.
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
 
-    // When using the ActionBarDrawerToggle, you must call it during onPostCreate() and onConfigurationChanged()...
+		switch (item.getItemId()) {
+		case R.id.filter_error:
+			filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR,
+					false));
+			return true;
+		case R.id.filter_appointment:
+			filterObjects.setFilter(new Filter(2, item,
+					NotificationType.APPOINTMENT, false));
+			return true;
+		case R.id.filter_warning:
+			filterObjects.setFilter(new Filter(3, item,
+					NotificationType.WARNING, false));
+			return true;
+		case R.id.action_refresh:
+			new ServerConnection(this, filterObjects).execute();
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
+	/*
+	 * ----------------- OPTIONS MENU -----------------
+	 */
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
+	/**
+	 * Method for changing the language
+	 */
+	private void setLanguage() {
+		if (filterObjects.getDatabase().getCount() == 0) {
+			locale = new Locale("en");
+		} else {
+			locale = new Locale(filterObjects.getDatabase().getLanguage());
+		}
+		Locale.setDefault(locale);
+		Configuration config = new Configuration();
+		config.locale = locale;
+		getBaseContext().getResources().updateConfiguration(config,
+				getBaseContext().getResources().getDisplayMetrics());
+	}
 
-    private void startFragment(int position, Fragment fragment) {
-        Bundle args = new Bundle();
-        FragmentManager fragmentManager = getFragmentManager();
+	private class DrawerItemClickListener implements
+			ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			selectItem(position);
+		}
+	}
 
-        args.putString("Menu", mMenuTitles[position]);
-        fragment.setArguments(args);
+	private void selectItem(int position) {
+		Fragment fragment;
 
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+		// Opens the main fragment
+		if (position == 0) {
+			fragment = new NotificationFragment();
+			startFragment(position, fragment);
+			filterObjects.getDatabase().filterNotifications();
+		}
 
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mMenuTitles[position]);
+		// Opens the filter fragment
+		if (position == 1) {
+			fragment = new FilterFragment(filterObjects);
+			startFragment(position, fragment);
+		}
 
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
+		// Opens the account fragment
+		if (position == 2) {
+			fragment = new AccountFragment();
+			startFragment(position, fragment);
+		}
+
+		// Opens the language fragment
+		if (position == 3) {
+			fragment = new LanguageFragment(filterObjects);
+			startFragment(position, fragment);
+		}
+
+		// Opens the reset fragment
+		if (position == 4) {
+			// TODO: Reset settings (delete Account, delete Filter settings, and
+			// so on)
+		}
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		mTitle = title;
+		getActionBar().setTitle(mTitle);
+	}
+
+	/**
+	 * When using the ActionBarDrawerToggle, you must call it during
+	 * onPostCreate() and onConfigurationChanged()...
+	 */
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggls
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
+	private void startFragment(int position, Fragment fragment) {
+		Bundle args = new Bundle();
+		FragmentManager fragmentManager = getFragmentManager();
+
+		args.putString("Menu", mMenuTitles[position]);
+		fragment.setArguments(args);
+
+		fragmentManager.beginTransaction()
+				.replace(R.id.content_frame, fragment).commit();
+
+		mDrawerList.setItemChecked(position, true);
+		setTitle(mMenuTitles[position]);
+
+		mDrawerLayout.closeDrawer(mDrawerList);
+	}
 }

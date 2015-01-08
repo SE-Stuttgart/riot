@@ -18,7 +18,9 @@
     <string name="settings">Settings</string>
 
     <!-- Fragment main (all entries for main please insert here) -->
-    <string name="action_refresh">Refresh</string>
+    <string name="filter_appointment">Appointments</string>
+    <string name="filter_error">Errors</string>
+    <string name="filter_warning">Warnings</string>
 
     <!-- Fragment language (all entries for language please insert here) -->
     <string name="english">English</string>
@@ -34,6 +36,10 @@
     <string name="add_event">Add Event</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
-
+    
+    <!-- Fragment filter (all entries for language please insert here) -->
+    <string name="desc_filter_error">Show only Error messages if selected</string>
+    <string name="desc_filter_appointment">Show only Appointments if selected</string>
+    <string name="desc_filter_warning">Show only Warning messages if selected</string>
 
 </resources>
