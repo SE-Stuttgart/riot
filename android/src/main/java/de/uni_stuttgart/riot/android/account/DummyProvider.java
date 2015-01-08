@@ -8,7 +8,7 @@ import android.net.Uri;
 /**
  * FIXME Provide description.
  */
-public class DummyProviderProvider extends ContentProvider {
+public class DummyProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
