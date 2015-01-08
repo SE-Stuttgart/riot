@@ -33,7 +33,7 @@ import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 /**
  * The authentication service will handle the authentication of a user based on a username + password and provide access tokens for further
  * usage of the API.
- * 
+ *
  * @author Marcel Lehwald
  *
  */
@@ -45,7 +45,7 @@ public class AuthenticationService {
     /**
      * Login as a user based on a provided username and password. On a successful authentication a access token and refresh token will be
      * returned which can be used to access the API.
-     * 
+     *
      * @param request
      *            The login request containing username and password.
      * @return Returns a new access and refresh token on success.
@@ -58,7 +58,7 @@ public class AuthenticationService {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
             User u = UserManagementFacade.getInstance().getUser(token);
-            UserResponse user = new UserResponse(u,this.getUserRoles(u));
+            UserResponse user = new UserResponse(u, this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new LoginException(e.getMessage(), e);
@@ -68,7 +68,7 @@ public class AuthenticationService {
     /**
      * Refresh an expired access token based on a refresh token. A refresh token will be used to generate a new access and refresh token. A
      * refresh token can only be used once and will be marked invalid when successfully used.
-     * 
+     *
      * @param request
      *            The refresh request containing a refresh token.
      * @return Returns a new access and refresh token on success.
@@ -80,8 +80,8 @@ public class AuthenticationService {
     public AuthenticationResponse refresh(RefreshRequest request) throws RefreshException {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
-            User u =UserManagementFacade.getInstance().getUser(token);
-            UserResponse user = new UserResponse(u,this.getUserRoles(u));
+            User u = UserManagementFacade.getInstance().getUser(token);
+            UserResponse user = new UserResponse(u, this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new RefreshException(e.getMessage(), e);
@@ -90,7 +90,7 @@ public class AuthenticationService {
 
     /**
      * Logout an authenticated user. The access and refresh token will therefore be marked as invalid.
-     * 
+     *
      * @return Returns an empty response.
      * @throws LogoutException
      *             When the operation fails.
@@ -104,24 +104,24 @@ public class AuthenticationService {
 
         return Response.ok().build();
     }
-    
+
     /*************/
     //FIXME
     private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
-    	Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-    	Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
-    	for (Role role : roles) {
-			roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
-		}
-    	return roleResponses;
+        Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
+        Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
+        for (Role role : roles) {
+            roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
+        }
+        return roleResponses;
     }
-    
-    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException{
-    	Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-    	Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
-    	for (Permission permission : permissions) {
-			permissionResponses.add(new PermissionResponse(permission));
-		}
-    	return permissionResponses;
+
+    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
+        Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
+        Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+        for (Permission permission : permissions) {
+            permissionResponses.add(new PermissionResponse(permission));
+        }
+        return permissionResponses;
     }
 }

@@ -28,7 +28,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 
 /**
  * The roles service will handle any access (create, read, update, delete) to the roles.
- * 
+ *
  * @author Marcel Lehwald
  *
  */
@@ -41,7 +41,7 @@ public class RoleService {
 
     /**
      * Get all roles.
-     * 
+     *
      * @return Returns a list of all roles.
      * @throws UserManagementException
      *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
@@ -50,13 +50,13 @@ public class RoleService {
     @GET
     @RequiresAuthentication
     public Collection<RoleResponse> getRoles() throws UserManagementException {
-    	// TODO limit returned roles
+        // TODO limit returned roles
         Collection<Role> roles = facade.getAllRoles();
 
         Collection<RoleResponse> roleResponse = new LinkedList<RoleResponse>();
-        for (Iterator<Role> it = roles.iterator(); it.hasNext();) {
-        	Role role = it.next(); 
-            roleResponse.add(new RoleResponse(role,this.getRolePermissions(role)));
+        for (Iterator<Role> it = roles.iterator(); it.hasNext(); ) {
+            Role role = it.next();
+            roleResponse.add(new RoleResponse(role, this.getRolePermissions(role)));
         }
 
         return roleResponse;
@@ -64,7 +64,7 @@ public class RoleService {
 
     /**
      * Get a role.
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @return Returns the role with the role ID.
@@ -77,12 +77,12 @@ public class RoleService {
     @RequiresAuthentication
     public RoleResponse getRole(@PathParam("roleID") Long roleID) throws UserManagementException {
         Role r = facade.getRole(roleID);
-    	return new RoleResponse(r,this.getRolePermissions(r));
+        return new RoleResponse(r, this.getRolePermissions(r));
     }
 
     /**
      * Add new role.
-     * 
+     *
      * @param role
      *            The role ID.
      * @return Returns the added role.
@@ -95,12 +95,12 @@ public class RoleService {
     public RoleResponse addRole(Role role) throws UserManagementException {
         facade.addRole(role);
         Role r = facade.getRole(role.getId());
-        return new RoleResponse(r,this.getRolePermissions(r));
+        return new RoleResponse(r, this.getRolePermissions(r));
     }
 
     /**
      * Update role.
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @param role
@@ -117,12 +117,12 @@ public class RoleService {
         role.setId(roleID);
         facade.updateRole(role);
         Role r = facade.getRole(role.getId());
-        return new RoleResponse(r,this.getRolePermissions(r));
+        return new RoleResponse(r, this.getRolePermissions(r));
     }
 
     /**
      * Remove role.
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @return Returns empty response (with status code 200) on success.
@@ -141,7 +141,7 @@ public class RoleService {
 
     /**
      * Get permissions of a role. FIXME This method seems to have the wrong name (has nothing to do with users?).
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @return Returns a list of all permissions of a role.
@@ -159,7 +159,7 @@ public class RoleService {
 
     /**
      * Add permission to a role.
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @param permissionID
@@ -180,7 +180,7 @@ public class RoleService {
 
     /**
      * Remove permission of a role.
-     * 
+     *
      * @param roleID
      *            The role ID.
      * @param permissionID
@@ -198,14 +198,14 @@ public class RoleService {
 
         return Response.ok().build();
     }
-    
-    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException{
-    	Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-    	Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
-    	for (Permission permission : permissions) {
-			permissionResponses.add(new PermissionResponse(permission));
-		}
-    	return permissionResponses;
+
+    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
+        Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
+        Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+        for (Permission permission : permissions) {
+            permissionResponses.add(new PermissionResponse(permission));
+        }
+        return permissionResponses;
     }
 
 }
