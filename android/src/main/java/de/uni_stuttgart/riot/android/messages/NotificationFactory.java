@@ -16,6 +16,7 @@ import de.enpro.android.riot.R;
  * Created by Benny on 12.12.2014.
  */
 public class NotificationFactory {
+
     private Context context;
     private String NOTIFICATION_GROUP = "RIOT-Group";
     private int notificationId;
