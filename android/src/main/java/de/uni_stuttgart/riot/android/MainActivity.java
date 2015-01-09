@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.account.AndroidUser;
@@ -30,6 +31,11 @@ import de.uni_stuttgart.riot.android.location.LocationFragment;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
+import de.uni_stuttgart.riot.android.messages.MessageHandler;
+import de.uni_stuttgart.riot.android.messages.NotificationFactory;
+import de.uni_stuttgart.riot.android.users.UserDetailFragment;
+import de.uni_stuttgart.riot.android.users.UserEditFragment;
+import de.uni_stuttgart.riot.android.users.UsersFragment;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -79,6 +85,12 @@ public class MainActivity extends Activity {
 
         // Database stuff
         // this.deleteDatabase("Database");
+        // Save the application context in the message handler and the notification factory
+        MessageHandler.setContext(getApplicationContext());
+        NotificationFactory.setContext(getApplicationContext());
+
+        // Database stuff
+        //this.deleteDatabase("Database");
         filterObjects = new FilterDataObjects(this);
 
         // Sets the language
@@ -92,8 +104,8 @@ public class MainActivity extends Activity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
+
 
         // ClickListener for the left ActionBar
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
@@ -133,9 +145,9 @@ public class MainActivity extends Activity {
         new ServerConnection(this, filterObjects).execute();
     }
 
-    /*
+	/*
      * ----------------- REFRESH BUTTON -----------------
-     */
+	 */
 
     /**
      * Prepare the refresh button on the right side
@@ -253,6 +265,26 @@ public class MainActivity extends Activity {
             fragment = new LocationFragment(filterObjects);
             startFragment(position, fragment);
         }
+
+        // Opens the user fragment
+        if (position == 4) {
+            fragment = new UsersFragment();
+            startFragment(position, fragment);
+        }
+
+        // ToDo: Nur temporaer!!
+        // Opens the user detail fragment
+        if (position == 5) {
+            fragment = new UserDetailFragment();
+            startFragment(position, fragment);
+        }
+
+        // Opens the user edit fragment
+        if (position == 6) {
+            fragment = new UserEditFragment();
+            startFragment(position, fragment);
+        }
+        // ToDo: <--
     }
 
     @Override

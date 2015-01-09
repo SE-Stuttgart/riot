@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.android.communication;
 import java.util.Date;
 
 import de.uni_stuttgart.riot.android.NotificationType;
+import de.uni_stuttgart.riot.android.messages.NotificationFactory;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class Notification {
@@ -23,7 +24,7 @@ public class Notification {
 		this.content = content;
 		this.type = type;
 		this.date = date;
-	}
+    }
 
 	public void setId(int id) {
 		this.id = id;
