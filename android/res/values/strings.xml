@@ -9,6 +9,9 @@
         <item>RIOT-Account</item>
         <item>Language</item>
         <item>Location</item>
+        <item>User</item>
+        <item>UserDetail</item>
+        <item>UserEdit</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -34,6 +37,9 @@
     <string name="add_event">Add Event</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
+    <string name="user_role">User-Role:</string>
+    <string name="user_permission">User-Permissions:</string>
+    <string name="user_edit">Edit</string>
 
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Show only Error messages if selected</string>
@@ -49,4 +55,14 @@
     <string name="location_distance">Distance from current position to</string>
     <string name="location_store_distance">Notify within a range of</string>
 
+    <!-- Notification (all entries for language please insert here) -->
+    <string-array name="priority">
+        <item>max</item>
+        <item>high</item>
+        <item>default</item>
+        <item>low</item>
+        <item>min</item>
+    </string-array>
+    <string name="notification_messages_with"> Messages with </string>
+    <string name="notification_priority"> priority</string>
 </resources>

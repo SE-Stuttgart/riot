@@ -9,6 +9,9 @@
         <item>RIOT-Konto</item>
         <item>Sprache</item>
         <item>Standortinformationen</item>
+        <item>User</item>
+        <item>UserDetail</item>
+        <item>UserEdit</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -35,6 +38,8 @@
     <string name="add_event">Event hinzufügen</string>
     <string name="acc_username">Benutzername:</string>
     <string name="acc_password">Passwort:</string>
+    <string name="user_role">Benutzer-Rolle:</string>
+    <string name="user_permission">Benutzer-Rechte:</string>
 
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Zeigt alle Fehler Meldungen an</string>
@@ -50,4 +55,15 @@
     <string name="location_distance">Entfernung von aktueller Position nach</string>
     <string name="location_store_distance">Benachrichtigung wird angezeigt in einer Reichweite von</string>
 
+    <!-- Notification (all entries for language please insert here) -->
+    <string-array name="priority">
+        <item>maximaler</item>
+        <item>hoher</item>
+        <item>normalen</item>
+        <item>niedriger</item>
+        <item>minimalsten</item>
+    </string-array>
+    <string name="notification_messages_with"> Meldungen mit </string>
+    <string name="notification_priority"> Priorität</string>
+    <string name="user_edit">Editieren</string>
 </resources>
