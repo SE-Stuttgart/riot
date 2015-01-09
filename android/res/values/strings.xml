@@ -48,5 +48,6 @@
     <string name="location_longitude">Longitude</string>
     <string name="location_distance">Distance from current position to</string>
     <string name="location_store_distance">Notify within a range of</string>
+    <string name="change_color">Change Color</string>
 
 </resources>

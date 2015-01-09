@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.account;
 
 import android.app.Fragment;
 import android.content.ContentProviderClient;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.view.LayoutInflater;
@@ -12,12 +13,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import de.uni_stuttgart.riot.android.ColorPicker;
+
 import de.enpro.android.riot.R;
 
 /**
  * UI for account creation.
  */
-public class AccountFragment extends Fragment implements OnClickListener {
+public class AccountFragment extends Fragment implements OnClickListener, ColorPicker.OnColorChangedListener {
 
     RIOTAccount acc;
     Calendar cal = null;
@@ -39,6 +42,9 @@ public class AccountFragment extends Fragment implements OnClickListener {
         b.setOnClickListener(this);
 
         b = (Button) view.findViewById(R.id.btn_add_cal_event);
+        b.setOnClickListener(this);
+
+        b = (Button) view.findViewById(R.id.btn_change_color);
         b.setOnClickListener(this);
 
         return view;
@@ -76,9 +82,24 @@ public class AccountFragment extends Fragment implements OnClickListener {
                 }
             }
             break;
+            case R.id.btn_change_color:
+                Paint mPaint = new Paint();
+                new ColorPicker(getActivity(), this, mPaint.getColor()).show();
+                break;
         default:
             throw new IllegalStateException();
         }
     }
 
+    @Override
+    public void colorChanged(int color) {
+        if(cal == null) {
+            ContentProviderClient client = getActivity().getContentResolver()
+                    .acquireContentProviderClient(CalendarContract.AUTHORITY);
+            cal = new Calendar(RIOTAccount.getRIOTAccount(getActivity()).getAccount(), client, "RIOT");
+        }
+        cal.changeColor(color);
+
+
+    }
 }

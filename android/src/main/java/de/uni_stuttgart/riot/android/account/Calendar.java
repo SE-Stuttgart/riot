@@ -57,6 +57,18 @@ public class Calendar {
         return -1;
     }
 
+    public void changeColor(int color)
+    {
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, color & 0xFFFFFFFF);
+        Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
+        try {
+            client.update(calendarsURI, values, "", null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     private long addCalendar(String calendarName, String calendarTitle) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
