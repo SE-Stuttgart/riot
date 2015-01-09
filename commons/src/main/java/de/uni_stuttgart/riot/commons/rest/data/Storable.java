@@ -1,10 +1,9 @@
-package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
-
-import java.util.Collection;
+package de.uni_stuttgart.riot.commons.rest.data;
 
 /**
  * 
  * Interface for all classes that should be stored at some point.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -14,7 +13,9 @@ public abstract class Storable {
 
     /**
      * Constructor.
-     * @param id .
+     * 
+     * @param id
+     *            .
      */
     public Storable(Long id) {
         this.id = id;
@@ -25,7 +26,6 @@ public abstract class Storable {
      */
     public Storable() {
     }
-
 
     /**
      * Returns the unique id of this object.
@@ -38,7 +38,9 @@ public abstract class Storable {
 
     /**
      * Setter for the unique id.
-     * @param id .
+     * 
+     * @param id
+     *            .
      */
     public void setId(Long id) {
         this.id = id;

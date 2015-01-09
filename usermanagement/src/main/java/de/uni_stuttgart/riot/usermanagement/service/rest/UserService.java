@@ -34,14 +34,7 @@ import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-<<<<<<< HEAD
-=======
 import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
-import de.uni_stuttgart.riot.usermanagement.service.rest.request.UserRequest;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.RoleResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.TokenResponse;
-import de.uni_stuttgart.riot.usermanagement.service.rest.response.UserResponse;
->>>>>>> Moved db frameworkt to server-commons
 
 /**
  * The users service will handle any access (create, read, update, delete) to the users.
@@ -70,7 +63,7 @@ public class UserService {
     @GET
     @RequiresAuthentication
     public Collection<UserResponse> getUsers() throws UserManagementException {
-         // TODO limit returned users
+        // TODO limit returned users
         Collection<User> users = facade.getAllUsers();
 
         Collection<UserResponse> userResponse = new LinkedList<UserResponse>();
@@ -267,7 +260,7 @@ public class UserService {
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
     }
 
-    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
+    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {
         Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
         Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
         for (Role role : roles) {
@@ -286,4 +279,3 @@ public class UserService {
     }
 
 }
-

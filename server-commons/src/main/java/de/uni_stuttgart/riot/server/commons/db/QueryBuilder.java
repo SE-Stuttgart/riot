@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
-import de.uni_stuttgart.riot.commons.model.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * 
@@ -119,4 +119,21 @@ public interface QueryBuilder {
      *             SQLException internal sql error
      */
     Query buildFindAll(String tableName, Connection connection) throws SQLException;
+
+    /**
+     * Builds the query for the retrieval of objects using pagination. <br>
+     * <br>
+     * Such as: <code>SELECT * FROM T LIMIT [limit] OFFSET [offset] </code>
+     * 
+     * @param tableName
+     *            the table name in which the query will be executed
+     * @param connection
+     *            represents a connection to the database * @param offset the start point
+     * @param limit
+     *            the number of objects to return
+     * @return {@link Query} for retrieval of all T objects.
+     * @throws SQLException
+     *             SQLException internal sql error
+     */
+    Query buildFindWithPagination(String tableName, Connection connection, int offset, int limit) throws SQLException;
 }

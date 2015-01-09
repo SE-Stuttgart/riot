@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
-import de.uni_stuttgart.riot.commons.model.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * This class is used to create the sql2o queries for every operation in {@link DAO}. <br>
@@ -48,5 +48,10 @@ public class QueryBuilderImpl implements QueryBuilder {
     @Override
     public Query buildFindAll(String tableName, Connection connection) throws SQLException {
         return connection.createQuery(SQLQueryUtil.buildGetAll(tableName));
+    }
+
+    @Override
+    public Query buildFindWithPagination(String tableName, Connection connection, int offset, int limit) throws SQLException {
+        return connection.createQuery(SQLQueryUtil.buildFindWithPagination(tableName)).addParameter("offset", offset).addParameter("limit", limit);
     }
 }

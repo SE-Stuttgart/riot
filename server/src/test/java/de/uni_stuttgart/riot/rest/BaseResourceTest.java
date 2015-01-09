@@ -23,7 +23,13 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.db.DaoException;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 
 /**
  * Use a mock implementation of the BaseResource to check if the behavior is as expected.
@@ -34,10 +40,7 @@ public class BaseResourceTest extends JerseyTest {
     /**
      * Mock implementation of a resource.
      */
-    private static class TestModel implements ResourceModel {
-
-        /** The id. */
-        private long id;
+    private static class TestModel extends Storable {
 
         /** Some comment */
         private String comment;
@@ -54,28 +57,8 @@ public class BaseResourceTest extends JerseyTest {
          * @param i
          *            the i
          */
-        public TestModel(int i) {
-            id = i;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see de.uni_stuttgart.riot.rest.ResourceModel#getId()
-         */
-        @Override
-        public long getId() {
-            return id;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see de.uni_stuttgart.riot.rest.ResourceModel#setId(long)
-         */
-        @Override
-        public void setId(long id) {
-            this.id = id;
+        public TestModel(long i) {
+            super(i);
         }
 
         public String getComment() {
@@ -90,10 +73,14 @@ public class BaseResourceTest extends JerseyTest {
     /**
      * Mock implementation of a resource manager that doesn't need a DB.
      */
-    private static class ModelManagerImpl implements ModelManager<TestModel> {
+    private static class ModelManagerImpl implements DAO<TestModel> {
 
         /** The test data. */
         private static HashMap<Long, TestModel> testData = new HashMap<>();
+
+        public ModelManagerImpl() {
+
+        }
 
         /*
          * (non-Javadoc)
@@ -101,7 +88,7 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#getById(long)
          */
         @Override
-        public TestModel getById(long id) {
+        public TestModel findBy(long id) {
             return testData.get(id);
         }
 
@@ -111,12 +98,12 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#get()
          */
         @Override
-        public Collection<TestModel> get() {
+        public Collection<TestModel> findAll() {
             return testData.values();
         }
 
         @Override
-        public Collection<TestModel> get(long offset, int limit) throws DaoException {
+        public Collection<TestModel> findAll(int offset, int limit) throws DatasourceFindException {
             // Dummy implementation just for testing REST API
             int testDataSize = testData.size();
             Collection<TestModel> values = new ArrayList<TestModel>();
@@ -141,13 +128,12 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#create(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
-        public TestModel create(TestModel model) {
+        public void insert(TestModel model) throws DatasourceInsertException {
             if (model == null) {
                 throw new IllegalArgumentException("The resource model must not be null");
             }
-            model.setId(testData.size() + 1);
+            model.setId((long) (testData.size() + 1));
             testData.put(model.getId(), model);
-            return model;
         }
 
         /*
@@ -156,8 +142,10 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#delete(long)
          */
         @Override
-        public boolean delete(long id) {
-            return testData.remove(id) != null;
+        public void delete(long id) throws DatasourceDeleteException {
+            if (testData.remove(id) == null) {
+                throw new DatasourceDeleteException("Object doesn't exist or already deleted");
+            }
         }
 
         /*
@@ -166,8 +154,28 @@ public class BaseResourceTest extends JerseyTest {
          * @see de.uni_stuttgart.riot.rest.ModelManager#update(de.uni_stuttgart.riot.rest.ResourceModel)
          */
         @Override
-        public boolean update(TestModel model) {
-            return testData.put(model.getId(), model) != null;
+        public void update(TestModel model) throws DatasourceUpdateException {
+            if (testData.put(model.getId(), model) == null) {
+                throw new DatasourceUpdateException("Object doesn't exist");
+            }
+        }
+
+        @Override
+        public void delete(TestModel t) throws DatasourceDeleteException {
+            // FIXME inherited from UM. Functionality not implemented on server REST API
+
+        }
+
+        @Override
+        public Collection<TestModel> findBy(Collection<SearchParameter> searchParams, boolean or) throws DatasourceFindException {
+            // FIXME inherited from UM. Functionality not implemented on server REST API
+            return null;
+        }
+
+        @Override
+        public TestModel findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
+            // FIXME inherited from UM. Functionality not implemented on server REST API
+            return null;
         }
 
     }
@@ -283,7 +291,7 @@ public class BaseResourceTest extends JerseyTest {
         assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
         // post requests must return the newly created resource with the id set
         TestModel created = resp.readEntity(TestModel.class);
-        assertEquals(ModelManagerImpl.testData.size(), created.getId());
+        assertEquals(ModelManagerImpl.testData.size(), created.getId().intValue());
         // post must fail with invalid body
         resp = target("tests").request(MediaType.APPLICATION_JSON).post(null);
         // expect a 400 for bad request

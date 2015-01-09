@@ -1,16 +1,13 @@
-package de.uni_stuttgart.riot.calendar;
+package de.uni_stuttgart.riot.commons.rest.data.calendar;
 
 import java.util.Date;
 
-import de.uni_stuttgart.riot.rest.ResourceModel;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * The Class CalendarEntry.
  */
-public class CalendarEntry implements ResourceModel {
-
-    /** The id. */
-    private long id;
+public class CalendarEntry extends Storable {
 
     /** The start time. */
     private Date startTime;
@@ -48,30 +45,10 @@ public class CalendarEntry implements ResourceModel {
      *            the body
      */
     public CalendarEntry(long id, String title, String description) {
-        this.id = id;
+        super(id);
         this.title = title;
         this.description = description;
         this.startTime = new Date();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.uni_stuttgart.riot.rest.ResourceModel#getId()
-     */
-    @Override
-    public long getId() {
-        return this.id;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.uni_stuttgart.riot.rest.ResourceModel#setId(int)
-     */
-    @Override
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -126,11 +103,10 @@ public class CalendarEntry implements ResourceModel {
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
         result = prime * result + (allDayEvent ? 1231 : 1237);
         result = prime * result + ((description == null) ? 0 : description.hashCode());
         result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
-        result = prime * result + (int) (id ^ (id >>> 32));
         result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
         result = prime * result + ((title == null) ? 0 : title.hashCode());
@@ -139,57 +115,40 @@ public class CalendarEntry implements ResourceModel {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (!super.equals(obj))
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         CalendarEntry other = (CalendarEntry) obj;
-        if (allDayEvent != other.allDayEvent) {
+        if (allDayEvent != other.allDayEvent)
             return false;
-        }
         if (description == null) {
-            if (other.description != null) {
+            if (other.description != null)
                 return false;
-            }
-        } else if (!description.equals(other.description)) {
+        } else if (!description.equals(other.description))
             return false;
-        }
         if (endTime == null) {
-            if (other.endTime != null) {
+            if (other.endTime != null)
                 return false;
-            }
-        } else if (!endTime.equals(other.endTime)) {
+        } else if (!endTime.equals(other.endTime))
             return false;
-        }
-        if (id != other.id) {
-            return false;
-        }
         if (location == null) {
-            if (other.location != null) {
+            if (other.location != null)
                 return false;
-            }
-        } else if (!location.equals(other.location)) {
+        } else if (!location.equals(other.location))
             return false;
-        }
         if (startTime == null) {
-            if (other.startTime != null) {
+            if (other.startTime != null)
                 return false;
-            }
-        } else if (!startTime.equals(other.startTime)) {
+        } else if (!startTime.equals(other.startTime))
             return false;
-        }
         if (title == null) {
-            if (other.title != null) {
+            if (other.title != null)
                 return false;
-            }
-        } else if (!title.equals(other.title)) {
+        } else if (!title.equals(other.title))
             return false;
-        }
         return true;
     }
 

@@ -1,11 +1,6 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
-import org.apache.shiro.authz.permission.WildcardPermission;
-
-import de.uni_stuttgart.riot.commons.model.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement. Permissions can be assigned to {@link UMUser}s over
@@ -69,8 +64,6 @@ public class Permission extends Storable {
         return result;
     }
 
-
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -102,12 +95,11 @@ public class Permission extends Storable {
     public void setPermissionValue(String permissionValue) {
         this.permissionValue = permissionValue;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Permission [permissionID=");
-        builder.append(id);
         builder.append(", permissionValue=");
         builder.append(permissionValue);
         builder.append("]");

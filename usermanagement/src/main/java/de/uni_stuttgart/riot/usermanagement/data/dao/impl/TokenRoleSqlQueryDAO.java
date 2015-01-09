@@ -5,23 +5,22 @@ import java.sql.SQLException;
 import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Token;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 
 /**
  * Data access class for all {@link Token} objects.
+ * 
  * @author Jonas Tangermann
  *
  */
 public class TokenRoleSqlQueryDAO extends SqlQueryDAO<TokenRole> {
 
-
     public TokenRoleSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
-        super(connection,transaction);
+        super(connection, transaction);
     }
 
     @Override
-	protected Class<TokenRole> getMyClazz() {
-		return TokenRole.class;
-	}
+    protected Class<TokenRole> getMyClazz() {
+        return TokenRole.class;
+    }
 }

@@ -4,23 +4,23 @@ import java.sql.SQLException;
 
 import org.sql2o.Connection;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
 
 /**
  * DAO for {@link Permission}
+ * 
  * @author Jonas Tangermann
  *
  */
 public class PermissionSqlQueryDAO extends SqlQueryDAO<Permission> {
 
     public PermissionSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
-        super(connection,transaction);
+        super(connection, transaction);
     }
 
-    protected Class<Permission> getMyClazz(){
-    	return Permission.class;
+    protected Class<Permission> getMyClazz() {
+        return Permission.class;
     }
 
-    
 }

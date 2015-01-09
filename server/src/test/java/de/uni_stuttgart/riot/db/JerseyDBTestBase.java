@@ -30,6 +30,8 @@ public class JerseyDBTestBase extends JerseyTest {
     public void setupTestData() throws Exception {
         try (SqlRunner sqlRunner = new SqlRunner(getDataSource())) {
             sqlRunner.runScript("/createCalendarEntries.sql");
+            sqlRunner.runScript("/createContacts.sql");
+            sqlRunner.runScript("/insertTestValues.sql");
         }
     }
 

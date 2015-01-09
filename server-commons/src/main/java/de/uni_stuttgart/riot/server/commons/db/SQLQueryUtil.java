@@ -96,6 +96,18 @@ public final class SQLQueryUtil {
     }
 
     /**
+     * Builds getAll statement using LIMIT clause.
+     * 
+     * @param tableName
+     *            the table name
+     * 
+     * @return statement
+     */
+    public static String buildFindWithPagination(String tableName) {
+        return "SELECT * FROM " + tableName + " LIMIT :limit OFFSET :offset";
+    }
+
+    /**
      * Builds getById statement.
      * 
      * @param params

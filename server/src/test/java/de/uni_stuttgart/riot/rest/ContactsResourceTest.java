@@ -7,17 +7,17 @@ import java.net.URI;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.contacts.ContactEntry;
+import de.uni_stuttgart.riot.commons.rest.data.contact.Contact;
+import de.uni_stuttgart.riot.db.JerseyDBTestBase;
 
 /**
  * Test class for the contacts which uses the Jersey Test Framework.
  * 
  * @see https://jersey.java.net/documentation/latest/test-framework.html
  */
-public class ContactsResourceTest extends JerseyTest {
+public class ContactsResourceTest extends JerseyDBTestBase {
 
     /*
      * (non-Javadoc)
@@ -47,13 +47,13 @@ public class ContactsResourceTest extends JerseyTest {
         final String response = target("contacts").request().get(String.class);
         assertNotNull(response);
     }
-    
+
     /**
      * Tests if a GET request (with id) to the resource work.
      */
     @Test
     public void testGetRequestWithId() {
-        final ContactEntry response = target("contacts/1").request().get(ContactEntry.class);
-        assertEquals("Max", response.getFirstName());
+        final Contact response = target("contacts/1").request().get(Contact.class);
+        assertEquals("John", response.getFirstName());
     }
 }

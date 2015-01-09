@@ -15,19 +15,9 @@ import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.PermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RolePermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
-=======
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Permission;
-import de.uni_stuttgart.riot.usermanagement.data.storable.Role;
->>>>>>> Moved db frameworkt to server-commons
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;
@@ -53,12 +43,12 @@ public class RoleLogic {
      */
     public RoleLogic() {
         try {
-            dao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            dao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
         } catch (NamingException e) {
             e.printStackTrace();
         } catch (SQLException e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -157,8 +147,8 @@ public class RoleLogic {
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
 
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
-            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
             // find all permissions belonging to a role
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
@@ -194,7 +184,7 @@ public class RoleLogic {
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
             RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.insert(rp);
         } catch (Exception e) {
@@ -217,7 +207,7 @@ public class RoleLogic {
                 throw new RemovePermissionFromRoleException("Role id and permission id can not be null");
             }
 
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(),false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
             // get the permission to remove
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();

@@ -7,7 +7,7 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
-import de.uni_stuttgart.riot.commons.model.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -63,11 +63,26 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     public void delete(T t) throws DatasourceDeleteException {
         try {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildDelete(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), t, SqlQueryDAO.this.connection);
-            stmt.executeUpdate();
+            int res = stmt.executeUpdate().getResult();
+            if (res == 0) {
+                throw new DatasourceDeleteException("Nothing to delete!");
+            }
             stmt.close();
         } catch (Exception e) {
             throw new DatasourceDeleteException(e.getMessage());
         }
+    }
+
+    @Override
+    public void delete(long id) throws DatasourceDeleteException {
+        try {
+            T t = getMyClazz().newInstance();
+            t.setId(id);
+            delete(t);
+        } catch (Exception e) {
+            throw new DatasourceDeleteException(e);
+        }
+
     }
 
     @Override
@@ -134,12 +149,25 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     }
 
     @Override
+    public Collection<T> findAll(final int offset, final int limit) throws DatasourceFindException {
+        if (offset < 0 || limit < 1) {
+            throw new DatasourceFindException("Invalid parameter value");
+        }
+        try {
+            Query stmt = SqlQueryDAO.this.queryBuilder.buildFindWithPagination(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), SqlQueryDAO.this.connection, offset, limit);
+            return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
+        } catch (Exception e) {
+            throw new DatasourceFindException(e);
+        }
+    }
+
+    @Override
     public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
         try {
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(searchParameter);
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), searchParams, SqlQueryDAO.this.connection, false);
-            T result =  stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
+            T result = stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
             if (result == null) {
                 throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
             }

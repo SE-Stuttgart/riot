@@ -2,7 +2,7 @@ package de.uni_stuttgart.riot.server.commons.db;
 
 import java.util.Collection;
 
-import de.uni_stuttgart.riot.commons.model.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -25,6 +25,17 @@ public interface DAO<T extends Storable> {
      *             When the object cannot be deleted.
      */
     void delete(T t) throws DatasourceDeleteException;
+
+    /**
+     * Deletes the object with given id from the datasource. <br>
+     * 
+     * @param id
+     *            the id from object to be delete
+     * 
+     * @throws DatasourceDeleteException
+     *             When the object cannot be deleted.
+     */
+    void delete(long id) throws DatasourceDeleteException;
 
     /**
      * Inserts the given object into the datasource.
@@ -80,6 +91,20 @@ public interface DAO<T extends Storable> {
     Collection<T> findAll() throws DatasourceFindException;
 
     /**
+     * Returns a collection of T objects using pagination.
+     * 
+     * @param offset
+     *            the start point
+     * @param limit
+     *            the number of objects to return
+     * @return the limited collection T objects
+     * @throws DatasourceFindException
+     *             When retrieving the objects failed or parameters are invalid (offset < 0 or limit < 1).
+     * 
+     */
+    Collection<T> findAll(final int offset, final int limit) throws DatasourceFindException;
+
+    /**
      * Returns the fist element that is matching the searchparameter. <b>Should only be used with unique fields</b>
      * 
      * @param searchParameter
@@ -89,5 +114,4 @@ public interface DAO<T extends Storable> {
      *             if there is no such element
      */
     T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException;
-
 }

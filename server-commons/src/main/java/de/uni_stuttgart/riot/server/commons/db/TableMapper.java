@@ -31,6 +31,10 @@ public class TableMapper {
             return "tokens_roles";
         } else if (className.equals("UserRole")) {
             return "users_roles";
+        } else if (className.equals("CalendarEntry")) {
+            return "calendarEntries";
+        } else if (className.equals("Contact")) {
+            return "contacts";
         }
         return "no table (TableMapper!)";
     }
