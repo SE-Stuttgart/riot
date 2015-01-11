@@ -15,12 +15,12 @@ Every request is augmented with the Access-Token, that is initially retrieved by
 The UsermanagementClient offers all operations that are available on the Usermanagement. 
 How to use the UsermanagementClient:
 
-     	LoginClient loginClient = new LoginClient(SERVER_URL, THING_NAME);
-        UsermanagementClient client = new UsermanagementClient(loginClient);
-        loginClient.login(USERNAME, PASSWORD);
-        Collection<UserResponse> users = client.getUsers();
- 	// do stuff
-        loginClient.logout();
+	LoginClient loginClient = new LoginClient(SERVER_URL, THING_NAME);
+	UsermanagementClient client = new UsermanagementClient(loginClient);
+	loginClient.login(USERNAME, PASSWORD);
+	Collection<UserResponse> users = client.getUsers();
+	// do stuff
+	loginClient.logout();
 
 ## How to implement a new client
 In order to implement a new REST-Client create a class as follows:
@@ -33,10 +33,10 @@ In order to implement a new REST-Client create a class as follows:
 		public ResponseClass restServiceOperationName(RequestClass request) throwsRequestException {
         		HttpResponse response = this.loginClient.put(REST_SERVICE_URL, request);
         		try {
-           			return this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),
+				return this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),
 							ResponseClass.class);
         		} catch (Exception e) {
-            			throw new RequestException(e);
+				throw new RequestException(e);
         		}
     		}
        } 
@@ -49,23 +49,24 @@ The Request and Response classes have to satisfy some rules. First of all they h
 
 		protected String fieldX;
 		protected String fieldY;
-  
-    		public User() {
-    		}
+  		
+		public User() {
+		}
 
-    		public String getFieldX() {
-       	 		return fieldX;
-    		}
+		public String getFieldX() {
+			return fieldX;
+		}
 
-    		public void setFieldX(String fieldX) {
-        		this.fieldX = fieldX;
-    		}
+		public void setFieldX(String fieldX) {
+			this.fieldX = fieldX;
+		}
+		
 		public String getFieldY() {
-        		return fieldY;
-    		}
+			return fieldY;
+		}
 
-    		public void setFieldY(String fieldY) {
-        		this.fieldY = fieldY;
-    		}
+		public void setFieldY(String fieldY) {
+			this.fieldY = fieldY;
+		}
 
 	}
