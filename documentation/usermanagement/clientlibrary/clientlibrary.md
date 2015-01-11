@@ -27,7 +27,7 @@ In order to implement a new REST-Client create a class as follows:
 
 	public class NewClient {
 
-       		private final LoginClient loginClient;
+       	private final LoginClient loginClient;
 
 		// For every REST-Operation 
 		public ResponseClass restServiceOperationName(RequestClass request) throwsRequestException {
@@ -36,7 +36,7 @@ In order to implement a new REST-Client create a class as follows:
 				return this.loginClient.jsonMapper.readValue(response.getEntity().getContent(),
 							ResponseClass.class);
         		} catch (Exception e) {
-				throw new RequestException(e);
+				    throw new RequestException(e);
         		}
     		}
        } 
@@ -50,7 +50,7 @@ The Request and Response classes have to satisfy some rules. First of all they h
 		protected String fieldX;
 		protected String fieldY;
   		
-		public User() {
+		public Response() {
 		}
 
 		public String getFieldX() {
