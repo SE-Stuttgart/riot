@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,13 +14,13 @@ import org.apache.shiro.subject.Subject;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
-import de.uni_stuttgart.riot.usermanagement.data.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenRoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenRoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
@@ -54,8 +55,10 @@ public class AuthenticationLogic {
      */
     public AuthenticationLogic() {
         try {
-            dao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
+            dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(), false);
         } catch (NamingException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,10 +102,10 @@ public class AuthenticationLogic {
                     ul.updateUser(user, null);
 
                     Token token = generateAndSaveTokens(user.getId());
-         
+
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
                     // assign the token the same roles as the user has
                     for (Role role : roles) {
@@ -141,7 +144,7 @@ public class AuthenticationLogic {
             // test, if token is valid
             if (token != null && token.isValid()) {
 
-                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
                 // generate a new token and save it in the db
                 Token newToken = generateAndSaveTokens(token.getUserID());
@@ -200,7 +203,7 @@ public class AuthenticationLogic {
         int retries = TOKEN_GENERATION_MAX_RETRIES;
         Exception lastException = null;
 
-        Timestamp issueTime = new Timestamp(System.currentTimeMillis()-1000000);//FIXME use git - master 
+        Timestamp issueTime = new Timestamp(System.currentTimeMillis() - 1000000);// FIXME use git - master
         Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
 
         do {

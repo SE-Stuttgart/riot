@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
+
 /**
  * The User class holds all basic information regarding to a user.
  * 

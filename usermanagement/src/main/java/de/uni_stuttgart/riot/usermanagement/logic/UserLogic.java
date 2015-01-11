@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,14 +12,14 @@ import org.apache.commons.lang.Validate;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.usermanagement.data.DAO;
-import de.uni_stuttgart.riot.usermanagement.data.DatasourceUtil;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchFields;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.SearchParameter;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.RoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.TokenSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserRoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.sqlQueryDao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserRoleSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
@@ -48,8 +49,10 @@ public class UserLogic {
      */
     public UserLogic() {
         try {
-            dao = new UserSqlQueryDao(DatasourceUtil.getDataSource());
+            dao = new UserSqlQueryDao(ConnectionMgr.openConnection(), false);
         } catch (NamingException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -207,7 +210,7 @@ public class UserLogic {
      */
     public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
         try {
-            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
             UserRole ur = new UserRole(userId, roleId);
             roleDao.insert(ur);
         } catch (Exception e) {
@@ -229,8 +232,8 @@ public class UserLogic {
         }
 
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
-            DAO<Role> roleDao = new RoleSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<Role> roleDao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
             // get all roles with the given user id
             Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
@@ -262,7 +265,7 @@ public class UserLogic {
      */
     public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(new SearchParameter(SearchFields.USERID, userId));
@@ -294,7 +297,7 @@ public class UserLogic {
         }
 
         try {
-            DAO<Token> tokenDao = new TokenSqlQueryDAO(DatasourceUtil.getDataSource());
+            DAO<Token> tokenDao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
             // get all active tokens with the given user id
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();

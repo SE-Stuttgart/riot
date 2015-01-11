@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement. Permissions can be assigned to {@link UMUser}s over
@@ -48,12 +47,6 @@ public class Permission extends Storable {
         this.setPermissionValue(permissionValue);
     }
 
-
-    @Override
-    public String toString() {
-        return "Permission [permissionValue=" + permissionValue + "]";
-    }
-
     /**
      * Getter for {@link Permission#permissionValue}.
      * 
@@ -70,8 +63,6 @@ public class Permission extends Storable {
         result = prime * result + ((permissionValue == null) ? 0 : permissionValue.hashCode());
         return result;
     }
-
-
 
     @Override
     public boolean equals(Object obj) {
@@ -103,5 +94,15 @@ public class Permission extends Storable {
      */
     public void setPermissionValue(String permissionValue) {
         this.permissionValue = permissionValue;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Permission [permissionID=");
+        builder.append(", permissionValue=");
+        builder.append(permissionValue);
+        builder.append("]");
+        return builder.toString();
     }
 }

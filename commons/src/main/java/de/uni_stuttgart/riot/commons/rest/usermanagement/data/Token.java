@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
+
 /**
  * Holds the Token that is used to authenticate a user and the associated
  * refresh token that could be used to retrieve a new token without the need of

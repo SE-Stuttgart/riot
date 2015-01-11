@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
+
 /**
  * {@link Role}s can be assigned to {@link UMUser}s to grand certain rights. It can also be used
  * to group {@link Permission}s. By assigning a role to a user, the users receives all permissions associated to the role.

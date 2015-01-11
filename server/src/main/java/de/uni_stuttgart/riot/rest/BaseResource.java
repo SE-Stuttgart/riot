@@ -19,7 +19,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import de.uni_stuttgart.riot.db.DaoException;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 
 /**
  * Base class for all rest resource classes.
@@ -29,7 +34,7 @@ import de.uni_stuttgart.riot.db.DaoException;
  * @param <E>
  *            the element type
  */
-public abstract class BaseResource<E extends ResourceModel> {
+public abstract class BaseResource<E extends Storable> {
 
     /** Default format for serialization. */
     protected static final String PRODUCED_FORMAT = MediaType.APPLICATION_JSON;
@@ -42,8 +47,8 @@ public abstract class BaseResource<E extends ResourceModel> {
 
     // protected static String URI_PATH;
 
-    /** The model manager for read/write operations. */
-    protected ModelManager<E> modelManager;
+    /** The DAO for read/write operations. */
+    protected DAO<E> dao;
 
     @Context
     private UriInfo uriInfo;
@@ -54,8 +59,8 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param modelManager
      *            the model manager
      */
-    public BaseResource(ModelManager<E> modelManager) {
-        this.modelManager = modelManager;
+    public BaseResource(DAO<E> modelManager) {
+        this.dao = modelManager;
     }
 
     /**
@@ -64,14 +69,14 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the model if it exists, HTTP 404 otherwise
-     * @throws DaoException
-     *             when access not possible
+     * @throws DatasourceFindException
+     *             when resource was not found
      */
     @GET
     @Path("{id}")
     @Produces(PRODUCED_FORMAT)
-    public E getById(@PathParam("id") long id) throws DaoException {
-        E model = modelManager.getById(id);
+    public E getById(@PathParam("id") long id) throws DatasourceFindException {
+        E model = dao.findBy(id);
         if (model == null) {
             throw new NotFoundException();
         }
@@ -86,22 +91,23 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param limit
      *            maximum number of items to return
      * @return the collection. If the both parameters are 0, it returns at maximum 20 elements.
-     * @throws DaoException
+     * 
+     * @throws DatasourceFindException
      *             when retrieving the data fails
      */
     @GET
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DaoException {
+    public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
 
         if (limit < 0 || offset < 0) {
             throw new BadRequestException("please provide valid parameter values");
         } else if (limit == 0) {
             // the case when GET request has no query parameters (api/resource)
-            return modelManager.get(offset, DEFAULT_PAGE_SIZE);
+            return dao.findAll(offset, DEFAULT_PAGE_SIZE);
 
         } else {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
-            return modelManager.get(offset, limit);
+            return dao.findAll(offset, limit);
         }
     }
 
@@ -111,19 +117,19 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param model
      *            the model
      * @return an HTTP created (201) response if successful
-     * @throws DaoException
-     *             when creation not possible
+     * @throws DatasourceInsertException
+     *             when insertion failed
      */
     @POST
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Response create(E model) throws DaoException {
+    public Response create(E model) throws DatasourceInsertException {
         if (model == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
-        E created = modelManager.create(model);
-        URI relative = getUriForModel(created);
-        return Response.created(relative).entity(created).build();
+        dao.insert(model);
+        URI relative = getUriForModel(model);
+        return Response.created(relative).entity(model).build();
     }
 
     /**
@@ -134,23 +140,25 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param model
      *            the model
      * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
-     * @throws DaoException
-     *             when update not possible
      * 
      */
     @PUT
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Response update(@PathParam("id") long id, E model) throws DaoException {
+    public Response update(@PathParam("id") long id, E model) {
         if (model == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
         model.setId(id);
-        if (modelManager.update(model)) {
-            return Response.noContent().build();
+
+        try {
+            dao.update(model);
+        } catch (DatasourceUpdateException exception) {
+            throw new NotFoundException("No such resource exists.", exception);
         }
-        throw new NotFoundException("No such resource exists.");
+
+        return Response.noContent().build();
     }
 
     // TODO: put for collection
@@ -161,17 +169,18 @@ public abstract class BaseResource<E extends ResourceModel> {
      * @param id
      *            the id
      * @return the response, which is either HTTP 204 or a HTTP 404 if no row matched the id.
-     * @throws DaoException
-     *             when deletion not possible
      */
     @DELETE
     @Path("{id}")
     @Consumes(CONSUMED_FORMAT)
-    public Response delete(@PathParam("id") long id) throws DaoException {
-        if (modelManager.delete(id)) {
-            return Response.noContent().build();
+    public Response delete(@PathParam("id") long id) {
+        try {
+            dao.delete(id);
+        } catch (DatasourceDeleteException exception) {
+            throw new NotFoundException("No such resource exists or it has already been deleted.", exception);
         }
-        throw new NotFoundException("No such resource exists or it has already been deleted.");
+
+        return Response.noContent().build();
     }
 
     /**

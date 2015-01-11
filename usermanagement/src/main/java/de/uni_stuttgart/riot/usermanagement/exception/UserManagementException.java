@@ -45,7 +45,7 @@ public abstract class UserManagementException extends Exception {
     public String getEndUserMessage() {
         return this.getMessage();
     }
-
+    
     /**
      * Constructor for UserManagementException.
      * 
