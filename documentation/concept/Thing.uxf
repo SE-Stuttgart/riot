@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>380</x>
+      <y>230</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>Thing</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>380</x>
+      <y>350</y>
+      <w>100</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Property&lt;T&gt;
+--
+-name
+-value</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>580</x>
+      <y>230</y>
+      <w>150</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Event&lt;FiredEvent&gt;
+--
+-listeners
++register(EvtListnr)
++unregister(EvtListnr)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>580</x>
+      <y>350</y>
+      <w>150</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>PropertyChangeEvent
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>360</x>
+      <y>150</y>
+      <w>130</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&gt;
+parent</panel_attributes>
+    <additional_attributes>30;80;30;50;110;50;110;80</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>400</x>
+      <y>250</y>
+      <w>50</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+r2=  n</panel_attributes>
+    <additional_attributes>30;30;30;100</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>450</x>
+      <y>330</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+
+m2=1</panel_attributes>
+    <additional_attributes>30;30;130;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>630</x>
+      <y>280</y>
+      <w>50</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;70</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>110</x>
+      <y>230</y>
+      <w>170</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Action&lt;ExecutedAction&gt;
+--
++execute(ExAct)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>250</x>
+      <y>210</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=n</panel_attributes>
+    <additional_attributes>130;30;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>110</x>
+      <y>350</y>
+      <w>170</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>PropertySetAction
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>160</x>
+      <y>260</y>
+      <w>50</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;90</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>250</x>
+      <y>330</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+
+m2=1</panel_attributes>
+    <additional_attributes>130;30;30;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>450</x>
+      <y>210</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m2=n</panel_attributes>
+    <additional_attributes>30;30;130;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>580</x>
+      <y>120</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>FiredEvent
+--
+-time</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>650</x>
+      <y>160</y>
+      <w>80</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-
+instance
+of &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>110</x>
+      <y>120</y>
+      <w>170</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ExecutedAction
+--
+-time</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>180</x>
+      <y>160</y>
+      <w>80</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-
+instance
+of &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>120</x>
+      <y>380</y>
+      <w>150</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>PropertySet
+--
+-newValue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Relation</type>
+    <coordinates>
+      <x>60</x>
+      <y>120</y>
+      <w>80</w>
+      <h>310</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>50;30;30;30;30;290;60;290</additional_attributes>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>590</x>
+      <y>380</y>
+      <w>130</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>PropertyChange
+--
+-oldValue
+-newValue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.element.Class</type>
+    <coordinates>
+      <x>810</x>
+      <y>230</y>
+      <w>220</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>EventListener&lt;FiredEvent&gt;
+--
++onFired(FiredEvent)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>720</x>
+      <y>240</y>
+      <w>110</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=n
+m2=m
+&lt; listens</panel_attributes>
+    <additional_attributes>10.0;20.0;90.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>710</x>
+      <y>130</y>
+      <w>80</w>
+      <h>300</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>20.0;10.0;60.0;10.0;60.0;280.0;10.0;280.0</additional_attributes>
+  </element>
+</diagram>

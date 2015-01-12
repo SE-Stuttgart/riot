@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>220</x>
+      <y>120</y>
+      <w>140</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+Floor
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>30</x>
+      <y>120</y>
+      <w>140</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+House
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>160</x>
+      <y>140</y>
+      <w>80</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>410</x>
+      <y>120</y>
+      <w>140</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+Room
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>350</x>
+      <y>140</y>
+      <w>80</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>30</x>
+      <y>350</y>
+      <w>210</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+Fridge
+--
++put(GroceryItem, int)
++remove(GroceryItem, int)
++getContent(GroceryItem) : int
++contentChangedEvent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>620</x>
+      <y>390</y>
+      <w>140</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+Toaster
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>470</x>
+      <y>390</y>
+      <w>140</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+CoffeeMachine
+--
++outOfWaterEvent
++outOfBeansEvent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>30</x>
+      <y>240</y>
+      <w>140</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+GroceryItem
+--
++label : String
++price : BigDecimal
++weight : BigDecimal</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>180</x>
+      <y>240</y>
+      <w>200</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Event&gt;&gt;
+FridgeContentChangedEvent
+--
++item : GroceryItem
++amount : int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>580</x>
+      <y>240</y>
+      <w>140</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+/TaskMachine/
+--
++startTask()
++taskFinishedEvent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>410</x>
+      <y>240</y>
+      <w>140</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Thing&gt;&gt;
+/HouseholdMachine/
+--
++turnOn()
++turnOff()
++state
++stateChangedEvent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>260</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;40.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>590</x>
+      <y>350</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>620</x>
+      <y>350</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>90</y>
+      <w>540</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=.
+Spatial organization</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>210</y>
+      <w>370</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>lt=.
+Grocery storage</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>400</x>
+      <y>210</y>
+      <w>380</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>lt=.
+Controllable household machines</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
