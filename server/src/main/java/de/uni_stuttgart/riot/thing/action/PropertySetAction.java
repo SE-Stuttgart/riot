@@ -43,7 +43,7 @@ public class PropertySetAction<T> implements Action<PropertySetAction<T>.Propert
         return property;
     }
 
-    private void setProperty(Property<T> property) {
+    public void setProperty(Property<T> property) {
         this.property = property;
     }
 }

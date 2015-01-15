@@ -1,10 +1,15 @@
 package de.uni_stuttgart.riot.thing.event;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class Event<T extends FiredEvent> {
 
     private Collection<EventListener<T>> eventListeners;
+    
+    public Event() {
+        this.eventListeners = new ArrayList<EventListener<T>>();
+    }
     
     public void register(EventListener<T> eventListener){
         this.eventListeners.add(eventListener);

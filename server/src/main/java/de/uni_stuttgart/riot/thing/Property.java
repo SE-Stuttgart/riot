@@ -9,11 +9,13 @@ public class Property<T> {
     private T value;
     
     private PropertySetAction<T> propertySetAction;
-    private PropertyChangeEvent propertyChangeEvent;
+    private PropertyChangeEvent<T> propertyChangeEvent;
     
-    public Property(String name, T value) {
+    public Property(String name, T value, PropertySetAction<T> propertySetAction, PropertyChangeEvent<T> propertyChangeEvent) {
         this.setName(name);
         this.setValue(value);
+        this.setPropertyChangeEvent(propertyChangeEvent);
+        this.setPropertySetAction(propertySetAction);
     }
     
     public Property() {

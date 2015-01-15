@@ -2,59 +2,66 @@ package de.uni_stuttgart.riot.thing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import de.uni_stuttgart.riot.thing.action.Action;
+import de.uni_stuttgart.riot.thing.action.PropertySetAction;
 import de.uni_stuttgart.riot.thing.event.Event;
+import de.uni_stuttgart.riot.thing.event.EventListener;
+import de.uni_stuttgart.riot.thing.event.PropertyChange;
+import de.uni_stuttgart.riot.thing.event.PropertyChangeEvent;
+import de.uni_stuttgart.riot.thing.house.TestListener;
 
 public abstract class Thing {
     
-    private Collection<Property> properties;
+    private Map<String,Property> properties;
     private Collection<Action> actions;
     private Collection<Event> events;
     private Thing parent;
     
-    public Thing() {
-        this.setActions(new ArrayList<Action>());
-        this.setEvents(new ArrayList<Event>());
-        this.setProperties(new ArrayList<Property>());
+    public Thing(String name, Long id) {
+        this.actions = new ArrayList<Action>();
+        this.events = new ArrayList<Event>();
+        this.properties = new HashMap<String,Property>();
+        this.addProperty("name", name);
+        this.addProperty("id", id);
+        this.initActions();
+        this.initEvents();
+        this.initProperties();
     }
     
-    /**
-     * @return the properties
-     */
-    protected Collection<Property> getProperties() {
-        return properties;
+    protected abstract void initProperties();
+    protected abstract void initActions();
+    protected abstract void initEvents();
+
+    protected <T> EventListener<PropertyChange<T>> addProperty(String name, T defaultValue){
+        PropertyChangeEvent<T> changeEvent = new PropertyChangeEvent<T>();
+        PropertySetAction<T> changeAction = new PropertySetAction<T>();
+        Property<T> property = new Property<T>(name,defaultValue,changeAction, changeEvent);
+        changeAction.setProperty(property);
+        this.actions.add(changeAction);
+        this.events.add(changeEvent);
+        this.properties.put(name,property);
+        EventListener<PropertyChange<T>> listener = new TestListener<T>();
+        changeEvent.register(listener);
+        return listener;
     }
-    /**
-     * @param properties the properties to set
-     */
-    protected void setProperties(Collection<Property> properties) {
-        this.properties = properties;
+    
+    protected <T> void changeProperty(String name, T newValue){
+        Property<T> property = this.properties.get(name);
+        PropertySetAction<T> action = property.getPropertySetAction();
+        T oldValue = property.getValue();
+        action.execute(action.new PropertySet<T>(newValue));
+        property.getPropertyChangeEvent().fire(new PropertyChange<T>(oldValue, newValue));
     }
-    /**
-     * @return the actions
-     */
-    protected Collection<Action> getActions() {
-        return actions;
+    
+    public Property getProperty(String name){
+        return this.properties.get(name);
     }
-    /**
-     * @param actions the actions to set
-     */
-    protected void setActions(Collection<Action> actions) {
-        this.actions = actions;
-    }
-    /**
-     * @return the events
-     */
-    protected Collection<Event> getEvents() {
-        return events;
-    }
-    /**
-     * @param events the events to set
-     */
-    protected void setEvents(Collection<Event> events) {
-        this.events = events;
-    }
+   
     /**
      * @return the parent
      */
