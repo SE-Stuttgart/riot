@@ -11,7 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -20,41 +20,45 @@ import org.codehaus.jackson.map.ObjectMapper;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 /**
  * Rest client for authentication handling.
  */
 public class LoginClient {
-    
+
     private static final int NOT_AUTH = 401;
     private static final int ERROR_THRESHOLD = 402;
     private static final int BAD_REQUEST = 400;
     private static final String APPLICATION_JSON = "application/json";
     private static final String PREFIX = "/riot/api/v1/";
     private static final String LOGOUT_PATH = PREFIX + "auth/logout";
-    private static final String LOGIN_PATH =  PREFIX + "auth/login";
-    private static final String REFRESH_PATH =  PREFIX + "auth/refresh";
+    private static final String LOGIN_PATH = PREFIX + "auth/login";
+    private static final String REFRESH_PATH = PREFIX + "auth/refresh";
     private static final String ACCESS_TOKEN = "Access-Token";
-    
-    final ObjectMapper jsonMapper = new ObjectMapper(); 
-    private String currentAuthenticationToken;
-    private String currentRefreshToken;
+
+    final ObjectMapper jsonMapper = new ObjectMapper();
+    private TokenManager tokenManager;
     private final String deviceName;
-    private final HttpClient client = HttpClientBuilder.create().build();
+    private final HttpClient client = new DefaultHttpClient();
     private final String serverUrl;
     private boolean logedIn;
 
     /**
      * Constructor.
-     * @param serverUrl the server url
-     * @param deviceName the devicename
+     *
+     * @param serverUrl
+     *            the server url
+     * @param deviceName
+     *            the devicename
+     * @param tokenManager
+     *            the token manager
      */
-    public LoginClient(String serverUrl, String deviceName) {
+    public LoginClient(String serverUrl, String deviceName, TokenManager tokenManager) {
         this.deviceName = deviceName;
-        this.currentAuthenticationToken = "noToken";
-        this.currentRefreshToken = "noToken";
         this.serverUrl = serverUrl;
         this.logedIn = false;
+        this.tokenManager = tokenManager;
     }
 
     public String getServerUrl() {
@@ -63,24 +67,30 @@ public class LoginClient {
 
     /**
      * Login for the given user, must be called before using any request.
-     * @param username .
-     * @param password .
-     * @throws RequestException Remote Exception
+     * 
+     * @param username
+     *            .
+     * @param password
+     *            .
+     * @throws RequestException
+     *             Remote Exception
      * @throws ClientProtocolException .
      * @throws IOException .
      */
-    public void login(String username, String password) throws RequestException, ClientProtocolException, IOException {
-        this.internalLogin(LOGIN_PATH, new LoginRequest(username, password));
+    public UserResponse login(String username, String password) throws RequestException, ClientProtocolException, IOException {
+        return this.internalLogin(LOGIN_PATH, new LoginRequest(username, password));
     }
 
     void refresh() throws RequestException {
-        RefreshRequest refreshRequest = new RefreshRequest(this.currentRefreshToken);
+        RefreshRequest refreshRequest = new RefreshRequest(tokenManager.getRefreshToken());
         this.internalLogin(REFRESH_PATH, refreshRequest);
     }
 
     /**
      * Logout, invalidates the current tokens.
-     * @throws RequestException Remote Exception
+     * 
+     * @throws RequestException
+     *             Remote Exception
      * @throws JsonGenerationException .
      * @throws JsonMappingException .
      * @throws UnsupportedEncodingException .
@@ -90,10 +100,10 @@ public class LoginClient {
         this.put(this.serverUrl + LOGOUT_PATH, "");
     }
 
-    void internalLogin(String path, Object entity) throws RequestException {
+    UserResponse internalLogin(String path, Object entity) throws RequestException {
         try {
             HttpPut put = new HttpPut(serverUrl + path);
-            put.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+            put.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
             StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
             jsonEntity.setContentType(APPLICATION_JSON);
             put.setEntity(jsonEntity);
@@ -111,13 +121,15 @@ public class LoginClient {
                 }
             } else {
                 AuthenticationResponse response = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), AuthenticationResponse.class);
-                this.currentAuthenticationToken = response.getAccessToken();
-                this.currentRefreshToken = response.getRefreshToken();
+                tokenManager.setAccessToken(response.getAccessToken());
+                tokenManager.setRefreshToken(response.getRefreshToken());
                 this.logedIn = true;
-            } 
+                return response.getUser();
+            }
         } catch (Exception e) {
             throw new RequestException(e);
         }
+        return null;
     }
 
     HttpResponse put(final String target, final Object entity) throws RequestException {
@@ -125,7 +137,7 @@ public class LoginClient {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
                     HttpPut put = new HttpPut(target);
-                    put.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+                    put.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
                     StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
                     jsonEntity.setContentType(APPLICATION_JSON);
                     put.setEntity(jsonEntity);
@@ -142,7 +154,7 @@ public class LoginClient {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
                     HttpPost post = new HttpPost(target);
-                    post.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+                    post.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
                     StringEntity jsonEntity = new StringEntity(LoginClient.this.jsonMapper.writeValueAsString(entity));
                     jsonEntity.setContentType(APPLICATION_JSON);
                     post.setEntity(jsonEntity);
@@ -159,7 +171,7 @@ public class LoginClient {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
                     HttpDelete delete = new HttpDelete(target);
-                    delete.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+                    delete.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
                     return LoginClient.this.client.execute(delete);
                 }
             });
@@ -173,7 +185,7 @@ public class LoginClient {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
                     HttpGet get = new HttpGet(target);
-                    get.setHeader(ACCESS_TOKEN, LoginClient.this.currentAuthenticationToken);
+                    get.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
                     return LoginClient.this.client.execute(get);
                 }
             });
@@ -216,6 +228,6 @@ public class LoginClient {
     }
 
     HttpClient getClient() {
-        return HttpClientBuilder.create().build();
+        return client;
     }
 }

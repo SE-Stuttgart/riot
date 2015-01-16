@@ -15,7 +15,7 @@ Every request is augmented with the Access-Token, that is initially retrieved by
 The UsermanagementClient offers all operations that are available on the Usermanagement. 
 How to use the UsermanagementClient:
 
-	LoginClient loginClient = new LoginClient(SERVER_URL, THING_NAME);
+	LoginClient loginClient = new LoginClient(SERVER_URL, THING_NAME, new DefaultTokenManager()); // The DefaultTokenManager saves tokens only in memory!
 	UsermanagementClient client = new UsermanagementClient(loginClient);
 	loginClient.login(USERNAME, PASSWORD);
 	Collection<UserResponse> users = client.getUsers();
