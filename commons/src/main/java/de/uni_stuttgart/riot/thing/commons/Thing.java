@@ -1,16 +1,26 @@
 package de.uni_stuttgart.riot.thing.commons;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
 
-public abstract class Thing {
+public abstract class Thing extends Storable{
 
-    private Collection<Property> properties;
-    private Collection<Event> events;
-    private Collection<Action> actions;
+    private final Collection<Property> properties;
+    private final Collection<Event> events;
+    private final Collection<Action> actions;
+    private final String name;
+    
+    public Thing(String name) {
+        this.name = name;
+        this.properties = new ArrayList<Property>();
+        this.events = new ArrayList<Event>();
+        this.actions = new ArrayList<Action>();
+    }
     
     //TODO geht das so
     public boolean hasProperty(Property property){
@@ -27,7 +37,7 @@ public abstract class Thing {
         this.actions.add(action);
     }
     
-    protected <T> void addProperty(Property<T> property){
+    public <T> void addProperty(Property<T> property){
         this.addAction(new PropertySetAction<T>(property.getName(),this));
         this.properties.add(property);
     }

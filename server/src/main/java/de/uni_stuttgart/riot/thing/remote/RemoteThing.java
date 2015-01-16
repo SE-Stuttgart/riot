@@ -4,4 +4,8 @@ import de.uni_stuttgart.riot.thing.commons.Thing;
 
 public class RemoteThing extends Thing {
 
+    public RemoteThing(String name) {
+        super(name);
+    }
+
 }

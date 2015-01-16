@@ -70,8 +70,17 @@ public enum SearchFields {
     /**
      * Search field for: {@link ConfigurationStorable#getConfigKey()}.
      * */
-    CONFIGKEY("configKey");
+    CONFIGKEY("configKey"),
 
+    /**
+     * Search field for:.
+     */
+    NAME("name"), 
+    /**
+     * Search field for:.
+     */
+    THINGID("thingID");
+    
     private final String text;
 
     private SearchFields(final String text) {

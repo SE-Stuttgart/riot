@@ -6,9 +6,8 @@ import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 
 public class Frigde extends ClientThing {
 
-    public Frigde(ThingClient thingClient, long delay) {
-        super(thingClient, delay);
-        // TODO Auto-generated constructor stub
+    public Frigde(ThingClient thingClient, String name, long delay) {
+        super(thingClient, name,delay);
     }
 
     @Override
@@ -22,7 +21,6 @@ public class Frigde extends ClientThing {
 
     @Override
     protected void handleActionInstances(ActionInstance actionInstance) {
-        // TODO Auto-generated method stub
         
     }
 

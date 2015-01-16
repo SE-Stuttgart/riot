@@ -11,7 +11,8 @@ public abstract class ClientThing extends Thing implements Runnable {
     private boolean started;
     private final ThingClient thingClient;
     
-    public ClientThing(ThingClient thingClient,long delay) {
+    public ClientThing(ThingClient thingClient, String name,long delay) {
+        super(name);
         this.delay = delay;
         this.started = true;
         this.thingClient = thingClient;
@@ -38,6 +39,10 @@ public abstract class ClientThing extends Thing implements Runnable {
 
     private Queue<ActionInstance> getActionInstances() {
         return this.thingClient.getActionInstances();
+    }
+    
+    public void stop(){
+        this.started = false;
     }
 
 }
