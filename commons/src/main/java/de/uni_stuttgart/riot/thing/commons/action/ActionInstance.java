@@ -1,13 +1,13 @@
-package de.uni_stuttgart.riot.thing.action;
+package de.uni_stuttgart.riot.thing.commons.action;
 
 import java.sql.Timestamp;
 
-public abstract class ExecutedAction {
+public abstract class ActionInstance {
     
     private Timestamp time;
     private Action instanceOf;
     
-    public ExecutedAction(Action instanceOf) {
+    public ActionInstance(Action instanceOf) {
         this.setTime(new Timestamp(System.currentTimeMillis()));
         this.setInstanceOf(instanceOf);
     }

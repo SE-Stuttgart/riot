@@ -1,9 +1,11 @@
-package de.uni_stuttgart.riot.thing.event;
+package de.uni_stuttgart.riot.thing.commons.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class Event<T extends FiredEvent> {
+import de.uni_stuttgart.riot.thing.commons.Property;
+
+public abstract class Event<T extends EventInstance> {
 
     private Collection<EventListener<T>> eventListeners;
     
@@ -30,4 +32,5 @@ public abstract class Event<T extends FiredEvent> {
         this.notifyListeners(event);
     }
     
+    public abstract T createInstance(Collection<Property> params) throws Exception;
 }

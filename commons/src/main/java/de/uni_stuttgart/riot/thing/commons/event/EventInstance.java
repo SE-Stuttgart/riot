@@ -1,12 +1,12 @@
-package de.uni_stuttgart.riot.thing.event;
+package de.uni_stuttgart.riot.thing.commons.event;
 
 import java.sql.Timestamp;
 
-public abstract class FiredEvent {
+public abstract class EventInstance {
     
     private Timestamp time;
     
-    public FiredEvent() {
+    public EventInstance() {
         this.setTime(new Timestamp(System.currentTimeMillis()));
     }
 
