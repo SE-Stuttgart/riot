@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing.client;
 
+import java.util.Collection;
 import java.util.Queue;
 
 import de.uni_stuttgart.riot.thing.commons.Thing;
@@ -37,8 +38,8 @@ public abstract class ClientThing extends Thing implements Runnable {
         }
     }
 
-    private Queue<ActionInstance> getActionInstances() {
-        return this.thingClient.getActionInstances();
+    private Collection<ActionInstance> getActionInstances() {
+        return this.thingClient.getActionInstances(this.getName());
     }
     
     public void stop(){

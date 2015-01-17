@@ -1,7 +1,10 @@
 package de.uni_stuttgart.riot.thing.remote;
 
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
+import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 
 public class ActionDBObject extends Storable{
     
@@ -15,8 +18,8 @@ public class ActionDBObject extends Storable{
         return factoryString;
     }
     
-    public Action getTheAction(){
-        return null; // TODO Impl
+    public Action getTheAction(Thing owner){
+        return new PropertySetAction("Test"); // FIXME ADD types (by visitor)
     }
 
 }

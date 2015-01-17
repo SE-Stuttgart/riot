@@ -7,6 +7,7 @@ Thing;
 CREATE TABLE Thing
 (
 id SERIAL ,
+ownerID bigint NOT NULL,
 name varchar(256) NOT NULL,
 PRIMARY KEY (id)
 );

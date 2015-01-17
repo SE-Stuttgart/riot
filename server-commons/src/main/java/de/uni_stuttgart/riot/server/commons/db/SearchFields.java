@@ -79,7 +79,12 @@ public enum SearchFields {
     /**
      * Search field for:.
      */
-    THINGID("thingID");
+    THINGID("thingID"),
+    
+        /**
+     * Search field for:.
+     */
+    OWNERID("ownerID");
     
     private final String text;
 

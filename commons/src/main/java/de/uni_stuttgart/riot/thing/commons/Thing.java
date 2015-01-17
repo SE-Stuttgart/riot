@@ -2,6 +2,9 @@ package de.uni_stuttgart.riot.thing.commons;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
@@ -10,21 +13,18 @@ import de.uni_stuttgart.riot.thing.commons.event.Event;
 
 public abstract class Thing extends Storable{
 
-    private final transient Collection<Property> properties;
-    private final transient Collection<Event> events;
-    private final transient Collection<Action> actions;
+    private transient Map<String,Property> properties;
+    private transient Map<String,Event> events;
+    private transient Collection<Action> actions;
     private final String name;
     
     public Thing(String name) {
         this.name = name;
-        this.properties = new ArrayList<Property>();
-        this.events = new ArrayList<Event>();
-        this.actions = new ArrayList<Action>();
     }
     
     //TODO geht das so
     public boolean hasProperty(Property property){
-        for (Property p : this.properties) {
+        for (Property p : this.properties.values()) {
             if(p.getName().equals(property.getName()) 
                     && p.getValue().getClass().equals(property.getValue().getClass())){
                 return true;
@@ -33,17 +33,28 @@ public abstract class Thing extends Storable{
         return false;
     }
     
-    protected void addAction(Action action){
+    public void addAction(Action action){
+        if(this.actions == null) this.actions = new ArrayList<Action>();
         this.actions.add(action);
     }
     
     public <T> void addProperty(Property<T> property){
-        this.addAction(new PropertySetAction<T>(property.getName(),this));
-        this.properties.add(property);
+        if(this.properties == null) this.properties = new HashMap<String, Property>();
+        this.properties.put(property.getName(),property);
     }
 
     public String getName() {
         return name;
+    }
+    
+    public Map<String,Property> getProperties(){
+        if(this.properties == null) this.properties = new HashMap<String, Property>();
+        return Collections.unmodifiableMap(this.properties);
+    }
+    
+    public Collection<Action> getActions(){
+        if(this.actions == null) this.actions = new ArrayList<Action>();
+        return Collections.unmodifiableCollection(this.actions);
     }
     
 }

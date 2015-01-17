@@ -8,7 +8,7 @@ public class Property<T> {
     private String name;
     private T value;
 
-    public Property(String name, T value, Thing owner) {
+    public Property(String name, T value) {
         this.setName(name);
         this.setValue(value);
     }

@@ -31,14 +31,14 @@ public class ThingDBTest extends JerseyDBTestBase{
     private RemoteThing getTestRemoteThing() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException{
         PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
         RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        daoT.insert(new RemoteThing("Tes2t"));
+        daoT.insert(new RemoteThing("Tes2t",1));
         return daoT.findBy(1);
     }
     
     @Test
     public void insertRemoteThingTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         RemoteThingSqlQueryDAO dao = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        dao.insert(new RemoteThing("Tes2t"));
+        dao.insert(new RemoteThing("Tes2t",1));
         RemoteThing thing = dao.findBy(1);
     }
     

@@ -34,6 +34,8 @@ public class JerseyDBTestBase extends JerseyTest {
             sqlRunner.runScript("/createThingEntries.sql");
             sqlRunner.runScript("/createContacts.sql");
             sqlRunner.runScript("/insertTestValues.sql");
+            sqlRunner.runScript("/insertTestThing.sql");
+
         }
     }
 
