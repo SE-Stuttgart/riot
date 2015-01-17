@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.naming.NamingException;
 
-import de.uni_stuttgart.riot.db.PropertySqlQueryDAO;
+import de.uni_stuttgart.riot.db.PropertyDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingActionSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
@@ -23,13 +23,13 @@ public class ThingLogic {
     
     private RemoteThingSqlQueryDAO remoteThingSqlQueryDAO;
     private RemoteThingActionSqlQueryDAO remoteThingActionSqlQueryDAO;
-    private PropertySqlQueryDAO propertySqlQueryDAO;
+    private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
     
     public ThingLogic() {
         try {
             this.remoteThingActionSqlQueryDAO = new RemoteThingActionSqlQueryDAO(ConnectionMgr.openConnection(),false);
             this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            this.propertySqlQueryDAO = new PropertySqlQueryDAO(ConnectionMgr.openConnection(),false);
+            this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO(ConnectionMgr.openConnection(),false);
         } catch (SQLException | NamingException e) {
             e.printStackTrace();
         }

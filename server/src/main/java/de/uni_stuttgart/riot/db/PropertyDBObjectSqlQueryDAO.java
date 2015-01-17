@@ -6,8 +6,9 @@ import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
 import de.uni_stuttgart.riot.thing.commons.Property;
+import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
 
-public class PropertySqlQueryDAO extends SqlQueryDAO<Property>{
+public class PropertyDBObjectSqlQueryDAO extends SqlQueryDAO<PropertyDBObject>{
     
     /**
      * Constructor.
@@ -19,12 +20,12 @@ public class PropertySqlQueryDAO extends SqlQueryDAO<Property>{
      * @throws SQLException
      *             if an error to database access occurs.
      */
-    public PropertySqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+    public PropertyDBObjectSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
         super(connection, transaction);
     }
 
     @Override
-    protected Class<Property> getMyClazz() {
-        return Property.class;
+    protected Class<PropertyDBObject> getMyClazz() {
+        return PropertyDBObject.class;
     }
 }

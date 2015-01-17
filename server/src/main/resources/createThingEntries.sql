@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS 
-Property,
+PropertyDBObject,
 RemoteThingAction,
-Action,
+ActionDBObject,
 Thing;
 
 CREATE TABLE Thing
@@ -11,10 +11,10 @@ name varchar(256) NOT NULL,
 PRIMARY KEY (id)
 );
 
-CREATE TABLE Action
+CREATE TABLE ActionDBObject
 (
 id SERIAL,
-className varchar(256) NOT NULL,
+factoryString varchar(256) NOT NULL,
 PRIMARY KEY (id)
 );
 
@@ -24,12 +24,12 @@ id SERIAL ,
 thingID bigint unsigned NOT NULL,
 FOREIGN KEY (thingID) REFERENCES thing(id) ON DELETE CASCADE,
 actionID bigint unsigned NOT NULL,
-FOREIGN KEY (actionID) REFERENCES action(id) ON DELETE CASCADE,
+FOREIGN KEY (actionID) REFERENCES ActionDBObject(id) ON DELETE CASCADE,
 PRIMARY KEY (id)
 );
 
 
-CREATE TABLE Property
+CREATE TABLE PropertyDBObject
 (
 id SERIAL , 
 name varchar(256) NOT NULL,

@@ -6,8 +6,9 @@ import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
+import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
 
-public class ActionSqlQueryDAO extends SqlQueryDAO<Action> {
+public class ActionDBObjectSqlQueryDAO extends SqlQueryDAO<ActionDBObject> {
 
     
     /**
@@ -20,13 +21,13 @@ public class ActionSqlQueryDAO extends SqlQueryDAO<Action> {
      * @throws SQLException
      *             if an error to database access occurs.
      */
-    public ActionSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
+    public ActionDBObjectSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
         super(connection, transaction);
     }
 
     @Override
-    protected Class<Action> getMyClazz() {
-        return Action.class;
+    protected Class<ActionDBObject> getMyClazz() {
+        return ActionDBObject.class;
     }
 
 }
