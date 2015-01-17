@@ -21,7 +21,7 @@ public class CreateBuilder {
             result.append("\n(\n");
             Collection<Field> fields = new LinkedList<Field>();
             fields = SQLQueryUtil.getAllFields(currnet,fields);
-            result.append("id SERIAL NOT NULL, \n");
+            result.append("id SERIAL , \n");
             Iterator<Field> i2 = fields.iterator();
             while(i2.hasNext()){
                 Field current = i2.next();
@@ -31,7 +31,10 @@ public class CreateBuilder {
                 if(fieldType.equalsIgnoreCase(String.class.getSimpleName())){
                     result.append("varchar(256) ");
                 } else if(fieldType.equalsIgnoreCase(Integer.class.getSimpleName()) || fieldType.equalsIgnoreCase(Long.class.getSimpleName())){
-                    result.append("int ");
+                    result.append("bigint ");
+                    if(current.getName().endsWith("ID")){
+                        result.append("unsigned ");
+                    }
                 } else if(fieldType.equalsIgnoreCase(Boolean.class.getSimpleName())){
                     result.append("boolean ");
                 } else if(fieldType.equalsIgnoreCase(Timestamp.class.getSimpleName())){

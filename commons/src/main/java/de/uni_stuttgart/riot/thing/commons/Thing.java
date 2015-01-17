@@ -10,9 +10,9 @@ import de.uni_stuttgart.riot.thing.commons.event.Event;
 
 public abstract class Thing extends Storable{
 
-    private final Collection<Property> properties;
-    private final Collection<Event> events;
-    private final Collection<Action> actions;
+    private final transient Collection<Property> properties;
+    private final transient Collection<Event> events;
+    private final transient Collection<Action> actions;
     private final String name;
     
     public Thing(String name) {
@@ -40,6 +40,10 @@ public abstract class Thing extends Storable{
     public <T> void addProperty(Property<T> property){
         this.addAction(new PropertySetAction<T>(property.getName(),this));
         this.properties.add(property);
+    }
+
+    public String getName() {
+        return name;
     }
     
 }

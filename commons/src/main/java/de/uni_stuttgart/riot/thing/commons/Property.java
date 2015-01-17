@@ -6,19 +6,41 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 public class Property<T> extends Storable{
 
     private String name;
-    private T value;
-    private String type;
-    private long thingId;
+    private transient T typedVal;
+    private String val;
+    private String valType;
+    private long thingID;
     
     
-    public Property(String name, T value) {
+    @Override
+    public String toString() {
+        return "Property [name=" + name + ", typedVal=" + typedVal + ", val=" + val + ", valType=" + valType + ", thingID=" + thingID + "]";
+    }
+
+    public Property(String name, T value, Thing owner) {
         this.setName(name);
         this.setValue(value);
-        this.setType(value.getClass().getSimpleName()); //FIXME
+        this.setThingID(owner.getId());
+        this.setVal(this.getValue().toString());
+        this.setValType(value.getClass().getSimpleName()); //FIXME
+    }
+    
+    /**
+     * DB Constructor.
+     * @param name
+     * @param value
+     * @param type
+     * @param thingID
+     */
+    public Property(String name, String value, String type, long thingID) {
+        this.setName(name);
+        this.setVal(value);
+        this.setValType(type); //FIXME
+        this.setThingID(thingID);
+        this.setValue((T)value);
     }
     
     public Property() {
-        
     }
 
     /**
@@ -39,22 +61,39 @@ public class Property<T> extends Storable{
      * @return the value
      */
     public T getValue() {
-        return value;
+        return typedVal;
     }
 
     /**
      * @param value the value to set
      */
     public void setValue(T value) {
-        this.value = value;
+        this.typedVal = value;
     }
 
-    public String getType() {
-        return type;
+    public String getVal() {
+        return val;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setVal(String val) {
+        this.val = val;
+        this.typedVal = (T)val;
+    }
+
+    public long getThingID() {
+        return thingID;
+    }
+
+    public void setThingID(long thingID) {
+        this.thingID = thingID;
+    }
+
+    public String getValType() {
+        return valType;
+    }
+
+    public void setValType(String valType) {
+        this.valType = valType;
     }
     
 }

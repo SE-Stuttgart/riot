@@ -16,7 +16,7 @@ public class Frigde extends ClientThing {
 
     @Override
     protected void initProperties() {
-        this.addProperty(new Property<Boolean>("on", false));
+        //this.addProperty(new Property<Boolean>("on", false));
     }
 
     @Override
