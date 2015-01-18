@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.rest.RiotApplication;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
@@ -32,6 +33,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateExcepti
  * Tests the operations executed at the persistence layer.
  *
  */
+@TestData({ "/schema/schema_calendar.sql", "/data/testdata_calendar.sql" })
 public class CalendarModelManagerTest extends JerseyDBTestBase {
 
     @Override

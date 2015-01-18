@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;
@@ -139,8 +140,8 @@ public class RoleLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_usermanagement.sql" })
     public void testGetAllRolesInvalid() throws Exception {
-        emptyDatabaseTables();
         Collection<Role> allRoles = rl.getAllRoles();
         assertEquals(0, allRoles.size());
     }

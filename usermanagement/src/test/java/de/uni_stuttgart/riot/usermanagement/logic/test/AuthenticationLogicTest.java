@@ -31,8 +31,6 @@ public class AuthenticationLogicTest extends LogicTestBase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         // disable logging of shiro
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         lc.stop();

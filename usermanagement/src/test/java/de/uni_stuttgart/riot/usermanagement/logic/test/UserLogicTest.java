@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
@@ -245,8 +246,8 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_usermanagement.sql" })
     public void testGetAllUsersEmpty() throws Exception {
-        emptyDatabaseTables();
         Collection<UMUser> allUsers = ul.getAllUsers();
         assertEquals(0, allUsers.size());
     }
@@ -310,8 +311,8 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_usermanagement.sql" })
     public void testGetAllRolesFromUserEmpty() throws Exception {
-        emptyDatabaseTables();
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(1L);
         assertEquals(0, allRolesFromUser.size());
     }
@@ -367,8 +368,8 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_usermanagement.sql" })
     public void testGetActiveTokensFromUserEmpty() throws Exception {
-        emptyDatabaseTables();
         Collection<Token> activeTokensFromUser = ul.getActiveTokensFromUser(1L);
         assertEquals(0, activeTokensFromUser.size());
     }

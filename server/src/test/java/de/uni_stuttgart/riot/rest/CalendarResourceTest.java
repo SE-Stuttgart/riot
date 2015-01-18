@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.db.JerseyDBTestBase;
 
 /**
@@ -15,6 +16,7 @@ import de.uni_stuttgart.riot.db.JerseyDBTestBase;
  * 
  * @see https://jersey.java.net/documentation/latest/test-framework.html
  */
+@TestData({ "/schema/schema_calendar.sql", "/data/testdata_calendar.sql" })
 public class CalendarResourceTest extends JerseyDBTestBase {
 
     /*

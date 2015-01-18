@@ -10,6 +10,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.contact.Contact;
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.db.JerseyDBTestBase;
 
 /**
@@ -17,6 +18,7 @@ import de.uni_stuttgart.riot.db.JerseyDBTestBase;
  * 
  * @see https://jersey.java.net/documentation/latest/test-framework.html
  */
+@TestData({ "/schema/schema_contacts.sql", "/data/testdata_contacts.sql" })
 public class ContactsResourceTest extends JerseyDBTestBase {
 
     /*
