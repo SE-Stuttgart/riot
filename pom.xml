@@ -17,7 +17,7 @@
 
 	<modules>
 		<module>commons</module>
-      <module>server-commons</module>
+	  <module>server-commons</module>
 		<module>usermanagement</module>
 		<module>server</module>
 		<module>clientlibrary</module>
@@ -209,8 +209,69 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>			
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>mysql</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>sql-maven-plugin</artifactId>
+						<version>1.5</version>
+						<dependencies>
+							<dependency>
+								<groupId>mysql</groupId>
+								<artifactId>mysql-connector-java</artifactId>
+								<version>5.1.34</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<driver>com.mysql.jdbc.Driver</driver>
+							<url>jdbc:mysql://localhost:3306/riot</url>
+							<settingsKey>riotMySQL</settingsKey>
+						</configuration>
+						<executions>
+							<execution>
+								<id>create-schema</id>
+								<phase>generate-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<orderFile>ascending</orderFile>
+									<fileset>
+										<basedir>${basedir}</basedir>
+										<includes>
+											<include>src/*/resources/schema/*.sql</include>
+										</includes>
+									</fileset>
+								</configuration>
+							</execution>
+							<execution>
+								<id>create-data</id>
+								<phase>generate-test-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<orderFile>ascending</orderFile>
+									<fileset>
+										<basedir>${basedir}</basedir>
+										<includes>
+											<include>src/*/resources/data/*.sql</include>
+										</includes>
+									</fileset>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

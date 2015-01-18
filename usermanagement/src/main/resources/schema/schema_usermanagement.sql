@@ -2,10 +2,10 @@ DROP TABLE IF EXISTS
 roles_permissions,
 tokens_roles,
 users_roles,
-users,
-tokens,
+roles,
 permissions,
-roles;
+tokens,
+users;
 
 CREATE TABLE users 
 (
