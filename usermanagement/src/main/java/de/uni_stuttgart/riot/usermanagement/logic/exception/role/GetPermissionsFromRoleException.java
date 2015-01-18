@@ -4,7 +4,7 @@ import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
 /**
- * Exception is thrown, if an error occurs while retrieving all permissions of a role
+ * Exception is thrown, if an error occurs while retrieving all permissions of a role.
  * 
  * @author Niklas Schnabel
  *

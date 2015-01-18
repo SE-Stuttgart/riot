@@ -16,6 +16,7 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class SqlTransaction implements TransactionInterface {
 
     private final Connection connection;

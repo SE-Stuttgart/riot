@@ -2,18 +2,19 @@ package de.uni_stuttgart.riot.android;
 
 import android.view.MenuItem;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class Filter {
 
 	private int id;
 	private MenuItem item;
 	private NotificationType type;
-	private boolean isChecked;
+	private boolean checked;
 	
-	public Filter(int id, MenuItem item, NotificationType type, boolean isChecked) {
+	public Filter(int id, MenuItem item, NotificationType type, boolean checked) {
 		this.id = id;
 		this.item = item;
 		this.type = type;
-		this.isChecked = isChecked;
+		this.checked = checked;
 	}
 	public int getId() {
 		return id;
@@ -34,9 +35,9 @@ public class Filter {
 		this.type = type;
 	}
 	public boolean isChecked() {
-		return isChecked;
+		return checked;
 	}
-	public void setChecked(boolean isChecked) {
-		this.isChecked = isChecked;
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 }

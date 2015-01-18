@@ -155,35 +155,6 @@ public class UMUser extends User {
         return builder.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        UMUser other = (UMUser) obj;
-        if (hashIterations != other.hashIterations)
-            return false;
-        if (hashedPassword == null) {
-            if (other.hashedPassword != null)
-                return false;
-        } else if (!hashedPassword.equals(other.hashedPassword))
-            return false;
-        if (passwordSalt == null) {
-            if (other.passwordSalt != null)
-                return false;
-        } else if (!passwordSalt.equals(other.passwordSalt))
-            return false;
-        return true;
-    }
-
     /**
      * Gets the hashed password.
      *
@@ -258,6 +229,53 @@ public class UMUser extends User {
      */
     public void setLoginAttemptCount(int loginAttempCount) {
         this.loginAttemptCount = loginAttempCount;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + hashIterations;
+        result = prime * result + ((hashedPassword == null) ? 0 : hashedPassword.hashCode());
+        result = prime * result + loginAttemptCount;
+        result = prime * result + ((passwordSalt == null) ? 0 : passwordSalt.hashCode());
+        return result;
+    }
+
+    // CHECKSTYLE:OFF Auto-Generated Code
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        UMUser other = (UMUser) obj;
+        if (hashIterations != other.hashIterations) {
+            return false;
+        }
+        if (hashedPassword == null) {
+            if (other.hashedPassword != null) {
+                return false;
+            }
+        } else if (!hashedPassword.equals(other.hashedPassword)) {
+            return false;
+        }
+        if (loginAttemptCount != other.loginAttemptCount) {
+            return false;
+        }
+        if (passwordSalt == null) {
+            if (other.passwordSalt != null) {
+                return false;
+            }
+        } else if (!passwordSalt.equals(other.passwordSalt)) {
+            return false;
+        }
+        return true;
     }
 
 }

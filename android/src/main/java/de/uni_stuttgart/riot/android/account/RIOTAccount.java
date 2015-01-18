@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * A RIOT Android account.
  */

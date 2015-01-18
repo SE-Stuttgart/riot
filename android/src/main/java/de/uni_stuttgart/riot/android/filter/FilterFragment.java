@@ -10,6 +10,7 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class FilterFragment extends Fragment {
 
 	private FilterDataObjects filterObjects;

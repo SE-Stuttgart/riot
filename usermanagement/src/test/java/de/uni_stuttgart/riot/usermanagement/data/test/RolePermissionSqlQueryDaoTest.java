@@ -19,16 +19,16 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() throws DatasourceException, SQLException {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(),false);
-        RolePermission testrolePermission = new RolePermission(1l, 2l, -1l);
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(), false);
+        RolePermission testrolePermission = new RolePermission(1L, 2L, -1L);
         dao.insert(testrolePermission);
         RolePermission findRolePermission = dao.findBy(testrolePermission.getId());
         assertEquals(findRolePermission, findRolePermission);
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(),false);
+    public void findUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(), false);
         RolePermission findRolePermission = dao.findBy(new Long(1));
         // RolePermissions are not mutable at the time, only to test the update funktion.
         dao.update(findRolePermission);
@@ -38,7 +38,7 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceFindException, DatasourceDeleteException, SQLException {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(),false);
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(), false);
         RolePermission rolePermission = dao.findBy(new Long(1));
         dao.delete(rolePermission);
         dao.findBy(new Long(1));
@@ -46,15 +46,15 @@ public class RolePermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceUpdateException.class)
     public void errorUpdateTest() throws DatasourceUpdateException, SQLException {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(),false);
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(), false);
         dao.update(new RolePermission(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
-        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(),false);
-        Collection<RolePermission> RolePermission = dao.findAll();
-        assertEquals(4, RolePermission.size());
+        RolePermissionSqlQueryDAO dao = new RolePermissionSqlQueryDAO(this.getConn(), false);
+        Collection<RolePermission> rolePermission = dao.findAll();
+        assertEquals(4, rolePermission.size());
     }
 
 }

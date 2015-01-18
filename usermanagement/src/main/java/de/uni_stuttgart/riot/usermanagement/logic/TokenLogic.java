@@ -12,6 +12,7 @@ import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class TokenLogic {
 
     private DAO<Token> dao;

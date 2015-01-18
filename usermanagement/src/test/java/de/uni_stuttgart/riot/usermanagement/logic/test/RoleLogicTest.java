@@ -28,7 +28,7 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testAddRole_validRole() throws Exception {
+    public void testAddRoleValidRole() throws Exception {
         Role role = new Role("testRole");
         rl.addRole(role);
 
@@ -37,12 +37,12 @@ public class RoleLogicTest extends LogicTestBase {
     }
 
     @Test(expected = AddRoleException.class)
-    public void testAddRole_null() throws AddRoleException {
+    public void testAddRoleNull() throws AddRoleException {
         rl.addRole(null);
     }
 
     @Test(expected = AddRoleException.class)
-    public void testAddRole_EmptyString() throws AddRoleException {
+    public void testAddRoleEmptyString() throws AddRoleException {
         rl.addRole(new Role(""));
     }
 
@@ -51,18 +51,18 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test(expected = GetRoleException.class)
-    public void testDeleteRole_validId() throws Exception {
+    public void testDeleteRoleValidId() throws Exception {
         rl.deleteRole(1L);
         rl.getRole(1L);
     }
 
     @Test(expected = DeleteRoleException.class)
-    public void testDeleteRole_invalidId() throws DeleteRoleException {
+    public void testDeleteRoleInvalidId() throws DeleteRoleException {
         rl.deleteRole(42L);
     }
 
     @Test(expected = DeleteRoleException.class)
-    public void testDeleteRole_null() throws DeleteRoleException {
+    public void testDeleteRoleNull() throws DeleteRoleException {
         rl.deleteRole(null);
     }
 
@@ -71,39 +71,39 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testUpdateRole_validIdAndValidRole() throws Exception {
+    public void testUpdateRoleValidIdAndValidRole() throws Exception {
         rl.updateRole(new Role(1L, "newRole"));
         Role role = rl.getRole(1L);
         assertEquals("newRole", role.getRoleName());
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_invalidIdAndValidRole() throws Exception {
+    public void testUpdateRoleInvalidIdAndValidRole() throws Exception {
         rl.updateRole(new Role(42L, "newRole"));
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_validIdAndInvalidRole() throws Exception {
+    public void testUpdateRoleValidIdAndInvalidRole() throws Exception {
         rl.updateRole(new Role(1L, ""));
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_invalidIdAndInvalidRole() throws Exception {
+    public void testUpdateRoleInvalidIdAndInvalidRole() throws Exception {
         rl.updateRole(new Role(42L, ""));
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_null() throws Exception {
+    public void testUpdateRoleNull() throws Exception {
         rl.updateRole(new Role(null, null));
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_nullId() throws Exception {
+    public void testUpdateRoleNullId() throws Exception {
         rl.updateRole(new Role(null, "test"));
     }
 
     @Test(expected = UpdateRoleException.class)
-    public void testUpdateRole_nullRole() throws Exception {
+    public void testUpdateRoleNullRole() throws Exception {
         rl.updateRole(new Role(1L, null));
     }
 
@@ -112,19 +112,19 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetRole_valid() throws Exception {
+    public void testGetRoleValid() throws Exception {
         Role expect = new Role(1L, "Master");
         Role role = rl.getRole(1L);
         assertEquals(expect, role);
     }
 
     @Test(expected = GetRoleException.class)
-    public void testGetRole_invalid() throws Exception {
+    public void testGetRoleInvalid() throws Exception {
         rl.getRole(42L);
     }
 
     @Test(expected = GetRoleException.class)
-    public void testGetRole_null() throws Exception {
+    public void testGetRoleNull() throws Exception {
         rl.getRole(null);
     }
 
@@ -133,13 +133,13 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetAllRoles_valid() throws Exception {
+    public void testGetAllRolesValid() throws Exception {
         Collection<Role> allRoles = rl.getAllRoles();
         assertEquals(4, allRoles.size());
     }
 
     @Test
-    public void testGetAllRoles_invalid() throws Exception {
+    public void testGetAllRolesInvalid() throws Exception {
         emptyDatabaseTables();
         Collection<Role> allRoles = rl.getAllRoles();
         assertEquals(0, allRoles.size());
@@ -150,18 +150,18 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetAllPermissionsFromRole_valid() throws Exception {
+    public void testGetAllPermissionsFromRoleValid() throws Exception {
         Collection<Permission> allPermissionsFromRole = rl.getAllPermissionsFromRole(1L);
         assertEquals(1, allPermissionsFromRole.size());
     }
 
     @Test(expected = GetPermissionsFromRoleException.class)
-    public void testGetAllPermissionsFromRole_invalid() throws Exception {
+    public void testGetAllPermissionsFromRoleInvalid() throws Exception {
         rl.getAllPermissionsFromRole(42L);
     }
 
     @Test(expected = GetPermissionsFromRoleException.class)
-    public void testGetAllPermissionsFromRole_null() throws Exception {
+    public void testGetAllPermissionsFromRoleNull() throws Exception {
         rl.getAllPermissionsFromRole(null);
     }
 
@@ -170,40 +170,40 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testAddPermissiontToRole_valid() throws Exception {
+    public void testAddPermissiontToRoleValid() throws Exception {
         rl.addPermissionToRole(1L, 2L);
         Collection<Permission> allPermissionsFromRole = rl.getAllPermissionsFromRole(1L);
         assertEquals(2, allPermissionsFromRole.size());
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_doubleEntry() throws Exception {
+    public void testAddPermissiontToRoleDoubleEntry() throws Exception {
         rl.addPermissionToRole(1L, 2L);
         rl.addPermissionToRole(1L, 2L);
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_null() throws Exception {
+    public void testAddPermissiontToRoleNull() throws Exception {
         rl.addPermissionToRole(null, null);
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_nullRoleId() throws Exception {
+    public void testAddPermissiontToRoleNullRoleId() throws Exception {
         rl.addPermissionToRole(1L, null);
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_nullPermissionId() throws Exception {
+    public void testAddPermissiontToRoleNullPermissionId() throws Exception {
         rl.addPermissionToRole(null, 1L);
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_invalidRoleId() throws Exception {
+    public void testAddPermissiontToRoleInvalidRoleId() throws Exception {
         rl.addPermissionToRole(42L, 1L);
     }
 
     @Test(expected = AddPermissionToRoleException.class)
-    public void testAddPermissiontToRole_invalidPermissionId() throws Exception {
+    public void testAddPermissiontToRoleInvalidPermissionId() throws Exception {
         rl.addPermissionToRole(1L, 42L);
     }
 
@@ -212,7 +212,7 @@ public class RoleLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testRemovePermissionFromRole_valid() throws Exception {
+    public void testRemovePermissionFromRoleValid() throws Exception {
         rl.removePermissionFromRole(1L, 1L);
 
         try {
@@ -224,35 +224,35 @@ public class RoleLogicTest extends LogicTestBase {
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_invalidRoleId() throws Exception {
+    public void testRemovePermissionFromRoleInvalidRoleId() throws Exception {
         rl.removePermissionFromRole(42L, 1L);
         assertEquals(1, rl.getAllPermissionsFromRole(1L).size());
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_invalidPermissionId() throws Exception {
+    public void testRemovePermissionFromRoleInvalidPermissionId() throws Exception {
         rl.removePermissionFromRole(1L, 42L);
         assertEquals(1, rl.getAllPermissionsFromRole(1L).size());
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_doubleRemove() throws Exception {
+    public void testRemovePermissionFromRoleDoubleRemove() throws Exception {
         rl.removePermissionFromRole(1L, 1L);
         rl.removePermissionFromRole(1L, 1L);
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_null() throws Exception {
+    public void testRemovePermissionFromRoleNull() throws Exception {
         rl.removePermissionFromRole(null, null);
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_nullRoleId() throws Exception {
+    public void testRemovePermissionFromRoleNullRoleId() throws Exception {
         rl.removePermissionFromRole(null, 1L);
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)
-    public void testRemovePermissionFromRole_nullPermissionId() throws Exception {
+    public void testRemovePermissionFromRoleNullPermissionId() throws Exception {
         rl.removePermissionFromRole(1L, null);
     }
 

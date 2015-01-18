@@ -19,9 +19,9 @@ public class DaoTestBase extends BaseDatabaseTest {
             sqlRunner.runScript("/insertTestValues.sql");
         }
     }
-    
-    public Connection getConn(){
-    	return new Sql2o(getDataSource()).open();
+
+    public Connection getConn() {
+        return new Sql2o(getDataSource()).open();
     }
 
 }

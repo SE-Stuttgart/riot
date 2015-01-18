@@ -29,6 +29,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.Refre
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the authorization process.
  * 

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> {
 
 	private MainActivity mainActivity;

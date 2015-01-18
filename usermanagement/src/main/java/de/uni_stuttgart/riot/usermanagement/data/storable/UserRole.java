@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * {@link UserRole} represents the n:m relation between {@link UMUser} and {@link Role}. Thus this class only maps User to Role not adding
  * any information.
@@ -55,23 +56,30 @@ public class UserRole extends Storable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         UserRole other = (UserRole) obj;
         if (roleID == null) {
-            if (other.roleID != null)
+            if (other.roleID != null) {
                 return false;
-        } else if (!roleID.equals(other.roleID))
+            }
+        } else if (!roleID.equals(other.roleID)) {
             return false;
+        }
         if (userID == null) {
-            if (other.userID != null)
+            if (other.userID != null) {
                 return false;
-        } else if (!userID.equals(other.userID))
+            }
+        } else if (!userID.equals(other.userID)) {
             return false;
+        }
         return true;
     }
 

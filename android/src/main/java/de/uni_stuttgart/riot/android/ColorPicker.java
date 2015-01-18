@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
+// CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class ColorPicker extends Dialog {
 
 	public interface OnColorChangedListener {

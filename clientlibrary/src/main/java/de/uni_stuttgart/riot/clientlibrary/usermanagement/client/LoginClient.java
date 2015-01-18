@@ -72,6 +72,7 @@ public class LoginClient {
      *            .
      * @param password
      *            .
+     * @return .
      * @throws RequestException
      *             Remote Exception
      * @throws ClientProtocolException .

@@ -19,7 +19,7 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() throws DatasourceException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(),false);
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         TokenRole testtokenRole = new TokenRole(new Long(42), new Long(2), new Long(1));
         dao.insert(testtokenRole);
         TokenRole find = dao.findBy(testtokenRole.getId());
@@ -27,8 +27,8 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(),false);
+    public void findUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         TokenRole find = dao.findBy(new Long(1));
         // TokenRoles are not mutable at the time, only to test the update funktion.
         dao.update(find);
@@ -38,23 +38,23 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(),false);
-        TokenRole TokenRole = dao.findBy(new Long(1));
-        dao.delete(TokenRole);
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
+        TokenRole tokenRole = dao.findBy(new Long(1));
+        dao.delete(tokenRole);
         dao.findBy(new Long(1));
     }
 
     @Test(expected = DatasourceUpdateException.class)
     public void errorUpdateTest() throws DatasourceUpdateException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(),false);
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         dao.update(new TokenRole(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(),false);
-        Collection<TokenRole> TokenRole = dao.findAll();
-        assertEquals(4, TokenRole.size());
+        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
+        Collection<TokenRole> tokenRole = dao.findAll();
+        assertEquals(4, tokenRole.size());
     }
 
 }

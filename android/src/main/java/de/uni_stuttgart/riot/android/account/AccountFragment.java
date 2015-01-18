@@ -82,10 +82,10 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
                 }
             }
             break;
-            case R.id.btn_change_color:
-                Paint mPaint = new Paint();
-                new ColorPicker(getActivity(), this, mPaint.getColor()).show();
-                break;
+        case R.id.btn_change_color:
+            Paint mPaint = new Paint();
+            new ColorPicker(getActivity(), this, mPaint.getColor()).show();
+            break;
         default:
             throw new IllegalStateException();
         }
@@ -93,13 +93,11 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
 
     @Override
     public void colorChanged(int color) {
-        if(cal == null) {
-            ContentProviderClient client = getActivity().getContentResolver()
-                    .acquireContentProviderClient(CalendarContract.AUTHORITY);
+        if (cal == null) {
+            ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
             cal = new Calendar(RIOTAccount.getRIOTAccount(getActivity()).getAccount(), client, "RIOT");
         }
         cal.changeColor(color);
-
 
     }
 }

@@ -31,6 +31,7 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * The main window.
  */

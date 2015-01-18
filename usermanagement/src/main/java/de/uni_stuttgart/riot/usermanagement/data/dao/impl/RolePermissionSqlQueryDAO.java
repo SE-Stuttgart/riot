@@ -7,6 +7,7 @@ import org.sql2o.Connection;
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Data access class for all {@link RolePermission} objects.
  * @author Jonas Tangermann

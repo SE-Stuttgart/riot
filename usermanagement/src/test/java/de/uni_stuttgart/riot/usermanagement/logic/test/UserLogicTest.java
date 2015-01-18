@@ -22,11 +22,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromU
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
-/**
- * 
- * @author Niklas Schnabel
- *
- */
 public class UserLogicTest extends LogicTestBase {
 
     private UserLogic ul;
@@ -41,40 +36,40 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testAddUser_valid() throws Exception {
+    public void testAddUserValid() throws Exception {
         UMUser user1 = ul.addUser("newUserName", "pwW123!");
         UMUser user2 = ul.getUser(user1.getId());
         assertEquals(user1, user2);
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_emptyUserName() throws Exception {
+    public void testAddUserEmptyUserName() throws Exception {
         ul.addUser("", "pw");
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_emptyPw() throws Exception {
+    public void testAddUserEmptyPw() throws Exception {
         ul.addUser("newUserName", "");
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_doubleAdd() throws Exception {
+    public void testAddUserDoubleAdd() throws Exception {
         ul.addUser("newUserName", "pw");
         ul.addUser("newUserName", "pw");
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_null() throws Exception {
+    public void testAddUserNull() throws Exception {
         ul.addUser(null, null);
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_nullUserName() throws Exception {
+    public void testAddUserNullUserName() throws Exception {
         ul.addUser(null, "pw");
     }
 
     @Test(expected = AddUserException.class)
-    public void testAddUser_nullPassword() throws Exception {
+    public void testAddUserNullPassword() throws Exception {
         ul.addUser("newUserName", null);
     }
 
@@ -83,24 +78,24 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test(expected = GetUserException.class)
-    public void testDeleteUser_valid() throws Exception {
+    public void testDeleteUserValid() throws Exception {
         ul.deleteUser(1L);
         ul.getUser(1L);
     }
 
     @Test(expected = DeleteUserException.class)
-    public void testDeleteUser_invalid() throws Exception {
+    public void testDeleteUserInvalid() throws Exception {
         ul.deleteUser(42L);
     }
 
     @Test(expected = DeleteUserException.class)
-    public void testDeleteUser_double() throws Exception {
+    public void testDeleteUserDouble() throws Exception {
         ul.deleteUser(1L);
         ul.deleteUser(1L);
     }
 
     @Test(expected = DeleteUserException.class)
-    public void testDeleteUser_null() throws Exception {
+    public void testDeleteUserNull() throws Exception {
         ul.deleteUser(null);
     }
 
@@ -109,7 +104,7 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testUpdateUser_valid() throws Exception {
+    public void testUpdateUserValid() throws Exception {
         UMUser user = ul.getUser(1L);
 
         user.setUsername("brandNewUserName");
@@ -120,7 +115,7 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
-    public void testUpdateUser_validPwChange() throws Exception {
+    public void testUpdateUserValidPwChange() throws Exception {
         UMUser user = ul.getUser(1L);
         String pwHashBefore = user.getHashedPassword();
 
@@ -131,65 +126,65 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_invalidId() throws Exception {
+    public void testUpdateUserInvalidId() throws Exception {
         UMUser user = new UMUser(42L, "userName", "hashedPw", "salt", 42);
         ul.updateUser(user, "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_emptyUserName() throws Exception {
+    public void testUpdateUserEmptyUserName() throws Exception {
         ul.updateUser(new UMUser(1L, "", "hashedPw", "pwSalt", 42), "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_emptyHashPw() throws Exception {
+    public void testUpdateUserEmptyHashPw() throws Exception {
         ul.updateUser(new UMUser(1L, "newUserName", "", "pwSalt", 42), "pw");
     }
 
     @Test
-    public void testUpdateUser_emptyClearPw() throws Exception {
+    public void testUpdateUserEmptyClearPw() throws Exception {
         ul.updateUser(new UMUser(1L, "newUserName", "hashedPw", "pwSalt", 42), "");
         UMUser user = ul.getUser(1L);
         assertEquals("hashedPw", user.getHashedPassword());
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_emptyPwSalt() throws Exception {
+    public void testUpdateUserEmptyPwSalt() throws Exception {
         ul.updateUser(new UMUser(1L, "newUserName", "hashedPw", "", 42), "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_null() throws Exception {
+    public void testUpdateUserNull() throws Exception {
         ul.updateUser(null, null);
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_nullUserName() throws Exception {
+    public void testUpdateUserNullUserName() throws Exception {
         ul.updateUser(new UMUser(null, "hashedPw", "pwSalt", 42), "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_nullHashedPassword() throws Exception {
+    public void testUpdateUserNullHashedPassword() throws Exception {
         ul.updateUser(new UMUser("newUserName", null, "pwSalt", 42), "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_nullClearPassword() throws Exception {
+    public void testUpdateUserNullClearPassword() throws Exception {
         ul.updateUser(new UMUser("newUserName", "hashedPw", "pwSalt", 42), null);
     }
 
     @Test(expected = UpdateUserException.class)
-    public void testUpdateUser_nullSalt() throws Exception {
+    public void testUpdateUserNullSalt() throws Exception {
         ul.updateUser(new UMUser("newUserName", "hashedPw", null, 42), "pw");
     }
 
     @Test(expected = UpdateUserException.class)
-    public void ttestUpdateUser_nullUser() throws Exception {
+    public void ttestUpdateUserNullUser() throws Exception {
         ul.updateUser(new UMUser(null, null, null, 42), "pw");
     }
 
     @Test
-    public void testUpdateUser_nullPw() throws Exception {
+    public void testUpdateUserNullPw() throws Exception {
         ul.updateUser(new UMUser(1L, "newUserName", "hashedPw", "pwSalt", 42), null);
         UMUser user = ul.getUser(1L);
         assertEquals("hashedPw", user.getHashedPassword());
@@ -200,19 +195,19 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetUserLong_valid() throws Exception {
+    public void testGetUserLongValid() throws Exception {
         UMUser user1 = new UMUser(1L, "Yoda", "yPYMjqXzWOPKaAKNJXfEw7Gu3EnckZmoWUuEhOqz/7IqGd4Ub+3/X3uANlO0mkIOqIMhxhUi/ieU1KZt2BK+eg==", "108bgacl42gihhrdlfcm8e6ls6gm2q45q00boauiv5kkduf1ainv", 200000);
         UMUser user2 = ul.getUser(1L);
         assertEquals(user1, user2);
     }
 
     @Test(expected = GetUserException.class)
-    public void testGetUserLong_invalid() throws Exception {
+    public void testGetUserLongInvalid() throws Exception {
         ul.getUser(42L);
     }
 
     @Test(expected = GetUserException.class)
-    public void testGetUserLong_null() throws Exception {
+    public void testGetUserLongNull() throws Exception {
         Long l = null;
         ul.getUser(l);
     }
@@ -222,19 +217,19 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetUserString_valid() throws Exception {
+    public void testGetUserStringValid() throws Exception {
         UMUser user1 = new UMUser(1L, "Yoda", "yPYMjqXzWOPKaAKNJXfEw7Gu3EnckZmoWUuEhOqz/7IqGd4Ub+3/X3uANlO0mkIOqIMhxhUi/ieU1KZt2BK+eg==", "108bgacl42gihhrdlfcm8e6ls6gm2q45q00boauiv5kkduf1ainv", 200000);
         UMUser user2 = ul.getUser("Yoda");
         assertEquals(user1, user2);
     }
 
     @Test(expected = GetUserException.class)
-    public void testGetUserString_invalid() throws Exception {
+    public void testGetUserStringInvalid() throws Exception {
         ul.getUser("blubb");
     }
 
     @Test(expected = GetUserException.class)
-    public void testGetUserString_null() throws Exception {
+    public void testGetUserStringNull() throws Exception {
         String u = null;
         ul.getUser(u);
     }
@@ -244,13 +239,13 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetAllUsers_valid() throws Exception {
+    public void testGetAllUsersValid() throws Exception {
         Collection<UMUser> allUsers = ul.getAllUsers();
         assertEquals(3, allUsers.size());
     }
 
     @Test
-    public void testGetAllUsers_empty() throws Exception {
+    public void testGetAllUsersEmpty() throws Exception {
         emptyDatabaseTables();
         Collection<UMUser> allUsers = ul.getAllUsers();
         assertEquals(0, allUsers.size());
@@ -261,35 +256,35 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testAddRoleToUser_valid() throws Exception {
+    public void testAddRoleToUserValid() throws Exception {
         int roleCount = ul.getAllRolesFromUser(1L).size();
         ul.addRoleToUser(1L, 2L);
         assertEquals(roleCount + 1, ul.getAllRolesFromUser(1L).size());
     }
 
     @Test(expected = AddRoleToUserException.class)
-    public void testAddRoleToUser_invalidUser() throws Exception {
+    public void testAddRoleToUserInvalidUser() throws Exception {
         ul.addRoleToUser(42L, 2L);
     }
 
     @Test(expected = AddRoleToUserException.class)
-    public void testAddRoleToUser_invalidRole() throws Exception {
+    public void testAddRoleToUserInvalidRole() throws Exception {
         ul.addRoleToUser(1L, 42L);
     }
 
     @Test(expected = AddRoleToUserException.class)
-    public void testAddRoleToUser_double() throws Exception {
+    public void testAddRoleToUserDouble() throws Exception {
         ul.addRoleToUser(1L, 2L);
         ul.addRoleToUser(1L, 2L);
     }
 
     @Test(expected = AddRoleToUserException.class)
-    public void testAddRoleToUser_nullUser() throws Exception {
+    public void testAddRoleToUserNullUser() throws Exception {
         ul.addRoleToUser(null, 2L);
     }
 
     @Test(expected = AddRoleToUserException.class)
-    public void testAddRoleToUser_nullRole() throws Exception {
+    public void testAddRoleToUserNullRole() throws Exception {
         ul.addRoleToUser(1L, null);
     }
 
@@ -298,24 +293,24 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetAllRolesFromUser_valid() throws Exception {
+    public void testGetAllRolesFromUserValid() throws Exception {
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(1L);
         assertEquals(1, allRolesFromUser.size());
     }
 
     @Test
-    public void testGetAllRolesFromUser_invalid() throws Exception {
+    public void testGetAllRolesFromUserInvalid() throws Exception {
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(42L);
         assertEquals(0, allRolesFromUser.size());
     }
 
     @Test(expected = GetRolesFromUserException.class)
-    public void testGetAllRolesFromUser_null() throws Exception {
+    public void testGetAllRolesFromUserNull() throws Exception {
         ul.getAllRolesFromUser(null);
     }
 
     @Test
-    public void testGetAllRolesFromUser_empty() throws Exception {
+    public void testGetAllRolesFromUserEmpty() throws Exception {
         emptyDatabaseTables();
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(1L);
         assertEquals(0, allRolesFromUser.size());
@@ -326,24 +321,24 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testRemoveRoleFromUser_valid() throws Exception {
+    public void testRemoveRoleFromUserValid() throws Exception {
         ul.removeRoleFromUser(1L, 1L);
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(1L);
         assertEquals(0, allRolesFromUser.size());
     }
 
     @Test(expected = RemoveRoleFromUserException.class)
-    public void testRemoveRoleFromUser_invalidUser() throws Exception {
+    public void testRemoveRoleFromUserInvalidUser() throws Exception {
         ul.removeRoleFromUser(42L, 1L);
     }
 
     @Test(expected = RemoveRoleFromUserException.class)
-    public void testRemoveRoleFromUser_invalidRole() throws Exception {
+    public void testRemoveRoleFromUserInvalidRole() throws Exception {
         ul.removeRoleFromUser(1L, 42L);
     }
 
     @Test(expected = RemoveRoleFromUserException.class)
-    public void testRemoveRoleFromUser_double() throws Exception {
+    public void testRemoveRoleFromUserDouble() throws Exception {
         ul.removeRoleFromUser(1L, 1L);
         ul.removeRoleFromUser(1L, 1L);
     }
@@ -353,7 +348,7 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
-    public void testGetActiveTokensFromUser_valid() throws Exception {
+    public void testGetActiveTokensFromUserValid() throws Exception {
         Collection<Token> activeTokensFromUser = ul.getActiveTokensFromUser(1L);
         Token token = activeTokensFromUser.iterator().next();
         assertEquals(1, activeTokensFromUser.size());
@@ -361,18 +356,18 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
-    public void testGetActiveTokensFromUser_invalid() throws Exception {
+    public void testGetActiveTokensFromUserInvalid() throws Exception {
         Collection<Token> activeTokensFromUser = ul.getActiveTokensFromUser(42L);
         assertEquals(0, activeTokensFromUser.size());
     }
 
     @Test(expected = GetActiveTokenException.class)
-    public void testGetActiveTokensFromUser_null() throws Exception {
+    public void testGetActiveTokensFromUserNull() throws Exception {
         ul.getActiveTokensFromUser(null);
     }
 
     @Test
-    public void testGetActiveTokensFromUser_empty() throws Exception {
+    public void testGetActiveTokensFromUserEmpty() throws Exception {
         emptyDatabaseTables();
         Collection<Token> activeTokensFromUser = ul.getActiveTokensFromUser(1L);
         assertEquals(0, activeTokensFromUser.size());

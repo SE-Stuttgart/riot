@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.location;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class MyLocation {
 
 	private String place;

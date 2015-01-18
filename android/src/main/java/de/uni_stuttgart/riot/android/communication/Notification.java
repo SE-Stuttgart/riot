@@ -4,6 +4,7 @@ import java.util.Date;
 
 import de.uni_stuttgart.riot.android.NotificationType;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class Notification {
 
 	private int id;

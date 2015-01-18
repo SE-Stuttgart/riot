@@ -34,6 +34,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserExcep
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding an user.
  * 

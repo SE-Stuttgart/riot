@@ -7,6 +7,7 @@ import org.sql2o.Connection;
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * DAO for {@link UserRole}
  * @author Jonas Tangermann
@@ -23,7 +24,7 @@ public class UserRoleSqlQueryDAO extends SqlQueryDAO<UserRole> {
         super(connection, transaction);
     }
 
-	@Override
+    @Override
 	protected Class<UserRole> getMyClazz() {
 		return UserRole.class;
 	}

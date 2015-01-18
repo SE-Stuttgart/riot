@@ -29,7 +29,7 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceException, SQLException {
+    public void findUpdateFindTest() throws DatasourceException, SQLException {
         PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         Permission findPermission = dao.findBy(new Long(1));
         findPermission.setPermissionValue("testPermissionName");
@@ -41,8 +41,8 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceException, SQLException {
         PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
-        Permission Permission = dao.findBy(new Long(1));
-        dao.delete(Permission);
+        Permission permission = dao.findBy(new Long(1));
+        dao.delete(permission);
         dao.findBy(new Long(1));
     }
 
@@ -67,8 +67,8 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
     public void findAllTest() throws DatasourceException, SQLException {
         PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
 
-        Collection<Permission> Permission = dao.findAll();
-        assertEquals(4, Permission.size());
+        Collection<Permission> permission = dao.findAll();
+        assertEquals(4, permission.size());
     }
 
 }

@@ -4,6 +4,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}. Thus this class only maps Roles to
  * Permission not adding any information.
@@ -56,23 +57,30 @@ public class RolePermission extends Storable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RolePermission other = (RolePermission) obj;
         if (permissionID == null) {
-            if (other.permissionID != null)
+            if (other.permissionID != null) {
                 return false;
-        } else if (!permissionID.equals(other.permissionID))
+            }
+        } else if (!permissionID.equals(other.permissionID)) {
             return false;
+        }
         if (roleID == null) {
-            if (other.roleID != null)
+            if (other.roleID != null) {
                 return false;
-        } else if (!roleID.equals(other.roleID))
+            }
+        } else if (!roleID.equals(other.roleID)) {
             return false;
+        }
         return true;
     }
 

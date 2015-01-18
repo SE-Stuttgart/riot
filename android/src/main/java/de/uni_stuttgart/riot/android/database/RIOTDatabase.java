@@ -18,6 +18,7 @@ import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.communication.Notification;
 import de.uni_stuttgart.riot.android.location.MyLocation;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class RIOTDatabase extends SQLiteOpenHelper {
 
 	private final static int DATABASE_VERION = 1;

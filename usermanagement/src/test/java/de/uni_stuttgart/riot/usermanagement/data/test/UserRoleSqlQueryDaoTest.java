@@ -19,7 +19,7 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException, SQLException {
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(),false);
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(), false);
         UserRole testUserRole = new UserRole(new Long(1), new Long(2), new Long(42));
         dao.insert(testUserRole);
         UserRole findUserRole = dao.findBy(testUserRole.getId());
@@ -27,8 +27,8 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(),false);
+    public void findUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(), false);
         UserRole findUserRole = dao.findBy(new Long(1));
         // UserRoles are not mutable at the time, only to test the update funktion.
         dao.update(findUserRole);
@@ -37,24 +37,24 @@ public class UserRoleSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test(expected = DatasourceFindException.class)
-    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException{
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(),false);
-        UserRole UserRole = dao.findBy(new Long(1));
-        dao.delete(UserRole);
+    public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException {
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(), false);
+        UserRole userRole = dao.findBy(new Long(1));
+        dao.delete(userRole);
         dao.findBy(new Long(1));
     }
 
     @Test(expected = DatasourceUpdateException.class)
-    public void errorUpdateTest() throws DatasourceUpdateException, SQLException{
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(),false);
+    public void errorUpdateTest() throws DatasourceUpdateException, SQLException {
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(), false);
         dao.update(new UserRole(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
-    public void findAllTest() throws DatasourceFindException, SQLException{
-        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(),false);
-        Collection<UserRole> UserRole = dao.findAll();
-        assertEquals(3, UserRole.size());
+    public void findAllTest() throws DatasourceFindException, SQLException {
+        UserRoleSqlQueryDAO dao = new UserRoleSqlQueryDAO(this.getConn(), false);
+        Collection<UserRole> userRole = dao.findAll();
+        assertEquals(3, userRole.size());
     }
 
 }

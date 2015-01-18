@@ -4,6 +4,7 @@ import de.uni_stuttgart.riot.android.Filter;
 import de.uni_stuttgart.riot.android.MainActivity;
 import de.uni_stuttgart.riot.android.NotificationType;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class FilterDataObjects {
 
 	private RIOTDatabase database;

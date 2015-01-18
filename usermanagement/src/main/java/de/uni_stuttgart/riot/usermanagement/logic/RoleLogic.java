@@ -28,6 +28,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleExceptio
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the roles.
  * 

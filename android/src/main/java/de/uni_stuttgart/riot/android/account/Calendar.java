@@ -10,6 +10,7 @@ import android.os.RemoteException;
 import android.provider.CalendarContract;
 import android.util.Log;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Created by dirkmb on 12/7/14.
  */
@@ -57,8 +58,7 @@ public class Calendar {
         return -1;
     }
 
-    public void changeColor(int color)
-    {
+    public void changeColor(int color) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, color & 0xFFFFFFFF);
         Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();

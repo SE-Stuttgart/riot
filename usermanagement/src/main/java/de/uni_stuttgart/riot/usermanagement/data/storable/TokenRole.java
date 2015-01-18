@@ -4,6 +4,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * {@link TokenRole} represents the n:m relation between {@link Token} and {@link Role}. Thus this class only maps Token to Role not adding
  * any information.
@@ -59,23 +60,30 @@ public class TokenRole extends Storable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TokenRole other = (TokenRole) obj;
         if (roleID == null) {
-            if (other.roleID != null)
+            if (other.roleID != null) {
                 return false;
-        } else if (!roleID.equals(other.roleID))
+            }
+        } else if (!roleID.equals(other.roleID)) {
             return false;
+        }
         if (tokenID == null) {
-            if (other.tokenID != null)
+            if (other.tokenID != null) {
                 return false;
-        } else if (!tokenID.equals(other.tokenID))
+            }
+        } else if (!tokenID.equals(other.tokenID)) {
             return false;
+        }
         return true;
     }
 

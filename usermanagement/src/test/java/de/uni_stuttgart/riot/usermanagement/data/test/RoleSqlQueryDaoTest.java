@@ -27,7 +27,7 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
+    public void findUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
         RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         Role findRole = dao.findBy(new Long(1));
         findRole.setRoleName("testRoleName");
@@ -39,8 +39,8 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceFindException, DatasourceDeleteException, SQLException {
         RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
-        Role Role = dao.findBy(new Long(1));
-        dao.delete(Role);
+        Role role = dao.findBy(new Long(1));
+        dao.delete(role);
         dao.findBy(new Long(1));
     }
 
@@ -53,8 +53,8 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
         RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
-        Collection<Role> Role = dao.findAll();
-        assertEquals(4, Role.size());
+        Collection<Role> role = dao.findAll();
+        assertEquals(4, role.size());
     }
 
 }

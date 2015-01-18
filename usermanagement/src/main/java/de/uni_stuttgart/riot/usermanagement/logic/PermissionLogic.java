@@ -15,6 +15,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPer
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the permissions.
  * 

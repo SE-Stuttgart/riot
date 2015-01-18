@@ -23,6 +23,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResp
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * This class contains the currently logged in user and allows the management of this user. The clear text password will not be saved
  * persistently, because of security reasons. Instead the authentication and refresh tokens are saved persistently for further

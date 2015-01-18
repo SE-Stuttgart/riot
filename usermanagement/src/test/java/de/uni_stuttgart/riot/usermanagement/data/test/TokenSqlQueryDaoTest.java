@@ -28,7 +28,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase {
     }
 
     @Test
-    public void FindUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
+    public void findUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
         TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(), false);
         Token findToken = dao.findBy(new Long(1));
         findToken.setTokenValue("testvalue");
@@ -40,8 +40,8 @@ public class TokenSqlQueryDaoTest extends DaoTestBase {
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException {
         TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(), false);
-        Token Token = dao.findBy(new Long(1));
-        dao.delete(Token);
+        Token token = dao.findBy(new Long(1));
+        dao.delete(token);
         dao.findBy(new Long(1));
     }
 
@@ -54,7 +54,7 @@ public class TokenSqlQueryDaoTest extends DaoTestBase {
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
         TokenSqlQueryDAO dao = new TokenSqlQueryDAO(this.getConn(), false);
-        Collection<Token> Token = dao.findAll();
-        assertEquals(3, Token.size());
+        Collection<Token> token = dao.findAll();
+        assertEquals(3, token.size());
     }
 }
