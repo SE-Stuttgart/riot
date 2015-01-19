@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -162,6 +163,20 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     }
 
     @Override
+    public Collection<T> findAll(FilteredRequest filter) throws DatasourceFindException {
+        if (filter == null || filter.getFilterAttributes() == null || filter.getFilterAttributes().isEmpty()) {
+            throw new DatasourceFindException("Filter is null or has no filter attributes.");
+        }
+
+        try {
+            Query stmt = SqlQueryDAO.this.queryBuilder.buildFindWithFiltering(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), connection, filter, SqlQueryDAO.this.getMyClazz());
+            return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
+        } catch (Exception e) {
+            throw new DatasourceFindException(e);
+        }
+    }
+
+    @Override
     public T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException {
         try {
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
@@ -180,5 +195,4 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
     public boolean isTransaction() {
         return transaction;
     }
-
 }

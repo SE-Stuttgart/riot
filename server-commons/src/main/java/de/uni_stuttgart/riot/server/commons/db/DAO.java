@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.server.commons.db;
 
 import java.util.Collection;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -105,6 +106,17 @@ public interface DAO<T extends Storable> {
     Collection<T> findAll(final int offset, final int limit) throws DatasourceFindException;
 
     /**
+     * Returns a filtered collection of T objects. It Allows Pagination.
+     * 
+     * @param filter
+     *            contains filter parameters, offset and limit values.
+     * @return the filtered collection of T objects.
+     * @throws DatasourceFindException
+     *             when filter is invalid or access to persistence layer is not possible.
+     */
+    Collection<T> findAll(FilteredRequest filter) throws DatasourceFindException;
+
+    /**
      * Returns the fist element that is matching the searchparameter. <b>Should only be used with unique fields</b>
      * 
      * @param searchParameter
@@ -114,4 +126,5 @@ public interface DAO<T extends Storable> {
      *             if there is no such element
      */
     T findByUniqueField(SearchParameter searchParameter) throws DatasourceFindException;
+
 }

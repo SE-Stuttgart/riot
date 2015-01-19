@@ -23,6 +23,9 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
@@ -178,6 +181,22 @@ public class BaseResourceTest extends JerseyTest {
             return null;
         }
 
+        @Override
+        public Collection<TestModel> findAll(FilteredRequest filter) throws DatasourceFindException {
+            // Dummy implementation just for testing REST API
+            Collection<TestModel> values = new ArrayList<TestModel>();
+            for (FilterAttribute att : filter.getFilterAttributes()) {
+                String value = (String) att.getValue();
+                for (int i = 1; i < testData.size(); i++) {
+                    if (value.equals(testData.get((long) i).getComment())) {
+                        values.add(testData.get((long) i));
+                    }
+                }
+                break;
+            }
+
+            return values;
+        }
     }
 
     /**
@@ -278,6 +297,30 @@ public class BaseResourceTest extends JerseyTest {
         models = resp.readEntity(new GenericType<List<TestModel>>() {
         });
         assertThat(models, hasSize(pageSize));
+    }
+
+    @Test
+    public void testGetFiltering() {
+        TestModel m = new TestModel();
+        m.setComment("changed"); // change some field at the object
+        Response resp = target("tests/1").request(MediaType.APPLICATION_JSON).put(Entity.entity(m, MediaType.APPLICATION_JSON_TYPE));
+
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        filterAtts.add(new FilterAttribute("comment", FilterOperator.EQ, "changed"));
+        FilteredRequest reqEntity = new FilteredRequest();
+        reqEntity.setOrMode(false);
+        reqEntity.setFilterAttributes(filterAtts);
+
+        resp = target("tests/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Collection<TestModel> models = resp.readEntity(new GenericType<List<TestModel>>() {
+        });
+        assertThat(models, hasSize(1));
+
+        // post must fail with invalid body
+        resp = target("tests/filter").request(MediaType.APPLICATION_JSON).post(null);
+        // expect a 400 for bad request
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
     }
 
     /**

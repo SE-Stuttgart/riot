@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -109,6 +110,26 @@ public abstract class BaseResource<E extends Storable> {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
             return dao.findAll(offset, limit);
         }
+    }
+
+    /**
+     * Creates a new model with data from the request body.
+     *
+     * @param request
+     *            object specifying the filter attributes (pagination also possible)
+     * @return collection containing elements that applied to filter
+     * @throws DatasourceFindException
+     *             when retrieving the data fails
+     */
+    @POST
+    @Path("/filter")
+    @Consumes(CONSUMED_FORMAT)
+    @Produces(PRODUCED_FORMAT)
+    public Collection<E> getBy(FilteredRequest request) throws DatasourceFindException {
+        if (request == null) {
+            throw new BadRequestException("please provide an entity in the request body.");
+        }
+        return dao.findAll(request);
     }
 
     /**

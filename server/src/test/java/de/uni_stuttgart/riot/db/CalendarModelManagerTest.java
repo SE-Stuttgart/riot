@@ -10,15 +10,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.naming.NamingException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.rest.RiotApplication;
@@ -246,6 +252,281 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
         } catch (DatasourceFindException exception) {
             assertFalse("An error message should be provided", exception.getMessage().isEmpty());
         }
+    }
+
+    /**
+     * get entries using filtering with AND / OR operators.
+     * 
+     * @throws DatasourceInsertException
+     * @throws NamingException
+     * @throws SQLException
+     * @throws DatasourceFindException
+     * 
+     * @throws DaoException
+     *             when access not possible.
+     */
+    @Test
+    public void getFilterAndOrTest() throws DatasourceInsertException, SQLException, NamingException, DatasourceFindException {
+        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        // creating test data
+        CalendarEntry model1 = new CalendarEntry(1, "Important Appointment", "getFilterTest");
+        model1.setAllDayEvent(true);
+        CalendarEntry model2 = new CalendarEntry(2, "Not Important Appointment", "getFilterTest");
+        modelManager.insert(model1);
+        modelManager.insert(model2);
+
+        // --- parameter of type String AND boolean, 'equals'
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Important Appointment"));
+        filterAtts.add(new FilterAttribute("allDayEvent", FilterOperator.EQ, true));
+        FilteredRequest filter = new FilteredRequest();
+        filter.setFilterAttributes(filterAtts);
+        Collection<CalendarEntry> retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(1)); // shall return 1 item
+        assertEquals(model1, (CalendarEntry) retrievedElements.toArray()[0]);
+
+        // --- parameter of type String OR boolean, 'equals'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Standup Meeting 1"));
+        filterAtts.add(new FilterAttribute("allDayEvent", FilterOperator.EQ, true));
+        filter.setOrMode(true);
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(2)); // shall return 2 items
+    }
+
+    /**
+     * get entries using filtering with EQ, NE, GT, GE, LT, LE operators.
+     * 
+     * @throws DatasourceInsertException
+     * @throws DatasourceFindException
+     * @throws NamingException
+     * @throws SQLException
+     * 
+     * @throws DaoException
+     *             when access not possible.
+     */
+    @Test
+    public void getFilterTest() throws DatasourceInsertException, DatasourceFindException, SQLException, NamingException {
+        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        Object[] elems = modelManager.findAll().toArray();
+
+        // test data
+        CalendarEntry model1 = (CalendarEntry) elems[0];
+        CalendarEntry model2 = (CalendarEntry) elems[1];
+        Date date1 = ((CalendarEntry) elems[0]).getStartTime();
+        Date date2 = ((CalendarEntry) elems[1]).getStartTime();
+
+        // --- parameter of type Date, 'equals'
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        FilteredRequest filter = new FilteredRequest();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.EQ, date1));
+        filter.setFilterAttributes(filterAtts);
+        Collection<CalendarEntry> retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(1)); // shall return 1 item
+        assertEquals(model1, (CalendarEntry) retrievedElements.toArray()[0]);
+
+        // --- parameter of type Date, 'not equals'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.NE, date1));
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(2)); // shall return 2 item
+        assertEquals(model2, (CalendarEntry) retrievedElements.toArray()[0]);
+
+        // --- parameter of type Date, 'greater than'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.GT, date1));
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(2)); // shall return 2 item
+        assertEquals(model2, (CalendarEntry) retrievedElements.toArray()[0]);
+
+        // --- parameter of type Date, 'greater than or equal'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.GE, date1));
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(3)); // shall return 3 items
+
+        // --- parameter of type Date, 'lower than'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.LT, date2));
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(1)); // shall return 1 item
+        assertEquals(model1, (CalendarEntry) retrievedElements.toArray()[0]);
+
+        // --- parameter of type Date, 'lower than or equal'
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.LE, date2));
+        filter.setFilterAttributes(filterAtts);
+        retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(2)); // shall return 2 items
+    }
+
+    /**
+     * get entries using pagination.
+     * 
+     * @throws DatasourceFindException
+     * @throws DatasourceInsertException
+     * @throws NamingException
+     * @throws SQLException
+     * 
+     * @throws DaoException
+     *             when access not possible.
+     */
+    @Test
+    public void getFilterPaginationTest() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
+        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Important Appointment"));
+        FilteredRequest filter = new FilteredRequest();
+        filter.setFilterAttributes(filterAtts);
+        filter.setOffset(0);
+        filter.setLimit(1);
+
+        // --- no test data at database: returned collection shall be empty
+        Collection<CalendarEntry> retrievedElements = modelManager.findAll(filter);
+        assertThat(retrievedElements, hasSize(0));
+
+        // creating test data
+        CalendarEntry model1 = new CalendarEntry(1, "Important Appointment", "getFilterPaginationTest");
+        CalendarEntry model2 = new CalendarEntry(2, "Not Important Appointment", "getFilterPaginationTest");
+        CalendarEntry model3 = new CalendarEntry(1, "Important Appointment", "getFilterPaginationTest");
+        modelManager.insert(model1);
+        modelManager.insert(model2);
+        modelManager.insert(model3);
+
+        // --- retrieving first page
+        retrievedElements = modelManager.findAll(filter); // OFFSET=0, LIMIT = 1
+        assertThat(retrievedElements, hasSize(1)); // shall return 1 item
+        assertEquals(model1, (CalendarEntry) retrievedElements.toArray()[0]); // elements still the same as created
+
+        // --- retrieving second page
+        filter.setOffset(1);
+        retrievedElements = modelManager.findAll(filter); // OFFSET=1, LIMIT = 1
+        assertThat(retrievedElements, hasSize(1)); // shall return 1 item
+        assertEquals(model3, (CalendarEntry) retrievedElements.toArray()[0]); // elements still the same as created
+
+        // --- OFFSET bigger than number of existing elements: returns empty collection
+        filter.setOffset(7);
+        retrievedElements = modelManager.findAll(filter); // OFFSET=7, LIMIT = 1
+        assertThat(retrievedElements, hasSize(0));
+    }
+
+    /**
+     * test using filtering syntax wrong.
+     * 
+     * @throws NamingException
+     * @throws SQLException
+     * 
+     */
+    @Test
+    public void getFilterFailedTest() throws SQLException, NamingException {
+        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        filterAtts.add(new FilterAttribute("blabla", FilterOperator.EQ, "Important Appointment"));
+        FilteredRequest filter = new FilteredRequest();
+        filter.setFilterAttributes(filterAtts);
+
+        // inexistent field
+        try {
+            modelManager.findAll(filter);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // invalid operator
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("title", null, "Important Appointment"));
+        filter.setFilterAttributes(filterAtts);
+        try {
+            modelManager.findAll(filter);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // invalid value
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, null));
+        filter.setFilterAttributes(filterAtts);
+        try {
+            modelManager.findAll(filter);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // wrong syntax
+        try {
+            modelManager.findAll(null);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // wrong value for attribute type boolean
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("allDayEvent", FilterOperator.EQ, "bla"));
+        filter.setFilterAttributes(filterAtts);
+        try {
+            modelManager.findAll(filter);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // wrong value for attribute type Date
+        filterAtts.clear();
+        filterAtts.add(new FilterAttribute("startTime", FilterOperator.EQ, "bla"));
+        filter.setFilterAttributes(filterAtts);
+        try {
+            modelManager.findAll(filter);
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+    }
+
+    /**
+     * test getting entries using filtering and pagination with invalid parameters.
+     * 
+     * @throws NamingException
+     * @throws SQLException
+     * 
+     * @throws DaoException
+     *             access not possible
+     */
+    @Test
+    public void getFilterPaginationFailedTest() throws SQLException, NamingException {
+        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
+        filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Important Appointment"));
+        FilteredRequest filter = new FilteredRequest();
+        filter.setFilterAttributes(filterAtts);
+        filter.setOffset(-1);
+        filter.setLimit(1);
+        // negative offset: throws exception
+        try {
+            modelManager.findAll(filter); // OFFSET=-1, LIMIT = 1
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
+        // negative limit: throws exception
+        try {
+            filter.setOffset(1);
+            filter.setLimit(-1);
+            modelManager.findAll(filter); // OFFSET=1, LIMIT = -1
+            fail("Expected an DaoException to be thrown");
+        } catch (DatasourceFindException exception) {
+            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
+        }
+
     }
 
     /**

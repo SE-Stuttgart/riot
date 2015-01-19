@@ -6,7 +6,9 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 
 /**
  * 
@@ -128,7 +130,9 @@ public interface QueryBuilder {
      * @param tableName
      *            the table name in which the query will be executed
      * @param connection
-     *            represents a connection to the database * @param offset the start point
+     *            represents a connection to the database
+     * @param offset
+     *            the start point
      * @param limit
      *            the number of objects to return
      * @return {@link Query} for retrieval of all T objects.
@@ -136,4 +140,25 @@ public interface QueryBuilder {
      *             SQLException internal sql error
      */
     Query buildFindWithPagination(String tableName, Connection connection, int offset, int limit) throws SQLException;
+
+    /**
+     * Builds the query for the retrieval of objects using filter attributes with/without pagination. <br>
+     * <br>
+     * Such as: <code>SELECT * FROM T WHERE t.att1 = [value1] [and | or] t.att2 = [value2] [LIMIT...] </code>
+     * 
+     * @param tableName
+     *            the table name in which the query will be executed
+     * @param connection
+     *            represents a connection to the database
+     * @param filter
+     *            object containing filter attributes and pagination settings.
+     * @param clazz
+     *            class type of object in table
+     * @return {@link Query} for retrieval of filtered T objects.
+     * @throws SQLException
+     *             SQLException internal sql error
+     * @throws DatasourceFindException
+     *             invalid filter
+     */
+    Query buildFindWithFiltering(String tableName, Connection connection, FilteredRequest filter, Class<?> clazz) throws SQLException, DatasourceFindException;
 }

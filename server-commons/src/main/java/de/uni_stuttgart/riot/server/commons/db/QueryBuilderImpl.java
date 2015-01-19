@@ -6,7 +6,10 @@ import java.util.Collection;
 import org.sql2o.Connection;
 import org.sql2o.Query;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 
 /**
  * This class is used to create the sql2o queries for every operation in {@link DAO}. <br>
@@ -53,5 +56,16 @@ public class QueryBuilderImpl implements QueryBuilder {
     @Override
     public Query buildFindWithPagination(String tableName, Connection connection, int offset, int limit) throws SQLException {
         return connection.createQuery(SQLQueryUtil.buildFindWithPagination(tableName)).addParameter("offset", offset).addParameter("limit", limit);
+    }
+
+    @Override
+    public Query buildFindWithFiltering(String tableName, Connection connection, FilteredRequest filter, Class<?> clazz) throws SQLException, DatasourceFindException {
+        Query q = connection.createQuery(SQLQueryUtil.buildFilteringStatement(clazz, filter, tableName));
+        int x = 0;
+        for (FilterAttribute filterAttribute : filter.getFilterAttributes()) {
+            q.addParameter(filterAttribute.getFieldName() + x, filterAttribute.getValue());
+            x = x + 1;
+        }
+        return q;
     }
 }

@@ -8,7 +8,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 
 /**
  * A utility class for building SQL Queries.
@@ -121,6 +127,112 @@ public final class SQLQueryUtil {
      */
     public static String buildFindByParam(Collection<SearchParameter> params, boolean or, String tableName) {
         return "SELECT * FROM " + tableName + " " + SQLQueryUtil.getWherePart(params, or);
+    }
+
+    /**
+     * Converts given filter operator to SQL conform operator.
+     * 
+     * @param filterOperator
+     *            supported filter operator. Valid operators are "eq" (equals), "ne" (not equals), "gt" (greater than), "ge" (greater than
+     *            or equals), "lt" (lower than), "le" (lower than or equals). See {@link FilterOperator}.
+     * @return SQL operator.
+     */
+    private static String getSQLOperator(FilterOperator filterOperator) {
+        switch (filterOperator) {
+        case EQ:
+            return "=";
+        case NE:
+            return "!=";
+        case GT:
+            return ">";
+        case GE:
+            return ">=";
+        case LT:
+            return "<";
+        case LE:
+            return "<=";
+        default:
+            return "=";
+        }
+    }
+
+    /**
+     * builds SELECT Statement based on given filter attribute list and table name.
+     * 
+     * @param clazz
+     *            the Class for which the filter should apply.
+     * @param filter
+     *            object containing Filter Attributes
+     * @param tableName
+     *            the table name
+     * @return statement in format: SELECT * FROM -tableName- WHERE name1 -op- :value1 AND [OR] ... [LIMIT...]
+     * @throws DatasourceFindException
+     *             if filter contains invalid elements.
+     */
+
+    public static String buildFilteringStatement(Class<?> clazz, FilteredRequest filter, String tableName) throws DatasourceFindException {
+        validateFilter(filter, clazz);
+
+        List<String> sqlFilterList = new ArrayList<String>();
+        int x = 0;
+        for (FilterAttribute filterAttribute : filter.getFilterAttributes()) {
+            sqlFilterList.add(filterAttribute.getFieldName() + getSQLOperator(filterAttribute.getOperator()) + ":" + filterAttribute.getFieldName() + x);
+            x = x + 1;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + tableName + " WHERE ");
+
+        if (filter.isOrMode()) {
+            sb.append(StringUtils.join(sqlFilterList, " OR "));
+        } else {
+            sb.append(StringUtils.join(sqlFilterList, " AND "));
+        }
+
+        if (filter.getLimit() > 0 && filter.getOffset() >= 0) {
+            // pagination
+            sb.append(" LIMIT " + filter.getOffset() + "," + filter.getLimit());
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Validates each filter attribute if: field exists and value has correct type.
+     * 
+     * @param clazz
+     *            the Class for which the filter should apply.
+     * @param filterAttributes
+     *            list containing filter attributes to validate
+     * @throws DatasourceFindException
+     *             if filter contains invalid elements.
+     */
+    private static void validateFilter(FilteredRequest filter, Class<?> clazz) throws DatasourceFindException {
+        // checks if offset and limit are correct
+        if (filter.getLimit() < 0 || filter.getOffset() < 0) {
+            // negative values not allowed
+            throw new DatasourceFindException("Invalid limit | offset values at request");
+        }
+
+        // checks if field exists and value has correct type.
+        for (FilterAttribute filterAttribute : filter.getFilterAttributes()) {
+            // checks filter operator
+            if (filterAttribute.getOperator() == null) {
+                throw new DatasourceFindException("Filter operator is null.");
+            }
+
+            try {
+                // if field in filter doesn't exist, it throws exception
+                Field field = clazz.getDeclaredField(filterAttribute.getFieldName());
+                Object value = filterAttribute.getValue();
+
+                // validate value according to field type (throws exception if not expected type)
+                if (value == null || !(ClassUtils.primitiveToWrapper(field.getType()) == value.getClass() || field.getType().isInstance(value))) {
+                    throw new DatasourceFindException("Wrong value type for filter value (" + value + "). Expected type: " + field.getType() + ".");
+                }
+            } catch (NoSuchFieldException | SecurityException e) {
+                throw new DatasourceFindException("Filter attribute '" + filterAttribute.getFieldName() + "' doesn't exist.", e);
+            }
+        }
     }
 
     /**
