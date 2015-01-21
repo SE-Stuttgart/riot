@@ -10,10 +10,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.TokenResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 /**
  * This test ensures that the entities used for the REST interface are compatible with the JAXB requirements. If they are not, Jersey will
@@ -50,7 +47,7 @@ public class JAXBCompatibilityTest {
     @Test
     public void testUserManagementClasses() throws JAXBException {
         testEntityClasses(UserRequest.class, LoginRequest.class, RefreshRequest.class);
-        testEntityClasses(UserResponse.class, TokenResponse.class, RoleResponse.class, PermissionResponse.class, AuthenticationResponse.class);
+        testEntityClasses( TokenResponse.class, AuthenticationResponse.class);
     }
 
     @Test

@@ -19,9 +19,6 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
@@ -58,7 +55,7 @@ public class AuthenticationService {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
             User u = UserManagementFacade.getInstance().getUser(token);
-            UserResponse user = new UserResponse(u, this.getUserRoles(u));
+            User user = new User(u.getUsername(), this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new LoginException(e.getMessage(), e);
@@ -81,7 +78,7 @@ public class AuthenticationService {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
             User u = UserManagementFacade.getInstance().getUser(token);
-            UserResponse user = new UserResponse(u, this.getUserRoles(u));
+            User user = new User(u.getUsername(), this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new RefreshException(e.getMessage(), e);
@@ -107,21 +104,22 @@ public class AuthenticationService {
 
     /*************/
     //FIXME
-    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
+    private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
         Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-        Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
+        Collection<Role> Roles = new LinkedList<Role>();
         for (Role role : roles) {
-            roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
+            role.setPermissions(this.getRolePermissions(role));
+            Roles.add(role);
         }
-        return roleResponses;
+        return Roles;
     }
 
-    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
+    private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
         Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+        Collection<Permission> Permissions = new LinkedList<Permission>();
         for (Permission permission : permissions) {
-            permissionResponses.add(new PermissionResponse(permission));
+            Permissions.add(permission);
         }
-        return permissionResponses;
+        return Permissions;
     }
 }

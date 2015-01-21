@@ -222,7 +222,7 @@ public final class SQLQueryUtil {
 
             try {
                 // if field in filter doesn't exist, it throws exception
-                Field field = clazz.getDeclaredField(filterAttribute.getFieldName());
+                Field field = SQLQueryUtil.getDeclaredField(clazz, filterAttribute.getFieldName());
                 Object value = filterAttribute.getValue();
 
                 // validate value according to field type (throws exception if not expected type)
@@ -233,6 +233,15 @@ public final class SQLQueryUtil {
                 throw new DatasourceFindException("Filter attribute '" + filterAttribute.getFieldName() + "' doesn't exist.", e);
             }
         }
+    }
+    
+    private static Field getDeclaredField(Class clazz, String fieldName) throws NoSuchFieldException{
+        Collection<Field> fields = new ArrayList<Field>();
+        SQLQueryUtil.getAllFields(clazz, fields);
+        for (Field field : fields) {
+            if(field.getName().equalsIgnoreCase(fieldName)) return field;
+        }
+        throw new NoSuchFieldException(fieldName+" not found in "+ clazz.getName());
     }
 
     /**

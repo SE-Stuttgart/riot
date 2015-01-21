@@ -27,4 +27,8 @@ public class CalendarResource extends BaseResource<CalendarEntry> {
         super(new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false));
     }
 
+    @Override
+    public void init(CalendarEntry storable) throws Exception {
+    }
+
 }

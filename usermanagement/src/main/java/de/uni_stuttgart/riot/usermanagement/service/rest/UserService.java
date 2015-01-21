@@ -1,10 +1,12 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
+import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,10 +28,12 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.TokenResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
@@ -39,59 +43,20 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 /**
  * The users service will handle any access (create, read, update, delete) to the users.
  *
- * @author Marcel Lehwald
+ * @author Marcel Lehwald <- //FIXME how to handle addUser with UMUser
  *
  */
 @Path("users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService {
+public class UserService extends BaseResource<UMUser>{
+
+    public UserService() throws SQLException, NamingException {
+        super(new UserSqlQueryDao(ConnectionMgr.openConnection(), false));
+    }
 
     private final UserManagementFacade facade = UserManagementFacade.getInstance();
-
-    @Context
-    private UriInfo uriInfo;
-
-    /**
-     * Get all users.
-     *
-     * @return Returns a list of all users.
-     * @throws UserManagementException
-     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
-     *             {@link UserManagementExceptionMapper} class.
-     */
-    @GET
-    @RequiresAuthentication
-    public Collection<UserResponse> getUsers() throws UserManagementException {
-        // TODO limit returned users
-        Collection<User> users = facade.getAllUsers();
-
-        Collection<UserResponse> userResponse = new LinkedList<UserResponse>();
-        for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
-            User u = it.next();
-            userResponse.add(new UserResponse(u, this.getUserRoles(u)));
-        }
-
-        return userResponse;
-    }
-
-    /**
-     * Get a user.
-     *
-     * @param userID
-     *            The user ID.
-     * @return Returns the user with the user ID.
-     * @throws UserManagementException
-     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
-     *             {@link UserManagementExceptionMapper} class.
-     */
-    @GET
-    @Path("/{userID}")
-    @RequiresAuthentication
-    public UserResponse getUser(@PathParam("userID") Long userID) throws UserManagementException {
-        User u = facade.getUser(userID);
-        return new UserResponse(u, this.getUserRoles(u));
-    }
+    
 
     /**
      * Get the currently executing user.
@@ -103,11 +68,11 @@ public class UserService {
     @GET
     @Path("/self")
     @RequiresAuthentication
-    public UserResponse getUser() throws UserManagementException {
+    public User getUser() throws UserManagementException {
         String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
         Token token = facade.getToken(accessToken);
         User u = facade.getUser(token);
-        return new UserResponse(u, this.getUserRoles(u));
+        return new User(u.getUsername(), this.getUserRoles(u));
     }
 
     /**
@@ -121,10 +86,11 @@ public class UserService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
+    @Path("/A")
     @RequiresAuthentication
-    public UserResponse addUser(UserRequest userRequest) throws UserManagementException {
+    public User addUser(UserRequest userRequest) throws UserManagementException {
         User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
-        return new UserResponse(user, this.getUserRoles(user));
+        return new User(user.getUsername(), this.getUserRoles(user));
     }
 
     /**
@@ -140,9 +106,9 @@ public class UserService {
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    @Path("/{userID}")
+    @Path("/A/{userID}")
     @RequiresAuthentication
-    public UserResponse updateUser(@PathParam("userID") Long userID, UserRequest userRequest) throws UserManagementException {
+    public User updateUser(@PathParam("userID") Long userID, UserRequest userRequest) throws UserManagementException {
         User user = facade.getUser(userID);
 
         if (StringUtils.isNotEmpty(userRequest.getUsername())) {
@@ -152,26 +118,7 @@ public class UserService {
         facade.updateUser(user, userRequest.getPassword());
 
         // the user contains after it is updated all the information it is updated with
-        return new UserResponse(user, this.getUserRoles(user));
-    }
-
-    /**
-     * Remove user.
-     *
-     * @param userID
-     *            The user ID.
-     * @return Returns empty response (with status code 200) on success.
-     * @throws UserManagementException
-     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
-     *             {@link UserManagementExceptionMapper} class.
-     */
-    @DELETE
-    @Path("/{userID}")
-    @RequiresAuthentication
-    public Response removeUser(@PathParam("userID") Long userID) throws UserManagementException {
-        facade.deleteUser(userID);
-
-        return Response.ok().build();
+        return new User(user.getUsername(), this.getUserRoles(user));
     }
 
     /**
@@ -187,17 +134,18 @@ public class UserService {
     @GET
     @Path("/{userID}/roles")
     @RequiresAuthentication
-    public Collection<RoleResponse> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
+    public Collection<Role> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned roles
         Collection<Role> roles = facade.getAllRolesFromUser(userID);
 
-        Collection<RoleResponse> roleResponse = new LinkedList<RoleResponse>();
+        Collection<Role> Role = new LinkedList<Role>();
         for (Iterator<Role> it = roles.iterator(); it.hasNext(); ) {
             Role r = it.next();
-            roleResponse.add(new RoleResponse(r, this.getRolePermissions(r)));
+            r.setPermissions(this.getRolePermissions(r));
+            Role.add(r);
         }
 
-        return roleResponse;
+        return Role;
     }
 
     /**
@@ -260,22 +208,33 @@ public class UserService {
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
     }
 
-    private Collection<RoleResponse> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {
+    private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {
         Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-        Collection<RoleResponse> roleResponses = new LinkedList<RoleResponse>();
+        Collection<Role> Roles = new LinkedList<Role>();
         for (Role role : roles) {
-            roleResponses.add(new RoleResponse(role, this.getRolePermissions(role)));
+            role.setPermissions(this.getRolePermissions(role));
+            Roles.add(role);
         }
-        return roleResponses;
+        return Roles;
     }
 
-    private Collection<PermissionResponse> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
+    private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
         Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        Collection<PermissionResponse> permissionResponses = new LinkedList<PermissionResponse>();
+        Collection<Permission> Permissions = new LinkedList<Permission>();
         for (Permission permission : permissions) {
-            permissionResponses.add(new PermissionResponse(permission));
+            Permissions.add(permission);
         }
-        return permissionResponses;
+        return Permissions;
+    }
+
+    //FIXME RFC
+    @Override
+    public void init(UMUser storable) throws Exception {
+        storable.setRoles(this.getUserRoles(storable.getId()));
+        storable.setHashedPassword("");
+        storable.setHashIterations(0);
+        storable.setLoginAttemptCount(0);
+        storable.setPasswordSalt("");
     }
 
 }

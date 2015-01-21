@@ -78,12 +78,18 @@ public abstract class BaseResource<E extends Storable> {
     @Produces(PRODUCED_FORMAT)
     public E getById(@PathParam("id") long id) throws DatasourceFindException {
         try{
-            return dao.findBy(id);
+            E result = dao.findBy(id);
+            this.init(result);
+            return result;
         } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
             throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatasourceFindException(e);
         }
         
     }
+    
+    public abstract void init(E storable) throws Exception;
 
     /**
      * Gets the collection for resources.
@@ -100,17 +106,25 @@ public abstract class BaseResource<E extends Storable> {
     @GET
     @Produces(PRODUCED_FORMAT)
     public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
-
+        Collection<E> result;
         if (limit < 0 || offset < 0) {
             throw new BadRequestException("please provide valid parameter values");
         } else if (limit == 0) {
             // the case when GET request has no query parameters (api/resource)
-            return dao.findAll(offset, DEFAULT_PAGE_SIZE);
-
+            result = dao.findAll(offset, DEFAULT_PAGE_SIZE);
+            
         } else {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
-            return dao.findAll(offset, limit);
+            result = dao.findAll(offset, limit);
         }
+        for (E e : result) {
+            try {
+                this.init(e);
+            } catch (Exception e1) {
+                throw new DatasourceFindException(e1);
+            }
+        }
+        return result;
     }
 
     /**
@@ -131,9 +145,16 @@ public abstract class BaseResource<E extends Storable> {
             throw new BadRequestException("please provide an entity in the request body.");
         }
         try{
-            return dao.findAll(request);
+            Collection<E> result = dao.findAll(request);
+            for (E e : result) {
+                this.init(e);
+            }
+            return result;
         } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
             throw new NotFoundException();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            throw new DatasourceFindException(e1);
         }
     }
 

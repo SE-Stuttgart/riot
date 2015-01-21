@@ -26,4 +26,8 @@ public class ContactsResource extends BaseResource<Contact> {
         super(new ContactSqlQueryDAO(ConnectionMgr.openConnection(), false));
     }
 
+    @Override
+    public void init(Contact storable) throws Exception {
+    }
+
 }

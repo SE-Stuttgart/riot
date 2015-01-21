@@ -19,7 +19,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
@@ -44,4 +43,8 @@ public class PermissionService extends BaseResource<Permission>{
     }
 
     UserManagementFacade facade = UserManagementFacade.getInstance();
+
+    @Override
+    public void init(Permission storable) {
+    }
 }

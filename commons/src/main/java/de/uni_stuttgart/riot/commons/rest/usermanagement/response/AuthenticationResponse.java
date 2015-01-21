@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.response;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+
 /**
  * The authentication response message for the client used in {@link AuthenticationService}.
  *
@@ -10,7 +12,7 @@ public class AuthenticationResponse {
 
     private String accessToken;
     private String refreshToken;
-    private UserResponse user;
+    private User user;
 
     /**
      * Default-Constructor for JAXB.
@@ -28,7 +30,7 @@ public class AuthenticationResponse {
      * @param user
      *            The user.
      */
-    public AuthenticationResponse(String accessToken, String refreshToken, UserResponse user) {
+    public AuthenticationResponse(String accessToken, String refreshToken, User user) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.user = user;
@@ -50,11 +52,11 @@ public class AuthenticationResponse {
         this.refreshToken = refreshToken;
     }
 
-    public UserResponse getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(UserResponse user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

@@ -112,7 +112,7 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
 
         // normal behavior
         final int pageSize = 2;
-        resp = target(this.getSubPath()).queryParam("offset", 2).queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
+        resp = target(this.getSubPath()).queryParam("offset", 1).queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Collection<T> models = resp.readEntity(new GenericType<List<T>>() {
         });
@@ -183,7 +183,7 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
      * Test put one. Response of 204 indicates success, 404 when nothing found that could be updated.
      */
     @Test
-    public void testPutOne() {
+    public void testUpdateOne() {
         Entity<T> testEntity = Entity.entity(this.getNewObject(), MediaType.APPLICATION_JSON_TYPE);
         Response resp = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());

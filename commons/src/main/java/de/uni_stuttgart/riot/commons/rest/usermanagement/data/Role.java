@@ -1,5 +1,8 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -11,6 +14,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 public class Role extends Storable {
 
     private String roleName;
+    
+    private transient Collection<Permission> permissions;
 
     /**
      * // FIXME.
@@ -26,6 +31,7 @@ public class Role extends Storable {
     public Role(Long id, String roleName) {
         super(id);
         this.setRoleName(roleName);
+        this.permissions = new ArrayList<Permission>();
     }
 
     /**
@@ -35,8 +41,10 @@ public class Role extends Storable {
     public Role(String roleName) {
         super(-1L);
         this.setRoleName(roleName);
-    }
+        this.permissions = new ArrayList<Permission>();
 
+    }
+    
     public String getRoleName() {
         return roleName;
     }
@@ -78,6 +86,14 @@ public class Role extends Storable {
     @Override
     public String toString() {
         return "Role [roleName=" + roleName + "]";
+    }
+
+    public Collection<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Collection<Permission> permissions) {
+        this.permissions = permissions;
     }
 
 

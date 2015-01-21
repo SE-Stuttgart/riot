@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
+import java.util.Collection;
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -12,7 +14,8 @@ public class User extends Storable {
 
 
     protected String username;
-
+    private transient Collection<Role> roles;
+    
     /**
      * Constructs a new user.
      */
@@ -30,6 +33,19 @@ public class User extends Storable {
     public User(String username) {
         super(-1L);
         this.username = username;
+    }
+    
+
+    /**
+     * Constructs a new user.
+     * 
+     * @param username
+     *            The name of the user
+     */
+    public User(String username,Collection<Role> roles) {
+        super(-1L);
+        this.username = username;
+        this.setRoles(roles);
     }
 
     /**
@@ -67,6 +83,14 @@ public class User extends Storable {
     @Override
     public String toString() {
         return "User [username=" + username + "]";
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 
 }

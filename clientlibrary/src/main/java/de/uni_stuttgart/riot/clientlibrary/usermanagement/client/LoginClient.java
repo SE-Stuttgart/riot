@@ -17,10 +17,10 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
 
 /**
  * Rest client for authentication handling.
@@ -78,7 +78,7 @@ public class LoginClient {
      * @throws ClientProtocolException .
      * @throws IOException .
      */
-    public UserResponse login(String username, String password) throws RequestException, ClientProtocolException, IOException {
+    public User login(String username, String password) throws RequestException, ClientProtocolException, IOException {
         return this.internalLogin(LOGIN_PATH, new LoginRequest(username, password));
     }
 
@@ -101,7 +101,7 @@ public class LoginClient {
         this.put(this.serverUrl + LOGOUT_PATH, "");
     }
 
-    UserResponse internalLogin(String path, Object entity) throws RequestException {
+    User internalLogin(String path, Object entity) throws RequestException {
         try {
             HttpPut put = new HttpPut(serverUrl + path);
             put.setHeader(ACCESS_TOKEN, tokenManager.getAccessToken());
