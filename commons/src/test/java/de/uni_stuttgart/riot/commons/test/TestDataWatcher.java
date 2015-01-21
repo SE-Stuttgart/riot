@@ -32,7 +32,8 @@ public class TestDataWatcher extends TestWatcher {
 
         // Execute SQLs, if the annotation was present.
         if (annotation != null && annotation.value() != null && annotation.value().length > 0) {
-            try (SqlRunner sqlRunner = new SqlRunner(database.getDataSource())) {
+            try {
+                SqlRunner sqlRunner = new SqlRunner(database.getDataSource());
                 for (String file : annotation.value()) {
                     sqlRunner.runScript(file);
                 }

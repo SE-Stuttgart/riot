@@ -36,6 +36,18 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.clientlibrary</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.clientlibrary</artifactId>
+			<version>${project.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.server-commons</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
