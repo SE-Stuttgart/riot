@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.db;
+package de.uni_stuttgart.riot.commons.test;
 
 import javax.sql.DataSource;
 
@@ -6,10 +6,6 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
-
-import de.uni_stuttgart.riot.commons.test.H2DatabaseRule;
-import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.commons.test.TestDataWatcher;
 
 /**
  * Base class for tests that need database access and Jersey.

@@ -13,6 +13,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteExcepti
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException;
 
 /**
  * 
@@ -69,7 +70,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                 throw new DatasourceDeleteException("Nothing to delete!");
             }
             stmt.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceDeleteException(e.getMessage());
         }
     }
@@ -80,7 +81,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             T t = getMyClazz().newInstance();
             t.setId(id);
             delete(t);
-        } catch (Exception e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new DatasourceDeleteException(e);
         }
 
@@ -96,7 +97,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             }
             t.setId(key);
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceInsertException(e);
         }
     }
@@ -110,7 +111,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
                 throw new DatasourceUpdateException("Nothing to update!");
             }
             stmt.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceUpdateException(e);
         }
     }
@@ -121,10 +122,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindByID(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), id, SqlQueryDAO.this.connection);
             T result = stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
             if (result == null) {
-                throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
+                throw new NotFoundException();
             }
             return result;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }
@@ -134,7 +135,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), searchParams, SqlQueryDAO.this.connection, or);
             return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }
@@ -144,7 +145,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindAll(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), SqlQueryDAO.this.connection);
             return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }
@@ -157,7 +158,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindWithPagination(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), SqlQueryDAO.this.connection, offset, limit);
             return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }
@@ -171,7 +172,7 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         try {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindWithFiltering(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), connection, filter, SqlQueryDAO.this.getMyClazz());
             return stmt.executeAndFetch(SqlQueryDAO.this.getMyClazz());
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }
@@ -184,10 +185,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             Query stmt = SqlQueryDAO.this.queryBuilder.buildFindBySearchParam(TableMapper.getTableName(SqlQueryDAO.this.getMyClazz().getSimpleName()), searchParams, SqlQueryDAO.this.connection, false);
             T result = stmt.executeAndFetchFirst(SqlQueryDAO.this.getMyClazz());
             if (result == null) {
-                throw new DatasourceFindException(DatasourceFindException.OBJECT_DOES_NOT_EXIST_IN_DATASOURCE);
+                throw new NotFoundException();
             }
             return result;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
     }

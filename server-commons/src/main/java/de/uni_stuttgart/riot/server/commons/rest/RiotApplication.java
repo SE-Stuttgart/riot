@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.rest;
+package de.uni_stuttgart.riot.server.commons.rest;
 
 import javax.ws.rs.ApplicationPath;
 

@@ -7,8 +7,8 @@ import javax.ws.rs.Path;
 
 import de.uni_stuttgart.riot.commons.rest.data.contact.Contact;
 import de.uni_stuttgart.riot.db.ContactSqlQueryDAO;
-import de.uni_stuttgart.riot.rest.BaseResource;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 
 /**
  * The Class ContactsResource.

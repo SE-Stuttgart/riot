@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.rest;
+package de.uni_stuttgart.riot.server.commons.rest;
 
 import java.net.URI;
 import java.util.Collection;
@@ -77,11 +77,12 @@ public abstract class BaseResource<E extends Storable> {
     @Path("{id}")
     @Produces(PRODUCED_FORMAT)
     public E getById(@PathParam("id") long id) throws DatasourceFindException {
-        E model = dao.findBy(id);
-        if (model == null) {
+        try{
+            return dao.findBy(id);
+        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
             throw new NotFoundException();
         }
-        return model;
+        
     }
 
     /**
@@ -129,7 +130,11 @@ public abstract class BaseResource<E extends Storable> {
         if (request == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
-        return dao.findAll(request);
+        try{
+            return dao.findAll(request);
+        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
+            throw new NotFoundException();
+        }
     }
 
     /**

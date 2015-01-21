@@ -9,6 +9,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
+
 /**
  * An exemplary test class which uses the Jersey Test Framework.
  * 

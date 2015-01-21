@@ -10,8 +10,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.contact.Contact;
+import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.db.JerseyDBTestBase;
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Test class for the contacts which uses the Jersey Test Framework.

@@ -8,11 +8,7 @@ package de.uni_stuttgart.riot.server.commons.db.exception;
  */
 public class DatasourceFindException extends DatasourceException {
 
-    /**
-     * Error message.
-     */
-    public static final String OBJECT_DOES_NOT_EXIST_IN_DATASOURCE = "There is no object stored in the datasource assosiated with the given ID or parameter";
-
+ 
     private static final long serialVersionUID = 1L;
 
     /**
