@@ -163,11 +163,6 @@ public class RoleLogic {
             for (RolePermission rolePermission : rolePermissions) {
                 permissions.add(permissionDao.findBy(rolePermission.getPermissionID()));
             }
-
-            if (permissions.isEmpty()) {
-                throw new GetPermissionsFromRoleException("The role has no permissions");
-            }
-
             return permissions;
         } catch (Exception e) {
             throw new GetPermissionsFromRoleException(e);

@@ -1,8 +1,11 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.type.TypeReference;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
@@ -15,7 +18,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
  */
 public class UsermanagementClient {
 
-    private static final String PREFIX = "/riot/api/v1/";
+    private static final String PREFIX = "/api/v1/";
 
     private static final String GET_USERS = PREFIX + "users";
     private static final String GET_ROLES = PREFIX + "roles";
@@ -26,18 +29,18 @@ public class UsermanagementClient {
     private static final String GET_ROLE = PREFIX + "roles/";
     private static final String GET_PERMISSION = PREFIX + "permissions/";
 
-    private static final String PUT_ADD_USER = PREFIX + "users";
-    private static final String PUT_ADD_ROLE = PREFIX + "roles";
-    private static final String PUT_ADD_PERMISSION = PREFIX + "permissions";
-    private static final String PUT_ADD_USER_ROLE = "/roles/";
+    private static final String POST_ADD_USER = PREFIX + "users/sec/";
+    private static final String POST_ADD_ROLE = PREFIX + "roles";
+    private static final String POST_ADD_PERMISSION = PREFIX + "permissions";
+    private static final String POST_ADD_USER_ROLE = "/roles/";
 
-    private static final String PUT_UPDATE_USER = PREFIX + "users/";
+    private static final String PUT_UPDATE_USER = PREFIX + "users/sec/";
     private static final String PUT_UPDATE_ROLE = PREFIX + "roles/";
     private static final String PUT_UPDATE_PERMISSION = PREFIX + "permissions/";
 
     private static final String DELETE_USER = PREFIX + "users/";
     private static final String DELETE_ROLE = PREFIX + "roles/";
-    private static final String DELETE_PERMISSION = PREFIX + "permissions";
+    private static final String DELETE_PERMISSION = PREFIX + "permissions/";
     private static final String DELETE_USER_ROLE = "/roles/";
 
     private final LoginClient loginClient;
@@ -62,14 +65,13 @@ public class UsermanagementClient {
      * @return the updated user
      * @throws RequestException .
      */
-    public User updateUser(long userID, UserRequest userRequest) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_USER + userID, userRequest);
-        try {
-            User result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), User.class);
-            return result;
-        } catch (Exception e) {
-            throw new RequestException(e);
-        }
+    public void updateUser(long userID, UserRequest userRequest) throws RequestException {
+         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_USER + userID, userRequest);
+         try {
+             response.getEntity().consumeContent();
+         } catch (IOException e) {
+             throw new RequestException(e);
+         }
     }
 
     /**
@@ -82,14 +84,8 @@ public class UsermanagementClient {
      * @return the updated role
      * @throws RequestException .
      */
-    public Role updateRole(long roleID, Role role) throws RequestException {
+    public void updateRole(long roleID, Role role) throws RequestException {
         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_ROLE + roleID, role);
-        try {
-            Role result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Role.class);
-            return result;
-        } catch (Exception e) {
-            throw new RequestException(e);
-        }
     }
 
     /**
@@ -102,14 +98,8 @@ public class UsermanagementClient {
      * @return the updated permission
      * @throws RequestException .
      */
-    public Permission updatePermission(long permissionID, Permission permission) throws RequestException {
+    public void updatePermission(long permissionID, Permission permission) throws RequestException {
         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_PERMISSION + permissionID, permission);
-        try {
-            Permission result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Permission.class);
-            return result;
-        } catch (Exception e) {
-            throw new RequestException(e);
-        }
     }
 
     /**
@@ -125,6 +115,11 @@ public class UsermanagementClient {
     public int removeUserRole(long userID, long roleID) throws RequestException {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + PREFIX + "users/" + userID + DELETE_USER_ROLE + roleID);
         int result = response.getStatusLine().getStatusCode();
+        try {
+            response.getEntity().consumeContent();
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
         return result;
     }
 
@@ -179,7 +174,7 @@ public class UsermanagementClient {
      * @throws RequestException .
      */
     public User addUser(UserRequest userRequest) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_ADD_USER, userRequest);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_USER, userRequest);
         try {
             User result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), User.class);
             return result;
@@ -197,7 +192,7 @@ public class UsermanagementClient {
      * @throws RequestException .
      */
     public Role addRole(Role role) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_ADD_ROLE, role);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_ROLE, role);
         try {
             Role result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Role.class);
             return result;
@@ -217,7 +212,12 @@ public class UsermanagementClient {
      * @throws RequestException .
      */
     public int addUserRole(long userID, long roleID) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PREFIX + "users/" + userID + PUT_ADD_USER_ROLE + roleID, "");
+        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PREFIX + "users/" + userID + POST_ADD_USER_ROLE + roleID, "");
+        try {
+            EntityUtils.toString(response.getEntity());
+        } catch (Exception e) {
+            throw new RequestException(e);
+        }
         return response.getStatusLine().getStatusCode();
     }
 
@@ -230,7 +230,7 @@ public class UsermanagementClient {
      * @throws RequestException .
      */
     public Permission addPermission(Permission permission) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_ADD_PERMISSION, permission);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_PERMISSION, permission);
         try {
             Permission result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Permission.class);
             return result;

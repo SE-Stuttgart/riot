@@ -36,6 +36,7 @@ public class TestDataWatcher extends TestWatcher {
                 SqlRunner sqlRunner = new SqlRunner(database.getDataSource());
                 for (String file : annotation.value()) {
                     sqlRunner.runScript(file);
+                    System.out.println(file);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);

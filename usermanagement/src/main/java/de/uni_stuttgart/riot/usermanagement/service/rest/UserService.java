@@ -10,6 +10,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -85,8 +86,8 @@ public class UserService extends BaseResource<UMUser>{
      *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
      *             {@link UserManagementExceptionMapper} class.
      */
-    @PUT
-    @Path("/A")
+    @POST
+    @Path("sec")
     @RequiresAuthentication
     public User addUser(UserRequest userRequest) throws UserManagementException {
         User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
@@ -106,7 +107,7 @@ public class UserService extends BaseResource<UMUser>{
      *             {@link UserManagementExceptionMapper} class.
      */
     @PUT
-    @Path("/A/{userID}")
+    @Path("/sec/{userID}")
     @RequiresAuthentication
     public User updateUser(@PathParam("userID") Long userID, UserRequest userRequest) throws UserManagementException {
         User user = facade.getUser(userID);

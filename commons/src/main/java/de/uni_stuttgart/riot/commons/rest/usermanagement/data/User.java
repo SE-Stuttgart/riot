@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -10,6 +12,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * @author Niklas Schnabel
  *
  */
+@JsonIgnoreProperties({"hashedPassword", "passwordSalt", "hashIterations", "loginAttemptCount"})
 public class User extends Storable {
 
 

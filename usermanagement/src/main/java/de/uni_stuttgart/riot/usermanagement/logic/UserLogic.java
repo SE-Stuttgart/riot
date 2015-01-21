@@ -180,7 +180,7 @@ public class UserLogic {
      */
     public UMUser getUser(Token token) throws GetUserException {
         try {
-            return dao.findByUniqueField(new SearchParameter(SearchFields.USERID, token.getUserID()));
+            return dao.findByUniqueField(new SearchParameter(SearchFields.TABLEPK, token.getUserID()));
         } catch (Exception e) {
             throw new GetUserException(e);
         }

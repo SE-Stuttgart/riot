@@ -31,7 +31,7 @@ public class LoginClient {
     private static final int ERROR_THRESHOLD = 402;
     private static final int BAD_REQUEST = 400;
     private static final String APPLICATION_JSON = "application/json";
-    private static final String PREFIX = "/riot/api/v1/";
+    private static final String PREFIX = "/api/v1/";
     private static final String LOGOUT_PATH = PREFIX + "auth/logout";
     private static final String LOGIN_PATH = PREFIX + "auth/login";
     private static final String REFRESH_PATH = PREFIX + "auth/refresh";
@@ -200,8 +200,10 @@ public class LoginClient {
             HttpResponse response = r.doRequest();
             int status = response.getStatusLine().getStatusCode();
             String mediatype = "";
-            if (response.getEntity().getContentType() != null) {
-                mediatype = response.getEntity().getContentType().getValue();
+            if (response.getEntity() != null ) {
+                if (response.getEntity().getContentType() != null) {
+                    mediatype = response.getEntity().getContentType().getValue();
+                }
             }
             if (status >= ERROR_THRESHOLD || status == BAD_REQUEST) {
                 if (mediatype.equals(APPLICATION_JSON)) {

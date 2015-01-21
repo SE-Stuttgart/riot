@@ -59,7 +59,11 @@ public enum SearchFields {
     /**
      * Search field for:.
      */
-    LOGINATTEMPTCOUNT("loginAttemptCount");
+    LOGINATTEMPTCOUNT("loginAttemptCount"),
+    /**
+     * Search field for:.
+     */
+    TABLEPK("id");
 
     private final String text;
 
