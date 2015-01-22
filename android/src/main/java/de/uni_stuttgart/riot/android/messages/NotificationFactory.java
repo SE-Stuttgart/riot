@@ -12,15 +12,12 @@ import java.util.Vector;
 
 import de.enpro.android.riot.R;
 
-//import android.support.v4.app.*;
-
 /**
  * Created by Benny on 12.12.2014.
  */
 public class NotificationFactory {
-    private static Context context;
-    private static NotificationFactory instance;
-    private static String NOTIFICATION_GROUP = "RIOT-Group";
+    private Context context;
+    private String NOTIFICATION_GROUP = "RIOT-Group";
     private int notificationId;
     private HashMap<Integer, Vector<Notification.Builder>> notificationList;
     private Notification.Builder[] stackedNotificationList;
@@ -28,18 +25,8 @@ public class NotificationFactory {
 
     /**
      * Constructor
-     *
-     * @param context the application context
      */
-    private NotificationFactory(Context context) {
-        this.context = context;
-        init();
-    }
-
-    /**
-     * Constructor
-     */
-    private NotificationFactory() {
+    public NotificationFactory() {
         init();
     }
 
@@ -58,30 +45,10 @@ public class NotificationFactory {
     }
 
     /**
-     * Singleton
-     *
-     * @param context the application context
+     * Clears all prepared (saved) notifications
      */
-    public static NotificationFactory getInstance(Context context) {
-        if (instance == null) {
-            instance = new NotificationFactory(context);
-        }
-        return instance;
-    }
-
-    /**
-     * Singleton
-     */
-    public static NotificationFactory getInstance() {
-        if (instance == null) {
-            instance = new NotificationFactory();
-        }
-        // Context has to be already set, otherwise return null
-        if (context == null) {
-            MessageHandler.getInstance().writeInfoMessage("NotificationFactory needs the context");
-            return null;
-        }
-        return instance;
+    public void clearPreparedNotifications() {
+        init();
     }
 
     /**
@@ -89,7 +56,7 @@ public class NotificationFactory {
      *
      * @param pContext the context of the application
      */
-    public static void setContext(Context pContext) {
+    public void setContext(Context pContext) {
         context = pContext;
     }
 

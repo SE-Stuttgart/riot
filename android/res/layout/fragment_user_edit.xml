@@ -24,7 +24,7 @@
         android:text="@string/user_role"
         android:id="@+id/user_role_text" />
 
-    <de.uni_stuttgart.riot.android.users.MultiSelectionSpinner
+    <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner
         android:id="@+id/user_role_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,22 +36,36 @@
         android:text="@string/user_permission"
         android:id="@+id/user_permission_text" />
 
-    <de.uni_stuttgart.riot.android.users.MultiSelectionSpinner
+    <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner
         android:id="@+id/user_permission_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/user_save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="118dp"
-        android:text="Zeige die Werte"
+        android:text="@string/user_save"
         android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
-    <EditText
-        android:id="@+id/values"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/user_abort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="118dp"
+        android:text="@string/user_abort"
+        android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
+    </LinearLayout>
+
+    <!--<EditText-->
+        <!--android:id="@+id/values"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
 </LinearLayout>

@@ -1,7 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -19,6 +17,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.account.AndroidUser;
@@ -32,10 +37,11 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.android.messages.MessageHandler;
+import de.uni_stuttgart.riot.android.management.DeviceListFragment;
+import de.uni_stuttgart.riot.android.management.ThingListFragment;
+import de.uni_stuttgart.riot.android.management.UserListFragment;
+import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.messages.NotificationFactory;
-import de.uni_stuttgart.riot.android.users.UserDetailFragment;
-import de.uni_stuttgart.riot.android.users.UserEditFragment;
-import de.uni_stuttgart.riot.android.users.UsersFragment;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -88,6 +94,9 @@ public class MainActivity extends Activity {
         // Save the application context in the message handler and the notification factory
         MessageHandler.setContext(getApplicationContext());
         NotificationFactory.setContext(getApplicationContext());
+
+        // Save the application context in the singleton objects
+        IM.INSTANCES.setContext(getApplicationContext());
 
         // Database stuff
         //this.deleteDatabase("Database");
@@ -145,6 +154,14 @@ public class MainActivity extends Activity {
         new ServerConnection(this, filterObjects).execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Delete all saved notifications
+        IM.INSTANCES.getNF().clearPreparedNotifications();
+    }
+
 	/*
      * ----------------- REFRESH BUTTON -----------------
 	 */
@@ -158,6 +175,7 @@ public class MainActivity extends Activity {
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     /**
      * Define displaying settings for the refresh button
@@ -266,22 +284,21 @@ public class MainActivity extends Activity {
             startFragment(position, fragment);
         }
 
-        // Opens the user fragment
+        // Opens the user list fragment
         if (position == 4) {
-            fragment = new UsersFragment();
+            fragment = new UserListFragment();
             startFragment(position, fragment);
         }
 
-        // ToDo: Nur temporaer!!
-        // Opens the user detail fragment
+        // Opens the thing list fragment
         if (position == 5) {
-            fragment = new UserDetailFragment();
+            fragment = new ThingListFragment();
             startFragment(position, fragment);
         }
 
-        // Opens the user edit fragment
+        // Opens the device list fragment
         if (position == 6) {
-            fragment = new UserEditFragment();
+            fragment = new DeviceListFragment();
             startFragment(position, fragment);
         }
         // ToDo: <--

@@ -9,23 +9,12 @@ import android.widget.Toast;
  */
 public class MessageHandler {
 
-    private static Context context;
-    private static MessageHandler instance;
-
-    /**
-     * Constructor
-     *
-     * @param context the application context
-     */
-    private MessageHandler(Context context) {
-        this.context = context;
-        init();
-    }
+    private Context context;
 
     /**
      * Constructor
      */
-    private MessageHandler() {
+    public MessageHandler() {
         init();
     }
 
@@ -36,37 +25,11 @@ public class MessageHandler {
     }
 
     /**
-     * Singleton
-     *
-     * @param context the application context
-     */
-    public static MessageHandler getInstance(Context context) {
-        if (instance == null) {
-            instance = new MessageHandler(context);
-        }
-        return instance;
-    }
-
-    /**
-     * Singleton
-     */
-    public static MessageHandler getInstance() {
-        if (instance == null) {
-            instance = new MessageHandler();
-        }
-        // Context has to be already set, otherwise return null
-        if(context == null) {
-            return null;
-        }
-        return instance;
-    }
-
-    /**
      * Saves the application context
      *
      * @param pContext the context of the application
      */
-    public static void setContext(Context pContext) {
+    public void setContext(Context pContext) {
         context = pContext;
     }
 
