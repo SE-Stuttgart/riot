@@ -146,7 +146,9 @@ public class RoleLogic {
      * @throws GetPermissionsFromRoleException
      */
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
-
+        if (roleId == null) {
+           throw new GetPermissionsFromRoleException("roleId must not be null!");
+        }
         try {
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
             DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);

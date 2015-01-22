@@ -156,9 +156,9 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(1, allPermissionsFromRole.size());
     }
 
-    @Test(expected = GetPermissionsFromRoleException.class)
+    @Test
     public void testGetAllPermissionsFromRoleInvalid() throws Exception {
-        rl.getAllPermissionsFromRole(42L);
+        assertEquals(0, rl.getAllPermissionsFromRole(42L).size());
     }
 
     @Test(expected = GetPermissionsFromRoleException.class)
@@ -215,13 +215,7 @@ public class RoleLogicTest extends LogicTestBase {
     @Test
     public void testRemovePermissionFromRoleValid() throws Exception {
         rl.removePermissionFromRole(1L, 1L);
-
-        try {
-            rl.getAllPermissionsFromRole(1L).size();
-        } catch (GetPermissionsFromRoleException e) {
-            return;
-        }
-        fail("Should not reach this point, because the specified role should not have permissions anymore.");
+        assertEquals(0, rl.getAllPermissionsFromRole(1L).size());
     }
 
     @Test(expected = RemovePermissionFromRoleException.class)

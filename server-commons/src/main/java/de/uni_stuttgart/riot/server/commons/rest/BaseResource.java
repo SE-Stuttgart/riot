@@ -77,18 +77,23 @@ public abstract class BaseResource<E extends Storable> {
     @Path("{id}")
     @Produces(PRODUCED_FORMAT)
     public E getById(@PathParam("id") long id) throws DatasourceFindException {
-        try{
+        try {
             E result = dao.findBy(id);
             this.init(result);
             return result;
-        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
+        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e) {
             throw new NotFoundException();
         } catch (Exception e) {
             throw new DatasourceFindException(e);
         }
-        
+
     }
-    
+
+    /**
+     * //TODO Comment.
+     * @param storable .
+     * @throws Exception .
+     */
     public abstract void init(E storable) throws Exception;
 
     /**
@@ -112,7 +117,7 @@ public abstract class BaseResource<E extends Storable> {
         } else if (limit == 0) {
             // the case when GET request has no query parameters (api/resource)
             result = dao.findAll(offset, DEFAULT_PAGE_SIZE);
-            
+
         } else {
             // the case when GET request has only limit query parameter (api/resource?limit=20)
             result = dao.findAll(offset, limit);
@@ -144,16 +149,15 @@ public abstract class BaseResource<E extends Storable> {
         if (request == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
-        try{
+        try {
             Collection<E> result = dao.findAll(request);
             for (E e : result) {
                 this.init(e);
             }
             return result;
-        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e){
+        } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e) {
             throw new NotFoundException();
         } catch (Exception e1) {
-            e1.printStackTrace();
             throw new DatasourceFindException(e1);
         }
     }
