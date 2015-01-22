@@ -9,9 +9,9 @@
         <item>RIOT-Account</item>
         <item>Language</item>
         <item>Location</item>
-        <item>User</item>
-        <item>UserDetail</item>
-        <item>UserEdit</item>
+        <item>UserList</item>
+        <item>ThingsList</item>
+        <item>DevicesList</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -39,7 +39,7 @@
     <string name="acc_password">Password:</string>
     <string name="user_role">User-Role:</string>
     <string name="user_permission">User-Permissions:</string>
-    <string name="user_edit">Edit</string>
+    <string name="user_edit">Edit User</string>
 
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Show only Error messages if selected</string>
@@ -63,6 +63,14 @@
         <item>low</item>
         <item>min</item>
     </string-array>
-    <string name="notification_messages_with"> Messages with </string>
-    <string name="notification_priority"> priority</string>
+    <string name="notification_messages_with">\u00A0Messages with\u00A0</string>
+    <string name="notification_priority">\u00A0priority</string>
+    <string name="user_save">Save</string>
+    <string name="user_abort">Abort</string>
+    <string name="processDialogExecute">Getting Data …</string>
+    <string name="user_list">User List</string>
+    <string name="device_list">Device List</string>
+    <string name="thing_list">Thing List</string>
+    <string name="user_detail">User Detail</string>
+    <string name="user_back">Back</string>
 </resources>

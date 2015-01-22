@@ -6,4 +6,11 @@
 
     <dimen name="fragment_main_margin">50px</dimen>
     <dimen name="fragment_margin_between_elements">60px</dimen>
+
+    <dimen name="list_item_margin_left">5dp</dimen>
+    <dimen name="list_item_margin_top">5dp</dimen>
+    <dimen name="list_item_subject_size">20dp</dimen>
+    <dimen name="list_item_description_size">14dp</dimen>
+    <dimen name="list_item_image_size">100px</dimen>
+    <dimen name="list_item_online_status_size">50px</dimen>
 </resources>

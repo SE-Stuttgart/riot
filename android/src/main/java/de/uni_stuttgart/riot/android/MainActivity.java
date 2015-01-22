@@ -1,7 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -19,6 +17,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
 import de.uni_stuttgart.riot.android.communication.NotificationFragment;
@@ -26,11 +31,11 @@ import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
-import de.uni_stuttgart.riot.android.messages.MessageHandler;
+import de.uni_stuttgart.riot.android.management.DeviceListFragment;
+import de.uni_stuttgart.riot.android.management.ThingListFragment;
+import de.uni_stuttgart.riot.android.management.UserListFragment;
+import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.messages.NotificationFactory;
-import de.uni_stuttgart.riot.android.users.UserDetailFragment;
-import de.uni_stuttgart.riot.android.users.UserEditFragment;
-import de.uni_stuttgart.riot.android.users.UsersFragment;
 
 /**
  * The main window.
@@ -51,9 +56,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Save the application context in the message handler and the notification factory
-        MessageHandler.setContext(getApplicationContext());
-        NotificationFactory.setContext(getApplicationContext());
+        // Save the application context in the singleton objects
+        IM.INSTANCES.setContext(getApplicationContext());
 
         // Database stuff
         //this.deleteDatabase("Database");
@@ -116,6 +120,13 @@ public class MainActivity extends Activity {
         new ServerConnection(this, filterObjects).execute();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Delete all saved notifications
+        IM.INSTANCES.getNF().clearPreparedNotifications();
+    }
 
 	/*
      * ----------------- REFRESH BUTTON -----------------
@@ -130,6 +141,7 @@ public class MainActivity extends Activity {
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     /**
      * Define displaying settings for the refresh button
@@ -188,14 +200,15 @@ public class MainActivity extends Activity {
 
                 // Test der Notifications!!
                 // Fire notification if it is a warning or an error
-                NotificationFactory notificationFactory = NotificationFactory.getInstance();
-                notificationFactory.prepareUncriticalNotification("Warnung 1", "Mit warnendem Text");
-                // notificationFactory.prepareUncriticalNotification("Warnung 2", "Mit warnendem Text");
+                NotificationFactory notificationFactory = IM.INSTANCES.getNF();
+                notificationFactory.prepareImportantNotification("Warnung 1", "Mit warnendem Text");
+                // notificationFactory.prepareImportantNotification("Warnung 2", "Mit warnendem Text");
                 notificationFactory.prepareCriticalNotification("Kritisch 1", "Mit kritischem Text");
                 notificationFactory.prepareCriticalNotification("Kritisch 2", "Mit kritischem Text");
                 notificationFactory.prepareCriticalNotification("Kritisch 3", "Mit kritischem Text");
                 notificationFactory.prepareCriticalNotification("Kritisch 4", "Mit kritischem Text");
                 notificationFactory.showStackedNotification();
+
 
                 new ServerConnection(this, filterObjects).execute();
             default:
@@ -203,7 +216,36 @@ public class MainActivity extends Activity {
         }
     }
 
-	/*
+    //******* -->>
+    public static String convertinputStreamToString(InputStream ists) {
+        if (ists != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            try {
+                BufferedReader r1 = new BufferedReader(new InputStreamReader(
+                        ists, "UTF-8"));
+                while ((line = r1.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    ists.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
+    //*************<<---------------
+    /*
      * ----------------- OPTIONS MENU -----------------
 	 */
 
@@ -260,26 +302,23 @@ public class MainActivity extends Activity {
             startFragment(position, fragment);
         }
 
-        // Opens the user fragment
+        // Opens the user list fragment
         if (position == 4) {
-            fragment = new UsersFragment();
+            fragment = new UserListFragment();
             startFragment(position, fragment);
         }
 
-        // ToDo: Nur temporaer!!
-        // Opens the user detail fragment
+        // Opens the thing list fragment
         if (position == 5) {
-            fragment = new UserDetailFragment();
+            fragment = new ThingListFragment();
             startFragment(position, fragment);
         }
 
-        // Opens the user edit fragment
+        // Opens the device list fragment
         if (position == 6) {
-            fragment = new UserEditFragment();
+            fragment = new DeviceListFragment();
             startFragment(position, fragment);
         }
-        // ToDo: <--
-
     }
 
     @Override
