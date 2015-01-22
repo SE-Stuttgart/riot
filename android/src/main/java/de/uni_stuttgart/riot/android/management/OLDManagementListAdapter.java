@@ -6,33 +6,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import java.util.ArrayList;
-
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Benny on 09.01.2015.
  */
-public class ManagementListAdapter extends ArrayAdapter<User> {
+public class OLDManagementListAdapter extends ArrayAdapter<HashMap<String, Object>> {
 
-    private ManagementFragment managementFragment;
+    private OLDManagementListFragment OLDManagementListFragment;
     private Context context;
     private int resource;
-    private ArrayList<User> itemList;
+    private List<HashMap<String, Object>> itemsList;
 
 
     /**
      * Constructor
      *
      * @param context   is the calling context
-     * @param itemList includes the data that will be shown by the list
+     * @param itemsList includes the data that will be shown by the list
      */
-    public ManagementListAdapter(ManagementFragment managementFragment, Context context, int resource, ArrayList<User> itemList) {
-        super(context, resource, itemList);
-        this.managementFragment = managementFragment;
+    public OLDManagementListAdapter(OLDManagementListFragment OLDManagementListFragment, Context context, int resource, List<HashMap<String, Object>> itemsList) {
+        super(context, resource, itemsList);
+        this.OLDManagementListFragment = OLDManagementListFragment;
         this.context = context;
         this.resource = resource;
-        this.itemList = itemList;
+        this.itemsList = itemsList;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ManagementListAdapter extends ArrayAdapter<User> {
         }
 
         // Save all elements of an item
-        managementFragment.doGetView(listRow, itemList.get(position));
+        OLDManagementListFragment.doGetView(listRow, itemsList.get(position));
         return listRow;
     }
 }

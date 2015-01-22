@@ -24,7 +24,7 @@
         android:text="@string/user_role"
         android:id="@+id/user_role_text" />
 
-    <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner
+    <de.uni_stuttgart.riot.android.management.OLDMultiSelectionSpinner
         android:id="@+id/user_role_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
         android:text="@string/user_permission"
         android:id="@+id/user_permission_text" />
 
-    <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner
+    <de.uni_stuttgart.riot.android.management.OLDMultiSelectionSpinner
         android:id="@+id/user_permission_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

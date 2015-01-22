@@ -11,7 +11,7 @@ import de.uni_stuttgart.riot.android.messages.IM;
 /**
  * Created by Benny on 09.01.2015.
  */
-public class DeviceListFragment extends ManagementListFragment {
+public class OLDThingListFragment extends OLDManagementListFragment {
 
     @Override
     protected String setTagId() {
@@ -46,7 +46,7 @@ public class DeviceListFragment extends ManagementListFragment {
     @Override
     protected void doOnItemClick(AdapterView<?> parent, View view, int position, long id) {
         HashMap<String, Object> items = (HashMap<String, Object>) parent.getItemAtPosition(position);
-        IM.INSTANCES.getMH().showQuickMessage("DevicesListFragment: At " + items.get(TAG_SUBJECT) + " (" + String.valueOf(items.get(TAG_ID)) + " )");
+        IM.INSTANCES.getMH().showQuickMessage("ThingsListFragment: At " + items.get(TAG_SUBJECT) + " (" + String.valueOf(items.get(TAG_ID)) + " )");
 
         //ToDo next:
         // OnClick oeffnet UserDetail
@@ -75,27 +75,27 @@ public class DeviceListFragment extends ManagementListFragment {
 
     @Override
     protected int getTitleId() {
-        return R.string.device_list;
+        return R.string.thing_list;
     }
 
     @Override
-    protected ManagementFragment getFragment() {
+    protected OLDManagementFragment getFragment() {
         return this;
     }
 
     @Override
     protected String getUrl() {
         StringBuilder str = new StringBuilder();
-        str.append("{\"devices\":[");
-        int max = 30;
+        str.append("{\"things\":[");
+        int max = 100;
         for (int i = 1; i < max; i++) {
             str.append("{\"id\":");
             str.append(i);
-            str.append(",\"name\":\"Device ");
+            str.append(",\"name\":\"Thing ");
             str.append(i);
             str.append("\",\"description\":\"Das ist das ");
             str.append(i);
-            str.append(". Device\",\"onlineState\":\"");
+            str.append(". Thing\",\"onlineState\":\"");
 
             if (i % 10 == 0) {
                 str.append("away");

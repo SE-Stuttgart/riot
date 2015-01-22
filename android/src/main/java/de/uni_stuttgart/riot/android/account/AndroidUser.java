@@ -1,27 +1,26 @@
 package de.uni_stuttgart.riot.android.account;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 
 import com.google.gson.Gson;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.ClientProtocolException;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.PermissionResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.UserResponse;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -42,7 +41,7 @@ public class AndroidUser {
     private static final String USER = "user";
 
     /** The user. */
-    private UserResponse user;
+    private User user;
 
     /** The user management client client. */
     private UsermanagementClient umClient;
@@ -70,8 +69,12 @@ public class AndroidUser {
 
         String userData = accountManager.getUserData(account, USER);
         if (StringUtils.isNotEmpty(userData)) {
-            user = new Gson().fromJson(userData, UserResponse.class);
+            user = new Gson().fromJson(userData, User.class);
         }
+    }
+
+    public UsermanagementClient getUmClient() {
+        return umClient;
     }
 
     /**
@@ -126,14 +129,14 @@ public class AndroidUser {
      * Fetch roles and permissions from the server.
      */
     public void refreshRolesAndPermissions() {
-        try {
-            Collection<RoleResponse> userRoles = umClient.getUserRoles(user.getUser().getId());
-            user.setRoles(userRoles);
-            saveUserInAccount();
-        } catch (RequestException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            Collection<Role> userRoles = umClient.getUserRoles(user.getUser().getId());
+//            user.setRoles(userRoles);
+//            saveUserInAccount();
+//        } catch (RequestException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -141,7 +144,7 @@ public class AndroidUser {
      *
      * @return the user
      */
-    public UserResponse getUser() {
+    public User getUser() {
         return user;
     }
 
@@ -154,7 +157,7 @@ public class AndroidUser {
      *
      * @return the roles
      */
-    public Collection<RoleResponse> getRoles() {
+    public Collection<Role> getRoles() {
         return user == null ? null : user.getRoles();
     }
 
@@ -166,15 +169,15 @@ public class AndroidUser {
      * @return true, if successful
      */
     public boolean hasRole(String roleName) {
-        if (user == null) {
-            return false;
-        }
-
-        for (RoleResponse roles : user.getRoles()) {
-            if (StringUtils.equals(roles.getRole().getRoleName(), roleName)) {
-                return true;
-            }
-        }
+//        if (user == null) {
+//            return false;
+//        }
+//
+//        for (Role roles : user.getRoles()) {
+//            if (StringUtils.equals(roles.getRole().getRoleName(), roleName)) {
+//                return true;
+//            }
+//        }
         return false;
     }
 
@@ -186,17 +189,17 @@ public class AndroidUser {
      * @return true, if successful
      */
     public boolean hasPermission(String permissionName) {
-        if (user == null) {
-            return false;
-        }
-
-        for (RoleResponse roles : user.getRoles()) {
-            for (PermissionResponse permissions : roles.getPermissions()) {
-                if (StringUtils.equals(permissions.getPermission().getPermissionValue(), permissionName)) {
-                    return true;
-                }
-            }
-        }
+//        if (user == null) {
+//            return false;
+//        }
+//
+//        for (Role roles : user.getRoles()) {
+//            for (Permission permissions : roles.getPermissions()) {
+//                if (StringUtils.equals(permissions.getPermission().getPermissionValue(), permissionName)) {
+//                    return true;
+//                }
+//            }
+//        }
         return false;
     }
 

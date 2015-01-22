@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by Benny on 09.01.2015.
  */
-public abstract class ManagementDetailEditFragment extends ManagementFragment {
+public abstract class OLDManagementDetailEditFragment extends OLDManagementFragment {
 
     public static final String BUNDLE_OBJECT_ID = "OBJECT_ID";
     protected int objectId;

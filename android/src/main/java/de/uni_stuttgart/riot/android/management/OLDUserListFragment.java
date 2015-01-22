@@ -11,7 +11,7 @@ import de.enpro.android.riot.R;
 /**
  * Created by Benny on 09.01.2015.
  */
-public class UserListFragment extends OLDManagementListFragment {
+public class OLDUserListFragment extends OLDManagementListFragment {
 
     @Override
     protected String setTagId() {

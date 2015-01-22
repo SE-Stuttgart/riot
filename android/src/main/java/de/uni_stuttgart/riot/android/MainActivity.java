@@ -17,11 +17,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import de.enpro.android.riot.R;
@@ -33,14 +28,10 @@ import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.android.messages.MessageHandler;
-import de.uni_stuttgart.riot.android.management.DeviceListFragment;
-import de.uni_stuttgart.riot.android.management.ThingListFragment;
-import de.uni_stuttgart.riot.android.management.UserListFragment;
+import de.uni_stuttgart.riot.android.management.OLDDeviceListFragment;
+import de.uni_stuttgart.riot.android.management.OLDThingListFragment;
+import de.uni_stuttgart.riot.android.management.OLDUserListFragment;
 import de.uni_stuttgart.riot.android.messages.IM;
-import de.uni_stuttgart.riot.android.messages.NotificationFactory;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -281,19 +272,19 @@ public class MainActivity extends Activity {
 
         // Opens the user list fragment
         if (position == 4) {
-            fragment = new UserListFragment();
+            fragment = new OLDUserListFragment();
             startFragment(position, fragment);
         }
 
         // Opens the thing list fragment
         if (position == 5) {
-            fragment = new ThingListFragment();
+            fragment = new OLDThingListFragment();
             startFragment(position, fragment);
         }
 
         // Opens the device list fragment
         if (position == 6) {
-            fragment = new DeviceListFragment();
+            fragment = new OLDDeviceListFragment();
             startFragment(position, fragment);
         }
         // ToDo: <--

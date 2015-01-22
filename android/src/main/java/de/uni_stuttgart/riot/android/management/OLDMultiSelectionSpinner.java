@@ -23,14 +23,14 @@ import java.util.List;
  * Modified by Benny on 16.12.2014.
  */
 
-public class MultiSelectionSpinner extends Spinner implements
+public class OLDMultiSelectionSpinner extends Spinner implements
         OnMultiChoiceClickListener {
     String[] _items = null;
     boolean[] mSelection = null;
 
     ArrayAdapter<String> simple_adapter;
 
-    public MultiSelectionSpinner(Context context) {
+    public OLDMultiSelectionSpinner(Context context) {
         super(context);
 
         simple_adapter = new ArrayAdapter<String>(context,
@@ -38,7 +38,7 @@ public class MultiSelectionSpinner extends Spinner implements
         super.setAdapter(simple_adapter);
     }
 
-    public MultiSelectionSpinner(Context context, AttributeSet attrs) {
+    public OLDMultiSelectionSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         simple_adapter = new ArrayAdapter<String>(context,

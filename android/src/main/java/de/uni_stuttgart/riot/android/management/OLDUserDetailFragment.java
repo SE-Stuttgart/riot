@@ -16,7 +16,7 @@ import de.enpro.android.riot.R;
 /**
  * Created by Benny on 10.01.2015.
  */
-public class UserDetailFragment extends ManagementDetailEditFragment {
+public class OLDUserDetailFragment extends OLDManagementDetailEditFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,15 +24,15 @@ public class UserDetailFragment extends ManagementDetailEditFragment {
         ((Button) view.findViewById(R.id.user_back_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callOtherFragment(new UserListFragment());
+                callOtherFragment(new OLDUserListFragment());
             }
         });
         ((Button) view.findViewById(R.id.user_edit_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle args = new Bundle();
-                args.putInt(UserDetailFragment.BUNDLE_OBJECT_ID, objectId);
-                callOtherFragment(new UserEditFragment(), args);
+                args.putInt(OLDUserDetailFragment.BUNDLE_OBJECT_ID, objectId);
+                callOtherFragment(new OLDUserEditFragment(), args);
             }
         });
         return view;
@@ -54,7 +54,7 @@ public class UserDetailFragment extends ManagementDetailEditFragment {
     }
 
     @Override
-    protected ManagementFragment getFragment() {
+    protected OLDManagementFragment getFragment() {
         return this;
     }
 

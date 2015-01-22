@@ -13,7 +13,7 @@ import de.enpro.android.riot.R;
  */
 public class JSONAsyncTask extends AsyncTask<String, String, JSONObject> {
 
-    private ManagementFragment managementFragment;
+    private OLDManagementFragment OLDManagementFragment;
     private String url;
     private ProgressDialog progressDialog;
 
@@ -22,10 +22,10 @@ public class JSONAsyncTask extends AsyncTask<String, String, JSONObject> {
      *
      * @param managementListFragment the calling fragment
      */
-    public JSONAsyncTask(ManagementFragment managementListFragment, String url) {
-        this.managementFragment = managementListFragment;
-        this.progressDialog = new ProgressDialog(this.managementFragment.getActivity());
-        this.progressDialog.setMessage(this.managementFragment.getActivity().getString(R.string.processDialogExecute));
+    public JSONAsyncTask(OLDManagementFragment managementListFragment, String url) {
+        this.OLDManagementFragment = managementListFragment;
+        this.progressDialog = new ProgressDialog(this.OLDManagementFragment.getActivity());
+        this.progressDialog.setMessage(this.OLDManagementFragment.getActivity().getString(R.string.processDialogExecute));
         this.progressDialog.setIndeterminate(false);
         this.progressDialog.setCancelable(true);
         this.url = url;
@@ -60,6 +60,6 @@ public class JSONAsyncTask extends AsyncTask<String, String, JSONObject> {
     @Override
     protected void onPostExecute(JSONObject jsonObject) {
         this.progressDialog.dismiss();
-        this.managementFragment.doOnPostExecute(jsonObject);
+        this.OLDManagementFragment.doOnPostExecute(jsonObject);
     }
 }

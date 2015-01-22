@@ -10,12 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
  * Created by Benny on 09.01.2015.
  */
-public abstract class ManagementListFragment extends OLDManagementFragment {
+public abstract class OLDManagementListFragment extends OLDManagementFragment {
 
     // Attributes for identify data
     protected String TAG_ID;
@@ -25,7 +24,7 @@ public abstract class ManagementListFragment extends OLDManagementFragment {
     protected String TAG_PICTURE_ID;
     protected String TAG_ONLINE_STATE;
 
-    protected ManagementListFragment() {
+    protected OLDManagementListFragment() {
         // Get values for the identifier
         TAG_ID = setTagId();
         TAG_SUBJECT = setTagSubject();
@@ -70,7 +69,7 @@ public abstract class ManagementListFragment extends OLDManagementFragment {
         // managementListAdapter.notifyDataSetChanged();
     }
 
-    public void doGetView(View view, User item) {
+    public void doGetView(View view, HashMap<String, Object> items) {
         // Check the item names and set the value on the correct display object
         if (items.containsKey(TAG_SUBJECT) && items.get(TAG_SUBJECT).getClass().equals(String.class)) {
             ((TextView) view.findViewById(R.id.listItem_management_subject)).setText((String) items.get(TAG_SUBJECT));

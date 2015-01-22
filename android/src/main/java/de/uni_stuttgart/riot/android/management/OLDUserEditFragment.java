@@ -16,7 +16,7 @@ import de.enpro.android.riot.R;
 /**
  * Created by Benny on 10.01.2015.
  */
-public class UserEditFragment extends ManagementDetailEditFragment {
+public class OLDUserEditFragment extends OLDManagementDetailEditFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -25,8 +25,8 @@ public class UserEditFragment extends ManagementDetailEditFragment {
             @Override
             public void onClick(View view) {
                 Bundle args = new Bundle();
-                args.putInt(UserEditFragment.BUNDLE_OBJECT_ID, objectId);
-                callOtherFragment(new UserDetailFragment(), args);
+                args.putInt(OLDUserEditFragment.BUNDLE_OBJECT_ID, objectId);
+                callOtherFragment(new OLDUserDetailFragment(), args);
             }
         });
         ((Button) view.findViewById(R.id.user_save_button)).setOnClickListener(new View.OnClickListener() {
@@ -34,8 +34,8 @@ public class UserEditFragment extends ManagementDetailEditFragment {
             public void onClick(View view) {
                 // ToDo: Save changes!!
                 Bundle args = new Bundle();
-                args.putInt(UserEditFragment.BUNDLE_OBJECT_ID, objectId);
-                callOtherFragment(new UserDetailFragment(), args);
+                args.putInt(OLDUserEditFragment.BUNDLE_OBJECT_ID, objectId);
+                callOtherFragment(new OLDUserDetailFragment(), args);
             }
         });
         return view;
@@ -57,7 +57,7 @@ public class UserEditFragment extends ManagementDetailEditFragment {
     }
 
     @Override
-    protected ManagementFragment getFragment() {
+    protected OLDManagementFragment getFragment() {
         return this;
     }
 
@@ -86,7 +86,7 @@ public class UserEditFragment extends ManagementDetailEditFragment {
                         }
                     }
                     String[] roleArray = {"Admin", "User", "Guest"};
-                    MultiSelectionSpinner roleSpinner = (MultiSelectionSpinner) view.findViewById(R.id.user_role_spinner);
+                    OLDMultiSelectionSpinner roleSpinner = (OLDMultiSelectionSpinner) view.findViewById(R.id.user_role_spinner);
                     roleSpinner.setItems(roleArray);
                     roleSpinner.setSelection(stringList);
                     // roleSpinner.getSelectedItemsAsArrayList();
@@ -101,7 +101,7 @@ public class UserEditFragment extends ManagementDetailEditFragment {
                     }
 
                     String[] permissionArray = {"Read", "Write", "Delte"};
-                    MultiSelectionSpinner permissionSpinner = (MultiSelectionSpinner) view.findViewById(R.id.user_permission_spinner);
+                    OLDMultiSelectionSpinner permissionSpinner = (OLDMultiSelectionSpinner) view.findViewById(R.id.user_permission_spinner);
                     permissionSpinner.setItems(permissionArray);
                     permissionSpinner.setSelection(stringList);
                     // permissionSpinner.getSelectedItemsAsArrayList();
