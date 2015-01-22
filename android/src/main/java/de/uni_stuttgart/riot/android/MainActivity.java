@@ -35,7 +35,6 @@ import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 import de.uni_stuttgart.riot.android.messages.MessageHandler;
 import de.uni_stuttgart.riot.android.management.DeviceListFragment;
 import de.uni_stuttgart.riot.android.management.ThingListFragment;
@@ -71,29 +70,26 @@ public class MainActivity extends Activity {
                 RIOTApiClient.getInstance().init(inst, "deviceName"); // TODO device name
 
                 AndroidUser au = new AndroidUser(inst);
-                for (RoleResponse roleResponse : au.getRoles()) {
-                    System.out.println(roleResponse.getRole().getRoleName());
-                }
-                // au.logIn("R2D2", "R2D2PW");
-                // au.logIn("Yoda", "YodaPW");
-                au.logIn("Vader", "VaderPW");
-                try {
-                    RIOTApiClient.getInstance().getUserManagementClient().addRole(new Role("Test"));
-                } catch (RequestException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                for (RoleResponse roleResponse : au.getRoles()) {
-                    System.out.println(roleResponse.getRole().getRoleName());
-                }
+//                for (RoleResponse roleResponse : au.getRoles()) {
+//                    System.out.println(roleResponse.getRole().getRoleName());
+//                }
+//                // au.logIn("R2D2", "R2D2PW");
+//                // au.logIn("Yoda", "YodaPW");
+//                au.logIn("Vader", "VaderPW");
+//                try {
+//                    RIOTApiClient.getInstance().getUserManagementClient().addRole(new Role("Test"));
+//                } catch (RequestException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//                for (RoleResponse roleResponse : au.getRoles()) {
+//                    System.out.println(roleResponse.getRole().getRoleName());
+//                }
             }
         }.start();
 
         // Database stuff
         // this.deleteDatabase("Database");
-        // Save the application context in the message handler and the notification factory
-        MessageHandler.setContext(getApplicationContext());
-        NotificationFactory.setContext(getApplicationContext());
 
         // Save the application context in the singleton objects
         IM.INSTANCES.setContext(getApplicationContext());
@@ -114,7 +110,6 @@ public class MainActivity extends Activity {
 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
-
 
         // ClickListener for the left ActionBar
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
