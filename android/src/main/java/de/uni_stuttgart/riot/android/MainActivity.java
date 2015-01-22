@@ -20,16 +20,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AccountFragment;
-import de.uni_stuttgart.riot.android.account.AndroidUser;
 import de.uni_stuttgart.riot.android.communication.NotificationFragment;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.response.RoleResponse;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -56,24 +52,7 @@ public class MainActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-                RIOTApiClient.getInstance().init(inst, "deviceName"); // TODO device name
-
-                AndroidUser au = new AndroidUser(inst);
-                for (RoleResponse roleResponse : au.getRoles()) {
-                    System.out.println(roleResponse.getRole().getRoleName());
-                }
-                // au.logIn("R2D2", "R2D2PW");
-                // au.logIn("Yoda", "YodaPW");
-                au.logIn("Vader", "VaderPW");
-                try {
-                    RIOTApiClient.getInstance().getUserManagementClient().addRole(new Role("Test"));
-                } catch (RequestException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                for (RoleResponse roleResponse : au.getRoles()) {
-                    System.out.println(roleResponse.getRole().getRoleName());
-                }
+                RIOTApiClient.getInstance().init(inst, "androidApp"); // TODO device name
             }
         }.start();
 

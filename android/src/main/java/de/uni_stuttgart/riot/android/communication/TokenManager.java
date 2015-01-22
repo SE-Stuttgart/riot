@@ -6,7 +6,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.app.Activity;
+import android.content.Context;
 import de.uni_stuttgart.riot.android.account.RIOTAccount;
 
 /**
@@ -36,12 +36,14 @@ public class TokenManager implements de.uni_stuttgart.riot.clientlibrary.userman
     /**
      * Instantiates a new token manager.
      *
-     * @param activity
+     * @param context
      *            the parent activity
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
-    public TokenManager(Activity activity) {
-        account = RIOTAccount.getRIOTAccount(activity).getAccount();
-        accountManager = AccountManager.get(activity);
+    public TokenManager(Context context) throws IOException {
+        account = RIOTAccount.getRIOTAccount(context).getAccount();
+        accountManager = AccountManager.get(context);
 
         try {
             accessToken = accountManager.blockingGetAuthToken(account, ACCESS_TOKEN, false);
@@ -53,8 +55,6 @@ public class TokenManager implements de.uni_stuttgart.riot.clientlibrary.userman
                 throw new RuntimeException(e);
             }
             // UnsupportedOperationException gets thrown if no tokens are saved in the account yet, so ignore it
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
