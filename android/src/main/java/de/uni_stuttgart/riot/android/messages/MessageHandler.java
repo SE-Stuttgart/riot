@@ -8,8 +8,6 @@ import android.widget.Toast;
  * Created by Benny on 12.12.2014.
  */
 public class MessageHandler {
-
-
     private Context context;
 
     /**
