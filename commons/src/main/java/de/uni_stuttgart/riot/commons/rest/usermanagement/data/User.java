@@ -12,13 +12,12 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * @author Niklas Schnabel
  *
  */
-@JsonIgnoreProperties({"hashedPassword", "passwordSalt", "hashIterations", "loginAttemptCount"})
+@JsonIgnoreProperties({ "hashedPassword", "passwordSalt", "hashIterations", "loginAttemptCount" })
 public class User extends Storable {
-
 
     protected String username;
     private transient Collection<Role> roles;
-    
+
     /**
      * Constructs a new user.
      */
@@ -37,15 +36,16 @@ public class User extends Storable {
         super(-1L);
         this.username = username;
     }
-    
 
     /**
      * Constructs a new user.
      * 
      * @param username
      *            The name of the user
+     * @param roles
+     *            The roles of the user
      */
-    public User(String username,Collection<Role> roles) {
+    public User(String username, Collection<Role> roles) {
         super(-1L);
         this.username = username;
         this.setRoles(roles);

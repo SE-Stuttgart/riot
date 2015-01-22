@@ -2,7 +2,6 @@ package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -40,11 +39,17 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 @Produces(MediaType.APPLICATION_JSON)
 public class RoleService extends BaseResource<Role> {
 
+    UserManagementFacade facade = UserManagementFacade.getInstance();
+    
+    /**
+     * Const.
+     * @throws SQLException .
+     * @throws NamingException .
+     */
     public RoleService() throws SQLException, NamingException {
         super(new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false));
     }
 
-    UserManagementFacade facade = UserManagementFacade.getInstance();
 
     /**
      * Get permissions of a role. FIXME This method seems to have the wrong name (has nothing to do with users?).
@@ -108,11 +113,11 @@ public class RoleService extends BaseResource<Role> {
 
     private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
         Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        Collection<Permission> Permissions = new LinkedList<Permission>();
+        Collection<Permission> permissionsResult = new LinkedList<Permission>();
         for (Permission permission : permissions) {
-            Permissions.add(permission);
+            permissionsResult.add(permission);
         }
-        return Permissions;
+        return permissionsResult;
     }
 
     @Override

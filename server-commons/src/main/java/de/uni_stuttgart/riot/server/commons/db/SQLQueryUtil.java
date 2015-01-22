@@ -234,14 +234,16 @@ public final class SQLQueryUtil {
             }
         }
     }
-    
-    private static Field getDeclaredField(Class clazz, String fieldName) throws NoSuchFieldException{
+
+    private static Field getDeclaredField(Class clazz, String fieldName) throws NoSuchFieldException {
         Collection<Field> fields = new ArrayList<Field>();
         SQLQueryUtil.getAllFields(clazz, fields);
         for (Field field : fields) {
-            if(field.getName().equalsIgnoreCase(fieldName)) return field;
+            if (field.getName().equalsIgnoreCase(fieldName)) {
+                return field;
+            }
         }
-        throw new NoSuchFieldException(fieldName+" not found in "+ clazz.getName());
+        throw new NoSuchFieldException(fieldName + " not found in " + clazz.getName());
     }
 
     /**

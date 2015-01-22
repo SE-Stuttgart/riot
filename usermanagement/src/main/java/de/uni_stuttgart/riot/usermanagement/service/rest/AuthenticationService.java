@@ -103,23 +103,23 @@ public class AuthenticationService {
     }
 
     /*************/
-    //FIXME
-    private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException  {
+    // FIXME
+    private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {
         Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-        Collection<Role> Roles = new LinkedList<Role>();
+        Collection<Role> rolesResult = new LinkedList<Role>();
         for (Role role : roles) {
             role.setPermissions(this.getRolePermissions(role));
-            Roles.add(role);
+            rolesResult.add(role);
         }
-        return Roles;
+        return rolesResult;
     }
 
     private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
         Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        Collection<Permission> Permissions = new LinkedList<Permission>();
+        Collection<Permission> permissionsResult = new LinkedList<Permission>();
         for (Permission permission : permissions) {
-            Permissions.add(permission);
+            permissionsResult.add(permission);
         }
-        return Permissions;
+        return permissionsResult;
     }
 }

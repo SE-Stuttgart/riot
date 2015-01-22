@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -62,7 +61,6 @@ public class UsermanagementClient {
      *            id of user to be updated
      * @param userRequest
      *            new values for the user
-     * @return the updated user
      * @throws RequestException .
      */
     public void updateUser(long userID, UserRequest userRequest) throws RequestException {
@@ -81,11 +79,10 @@ public class UsermanagementClient {
      *            id of role to be updated
      * @param role
      *            new values for the role
-     * @return the updated role
      * @throws RequestException .
      */
     public void updateRole(long roleID, Role role) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_ROLE + roleID, role);
+        this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_ROLE + roleID, role);
     }
 
     /**
@@ -95,11 +92,10 @@ public class UsermanagementClient {
      *            if of the permission to be updated
      * @param permission
      *            new values
-     * @return the updated permission
      * @throws RequestException .
      */
     public void updatePermission(long permissionID, Permission permission) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_PERMISSION + permissionID, permission);
+        this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_PERMISSION + permissionID, permission);
     }
 
     /**

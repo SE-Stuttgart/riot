@@ -7,10 +7,8 @@ import static org.junit.Assert.assertEquals;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericType;
@@ -18,31 +16,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
-import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
-import de.uni_stuttgart.riot.server.commons.db.DAO;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Use a mock implementation of the BaseResource to check if the behavior is as expected.
+ * 
  * @param <T>
  *
  */
 public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Storable> extends JerseyDBTestBase {
-
 
     /*
      * (non-Javadoc)
@@ -64,24 +52,22 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
     }
 
-    
     public abstract String getSubPath();
-    
+
     public abstract int getTestDataSize();
-    
+
     public abstract FilterAttribute getFilter();
 
-    
     /**
      * Test get one.
      */
     @Test
     public void testGetOne() {
         // expect a 404 for nonexisting resources
-        Response a = target(this.getSubPath()+"/"+(this.getTestDataSize()+1)).request(MediaType.APPLICATION_JSON).get();
+        Response a = target(this.getSubPath() + "/" + (this.getTestDataSize() + 1)).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), a.getStatus());
         // expect a 200 for existing ones
-        a = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
+        a = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
     }
 
@@ -134,22 +120,22 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         reqEntity.setOrMode(false);
         reqEntity.setFilterAttributes(filterAtts);
 
-        Response resp = target(this.getSubPath()+"/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
+        Response resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Collection<T> models = resp.readEntity(new GenericType<List<T>>() {
         });
         assertThat(models, hasSize(1));
 
         // post must fail with invalid body
-        resp = target(this.getSubPath()+"/filter").request(MediaType.APPLICATION_JSON).post(null);
+        resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(null);
         // expect a 400 for bad request
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
     }
 
     public abstract T getNewObject();
+
     public abstract Class<T> getObjectClass();
 
-    
     /**
      * Test creating a new object.
      */
@@ -172,10 +158,10 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
      */
     @Test
     public void testDelete() {
-        Response resp = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).delete();
+        Response resp = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
         // resource deleted, so same request should return 404
-        resp = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).delete();
+        resp = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).delete();
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
 
@@ -185,17 +171,17 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
     @Test
     public void testUpdateOne() {
         Entity<T> testEntity = Entity.entity(this.getNewObject(), MediaType.APPLICATION_JSON_TYPE);
-        Response resp = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).put(testEntity);
+        Response resp = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
         // retrieved object must have the "comment" field updated
-        Response a = target(this.getSubPath()+"/"+this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
+        Response a = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
         T updated = a.readEntity(this.getObjectClass());
         T testValue = this.getNewObject();
         testValue.setId(Long.valueOf(this.getTestDataSize()));
         assertEquals(testValue, updated);
         // resource doesnt exist, so put request should return 404
-        resp = target(this.getSubPath()+"/"+(this.getTestDataSize()+1)).request(MediaType.APPLICATION_JSON).put(testEntity);
+        resp = target(this.getSubPath() + "/" + (this.getTestDataSize() + 1)).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
 

@@ -13,11 +13,19 @@ public class UserRequest {
     private String username;
     private String password;
     
+    /**
+     * Const.
+     * @param username .
+     * @param password .
+     */
     public UserRequest(String username, String password) {
         this.password = password;
         this.username = username;
     }
     
+    /**
+     * Default const.
+     */
     public UserRequest() {
     }
 

@@ -1,8 +1,6 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.LinkedList;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
