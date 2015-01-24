@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8"?><!-- ToDo online state close to the image and arrow to the right (for viewing details) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -10,10 +9,15 @@
 
     <ImageView
         android:id="@+id/listItem_management_picture"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/list_item_image_size"
         android:layout_height="@dimen/list_item_image_size"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_launcher" />
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/listItem_management_onlineState"
+        android:layout_width="@dimen/list_item_online_status_size"
+        android:layout_height="@dimen/list_item_online_status_size"
+        android:layout_gravity="center" />
 
 
     <LinearLayout
@@ -21,6 +25,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1"
+        android:layout_gravity="center"
         android:layout_marginLeft="@dimen/list_item_margin_left"
         android:layout_marginRight="@dimen/list_item_margin_left">
 
@@ -29,21 +34,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="@dimen/list_item_subject_size"
-            android:text="Subject" />
+            android:textSize="@dimen/list_item_subject_size" />
 
         <TextView
             android:id="@+id/listItem_management_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/list_item_description_size"
-            android:text="Beschreibung" />
+            android:textSize="@dimen/list_item_description_size" />
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/listItem_management_onlineState"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/list_item_online_status_size"
+        android:id="@+id/listItem_management_details"
+        android:layout_width="@dimen/list_item_details_size"
+        android:layout_height="@dimen/list_item_details_size"
         android:layout_gravity="center"
-        android:src="@android:drawable/presence_online" />
+        android:src="@android:drawable/ic_menu_info_details" />
 </LinearLayout>

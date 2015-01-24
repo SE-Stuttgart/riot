@@ -74,4 +74,5 @@
     <string name="thing_list">Thing List</string>
     <string name="user_detail">User Detail</string>
     <string name="user_back">Back</string>
+    <string name="user_id">Id</string>
 </resources>

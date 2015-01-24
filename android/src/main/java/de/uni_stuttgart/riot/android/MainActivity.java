@@ -28,12 +28,13 @@ import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
+import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
 import de.uni_stuttgart.riot.android.management.OLDDeviceListFragment;
 import de.uni_stuttgart.riot.android.management.OLDThingListFragment;
-import de.uni_stuttgart.riot.android.management.OLDUserListFragment;
 import de.uni_stuttgart.riot.android.messages.IM;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
+
 /**
  * The main window.
  */
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
     private ActionBarDrawerToggle mDrawerToggle;
     private CharSequence mTitle;
     private String[] mMenuTitles;
+    public static AndroidUser au;
 
     private Locale locale;
 
@@ -60,7 +62,7 @@ public class MainActivity extends Activity {
             public void run() {
                 RIOTApiClient.getInstance().init(inst, "deviceName"); // TODO device name
 
-                AndroidUser au = new AndroidUser(inst);
+                au = new AndroidUser(inst);
 //                for (RoleResponse roleResponse : au.getRoles()) {
 //                    System.out.println(roleResponse.getRole().getRoleName());
 //                }
@@ -138,6 +140,14 @@ public class MainActivity extends Activity {
 
         // get the latest Notifications
         new ServerConnection(this, filterObjects).execute();
+
+
+        /**
+         * Test
+         */
+        Fragment fragment = new ManagementUserListFragment();
+        int position = 4;
+        startFragment(position, fragment);
     }
 
     @Override
@@ -200,19 +210,19 @@ public class MainActivity extends Activity {
         }
 
         switch (item.getItemId()) {
-        case R.id.filter_error:
-            filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR, false));
-            return true;
-        case R.id.filter_appointment:
-            filterObjects.setFilter(new Filter(2, item, NotificationType.APPOINTMENT, false));
-            return true;
-        case R.id.filter_warning:
-            filterObjects.setFilter(new Filter(3, item, NotificationType.WARNING, false));
-            return true;
-        case R.id.action_refresh:
-            new ServerConnection(this, filterObjects).execute();
-        default:
-            return super.onOptionsItemSelected(item);
+            case R.id.filter_error:
+                filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR, false));
+                return true;
+            case R.id.filter_appointment:
+                filterObjects.setFilter(new Filter(2, item, NotificationType.APPOINTMENT, false));
+                return true;
+            case R.id.filter_warning:
+                filterObjects.setFilter(new Filter(3, item, NotificationType.WARNING, false));
+                return true;
+            case R.id.action_refresh:
+                new ServerConnection(this, filterObjects).execute();
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -272,7 +282,7 @@ public class MainActivity extends Activity {
 
         // Opens the user list fragment
         if (position == 4) {
-            fragment = new OLDUserListFragment();
+            fragment = new ManagementUserListFragment();
             startFragment(position, fragment);
         }
 

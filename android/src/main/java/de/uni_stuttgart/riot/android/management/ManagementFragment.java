@@ -2,104 +2,230 @@ package de.uni_stuttgart.riot.android.management;
 
 
 import android.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.account.AndroidUser;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
 /**
- * Created by Benny on 10.01.2015.
+ * Created by Benny on 10.01.2015
  */
 public abstract class ManagementFragment extends Fragment {
 
     // Attributes
-    protected View view;
+    protected View view; // ToDo is it also possible to use public "getView()" method??
+    protected static String BUNDLE_OBJECT_ID = "bundle_object_id";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Get and save view
         this.view = inflater.inflate(getLayoutResource(), container, false);
 
         // Set the title of the frame
         getActivity().setTitle(getTitleId());
 
-        // Add a new android user
-        AndroidUser androidUser = new AndroidUser(getActivity());
+        // Display data
+        displayData();
+
+        // Login with user?
         // androidUser.logIn("R2D2", "R2D2PW");
         // androidUser.logIn("Yoda", "YodaPW");
-        androidUser.logIn("Vader", "VaderPW");
-
-        // Display data
-        try {
-            displayData(androidUser);
-        } catch (RequestException e) {
-            // ToDo output!
-            e.printStackTrace();
-        }
+        // MainActivity.au.logIn("Vader", "VaderPW"); // TODO server-connection (also use an extra thread)
+        // displayData(MainActivity.au); // TODO server-connection
 
         // Logout the user
-        androidUser.logOut();
+        // MainActivity.au.logOut(); // TODO server-connection
 
         return this.view;
     }
 
+    /**
+     * Returns the resource id of the view layout.
+     *
+     * @return the id of the resource layout
+     */
+    protected abstract int getLayoutResource();
 
-    private void displayData(AndroidUser androidUser) throws RequestException {
-        ManagementListAdapter managementListAdapter = new ManagementListAdapter(this, getActivity(), R.layout.list_item_managment_list, new ArrayList<User>(androidUser.getUmClient().getUsers()));
-        ListView listView = (ListView) getActivity().findViewById(R.id.management_listView);
-        listView.setAdapter(managementListAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                doOnItemClick(parent, view, position, id);
+    /**
+     * Returns the resource id of the view title.
+     *
+     * @return the id of the resource string
+     */
+    protected abstract int getTitleId();
+
+    /**
+     * Set values to the view elements.
+     */
+    protected abstract void displayData();
+
+    /**
+     * Calls an other fragment and sends some data.
+     *
+     * @param fragment the called fragment
+     * @param args     some data for the new fragment
+     */
+    protected void callOtherFragment(Fragment fragment, Bundle args) {
+        if (args != null) {
+            fragment.setArguments(args);
+        }
+        getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+    }
+
+    /* ***************
+     *****************
+     * Dummy classes *
+     *****************
+     *****************/
+
+    /**
+     * Dummy class for preparing some users.
+     *
+     * @return .
+     */
+    public static ArrayList<DummyUser> getUsers() {
+        ArrayList<Permission> permissionList = new ArrayList<Permission>();
+        for (long i = 0; i < 3; i++) {
+            Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
+            permissionList.add(permission);
+        }
+
+        ArrayList<Role> roleList = new ArrayList<Role>();
+        for (long i = 0; i < 5; i++) {
+            Role role = new Role(i, "Role_" + String.valueOf(i));
+            role.setPermissions(permissionList);
+            roleList.add(role);
+        }
+
+        ArrayList<DummyUser> userList = new ArrayList<DummyUser>();
+        for (long i = 0; i < 10; i++) {
+            DummyUser user = new DummyUser(i, "User_" + String.valueOf(i));
+            user.setRoles(roleList);
+            userList.add(user);
+        }
+
+        return userList;
+    }
+
+    /**
+     * Dummy class for getting the user with the given id.
+     *
+     * @param id .
+     * @return .
+     */
+    public static DummyUser getUser(Long id) {
+        for (DummyUser user : getUsers()) {
+            if (user.getId().equals(id)) {
+                return user;
             }
-        });
-        // If you want to change items afterwards (when list adapter is already installed) use:
-        // managementListAdapter.notifyDataSetChanged();
-
+        }
+        return null;
     }
 
+    /**
+     * Dummy class for preparing some user roles.
+     *
+     * @return .
+     */
+    public static ArrayList<Role> getRoles() {
+        ArrayList<Role> roles = new ArrayList<Role>();
+        for (long i = 0; i < 10; i++) {
+            Role role = new Role(i, "Role_" + String.valueOf(i));
+            roles.add(role);
+        }
 
-    public void doGetView(View view, DummyUser item) {
-
-        // Save values
-        ((TextView) view.findViewById(R.id.listItem_management_subject)).setText(item.getUsername());
-        ((TextView) view.findViewById(R.id.listItem_management_description)).setText(item.getId().toString());
-        ((ImageView) view.findViewById(R.id.listItem_management_onlineState)).setImageResource(item.getOnlineState().getR());
-
-        // ToDo maybe load asynchronous??
-        ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageURI(Uri.parse(item.getImageUri()));
-
-        // ToDo Default values for list elements..
+        return roles;
     }
 
-
-    protected void doOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        DummyUser item = (DummyUser) parent.getItemAtPosition(position);
-
-        // Save information for the calling fragment
-        Bundle args = new Bundle();
-        // args.putInt(OLDUserDetailFragment.BUNDLE_OBJECT_ID, (Integer) item.get(TAG_ID));
-        // callOtherFragment(new OLDUserDetailFragment(), args);
+    /**
+     * Dummy class for getting the names of all user roles.
+     *
+     * @return .
+     */
+    public static LinkedHashSet<String> getAllRoleNames() {
+        return getRoleNames(getRoles());
     }
 
-
-    protected int getLayoutResource() {
-        return R.layout.fragment_management_list;
+    /**
+     * Dummy class for getting the names of the given user roles.
+     *
+     * @param roles .
+     * @return .
+     */
+    public static LinkedHashSet<String> getRoleNames(Collection<Role> roles) {
+        return getRoleNames(new ArrayList<Role>(roles));
     }
 
-    protected int getTitleId() {
-        return R.string.user_list;
+    /**
+     * Dummy class for getting the names of the given user roles.
+     *
+     * @param roles .
+     * @return .
+     */
+    public static LinkedHashSet<String> getRoleNames(ArrayList<Role> roles) {
+        LinkedHashSet<String> names = new LinkedHashSet<String>();
+        if (roles != null && !roles.isEmpty()) {
+            for (Role role : roles) {
+                names.add(role.getRoleName());
+            }
+        }
+        return names;
+    }
+
+    /**
+     * Dummy class for preparing some user permissions.
+     *
+     * @return .
+     */
+    public static ArrayList<Permission> getPermissions() {
+        ArrayList<Permission> permissions = new ArrayList<Permission>();
+        for (long i = 0; i < 10; i++) {
+            Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
+            permissions.add(permission);
+        }
+
+        return permissions;
+    }
+
+    /**
+     * Dummy class for getting the names of all user permissions.
+     *
+     * @return .
+     */
+    public static LinkedHashSet<String> getAllPermissionNames() {
+        return getPermissionNames(getPermissions());
+    }
+
+    /**
+     * Dummy class for getting the names of the given user permissions.
+     *
+     * @param permissions .
+     * @return .
+     */
+    public static LinkedHashSet<String> getPermissionNames(Collection<Permission> permissions) {
+        return getPermissionNames(new ArrayList<Permission>(permissions));
+    }
+
+    /**
+     * Dummy class for getting the names fo the given user permissions.
+     *
+     * @param permissions .
+     * @return .
+     */
+    public static LinkedHashSet<String> getPermissionNames(ArrayList<Permission> permissions) {
+        LinkedHashSet<String> names = new LinkedHashSet<String>();
+        if (permissions != null && !permissions.isEmpty()) {
+            for (Permission permission : permissions) {
+                names.add(permission.getPermissionValue());
+            }
+        }
+        return names;
     }
 }

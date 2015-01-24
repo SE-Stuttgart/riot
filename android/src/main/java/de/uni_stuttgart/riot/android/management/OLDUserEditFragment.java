@@ -86,7 +86,7 @@ public class OLDUserEditFragment extends OLDManagementDetailEditFragment {
                         }
                     }
                     String[] roleArray = {"Admin", "User", "Guest"};
-                    OLDMultiSelectionSpinner roleSpinner = (OLDMultiSelectionSpinner) view.findViewById(R.id.user_role_spinner);
+                    MultiSelectionSpinner roleSpinner = (MultiSelectionSpinner) view.findViewById(R.id.user_role_spinner);
                     roleSpinner.setItems(roleArray);
                     roleSpinner.setSelection(stringList);
                     // roleSpinner.getSelectedItemsAsArrayList();
@@ -101,7 +101,7 @@ public class OLDUserEditFragment extends OLDManagementDetailEditFragment {
                     }
 
                     String[] permissionArray = {"Read", "Write", "Delte"};
-                    OLDMultiSelectionSpinner permissionSpinner = (OLDMultiSelectionSpinner) view.findViewById(R.id.user_permission_spinner);
+                    MultiSelectionSpinner permissionSpinner = (MultiSelectionSpinner) view.findViewById(R.id.user_permission_spinner);
                     permissionSpinner.setItems(permissionArray);
                     permissionSpinner.setSelection(stringList);
                     // permissionSpinner.getSelectedItemsAsArrayList();

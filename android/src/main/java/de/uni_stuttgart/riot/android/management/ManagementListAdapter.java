@@ -6,33 +6,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * Created by Benny on 09.01.2015.
  */
-public class ManagementListAdapter extends ArrayAdapter<User> {
+public class ManagementListAdapter extends ArrayAdapter<Storable> {
 
-    private ManagementFragment managementFragment;
+    private ManagementListFragment managementListFragment;
     private Context context;
     private int resource;
-    private ArrayList<User> itemList;
-
+    private List<Storable> data;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param context   is the calling context
-     * @param itemList includes the data that will be shown by the list
+     * @param managementListFragment is the fragment where the adapter was added
+     * @param context                is the application context
+     * @param resource               it the resource id of the layout for the list item
+     * @param data                   is a list of data that will be displayed in the list
      */
-    public ManagementListAdapter(ManagementFragment managementFragment, Context context, int resource, ArrayList<User> itemList) {
-        super(context, resource, itemList);
-        this.managementFragment = managementFragment;
+    public ManagementListAdapter(ManagementListFragment managementListFragment, Context context, int resource, List<Storable> data) {
+        super(context, resource, data);
+        this.managementListFragment = managementListFragment;
         this.context = context;
         this.resource = resource;
-        this.itemList = itemList;
+        this.data = data;
     }
 
     @Override
@@ -44,8 +45,8 @@ public class ManagementListAdapter extends ArrayAdapter<User> {
             listRow = inflater.inflate(resource, parent, false);
         }
 
-        // Save all elements of an item
-        managementFragment.doGetView(listRow, itemList.get(position));
+        // Set values of that item to the view elements
+        managementListFragment.doGetView(listRow, data.get(position));
         return listRow;
     }
 }

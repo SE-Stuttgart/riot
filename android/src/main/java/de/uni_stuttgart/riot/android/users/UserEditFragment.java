@@ -31,9 +31,9 @@ public class UserEditFragment extends Fragment {
         permissionSpinner.setItems(permissionArray);
 
 
-        final EditText values = (EditText) view.findViewById(R.id.values);
+        final EditText values = (EditText) view.findViewById(R.id.user_name_edit);
 
-        ((Button) view.findViewById(R.id.button1)).setOnClickListener(new View.OnClickListener() {
+        ((Button) view.findViewById(R.id.user_edit_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String s = "Roles: ";
