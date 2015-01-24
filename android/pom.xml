@@ -57,6 +57,12 @@
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.clientlibrary</artifactId>
 			<version>${project.parent.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>javax.ws.rs-api</artifactId>
+					<groupId>javax.ws.rs</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Android -->
