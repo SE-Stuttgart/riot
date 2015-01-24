@@ -8,6 +8,9 @@
         <option name="CUSTOM_APK_RESOURCE_FOLDER" value="/target/generated-sources/combined-resources/res" />
         <option name="APK_PATH" value="/target/riot.android.apk" />
         <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="false" />
+        <proGuardCfgFiles>
+          <file>file://C:/Program Files/Java/jdk1.8.0_31/tools/proguard/proguard-android.txt</file>
+        </proGuardCfgFiles>
         <option name="COMPILE_CUSTOM_GENERATED_SOURCES" value="false" />
         <includeAssetsFromLibraries>true</includeAssetsFromLibraries>
         <resOverlayFolders>
@@ -26,7 +29,7 @@
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/combined-resources" />
       <excludeFolder url="file://$MODULE_DIR$/target/generated-sources/extracted-dependencies" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Android API 16 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: de.uni-stuttgart.riot:riot.commons:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.3" level="project" />
