@@ -24,5 +24,8 @@
     "less.js": "~1.6",
     "font-awesome": "~4.0",
     "restangular": "~1.4.0"
+  },
+  "resolutions": {
+    "angular": "~1.2"
   }
 }
