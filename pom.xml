@@ -23,6 +23,7 @@
 		<module>clientlibrary</module>
 		<module>android</module>
 		<module>integration-tests</module>
+		<module>webapp</module>
 	</modules>
 
 	<dependencies>
