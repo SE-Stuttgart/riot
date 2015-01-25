@@ -63,7 +63,3 @@ mvn clean install -Pmysql
 All localized strings should be kept in "commons/src/main/resources/languages". The files created there should be named "xxx_yy.properties", where xxx is module/application domain that the strings inside belong to and yy is the locale code. When using Eclipse, it is important to use UTF-8-Encoding and a normal text editor (not the Eclipse visual GUI for properties files).
 
 These .properties files are accessible in the Server applications and other applications that use the commons project through the respective classes in de.uni_stuttgart.riot.i18n (located in the commons project). These can be used like regular resource bundles.
-
-For Android, there is a simpler alternative: The Maven goal "mvn initialize" in the Android project, which is also executed during the normal "install" build, will generate XML files for Android. Thus, the strings are available in "R.string.xxx_yyy" or "@string/xxx_yyy", where xxx is the prefix of the source properties file and yyy is the key of the string inside the file.
-
-For the web application with AngularJS, the grunt task "grunt convert_messages" converts the strings to localization resource files for the angular-localization plugin by doshprompt. The strings can be used with ng-bind="'xxx.yyy' | i18n" or {{ 'xxx.yyy' | i18n }} or data-i18n="xxx.yyy", where xxx is the prefix of the source properties file and yyy is the key of the string inside the file. Please see the official documentation (https://github.com/doshprompt/angular-localization#usage-examples) for more examples.
