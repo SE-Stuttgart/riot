@@ -16,8 +16,9 @@
 	</properties>
 
 	<modules>
+		<module>maven-plugin</module>
 		<module>commons</module>
-	  <module>server-commons</module>
+		<module>server-commons</module>
 		<module>usermanagement</module>
 		<module>server</module>
 		<module>clientlibrary</module>

@@ -92,7 +92,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.4.4</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.robolectric</groupId>
 			<artifactId>robolectric</artifactId>
@@ -105,6 +105,35 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>de.uni-stuttgart.riot</groupId>
+				<artifactId>riot.maven-plugin</artifactId>
+				<version>${project.parent.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>de.uni-stuttgart.riot</groupId>
+						<artifactId>riot.commons</artifactId>
+						<version>${project.parent.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<files>
+						<file>thing</file>
+					</files>
+					<languages>
+						<language>de</language>
+						<language>en</language>
+					</languages>
+				</configuration>
+				<executions>
+					<execution>
+						<id>convert-messages</id>
+						<goals>
+							<goal>convert-messages</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
@@ -147,6 +176,27 @@
 										</versionRange>
 										<goals>
 											<goal>consume-aar</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											de.uni-stuttgart.riot
+										</groupId>
+										<artifactId>
+											riot.maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>
+												convert-messages
+											</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
