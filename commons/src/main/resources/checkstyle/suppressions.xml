@@ -12,5 +12,6 @@
     <suppress checks="IllegalThrows" files="[\\/]src[\\/]test[\\/]"/>
     <suppress checks="MagicNumber" files="[\\/]src[\\/]test[\\/]"/>
     <suppress checks="FileTabCharacter" files=".sql"/>
+    <suppress checks="FileTabCharacter" files=".xml"/>
     <suppress checks="." files="[\\/]gen[\\/]"/>
 </suppressions> 

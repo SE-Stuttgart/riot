@@ -51,6 +51,12 @@
 	<dependencyManagement>
 		<dependencies>
 
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.3</version>
+			</dependency>
+
 			<!-- Server -->
 			<dependency>
 				<groupId>javax</groupId>
