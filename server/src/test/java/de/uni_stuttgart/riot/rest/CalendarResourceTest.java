@@ -1,13 +1,19 @@
 package de.uni_stuttgart.riot.rest;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.net.URI;
+import java.util.List;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
@@ -19,6 +25,8 @@ import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
  */
 @TestData({ "/schema/schema_calendar.sql", "/data/testdata_calendar.sql" })
 public class CalendarResourceTest extends JerseyDBTestBase {
+
+    private static final String CALENDAR = "calendar/";
 
     /*
      * (non-Javadoc)
@@ -41,12 +49,34 @@ public class CalendarResourceTest extends JerseyDBTestBase {
     }
 
     /**
-     * Tests if a GET request to the resource work.
+     * Tests if a GET request to the resource works.
      */
     @Test
-    public void testGetRequest() {
-        final String response = target("calendar").request().get(String.class);
-        assertNotNull(response);
+    public void testGetRequests() {
+        // get collection
+        final List<CalendarEntry> response = target(CALENDAR).request().get(new GenericType<List<CalendarEntry>>() {
+        });
+        assertEquals(3, response.size());
+        // get single item
+        final CalendarEntry entry = target(CALENDAR + "1").request().get(CalendarEntry.class);
+        assertEquals("Standup Meeting 1", entry.getTitle());
+    }
+
+    /**
+     * Tests post and delete requests by first creating, then deleting a resource.
+     */
+    @Test
+    public void testPostDeleteRequest() {
+        CalendarEntry newdate = new CalendarEntry();
+        newdate.setTitle("a title");
+        Entity<CalendarEntry> ent = Entity.entity(newdate, "application/json");
+        Response response = target(CALENDAR).request().post(ent);
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        assertTrue("response should contain uri of new entity", response.getMetadata().containsKey("location"));
+
+        String uriCreated = (String) response.getMetadata().get("location").get(0);
+        response = this.client().target(uriCreated).request().delete();
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
 }
