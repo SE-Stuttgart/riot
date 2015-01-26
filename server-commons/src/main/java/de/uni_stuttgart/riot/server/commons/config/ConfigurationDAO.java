@@ -11,7 +11,7 @@ import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
  * 
  * @author Niklas Schnabel
  */
-class ConfigurationDAO extends SqlQueryDAO<ConfigurationStorable> {
+public class ConfigurationDAO extends SqlQueryDAO<ConfigurationStorable> {
 
     /**
      * Instantiates a new configuration dao.
