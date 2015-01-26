@@ -17,6 +17,7 @@ import android.util.Log;
 
 import java.util.HashSet;
 
+import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.communication.TokenManager;
@@ -95,11 +96,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot";
 
     CalendarClient mCalendarClient;
+    AndroidUser mAndroidUser;
 
     public SyncAdapter(Context context) {
         super(context, true);
         Log.v(TAG, "SyncAdapter created");
         mCalendarClient = new CalendarClient(new LoginClient(API_URL, "FooFoo", new DefaultTokenManager()));
+        mAndroidUser = new AndroidUser(getContext());
     }
 
     public void CreateEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry)
@@ -191,8 +194,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     {
         Uri url = CalendarContract.Events.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(Calendars.ACCOUNT_NAME,RIOTAccount.AUTHORITY)
-                .appendQueryParameter(Calendars.ACCOUNT_TYPE, RIOTAccount.ACCOUNT_TYPE)
+                .appendQueryParameter(Calendars.ACCOUNT_NAME,AndroidUser.getAccount(getContext()).name)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(
+                        R.string.ACCOUNT_TYPE))
                 .build();
 
         Cursor eventCursor = null;
@@ -212,8 +216,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     {
         Uri url = CalendarContract.Events.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(Calendars.ACCOUNT_NAME,RIOTAccount.AUTHORITY)
-                .appendQueryParameter(Calendars.ACCOUNT_TYPE, RIOTAccount.ACCOUNT_TYPE)
+                .appendQueryParameter(Calendars.ACCOUNT_NAME, AndroidUser.getAccount(getContext()).name)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(
+                        R.string.ACCOUNT_TYPE))
                 .build();
         try {
             Cursor eventCursor = contentResolver.query(url,
@@ -237,8 +242,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         Uri calendarsURI = CalendarContract.Events.CONTENT_URI
                 .buildUpon()
-                .appendQueryParameter(Calendars.ACCOUNT_NAME,RIOTAccount.AUTHORITY)
-                .appendQueryParameter(Calendars.ACCOUNT_TYPE, RIOTAccount.ACCOUNT_TYPE)
+                .appendQueryParameter(Calendars.ACCOUNT_NAME,AndroidUser.getAccount(getContext()).name)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(
+                        R.string.ACCOUNT_TYPE))
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .build();
         try {
@@ -293,7 +299,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     {
                         if(cal == null)
                         {
-                            cal = new Calendar(RIOTAccount.getRIOTAccount(getContext()).getAccount(), contentResolver, calendar_id);
+                            cal = new Calendar(AndroidUser.getAccount(getContext()), contentResolver, calendar_id);
                         }
                         //create this event
                         AndroidCalendarEventEntry event = new AndroidCalendarEventEntry(entry);
