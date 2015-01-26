@@ -19,11 +19,11 @@
 		<module>commons</module>
 	  <module>server-commons</module>
 		<module>usermanagement</module>
+		<module>webapp</module>
 		<module>server</module>
 		<module>clientlibrary</module>
 		<module>android</module>
 		<module>integration-tests</module>
-		<module>webapp</module>
 	</modules>
 
 	<dependencies>

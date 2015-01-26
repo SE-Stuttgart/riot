@@ -2,13 +2,30 @@
 
 ## Prerequisites
 
-The following sofware components are needed to setup the build environment:
+The following sofware components are needed to setup the development environment:
 
  - [node](http://nodejs.org/)
  - [npm](https://www.npmjs.com/)
  - [grunt](http://gruntjs.com/)
  - [bower](http://bower.io/)
  - [Yeoman](http://yeoman.io/)
+ 
+## Maven integration
+
+It is not necessary to install all prerequisites for building the application.
+The build and test process can be triggered with maven via `mvn build` and `mvn test` respectively.
+The required binaries are then downloaded and executed via a maven plugin.
+
+The generated files might not be shown immediately in eclipse unless the following setting is activated:
+`preferences->general->workspace->refresh using native hooks or polling`
+
+### Testing
+By default maven triggers headless tests via grunt (no real browsers are used to run karma tests).
+You can change this behaviour by specifying the property `<webapp.test.goal>test</webapp.test.goal>`
+in your local `m2/settings.xml` file. If Karma, the js test runner, has issues discovering installed
+browsers then manually set the appropriate environment variables
+(e.g. with `export CHROME_BIN=/usr/bin/chromium-browser` on Linux).
+ 
 
 ### Install on Linux
 
@@ -47,6 +64,7 @@ Run the following commands in the root directory of the webapp to load the requi
     bower install
 
 If you get a prompt during installation with the message "Unable to find a suitable version for angular, please choose one", select angular version 1.2.28 to download.
+
 
 ## Project Structure
 
