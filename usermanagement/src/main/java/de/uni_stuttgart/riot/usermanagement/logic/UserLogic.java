@@ -12,6 +12,8 @@ import org.apache.commons.lang.Validate;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
+import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
@@ -331,8 +333,7 @@ public class UserLogic {
      *            The user of whom the password shall be hashed
      */
     private void hashPassword(UMUser user, String clearTextPassword) {
-        // TODO Read amount of iterations from some sort of centralized configuration file/database
-        user.setHashIterations(200000);
+        user.setHashIterations(Configuration.getInt(ConfigurationKey.um_hashIterations));
 
         user.setPasswordSalt(AuthenticationUtil.generateSalt());
 

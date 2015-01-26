@@ -13,8 +13,9 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
-import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
@@ -130,6 +131,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testLoginMaxRetriesUpdateUser() throws Exception {
         for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
             try {

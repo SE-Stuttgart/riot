@@ -2,7 +2,8 @@ package de.uni_stuttgart.riot.usermanagement.security;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.uni_stuttgart.riot.usermanagement.configuration.Configuration;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
+import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 import de.uni_stuttgart.riot.usermanagement.security.exception.PasswordValidationException;
 
 /**
@@ -50,13 +51,13 @@ public class PasswordValidator {
      *             the password validation exception
      */
     public PasswordValidator() throws PasswordValidationException {
-        maxLength = checkMaxLength(Configuration.getPasswordValidationMaxPasswordLength());
-        minLength = checkMinLength(Configuration.getPasswordValidationMinPasswordLength());
-        minAmountNumbers = checkMinAmountNumbers(Configuration.getPasswordValidationMinAmountNumbers());
-        minAmountLowerCaseLetters = checkMinAmountLowerCaseLetters(Configuration.getPasswordValidationMinAmountLowerCaseLetters());
-        minAmountUpperCaseLetters = checkMinAmountUpperCaseLetters(Configuration.getPasswordValidationMinAmountUpperCaseLetters());
-        minAmountSpecialCharacters = checkMinAmountSpecialCharacters(Configuration.getPasswordValidationMinAmountSpecialCharacters());
-        allowedSpecialCharacters = checkAllowedSpecialCharacters(Configuration.getPasswordValidationAllowedSpecialCharacters());
+        maxLength = checkMaxLength(Configuration.getInt(ConfigurationKey.um_pwValidator_maxLength));
+        minLength = checkMinLength(Configuration.getInt(ConfigurationKey.um_pwValidator_minLength));
+        minAmountNumbers = checkMinAmountNumbers(Configuration.getInt(ConfigurationKey.um_pwValidator_numberCount));
+        minAmountLowerCaseLetters = checkMinAmountLowerCaseLetters(Configuration.getInt(ConfigurationKey.um_pwValidator_lowerCaseCharsCount));
+        minAmountUpperCaseLetters = checkMinAmountUpperCaseLetters(Configuration.getInt(ConfigurationKey.um_pwValidator_upperCaseCharCount));
+        minAmountSpecialCharacters = checkMinAmountSpecialCharacters(Configuration.getInt(ConfigurationKey.um_pwValidator_specialCharsCount));
+        allowedSpecialCharacters = checkAllowedSpecialCharacters(Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
 
         checkCombinedMinAmounts(maxLength, minAmountNumbers, minAmountLowerCaseLetters, minAmountUpperCaseLetters, minAmountSpecialCharacters);
     }
@@ -103,7 +104,7 @@ public class PasswordValidator {
      *             the password validation exception
      */
     private String checkAllowedSpecialCharacters(String allowedSpecialCharactersParam) throws PasswordValidationException {
-        if (!StringUtils.containsOnly(allowedSpecialCharactersParam, Configuration.getPasswordValidationAllowedSpecialCharacters())) {
+        if (!StringUtils.containsOnly(allowedSpecialCharactersParam, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars))) {
             throw new PasswordValidationException("The given string contains not allowed chars");
         }
         return allowedSpecialCharactersParam;
@@ -295,6 +296,8 @@ public class PasswordValidator {
             return false;
         }
 
+        String allowedChars = Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars);
+
         for (char c : password.toCharArray()) {
             if (Character.isLowerCase(c)) {
                 ++lowerCaselettersCount;
@@ -302,7 +305,7 @@ public class PasswordValidator {
                 ++upperCaselettersCount;
             } else if (Character.isDigit(c)) {
                 ++numbersCount;
-            } else if (StringUtils.contains(Configuration.getPasswordValidationAllowedSpecialCharacters(), c)) {
+            } else if (StringUtils.contains(allowedChars, c)) {
                 ++specialCharsCount;
             } else {
                 // c is a not allowed character

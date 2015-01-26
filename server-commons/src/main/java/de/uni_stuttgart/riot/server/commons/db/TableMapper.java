@@ -35,6 +35,8 @@ public class TableMapper {
             return "calendarEntries";
         } else if (className.equals("Contact")) {
             return "contacts";
+        } else if (className.equals("ConfigurationStorable")) {
+            return "configuration";
         }
         return "no table (TableMapper!)";
     }
