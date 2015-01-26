@@ -11,6 +11,8 @@ import android.provider.CalendarContract;
 import android.util.Log;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
+import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
+
 /**
  * Created by dirkmb on 12/7/14.
  */
@@ -22,11 +24,27 @@ public class Calendar {
 
     /**
      * Creates a new Calendar.
-     * 
+     *
      * @param account
      *            The account.
      * @param client
-     *            FIXME Provide description
+     *            The content provider for the database querys
+     * @param calendarId
+     *            The id of the calendar.
+     */
+    public Calendar(Account account, ContentProviderClient client, long calendarId) {
+        this.account = account;
+        this.client = client;
+        this.calendarId = calendarId;
+    }
+
+    /**
+     * Creates a new Calendar.
+     *
+     * @param account
+     *            The account.
+     * @param client
+     *            The content provider for the database querys
      * @param calendarName
      *            The name of the calendar.
      */
@@ -84,16 +102,6 @@ public class Calendar {
         values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
         values.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 1);
         values.put(CalendarContract.Calendars.CAN_MODIFY_TIME_ZONE, 1);
-        // }
-
-        /*
-         * if (android.os.Build.VERSION.SDK_INT >= 15) { values.put(Calendars.ALLOWED_AVAILABILITY, Events.AVAILABILITY_BUSY + "," +
-         * Events.AVAILABILITY_FREE + "," + Events.AVAILABILITY_TENTATIVE); values.put(Calendars.ALLOWED_ATTENDEE_TYPES, Attendees.TYPE_NONE
-         * + "," + Attendees.TYPE_OPTIONAL + "," + Attendees.TYPE_REQUIRED + "," + Attendees.TYPE_RESOURCE); }
-         */
-
-        // if (info.getTimezone() != null)
-        // values.put(Calendars.CALENDAR_TIME_ZONE, info.getTimezone());
 
         Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
 
@@ -114,7 +122,7 @@ public class Calendar {
 
     /**
      * Adds an event with the given name.
-     * 
+     *
      * @param eventName
      *            The name of the event.
      * @return The ID of the created event.
@@ -125,7 +133,7 @@ public class Calendar {
 
     /**
      * Creates a new event with a default duration of 2 minutes.
-     * 
+     *
      * @param eventName
      *            The name of the event.
      * @param dtstart
@@ -134,12 +142,12 @@ public class Calendar {
      */
     public long addEvent(String eventName, long dtstart) {
         // default end is 2min after start
-        return addEvent(eventName, dtstart, java.util.Calendar.getInstance().getTimeInMillis() + 120000); // NOCS FIXME
+        return addEvent(eventName, dtstart, java.util.Calendar.getInstance().getTimeInMillis() + 120000);
     }
 
     /**
      * Creates a new event.
-     * 
+     *
      * @param eventName
      *            The name of the event.
      * @param dtstart
@@ -165,6 +173,32 @@ public class Calendar {
         try {
             Uri uri = null;
             uri = client.insert(calendarsURI, cv);
+            Log.v(TAG, "Event added");
+            long id = ContentUris.parseId(uri);
+            Log.d(TAG, "Created test Event[" + calendarId + "] with ID " + id);
+            return id;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public long addEvent(AndroidCalendarEventEntry entry) {
+        ContentValues cv = new ContentValues();
+        cv.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+        cv.put(CalendarContract.Events.TITLE, entry.getTitle());
+        cv.put(CalendarContract.Events.ALL_DAY, entry.isAllDayEvent());
+        cv.put(CalendarContract.Events.DTSTART, entry.getStartTime().getTime());
+        cv.put(CalendarContract.Events.DTEND, entry.getEndTime().getTime());
+        cv.put(CalendarContract.Events.EVENT_TIMEZONE, "UTC");
+        cv.put(CalendarContract.Events.EVENT_LOCATION, entry.getLocation());
+        cv.put(CalendarContract.Events.DESCRIPTION, entry.getDescription());
+
+        cv.put(CalendarContract.Events._SYNC_ID, entry.getId());
+        cv.put(CalendarContract.Events.DIRTY, entry.isDirty());
+
+        Uri calendarsURI = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
+        try {
+            Uri uri = client.insert(calendarsURI, cv);
             Log.v(TAG, "Event added");
             long id = ContentUris.parseId(uri);
             Log.d(TAG, "Created test Event[" + calendarId + "] with ID " + id);

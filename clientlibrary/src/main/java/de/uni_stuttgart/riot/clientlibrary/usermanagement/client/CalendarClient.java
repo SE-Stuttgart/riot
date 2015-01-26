@@ -86,7 +86,7 @@ public class CalendarClient {
      * @return the list of all events
      * @throws RequestException .
      */
-    public Collection<CalendarEntry> deleteEvent() throws RequestException {
+    public Collection<CalendarEntry> getEvents() throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + EVENTS);
         try {
             Collection<CalendarEntry> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<CalendarEntry>>() { });
