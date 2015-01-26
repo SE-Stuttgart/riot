@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.codehaus.jackson.JsonGenerationException;
@@ -12,8 +13,14 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+
+import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -35,6 +42,8 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
  * @author Niklas Schnabel
  */
 public class AndroidUser {
+    /** The tag for the android logging **/
+    private static final String TAG = "AndroidUser";
 
     /** Used as key for saving the user information in the account via the {@link AccountManager} */
     private static final String USER = "user";
@@ -62,22 +71,67 @@ public class AndroidUser {
      */
     public AndroidUser(Context context) {
         accountManager = AccountManager.get(context);
-        account = RIOTAccount.getRIOTAccount(context).getAccount();
+        account = getAccount(context);
         umClient = RIOTApiClient.getInstance().getUserManagementClient();
         loginClient = RIOTApiClient.getInstance().getLoginClient();
 
-        String userData = accountManager.getUserData(account, USER);
-        if (StringUtils.isNotEmpty(userData)) {
-            try {
-                user = new ObjectMapper().readValue(userData, User.class);
-            } catch (JsonParseException e) {
-                // FIXME Use NotificationManager
-            } catch (JsonMappingException e) {
-                // FIXME Use NotificationManager
-            } catch (IOException e) {
-                // FIXME Use NotificationManager
+        if(account != null) {
+            String userData = accountManager.getUserData(account, USER);
+            if (StringUtils.isNotEmpty(userData)) {
+                try {
+                    user = new ObjectMapper().readValue(userData, User.class);
+                } catch (JsonParseException e) {
+                    // FIXME Use NotificationManager
+                } catch (JsonMappingException e) {
+                    // FIXME Use NotificationManager
+                } catch (IOException e) {
+                    // FIXME Use NotificationManager
+                }
             }
         }
+    }
+
+    /**
+     * Get the fist android account for our account type
+     *
+     * @param context the android context
+     */
+    static public Account getAccount(Context context) {
+        // search account
+        AccountManager accountManager = AccountManager.get(context);
+        Account[] allAccounts = accountManager
+                .getAccountsByType(context.getString(R.string.ACCOUNT_TYPE));
+        if (allAccounts.length > 0) {
+            Account account = allAccounts[0];
+            Log.v("AndroidUser", "Found account: " + account);
+            return account;
+        }
+        return null;
+    }
+
+    /**
+     * Create a new Android account
+     *
+     * @param username the username
+     * @param context the android context
+     *
+     */
+    boolean CreateAndroidAccount(String username, Context context) {
+        Account account = new Account(username, context.getString(R.string.ACCOUNT_TYPE));
+        boolean accountCreated = accountManager.addAccountExplicitly(account, "", new Bundle());
+        if(accountCreated) {
+            // Inform the system that this account supports sync
+            ContentResolver.setIsSyncable(account, context.getString(R.string.ACCOUNT_TYPE), 1);
+
+            // Inform the system that this account is eligible for auto sync when the network is up
+            ContentResolver.setSyncAutomatically(account, context.getString(R.string.ACCOUNT_TYPE), true);
+
+            // Recommend a schedule for automatic synchronization. The system may modify this based
+            // on other scheduled syncs and network utilization.
+            ContentResolver.addPeriodicSync(account, context.getString(R.string.ACCOUNT_TYPE), new Bundle(),
+                    Long.getLong(context.getString(R.string.ACCOUNT_SYNC_FREQ)));
+        }
+        return accountCreated;
     }
 
     /**
@@ -88,17 +142,30 @@ public class AndroidUser {
      * @param password
      *            the password
      */
-    public void logIn(String username, String password) {
+    public boolean logIn(String username, String password) {
         try {
             user = loginClient.login(username, password);
-            saveUserInAccount();
+            if(user != null) {
+                saveUserInAccount();
+                return true;
+            }
         } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            Log.v(TAG, "could not connect to server!");
+
             // FIXME Use NotificationManager
         } catch (RequestException e) {
+            e.printStackTrace();
+            Log.v(TAG, "could not connect to server!");
+
             // FIXME Use NotificationManager
         } catch (IOException e) {
+            e.printStackTrace();
+            Log.v(TAG, "could not connect to server!");
+
             // FIXME Use NotificationManager
         }
+        return false;
     }
 
     /**
