@@ -1,7 +1,15 @@
 package de.uni_stuttgart.riot.android.account;
 
+import com.sun.org.apache.xpath.internal.operations.And;
+
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentProviderClient;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -16,20 +24,34 @@ import android.widget.Toast;
 import de.uni_stuttgart.riot.android.ColorPicker;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.MainActivity;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 
 /**
  * UI for account creation.
  */
 public class AccountFragment extends Fragment implements OnClickListener, ColorPicker.OnColorChangedListener {
 
-    RIOTAccount acc;
+    AndroidUser androidUser;
     Calendar cal = null;
+
 
     EditText editUsername;
     EditText editPassword;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+
+        // Initialize the API client. Initialization is not allowed in the main thread.
+        final Context ctx = getActivity();
+        new Thread() {
+            @Override
+            public void run() {
+                RIOTApiClient.getInstance().init(ctx, "androidApp"); // TODO device name
+                androidUser = new AndroidUser(ctx);
+            }
+        }.start();
 
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         // String menu = getArguments().getString("Menu");
@@ -55,24 +77,29 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
         // do what you want to do when button is clicked
         switch (view.getId()) {
         case R.id.btn_add_acc:
-            String username = editUsername.getText().toString(); // FIXME
-            String password = editPassword.getText().toString();
-
-            // TODO check agains backend
-            if (password.equals("test")) {
-                // edit <server>/iot/api/v1/calendar/<id>/
-                // list all<server>/iot/api/v1/calendar/
-                Toast.makeText(view.getContext(), "Account wird angelegt", Toast.LENGTH_LONG).show();
-                acc = RIOTAccount.getRIOTAccount(getActivity());
-                ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
-                cal = new Calendar(acc.getAccount(), client, "RIOT");
+            final String username = editUsername.getText().toString();
+            final String password = editPassword.getText().toString();
+            if(username.isEmpty() || password.isEmpty())
+            {
+                Toast.makeText(view.getContext(), "Please insert username and password.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(view.getContext(), "'test' ist das richtig passwort", Toast.LENGTH_LONG).show();
+                final Context ctx = getActivity();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        if (androidUser.logIn(username, password)) {
+                            AnswerIntent(username);
+                        } else {
+                            Toast.makeText(ctx, "Your login was not correct.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }.start();
             }
-
             break;
+
         case R.id.btn_add_cal_event:
-            if (acc == null || cal == null) {
+            if (cal == null) {
                 Toast.makeText(view.getContext(), "Bitte erst einen Account anelgen", Toast.LENGTH_LONG).show();
             } else {
                 if (cal.addEvent("Dummy") > 0) {
@@ -94,10 +121,32 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
     @Override
     public void colorChanged(int color) {
         if (cal == null) {
-            ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
-            cal = new Calendar(RIOTAccount.getRIOTAccount(getActivity()).getAccount(), client, "RIOT");
+//            ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
+//            cal = new Calendar(AndroidUser.getAccount(getContext()), client, "RIOT");
         }
         cal.changeColor(color);
+    }
 
+    void AnswerIntent(String username)
+    {
+        if(androidUser.getAccount(getActivity())==null) {
+            boolean accountCreated = androidUser.CreateAndroidAccount(username, getActivity());
+            Bundle extras = getActivity().getIntent().getExtras();
+            if (extras != null) {
+                if (accountCreated) {  //Pass the new account back to the account manager
+                    AccountAuthenticatorResponse response = extras
+                            .getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+                    Bundle result = new Bundle();
+                    result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
+                    result.putString(AccountManager.KEY_ACCOUNT_TYPE,
+                            getString(R.string.ACCOUNT_TYPE));
+                    response.onResult(result);
+                }
+                getActivity().finish();
+            }
+        }
+        else {
+            // TODO account already exists in the system, what to do with the intend?
+        }
     }
 }
