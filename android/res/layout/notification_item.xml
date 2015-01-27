@@ -33,6 +33,7 @@
         android:id="@+id/notificationDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/notificationContent"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:text="TEST" />
