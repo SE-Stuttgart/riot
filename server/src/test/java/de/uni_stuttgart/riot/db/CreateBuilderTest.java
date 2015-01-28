@@ -12,8 +12,8 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.server.commons.db.CreateBuilder;
 import de.uni_stuttgart.riot.thing.commons.Property;
+import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
-import de.uni_stuttgart.riot.thing.remote.RemoteThing;
 import de.uni_stuttgart.riot.thing.remote.RemoteThingAction;
 
 public class CreateBuilderTest {

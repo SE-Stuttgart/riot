@@ -1,36 +1,42 @@
 package de.uni_stuttgart.riot.rest;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.sql.SQLException;
 
+import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.thing.commons.ThingInfo;
+import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
+import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 
+/**
+ * The thing service will handle any access (create, read, update, delete) to the "things".
+ *
+ */
 @Path("thing")
-@Consumes("application/json")
-@Produces("application/json")
-public class ThingService {
-    
-    @GET
-    public Collection<ThingInfo> getMyThings() throws DatasourceFindException, JsonProcessingException{
-        ThingLogic logic = new ThingLogic();
-        ObjectMapper mapper = new ObjectMapper();
-        Collection<ThingInfo> result = logic.getAllThings(1);
-        for (ThingInfo thingInfo : result) {
-            System.out.println(mapper.writeValueAsString(thingInfo));
-        }
-        return result;
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public class ThingService extends BaseResource<RemoteThing> {
+
+    private ThingLogic logic = new ThingLogic();
+
+    /**
+     * Default Constructor.
+     * 
+     * @throws SQLException .
+     * @throws NamingException .
+     */
+    public ThingService() throws SQLException, NamingException {
+        super(new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false));
     }
 
+    @Override
+    public void init(RemoteThing storable) throws Exception {
+        this.logic.completeRemoteThing(storable);
+    }
 }

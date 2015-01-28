@@ -17,18 +17,26 @@ import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.thing.commons.Property;
-import de.uni_stuttgart.riot.thing.commons.ThingInfo;
+import de.uni_stuttgart.riot.thing.commons.RemoteThing;
+import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 
+/**
+ * Contains all logic regarding to {@link Thing}.
+ *
+ */
 public class ThingLogic {
-    
+
     private RemoteThingSqlQueryDAO remoteThingSqlQueryDAO;
     private RemoteThingActionSqlQueryDAO remoteThingActionSqlQueryDAO;
     private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
     private ActionDBObjectSqlQueryDAO actionDBObjectSqlQueryDAO;
-    
+
+    /**
+     * Constructor.
+     */
     public ThingLogic() {
         try {
             this.remoteThingActionSqlQueryDAO = new RemoteThingActionSqlQueryDAO(ConnectionMgr.openConnection(), false);
@@ -39,13 +47,28 @@ public class ThingLogic {
             e.printStackTrace();
         }
     }
-    
-    public RemoteThing getRemoteThing(String name) throws DatasourceFindException{
-        RemoteThing remoteThing = this.remoteThingSqlQueryDAO.findByUniqueField(new SearchParameter(SearchFields.NAME, name));
-        return this.completeRemoteThing(remoteThing);
+
+    /**
+     * gets the {@link RemoteThing} by its name.
+     * 
+     * @param name
+     *            the thing name.
+     * @return the {@link RemoteThing}.
+     * @throws DatasourceFindException .
+     */
+    public RemoteThing getRemoteThing(String name) throws DatasourceFindException {
+        return null;
     }
-    
-    private RemoteThing completeRemoteThing(RemoteThing remoteThing) throws DatasourceFindException{
+
+    /**
+     * Fills the object {@link RemoteThing} with its properties and actions.
+     * 
+     * @param remoteThing
+     *            to be filled.
+     * @return the filled object.
+     * @throws DatasourceFindException .
+     */
+    public RemoteThing completeRemoteThing(RemoteThing remoteThing) throws DatasourceFindException {
         ArrayList<SearchParameter> searchParams = new ArrayList<SearchParameter>();
         searchParams.add(new SearchParameter(SearchFields.THINGID, remoteThing.getId()));
         Collection<PropertyDBObject> properties = this.propertySqlQueryDAO.findBy(searchParams, false);
@@ -59,40 +82,65 @@ public class ThingLogic {
         }
         return remoteThing;
     }
-    
-    public RemoteThing getThing(long id) throws DatasourceFindException{
+
+    /**
+     * gets the {@link RemoteThing} by its id.
+     * 
+     * @param id
+     *            the id to be searched.
+     * @return found {@link RemoteThing}
+     * @throws DatasourceFindException
+     *             if not found.
+     */
+    public RemoteThing getThing(long id) throws DatasourceFindException {
         RemoteThing remoteThing = this.remoteThingSqlQueryDAO.findBy(id);
         return this.completeRemoteThing(remoteThing);
     }
-    
-    public void registerThing(String username, String thingName, Collection<Property> properties, Collection<Action> actions){
-        
+
+    /**
+     * TODO .
+     * 
+     * @param username
+     * @param thingName
+     * @param properties
+     * @param actions
+     */
+    public void registerThing(String username, String thingName, Collection<Property> properties, Collection<Action> actions) {
+
     }
-    
-    public void unregisterThing(String username, String thingName){
-        
+
+    /**
+     * TODO .
+     * 
+     * @param username
+     * @param thingName
+     */
+    public void unregisterThing(String username, String thingName) {
+
     }
-    
-    public Collection<ThingInfo> getAllThings(long userID) throws DatasourceFindException{
-        ArrayList<SearchParameter> searchParams = new ArrayList<SearchParameter>();
-        searchParams.add(new SearchParameter(SearchFields.OWNERID, userID));
-        Collection<RemoteThing> rThings = this.remoteThingSqlQueryDAO.findBy(searchParams, false);
-        for (RemoteThing remoteThing : rThings) {
-            this.completeRemoteThing(remoteThing);
-        }
-        Collection<ThingInfo> thingInfos = new ArrayList<ThingInfo>();
-        for (RemoteThing remoteThing : rThings) {
-            thingInfos.add(new ThingInfo(remoteThing.getName(), remoteThing.getProperties().values(), remoteThing.getActions()));
-        }
-        return thingInfos;
+
+    /**
+     * TODO .
+     * 
+     * @param userID
+     * @return .
+     * @throws DatasourceFindException
+     */
+    public Collection<RemoteThing> getAllThings(long userID) throws DatasourceFindException {
+        return null;
     }
-    
-    public Queue<ActionInstance> getCurrentActionInstances(){
+
+    public Queue<ActionInstance> getCurrentActionInstances() {
         return new ConcurrentLinkedQueue<ActionInstance>();
     }
-    
-    public void submitEvent(EventInstance eventInstance){
-        
+
+    /**
+     * TODO .
+     * 
+     * @param eventInstance
+     */
+    public void submitEvent(EventInstance eventInstance) {
+
     }
 
 }

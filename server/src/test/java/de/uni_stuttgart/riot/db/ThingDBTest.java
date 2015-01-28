@@ -6,16 +6,19 @@ import javax.naming.NamingException;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
+import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
+import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
 import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
-import de.uni_stuttgart.riot.thing.remote.RemoteThing;
 import de.uni_stuttgart.riot.thing.remote.RemoteThingAction;
 
+@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
 public class ThingDBTest extends JerseyDBTestBase {
 
     @Override

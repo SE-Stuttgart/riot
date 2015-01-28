@@ -5,11 +5,14 @@ import java.sql.SQLException;
 import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
-import de.uni_stuttgart.riot.thing.commons.Property;
 import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
 
-public class PropertyDBObjectSqlQueryDAO extends SqlQueryDAO<PropertyDBObject>{
-    
+/**
+ * DAO for {@link PropertyDBObject}.
+ *
+ */
+public class PropertyDBObjectSqlQueryDAO extends SqlQueryDAO<PropertyDBObject> {
+
     /**
      * Constructor.
      * 

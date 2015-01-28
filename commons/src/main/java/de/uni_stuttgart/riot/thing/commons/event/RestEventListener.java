@@ -1,6 +1,11 @@
 package de.uni_stuttgart.riot.thing.commons.event;
 
-public class RestEventListener<T extends EventInstance> extends EventListener<T>{
+/**
+ * TODO .
+ *
+ * @param <T>
+ */
+public class RestEventListener<T extends EventInstance> extends EventListener<T> {
 
     @Override
     public void onFired(T event) {

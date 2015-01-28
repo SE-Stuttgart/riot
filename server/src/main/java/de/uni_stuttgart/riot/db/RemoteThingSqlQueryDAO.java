@@ -5,9 +5,13 @@ import java.sql.SQLException;
 import org.sql2o.Connection;
 
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
-import de.uni_stuttgart.riot.thing.remote.RemoteThing;
+import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 
-public class RemoteThingSqlQueryDAO extends SqlQueryDAO<RemoteThing>{
+/**
+ * DAO for {@link RemoteThing}.
+ *
+ */
+public class RemoteThingSqlQueryDAO extends SqlQueryDAO<RemoteThing> {
 
     /**
      * Constructor.
@@ -22,7 +26,7 @@ public class RemoteThingSqlQueryDAO extends SqlQueryDAO<RemoteThing>{
     public RemoteThingSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
         super(connection, transaction);
     }
-    
+
     @Override
     protected Class<RemoteThing> getMyClazz() {
         return RemoteThing.class;

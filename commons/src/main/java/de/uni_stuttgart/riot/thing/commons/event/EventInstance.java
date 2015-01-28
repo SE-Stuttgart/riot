@@ -2,10 +2,17 @@ package de.uni_stuttgart.riot.thing.commons.event;
 
 import java.sql.Timestamp;
 
+/**
+ * TODO .
+ *
+ */
 public abstract class EventInstance {
-    
+
     private Timestamp time;
-    
+
+    /**
+     * Constructor.
+     */
     public EventInstance() {
         this.setTime(new Timestamp(System.currentTimeMillis()));
     }

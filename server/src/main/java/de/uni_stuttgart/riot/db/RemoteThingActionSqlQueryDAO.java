@@ -7,6 +7,10 @@ import org.sql2o.Connection;
 import de.uni_stuttgart.riot.server.commons.db.SqlQueryDAO;
 import de.uni_stuttgart.riot.thing.remote.RemoteThingAction;
 
+/**
+ * DAO for {@link RemoteThingAction}.
+ *
+ */
 public class RemoteThingActionSqlQueryDAO extends SqlQueryDAO<RemoteThingAction> {
 
     /**
@@ -22,7 +26,7 @@ public class RemoteThingActionSqlQueryDAO extends SqlQueryDAO<RemoteThingAction>
     public RemoteThingActionSqlQueryDAO(Connection connection, boolean transaction) throws SQLException {
         super(connection, transaction);
     }
-    
+
     @Override
     protected Class<RemoteThingAction> getMyClazz() {
         return RemoteThingAction.class;

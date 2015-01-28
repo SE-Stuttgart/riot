@@ -167,7 +167,6 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         // updates the last element
         Response resp = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
-        // retrieved object must have the "comment" field updated
         Response a = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
         T updated = a.readEntity(this.getObjectClass());
