@@ -20,8 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/user_id_edit"
-            android:layout_marginBottom="@dimen/fragment_margin_between_elements"
-            android:editable="false" />
+            android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,6 +33,30 @@
             android:layout_height="wrap_content"
             android:id="@+id/user_name_edit"
             android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_online_state"
+            android:id="@+id/user_online_state_text" />
+
+        <ImageView
+            android:id="@+id/user_online_state"
+            android:layout_width="@dimen/list_item_online_status_size"
+            android:layout_height="@dimen/list_item_online_status_size"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_image"
+            android:id="@+id/user_image_text" />
+
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="@dimen/list_item_image_size"
+            android:layout_height="@dimen/list_item_image_size"
+            android:layout_gravity="center" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,7 +88,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/user_save_button"
+                android:id="@+id/user_edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="118dp"
@@ -80,10 +103,5 @@
                 android:text="@string/user_abort"
                 android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
         </LinearLayout>
-
-        <!--<EditText-->
-        <!--android:id="@+id/values"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
     </LinearLayout>
 </ScrollView>

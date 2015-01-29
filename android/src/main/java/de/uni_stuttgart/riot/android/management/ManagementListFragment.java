@@ -12,6 +12,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -25,7 +27,14 @@ public abstract class ManagementListFragment extends ManagementFragment {
     }
 
     @Override
+    protected void handleArguments(Bundle args) {
+    }
+
+    @Override
     protected void displayData() {
+
+        UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
+
         // Collection<User> userCollection = androidUser.getUmClient().getUsers(); // TODO server-connection
         // ArrayList<User> userList = new ArrayList<User>(userCollection);
 
@@ -68,14 +77,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @return the called fragment (null if there should be no onClick action)
      */
     protected abstract Fragment getOnItemClickFragment();
-
-    /**
-     * Checks if the item is an instance of this class.
-     *
-     * @param item the item that will be checked
-     * @return true if the item is an instance of the class
-     */
-    protected abstract boolean isInstanceOf(Storable item);
 
     /**
      * Returns the default subject for the list item.
@@ -149,65 +150,67 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
 
     public void doGetView(View view, Storable item) {
-        String defaultSubject = getDefaultSubject();
-        String defaultDescription = getDefaultDescription();
-        String defaultImageUri = getDefaultImageUri();
-        int defaultImageId = getDefaultImageId();
-        OnlineState defaultOnlineState = getDefaultOnlineState();
+        // Save the default values
+        String subject, defaultSubject = getDefaultSubject();
+        String description, defaultDescription = getDefaultDescription();
+        int imageId, defaultImageId = getDefaultImageId();
+        String imageUri, defaultImageUri = getDefaultImageUri();
+        OnlineState onlineState, defaultOnlineState = getDefaultOnlineState();
 
-        // Save the subject
-        if (defaultSubject != null && !defaultSubject.isEmpty()) {
-            if (isInstanceOf(item)) {
-                String subject = getSubject(item);
-                if (subject != null && !subject.isEmpty()) {
-                    defaultSubject = subject;
-                }
+        // Get values of the item when the item is an instance of the expected class
+        if (isInstanceOf(item)) {
+            subject = getSubject(item);
+            description = getDescription(item);
+            imageId = getImageId(item);
+            imageUri = getImageUri(item);
+            onlineState = getOnlineState(item);
+
+            // Save the subject
+            if (subject != null && !subject.isEmpty()) {
+                defaultSubject = subject;
             }
+
+            // Save the description
+            if (description != null && !description.isEmpty()) {
+                defaultDescription = description;
+            }
+
+            // Save the image id
+            if (imageId != 0) {
+                defaultImageId = imageId;
+            }
+
+            // Save the image uri
+            if (imageUri != null && !imageUri.isEmpty()) {
+                defaultImageUri = imageUri;
+            }
+
+            // Save the online state
+            if (onlineState != null) {
+                defaultOnlineState = onlineState;
+            }
+        }
+
+        // Set the subject value
+        if (defaultSubject != null && !defaultSubject.isEmpty()) {
             ((TextView) view.findViewById(R.id.listItem_management_subject)).setText(defaultSubject);
         }
 
-        // Save the description
+        // Set the description value
         if (defaultDescription != null && !defaultDescription.isEmpty()) {
-            if (isInstanceOf(item)) {
-                String description = getDescription(item);
-                if (description != null && !description.isEmpty()) {
-                    defaultDescription = description;
-                }
-            }
             ((TextView) view.findViewById(R.id.listItem_management_description)).setText(defaultDescription);
         }
 
-        // Save the image by uri
-        if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
-            if (isInstanceOf(item)) {
-                String imageUri = getImageUri(item);
-                if (imageUri != null && !imageUri.isEmpty()) {
-                    defaultImageUri = imageUri;
-                }
-            }
+        // Set the image value
+        if (defaultImageId != 0) {
+            ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageResource(defaultImageId);
+        } else if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
             ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageURI(Uri.parse(defaultImageUri));
             // ToDo maybe load asynchronous??
         }
 
-        // Save the image by resource id
-        if (defaultImageId != 0) {
-            if (isInstanceOf(item)) {
-                int imageId = getImageId(item);
-                if (imageId != 0) {
-                    defaultImageId = imageId;
-                }
-            }
-            ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageResource(defaultImageId);
-        }
-
-        // Save the online state
+        // Set the online state value
         if (defaultOnlineState != null) {
-            if (isInstanceOf(item)) {
-                OnlineState onlineState = getOnlineState(item);
-                if (onlineState != null) {
-                    defaultOnlineState = onlineState;
-                }
-            }
             ((ImageView) view.findViewById(R.id.listItem_management_onlineState)).setImageResource(defaultOnlineState.getR());
         }
     }

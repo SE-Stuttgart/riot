@@ -29,8 +29,6 @@ import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
 import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
-import de.uni_stuttgart.riot.android.management.OLDDeviceListFragment;
-import de.uni_stuttgart.riot.android.management.OLDThingListFragment;
 import de.uni_stuttgart.riot.android.messages.IM;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -286,17 +284,17 @@ public class MainActivity extends Activity {
             startFragment(position, fragment);
         }
 
-        // Opens the thing list fragment
-        if (position == 5) {
-            fragment = new OLDThingListFragment();
-            startFragment(position, fragment);
-        }
-
-        // Opens the device list fragment
-        if (position == 6) {
-            fragment = new OLDDeviceListFragment();
-            startFragment(position, fragment);
-        }
+//        // Opens the thing list fragment
+//        if (position == 5) {
+//            fragment = new OLDThingListFragment();
+//            startFragment(position, fragment);
+//        }
+//
+//        // Opens the device list fragment
+//        if (position == 6) {
+//            fragment = new OLDDeviceListFragment();
+//            startFragment(position, fragment);
+//        }
         // ToDo: <--
     }
 
@@ -321,7 +319,7 @@ public class MainActivity extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
+        // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 

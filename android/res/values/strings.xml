@@ -75,4 +75,6 @@
     <string name="user_detail">User Detail</string>
     <string name="user_back">Back</string>
     <string name="user_id">Id</string>
+    <string name="user_image">Image</string>
+    <string name="user_online_state">Online-State</string>
 </resources>

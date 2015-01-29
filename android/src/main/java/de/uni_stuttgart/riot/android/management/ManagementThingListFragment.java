@@ -10,16 +10,16 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 /**
  * Created by Benny on 24.01.2015
  */
-public class ManagementUserListFragment extends ManagementListFragment {
+public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected int getTitleId() {
-        return R.string.user_list;
+        return R.string.thing_list;
     }
 
     @Override
     protected List<Storable> getData() {
-        return (List<Storable>) (List<?>) getUsers();
+        return (List<Storable>) (List<?>) getThings();
     }
 
     @Override
@@ -29,32 +29,32 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected Fragment getOnItemClickFragment() {
-        return new ManagementUserListFragment();
+        return new ManagementThingListFragment();
     }
 
     @Override
     protected boolean isInstanceOf(Storable item) {
-        return (item instanceof DummyUser);
+        return (item instanceof DummyThing);
     }
 
     @Override
     protected String getDefaultSubject() {
-        return "This is a User";
+        return "This is a Thing";
     }
 
     @Override
     protected String getSubject(Storable item) {
-        return ((DummyUser) item).getUsername();
+        return ((DummyThing) item).getThingName();
     }
 
     @Override
     protected String getDefaultDescription() {
-        return "This is the description of the user";
+        return "This is the description of the thing";
     }
 
     @Override
     protected String getDescription(Storable item) {
-        Long id = ((DummyUser) item).getId();
+        Long id = ((DummyThing) item).getId();
         if (id != null && id != 0) {
             return id.toString();
         }
@@ -68,7 +68,7 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected String getImageUri(Storable item) {
-        return ((DummyUser) item).getImageUri();
+        return null; // ((DummyThing) item).getImageUri(); // ToDo
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected int getImageId(Storable item) {
-        return ((DummyUser) item).getImageId();
+        return 0; // ((DummyThing) item).getImageId(); // ToDo
     }
 
     @Override
@@ -88,6 +88,6 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected OnlineState getOnlineState(Storable item) {
-        return ((DummyUser) item).getOnlineState();
+        return null; // ((DummyThing) item).getOnlineState(); // ToDo
     }
 }

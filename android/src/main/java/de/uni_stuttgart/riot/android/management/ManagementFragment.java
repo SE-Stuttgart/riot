@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
@@ -21,7 +22,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 public abstract class ManagementFragment extends Fragment {
 
     // Attributes
-    protected View view; // ToDo is it also possible to use public "getView()" method??
+    protected View view; // ToDo is it also possible to use public "getView()" method?? [[or do I need the view later??]]
     protected static String BUNDLE_OBJECT_ID = "bundle_object_id";
 
     @Override
@@ -31,6 +32,9 @@ public abstract class ManagementFragment extends Fragment {
 
         // Set the title of the frame
         getActivity().setTitle(getTitleId());
+
+        // Handle arguments
+        handleArguments(getArguments());
 
         // Display data
         displayData();
@@ -62,6 +66,21 @@ public abstract class ManagementFragment extends Fragment {
     protected abstract int getTitleId();
 
     /**
+     * Handle (/save) the arguments, that were set by calling the fragment
+     *
+     * @param args the arguments that were sent
+     */
+    protected abstract void handleArguments(Bundle args);
+
+    /**
+     * Checks if the item is an instance of this class.
+     *
+     * @param item the item that will be checked
+     * @return true if the item is an instance of the class
+     */
+    protected abstract boolean isInstanceOf(Storable item);
+
+    /**
      * Set values to the view elements.
      */
     protected abstract void displayData();
@@ -79,11 +98,51 @@ public abstract class ManagementFragment extends Fragment {
         getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 
+    /**
+     * Calls the callOtherFragment method without arguments
+     *
+     * @param fragment the called fragment
+     */
+    protected void callOtherFragment(Fragment fragment) {
+        callOtherFragment(fragment, null);
+    }
+
     /* ***************
      *****************
      * Dummy classes *
      *****************
      *****************/
+
+    // ToDo ToDO -> Undo "static"
+
+    /**
+     * Dummy class for preparing some things.
+     *
+     * @return .
+     */
+    public ArrayList<DummyThing> getThings() {
+        ArrayList<DummyThing> things = new ArrayList<DummyThing>();
+        for (long i = 0; i < 20; i++) {
+            DummyThing thing = new DummyThing(i, "Thing_" + String.valueOf(i));
+            things.add(thing);
+        }
+        return things;
+    }
+
+    /**
+     * Dummy class for preparing some devices.
+     *
+     * @return .
+     */
+    public ArrayList<DummyDevice> getDevices() {
+        ArrayList<DummyDevice> devices = new ArrayList<DummyDevice>();
+        for (long i = 0; i < 20; i++) {
+            DummyDevice device = new DummyDevice(i, "Device_" + String.valueOf(i));
+            devices.add(device);
+        }
+        return devices;
+    }
+
 
     /**
      * Dummy class for preparing some users.
@@ -121,9 +180,11 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static DummyUser getUser(Long id) {
-        for (DummyUser user : getUsers()) {
-            if (user.getId().equals(id)) {
-                return user;
+        if (id != null && id != 0) {
+            for (DummyUser user : getUsers()) {
+                if (user.getId().equals(id)) {
+                    return user;
+                }
             }
         }
         return null;
