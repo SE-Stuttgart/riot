@@ -104,6 +104,13 @@ public class MultiSelectionSpinner extends Spinner implements
         simple_adapter.add(buildSelectedItemString());
     }
 
+    public void setSelectionEnabled(boolean value) {
+// ToDo
+//        setClickable(value);
+//        setFocusable(value);
+//        getSelectedView().setEnabled(value);
+    }
+
     public void setSelection(List<String> selection) {
         setSelection(selection.toArray(new String[selection.size()]));
     }

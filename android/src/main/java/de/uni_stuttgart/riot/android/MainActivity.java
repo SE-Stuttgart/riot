@@ -28,6 +28,8 @@ import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
+import de.uni_stuttgart.riot.android.management.ManagementDeviceListFragment;
+import de.uni_stuttgart.riot.android.management.ManagementThingListFragment;
 import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
 import de.uni_stuttgart.riot.android.messages.IM;
 
@@ -284,17 +286,17 @@ public class MainActivity extends Activity {
             startFragment(position, fragment);
         }
 
-//        // Opens the thing list fragment
-//        if (position == 5) {
-//            fragment = new OLDThingListFragment();
-//            startFragment(position, fragment);
-//        }
-//
-//        // Opens the device list fragment
-//        if (position == 6) {
-//            fragment = new OLDDeviceListFragment();
-//            startFragment(position, fragment);
-//        }
+        // Opens the thing list fragment
+        if (position == 5) {
+            fragment = new ManagementThingListFragment();
+            startFragment(position, fragment);
+        }
+
+        // Opens the device list fragment
+        if (position == 6) {
+            fragment = new ManagementDeviceListFragment();
+            startFragment(position, fragment);
+        }
         // ToDo: <--
     }
 

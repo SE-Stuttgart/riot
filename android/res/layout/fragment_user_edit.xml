@@ -88,7 +88,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/user_edit_button"
+                android:id="@+id/detail_edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="118dp"
@@ -96,7 +96,7 @@
                 android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
             <Button
-                android:id="@+id/user_abort_button"
+                android:id="@+id/detail_abort_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="118dp"

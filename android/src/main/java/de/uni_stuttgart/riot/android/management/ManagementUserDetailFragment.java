@@ -117,7 +117,9 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
                 roleSpinner.setSelection(roleNames);
             }
 
-            roleSpinner.setEnabled(this.enableElements);
+            // ToDo - just disable the list
+//            roleSpinner.setEnabled(this.enableElements);
+            roleSpinner.setSelectionEnabled(this.enableElements);
             // roleSpinner.getSelectedItemsAsArrayList();
         }
 
@@ -131,7 +133,9 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
                 roleSpinner.setSelection(permissionNames);
             }
 
-            roleSpinner.setEnabled(this.enableElements);
+            // ToDo - just disable the list
+//            roleSpinner.setEnabled(this.enableElements);
+            roleSpinner.setSelectionEnabled(this.enableElements);
             // roleSpinner.getSelectedItemsAsArrayList();
         }
     }
@@ -143,27 +147,39 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
     @Override
     protected void setOnAbortClick(View view) {
-        callOtherFragment(new ManagementUserDetailFragment());
+        if (this.enableElements) {
+            Bundle args = new Bundle();
+            args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
+            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
+            callOtherFragment(new ManagementUserDetailFragment(), args);
+        } else {
+            callOtherFragment(new ManagementUserListFragment());
+        }
     }
 
     @Override
     protected void setOnEditClick(View view) {
-        // ToDo save changed object
-
         Bundle args = new Bundle();
         args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
-        callOtherFragment(new ManagementUserDetailFragment(), args);
+
+        if (this.enableElements) {
+            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
+            callOtherFragment(new ManagementUserDetailFragment(), args);
+        } else {
+            // ToDo save changed object
+            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, true);
+            callOtherFragment(new ManagementUserDetailFragment(), args);
+        }
     }
 
     @Override
     protected int getAbortText() {
-        return R.string.user_abort;
+        return this.enableElements ? R.string.user_abort : R.string.user_back;
     }
 
     @Override
     protected int getEditText() {
-        return R.string.user_save;
+        return this.enableElements ? R.string.user_save : R.string.user_edit;
     }
 
     /**

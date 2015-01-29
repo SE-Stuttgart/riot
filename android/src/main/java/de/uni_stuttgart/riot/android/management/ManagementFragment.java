@@ -120,9 +120,9 @@ public abstract class ManagementFragment extends Fragment {
      *
      * @return .
      */
-    public ArrayList<DummyThing> getThings() {
+    public static ArrayList<DummyThing> getThings() {
         ArrayList<DummyThing> things = new ArrayList<DummyThing>();
-        for (long i = 0; i < 20; i++) {
+        for (long i = 1; i < 20; i++) {
             DummyThing thing = new DummyThing(i, "Thing_" + String.valueOf(i));
             things.add(thing);
         }
@@ -130,11 +130,28 @@ public abstract class ManagementFragment extends Fragment {
     }
 
     /**
+     * Dummy class for getting the thing with the given id.
+     *
+     * @param id .
+     * @return .
+     */
+    public static DummyThing getThing(Long id) {
+        if (id != null && id != 0) {
+            for (DummyThing thing : getThings()) {
+                if (thing.getId().equals(id)) {
+                    return thing;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Dummy class for preparing some devices.
      *
      * @return .
      */
-    public ArrayList<DummyDevice> getDevices() {
+    public static ArrayList<DummyDevice> getDevices() {
         ArrayList<DummyDevice> devices = new ArrayList<DummyDevice>();
         for (long i = 0; i < 20; i++) {
             DummyDevice device = new DummyDevice(i, "Device_" + String.valueOf(i));
@@ -143,6 +160,22 @@ public abstract class ManagementFragment extends Fragment {
         return devices;
     }
 
+    /**
+     * Dummy class for getting the device with the given id.
+     *
+     * @param id .
+     * @return .
+     */
+    public static DummyDevice getDevice(Long id) {
+        if (id != null && id != 0) {
+            for (DummyDevice device : getDevices()) {
+                if (device.getId().equals(id)) {
+                    return device;
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Dummy class for preparing some users.
@@ -151,20 +184,20 @@ public abstract class ManagementFragment extends Fragment {
      */
     public static ArrayList<DummyUser> getUsers() {
         ArrayList<Permission> permissionList = new ArrayList<Permission>();
-        for (long i = 0; i < 3; i++) {
+        for (long i = 1; i < 3; i++) {
             Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
             permissionList.add(permission);
         }
 
         ArrayList<Role> roleList = new ArrayList<Role>();
-        for (long i = 0; i < 5; i++) {
+        for (long i = 1; i < 5; i++) {
             Role role = new Role(i, "Role_" + String.valueOf(i));
             role.setPermissions(permissionList);
             roleList.add(role);
         }
 
         ArrayList<DummyUser> userList = new ArrayList<DummyUser>();
-        for (long i = 0; i < 10; i++) {
+        for (long i = 1; i < 10; i++) {
             DummyUser user = new DummyUser(i, "User_" + String.valueOf(i));
             user.setRoles(roleList);
             userList.add(user);
@@ -197,7 +230,7 @@ public abstract class ManagementFragment extends Fragment {
      */
     public static ArrayList<Role> getRoles() {
         ArrayList<Role> roles = new ArrayList<Role>();
-        for (long i = 0; i < 10; i++) {
+        for (long i = 1; i < 10; i++) {
             Role role = new Role(i, "Role_" + String.valueOf(i));
             roles.add(role);
         }
@@ -247,7 +280,7 @@ public abstract class ManagementFragment extends Fragment {
      */
     public static ArrayList<Permission> getPermissions() {
         ArrayList<Permission> permissions = new ArrayList<Permission>();
-        for (long i = 0; i < 10; i++) {
+        for (long i = 1; i < 10; i++) {
             Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
             permissions.add(permission);
         }

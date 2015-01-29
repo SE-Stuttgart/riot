@@ -29,7 +29,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected Fragment getOnItemClickFragment() {
-        return new ManagementThingListFragment();
+        return new ManagementThingDetailFragment();
     }
 
     @Override
@@ -54,10 +54,10 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDescription(Storable item) {
-        Long id = ((DummyThing) item).getId();
-        if (id != null && id != 0) {
-            return id.toString();
-        }
+//        Long id = ((DummyThing) item).getId();
+//        if (id != null && id != 0) {
+//            return id.toString();
+//        }
         return null;
     }
 

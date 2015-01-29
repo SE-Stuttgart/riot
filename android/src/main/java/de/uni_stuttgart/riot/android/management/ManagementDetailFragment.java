@@ -21,7 +21,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
     protected void handleArguments(Bundle args) {
         if (args != null) {
             // Save the value of the parameter, otherwise set a default id
-            this.itemId = args.containsKey(BUNDLE_ENABLE_ELEMENTS) ? args.getLong(BUNDLE_OBJECT_ID) : 0;
+            this.itemId = args.containsKey(BUNDLE_OBJECT_ID) ? args.getLong(BUNDLE_OBJECT_ID) : 0;
 
             // Save the value of the parameter, otherwise disable all elements
             this.enableElements = args.containsKey(BUNDLE_ENABLE_ELEMENTS) && args.getBoolean(BUNDLE_ENABLE_ELEMENTS);
@@ -31,7 +31,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
     @Override
     protected void displayData() {
         // Set values and on click event off the buttons
-        Button button_abort = (Button) view.findViewById(R.id.user_abort_button);
+        Button button_abort = (Button) view.findViewById(R.id.detail_abort_button);
         button_abort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -40,7 +40,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
         });
         button_abort.setText(getAbortText());
 
-        Button button_edit = (Button) view.findViewById(R.id.user_edit_button);
+        Button button_edit = (Button) view.findViewById(R.id.detail_edit_button);
         button_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

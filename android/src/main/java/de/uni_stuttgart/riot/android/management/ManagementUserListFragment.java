@@ -29,7 +29,7 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected Fragment getOnItemClickFragment() {
-        return new ManagementUserListFragment();
+        return new ManagementUserDetailFragment();
     }
 
     @Override

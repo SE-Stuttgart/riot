@@ -12,8 +12,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -33,7 +31,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     @Override
     protected void displayData() {
 
-        UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
+       // UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
 
         // Collection<User> userCollection = androidUser.getUmClient().getUsers(); // TODO server-connection
         // ArrayList<User> userList = new ArrayList<User>(userCollection);

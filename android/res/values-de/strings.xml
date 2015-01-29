@@ -78,4 +78,10 @@
     <string name="user_id">Id</string>
     <string name="user_image">Image</string>
     <string name="user_online_state">Online-State</string>
+    <string name="device_name">Device Name</string>
+    <string name="device_detail">Device Detail</string>
+    <string name="thing_id">Id</string>
+    <string name="thing_name">Thing Name</string>
+    <string name="device_id">Id</string>
+    <string name="thing_detail">Thing Detail</string>
 </resources>
