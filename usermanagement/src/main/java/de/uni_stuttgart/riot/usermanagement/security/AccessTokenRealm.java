@@ -19,7 +19,6 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.JdbcUtils;
 
 /**
  * The AccessTokenRealm provides authentication and authorization capabilities for using an access token with a REST API. The realm will use
@@ -47,25 +46,18 @@ public class AccessTokenRealm extends AuthorizingRealm {
         AccessToken tokenImpl = (AccessToken) token;
         String accessToken = tokenImpl.getToken();
 
-        Connection connection = null;
-        SimpleAuthenticationInfo info = null;
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
 
             String principal = getPrincipal(connection, accessToken);
-
             if (principal == null) {
                 return null;
             }
 
-            info = new SimpleAuthenticationInfo(accessToken, accessToken, getName());
+            return new SimpleAuthenticationInfo(accessToken, accessToken, getName());
         } catch (SQLException e) {
             throw new AuthenticationException("There was a SQL error while authenticating the user", e);
-        } finally {
-            JdbcUtils.closeConnection(connection);
         }
 
-        return info;
     }
 
     /**
@@ -93,19 +85,14 @@ public class AccessTokenRealm extends AuthorizingRealm {
 
         String token = (String) getAvailablePrincipal(principals);
 
-        Connection connection = null;
         Set<String> roleNames = null;
         Set<String> permissions = null;
 
-        try {
-            connection = dataSource.getConnection();
-
+        try (Connection connection = dataSource.getConnection()) {
             roleNames = getRoles(connection, token);
             permissions = getPermissions(connection, roleNames);
         } catch (SQLException e) {
             throw new AuthorizationException("There was a SQL error while authorizing the user", e);
-        } finally {
-            JdbcUtils.closeConnection(connection);
         }
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roleNames);
@@ -126,30 +113,22 @@ public class AccessTokenRealm extends AuthorizingRealm {
      *             When an SQL error occurs.
      */
     protected Set<String> getRoles(Connection connection, String token) throws SQLException {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        Set<String> roles = new LinkedHashSet<String>();
-
-        try {
-            ps = connection.prepareStatement(rolesQuery);
+        try (PreparedStatement ps = connection.prepareStatement(rolesQuery)) {
             ps.setString(1, token);
 
-            // execute query
-            rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
 
-            // loop over results and add each returned role to a set
-            while (rs.next()) {
-                String role = rs.getString(1);
-                if (role != null) {
-                    roles.add(role);
+                // loop over results and add each returned role to a set
+                Set<String> roles = new LinkedHashSet<String>();
+                while (rs.next()) {
+                    String role = rs.getString(1);
+                    if (role != null) {
+                        roles.add(role);
+                    }
                 }
+                return roles;
             }
-        } finally {
-            JdbcUtils.closeResultSet(rs);
-            JdbcUtils.closeStatement(ps);
         }
-
-        return roles;
     }
 
     /**
@@ -164,34 +143,20 @@ public class AccessTokenRealm extends AuthorizingRealm {
      *             When an SQL error occurs.
      */
     protected Set<String> getPermissions(Connection connection, Collection<String> roles) throws SQLException {
-        PreparedStatement ps = null;
         Set<String> permissions = new LinkedHashSet<String>();
-
-        try {
-            ps = connection.prepareStatement(permissionsQuery);
-
+        try (PreparedStatement ps = connection.prepareStatement(permissionsQuery)) {
             for (String role : roles) {
                 ps.setString(1, role);
 
-                ResultSet rs = null;
-
-                try {
-                    // execute query
-                    rs = ps.executeQuery();
-
+                try (ResultSet rs = ps.executeQuery()) {
                     // loop over results and add each returned role to a set
                     while (rs.next()) {
                         String permission = rs.getString(1);
                         permissions.add(permission);
                     }
-                } finally {
-                    JdbcUtils.closeResultSet(rs);
                 }
             }
-        } finally {
-            JdbcUtils.closeStatement(ps);
         }
-
         return permissions;
     }
 

@@ -17,9 +17,11 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
+    private TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO();
+
     @Test
     public void insertAndFindTest() throws DatasourceException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
+
         TokenRole testtokenRole = new TokenRole(new Long(42), new Long(2), new Long(1));
         dao.insert(testtokenRole);
         TokenRole find = dao.findBy(testtokenRole.getId());
@@ -28,7 +30,6 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void findUpdateFindTest() throws DatasourceFindException, DatasourceUpdateException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         TokenRole find = dao.findBy(new Long(1));
         // TokenRoles are not mutable at the time, only to test the update funktion.
         dao.update(find);
@@ -38,7 +39,6 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceDeleteException, DatasourceFindException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         TokenRole tokenRole = dao.findBy(new Long(1));
         dao.delete(tokenRole);
         dao.findBy(new Long(1));
@@ -46,13 +46,11 @@ public class TokenRoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceUpdateException.class)
     public void errorUpdateTest() throws DatasourceUpdateException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         dao.update(new TokenRole(new Long(32), new Long(32), new Long(32)));
     }
 
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
-        TokenRoleSqlQueryDAO dao = new TokenRoleSqlQueryDAO(this.getConn(), false);
         Collection<TokenRole> tokenRole = dao.findAll();
         assertEquals(4, tokenRole.size());
     }

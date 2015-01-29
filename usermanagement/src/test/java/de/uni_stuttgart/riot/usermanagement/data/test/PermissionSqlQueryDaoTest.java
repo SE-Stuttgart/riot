@@ -19,9 +19,10 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class PermissionSqlQueryDaoTest extends DaoTestBase {
 
+    private PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO();
+
     @Test
     public void insertAndFindTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         Permission testPermission = new Permission(new Long(42), "TestPermission");
         dao.insert(testPermission);
         Permission findPermission = dao.findBy(testPermission.getId());
@@ -30,7 +31,6 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void findUpdateFindTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         Permission findPermission = dao.findBy(new Long(1));
         findPermission.setPermissionValue("testPermissionName");
         dao.update(findPermission);
@@ -40,7 +40,6 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         Permission permission = dao.findBy(new Long(1));
         dao.delete(permission);
         dao.findBy(new Long(1));
@@ -48,13 +47,11 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceUpdateException.class)
     public void errorUpdateTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         dao.update(new Permission(new Long(32), ""));
     }
 
     @Test
     public void findByParamTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
         LinkedList<SearchParameter> param = new LinkedList<>();
         param.add(new SearchParameter(SearchFields.PERMISSIONVALUE, "x"));
         param.add(new SearchParameter(SearchFields.PERMISSIONVALUE, "y"));
@@ -65,8 +62,6 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void findAllTest() throws DatasourceException, SQLException {
-        PermissionSqlQueryDAO dao = new PermissionSqlQueryDAO(this.getConn(), false);
-
         Collection<Permission> permission = dao.findAll();
         assertEquals(4, permission.size());
     }

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -228,9 +227,8 @@ public class Configuration {
      * Clear the current configuration and get the values from the database.
      */
     public static void init() {
-
         try {
-            dao = new ConfigurationDAO(ConnectionMgr.openConnection(), false);
+            dao = new ConfigurationDAO();
             om = new ObjectMapper();
         } catch (Exception e) {
             throw new ConfigurationException(e);

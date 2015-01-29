@@ -1,8 +1,5 @@
 package de.uni_stuttgart.riot.config;
 
-import java.sql.SQLException;
-
-import javax.naming.NamingException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -13,7 +10,6 @@ import javax.ws.rs.core.Response;
 
 import de.uni_stuttgart.riot.server.commons.config.ConfigurationDAO;
 import de.uni_stuttgart.riot.server.commons.config.ConfigurationStorable;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -29,14 +25,9 @@ public class ConfigResource extends BaseResource<ConfigurationStorable> {
 
     /**
      * Instantiates a new config ressource.
-     *
-     * @throws SQLException
-     *             the SQL exception
-     * @throws NamingException
-     *             the naming exception
      */
-    public ConfigResource() throws SQLException, NamingException {
-        super(new ConfigurationDAO(ConnectionMgr.openConnection(), false));
+    public ConfigResource() {
+        super(new ConfigurationDAO());
     }
 
     @Override

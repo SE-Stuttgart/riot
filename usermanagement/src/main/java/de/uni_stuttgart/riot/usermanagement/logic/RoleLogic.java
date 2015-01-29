@@ -1,17 +1,13 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
@@ -28,7 +24,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleExceptio
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the roles.
  * 
@@ -37,27 +32,14 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleExcep
  */
 public class RoleLogic {
 
-    private DAO<Role> dao;
-
-    /**
-     * Constructor
-     */
-    public RoleLogic() {
-        try {
-            dao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        } catch (NamingException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    private DAO<Role> dao = new RoleSqlQueryDAO();
 
     /**
      * Add a new role to the system.
      * 
      * @param role
      *            The role to add
-     * @throws AddRoleException
+     * @throws AddRoleException When adding the role fails.
      */
     public void addRole(Role role) throws AddRoleException {
         try {
@@ -76,7 +58,7 @@ public class RoleLogic {
      * 
      * @param id
      *            The id of the role to delete
-     * @throws DeleteRoleException
+     * @throws DeleteRoleException When deleting the role fails.
      */
     public void deleteRole(Long id) throws DeleteRoleException {
         try {
@@ -89,11 +71,9 @@ public class RoleLogic {
     /**
      * Update an existing role.
      * 
-     * @param id
-     *            The id of the role to update
      * @param role
      *            The content of the role to update
-     * @throws UpdateRoleException
+     * @throws UpdateRoleException When updating the role fails.
      */
     public void updateRole(Role role) throws UpdateRoleException {
         try {
@@ -113,7 +93,7 @@ public class RoleLogic {
      * @param id
      *            The id of the role to retrieve
      * @return Retrieved role
-     * @throws GetRoleException
+     * @throws GetRoleException When getting the role fails.
      */
     public Role getRole(Long id) throws GetRoleException {
         try {
@@ -127,7 +107,7 @@ public class RoleLogic {
      * Retrieve all existing roles.
      * 
      * @return Collection with all roles
-     * @throws GetAllRolesException
+     * @throws GetAllRolesException When getting the roles fails.
      */
     public Collection<Role> getAllRoles() throws GetAllRolesException {
         try {
@@ -141,17 +121,17 @@ public class RoleLogic {
      * Get all permissions, that are associated with a role.
      * 
      * @param roleId
-     *            The id of the role
-     * @return Collection with permissions
-     * @throws GetPermissionsFromRoleException
+     *            The id of the role.
+     * @return Collection with permissions.
+     * @throws GetPermissionsFromRoleException When getting the permissions fails.
      */
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
         if (roleId == null) {
            throw new GetPermissionsFromRoleException("roleId must not be null!");
         }
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            DAO<Permission> permissionDao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
+            DAO<Permission> permissionDao = new PermissionSqlQueryDAO();
 
             // find all permissions belonging to a role
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
@@ -178,11 +158,11 @@ public class RoleLogic {
      *            The id of the role
      * @param permissionId
      *            The id of the permission
-     * @throws AddPermissionToRoleException
+     * @throws AddPermissionToRoleException When adding the permissions fails.
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
             RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.insert(rp);
         } catch (Exception e) {
@@ -194,10 +174,10 @@ public class RoleLogic {
      * Remove a permission from a role.
      * 
      * @param roleId
-     *            The id of the role
+     *            The id of the role.
      * @param permissionId
-     *            The id of the permission
-     * @throws RemovePermissionFromRoleException
+     *            The id of the permission.
+     * @throws RemovePermissionFromRoleException When removing the permission fails.
      */
     public void removePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         try {
@@ -205,7 +185,7 @@ public class RoleLogic {
                 throw new RemovePermissionFromRoleException("Role id and permission id can not be null");
             }
 
-            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
 
             // get the permission to remove
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();

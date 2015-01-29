@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+// CHECKSTYLE:OFF FIXME Please fix the Checkstyle errors in this file.
 public class HomeScreen extends Activity {
 
 	@Override

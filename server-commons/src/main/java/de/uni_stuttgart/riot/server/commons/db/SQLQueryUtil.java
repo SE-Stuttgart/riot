@@ -235,7 +235,7 @@ public final class SQLQueryUtil {
         }
     }
 
-    private static Field getDeclaredField(Class clazz, String fieldName) throws NoSuchFieldException {
+    private static Field getDeclaredField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
         Collection<Field> fields = new ArrayList<Field>();
         SQLQueryUtil.getAllFields(clazz, fields);
         for (Field field : fields) {

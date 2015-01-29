@@ -2,7 +2,6 @@ package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -28,9 +27,8 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.TokenResponse;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
-import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
@@ -41,23 +39,24 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 /**
  * The users service will handle any access (create, read, update, delete) to the users.
  *
- * @author Marcel Lehwald <- //FIXME how to handle addUser with UMUser
+ * @author Marcel Lehwald <- // FIXME how to handle addUser with UMUser
  *
  */
 @Path("users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserService extends BaseResource<UMUser>{
+public class UserService extends BaseResource<UMUser> {
 
     private final UserManagementFacade facade = UserManagementFacade.getInstance();
-    
+
     /**
      * Const.
+     * 
      * @throws SQLException .
      * @throws NamingException .
      */
     public UserService() throws SQLException, NamingException {
-        super(new UserSqlQueryDao(ConnectionMgr.openConnection(), false));
+        super(new UserSqlQueryDAO());
     }
 
     /**
@@ -139,14 +138,11 @@ public class UserService extends BaseResource<UMUser>{
     public Collection<Role> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned roles
         Collection<Role> roles = facade.getAllRolesFromUser(userID);
-
         Collection<Role> roleResult = new LinkedList<Role>();
-        for (Iterator<Role> it = roles.iterator(); it.hasNext(); ) {
-            Role r = it.next();
+        for (Role r : roles) {
             r.setPermissions(this.getRolePermissions(r));
             roleResult.add(r);
         }
-
         return roleResult;
     }
 
@@ -229,7 +225,7 @@ public class UserService extends BaseResource<UMUser>{
         return permissionsResult;
     }
 
-    //FIXME RFC
+    // FIXME RFC
     @Override
     public void init(UMUser storable) throws Exception {
         storable.setRoles(this.getUserRoles(storable.getId()));
