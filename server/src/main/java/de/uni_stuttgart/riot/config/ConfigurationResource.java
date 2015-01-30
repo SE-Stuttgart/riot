@@ -8,30 +8,30 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.server.commons.config.ConfigurationDAO;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationStorable;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 
 /**
- * The Class ConfigRessource.
- * 
+ * The Class ConfigurationResource.
+ *
  * @author Niklas Schnabel
  */
 @Path("config")
-public class ConfigResource extends BaseResource<ConfigurationStorable> {
+public class ConfigurationResource extends BaseResource<ConfigurationEntry> {
 
     /**
      * Instantiates a new config ressource.
      */
-    public ConfigResource() {
+    public ConfigurationResource() {
         super(new ConfigurationDAO());
     }
 
     @Override
-    public void init(ConfigurationStorable storable) throws Exception {
+    public void init(ConfigurationEntry storable) throws Exception {
 
     }
 
@@ -47,9 +47,9 @@ public class ConfigResource extends BaseResource<ConfigurationStorable> {
     @GET
     @Path("key/{key}")
     @Produces(PRODUCED_FORMAT)
-    public ConfigurationStorable getByKey(@PathParam("key") String key) throws DatasourceFindException {
+    public ConfigurationEntry getByKey(@PathParam("key") String key) throws DatasourceFindException {
         try {
-            ConfigurationStorable result = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
+            ConfigurationEntry result = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
             return result;
         } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e) {
             throw new NotFoundException();
@@ -73,7 +73,7 @@ public class ConfigResource extends BaseResource<ConfigurationStorable> {
     @Produces(PRODUCED_FORMAT)
     public Response deleteByKey(@PathParam("key") String key) throws DatasourceFindException {
         try {
-            ConfigurationStorable result = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
+            ConfigurationEntry result = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
             dao.delete(result);
         } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e) {
             throw new NotFoundException();

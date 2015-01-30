@@ -13,7 +13,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 
 /**
- * Rest client for the Usermanagement. // FIXME handle baseresource changes 
+ * Rest client for the Usermanagement. // FIXME handle baseresource changes
  */
 public class UsermanagementClient {
 
@@ -64,12 +64,12 @@ public class UsermanagementClient {
      * @throws RequestException .
      */
     public void updateUser(long userID, UserRequest userRequest) throws RequestException {
-         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_USER + userID, userRequest);
-         try {
-             response.getEntity().consumeContent();
-         } catch (IOException e) {
-             throw new RequestException(e);
-         }
+        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_USER + userID, userRequest);
+        try {
+            response.getEntity().consumeContent();
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
     }
 
     /**
@@ -172,7 +172,7 @@ public class UsermanagementClient {
     public User addUser(UserRequest userRequest) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_USER, userRequest);
         try {
-            User result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), User.class);
+            User result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), User.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -190,7 +190,7 @@ public class UsermanagementClient {
     public Role addRole(Role role) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_ROLE, role);
         try {
-            Role result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Role.class);
+            Role result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Role.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -228,7 +228,7 @@ public class UsermanagementClient {
     public Permission addPermission(Permission permission) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_PERMISSION, permission);
         try {
-            Permission result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Permission.class);
+            Permission result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Permission.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -246,7 +246,7 @@ public class UsermanagementClient {
     public Collection<Role> getUserRoles(long userid) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_USER + userid + GET_USER_ROLES);
         try {
-            Collection<Role> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<Role>>() {
+            Collection<Role> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<Role>>() {
             });
             return result;
         } catch (Exception e) {
@@ -265,7 +265,7 @@ public class UsermanagementClient {
     public User getUser(long id) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_USER + id);
         try {
-            User result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), User.class);
+            User result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), User.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -283,7 +283,7 @@ public class UsermanagementClient {
     public Role getRole(long id) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_ROLE + id);
         try {
-            Role result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Role.class);
+            Role result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Role.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -301,7 +301,7 @@ public class UsermanagementClient {
     public Permission getPermission(long id) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_PERMISSION + id);
         try {
-            Permission result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), Permission.class);
+            Permission result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Permission.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
@@ -317,7 +317,7 @@ public class UsermanagementClient {
     public Collection<User> getUsers() throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_USERS);
         try {
-            Collection<User> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<User>>() {
+            Collection<User> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<User>>() {
             });
             return result;
         } catch (Exception e) {
@@ -334,7 +334,7 @@ public class UsermanagementClient {
     public Collection<Role> getRoles() throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_ROLES);
         try {
-            Collection<Role> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<Role>>() {
+            Collection<Role> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<Role>>() {
             });
             return result;
         } catch (Exception e) {
@@ -351,7 +351,7 @@ public class UsermanagementClient {
     public Collection<Permission> getPermissions() throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_PERMISSIONS);
         try {
-            Collection<Permission> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<Permission>>() {
+            Collection<Permission> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<Permission>>() {
             });
             return result;
         } catch (Exception e) {

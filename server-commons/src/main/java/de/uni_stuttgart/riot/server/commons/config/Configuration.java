@@ -7,6 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
+import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -59,7 +62,7 @@ public class Configuration {
         }
 
         String valueString = om.writeValueAsString(value);
-        ConfigurationStorable old;
+        ConfigurationEntry old;
         try {
             old = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
         } catch (DatasourceFindException e) {
@@ -67,11 +70,11 @@ public class Configuration {
         }
 
         if (old != null) {
-            ConfigurationStorable newOne = new ConfigurationStorable(key, valueString, getClassName(value.getClass()));
+            ConfigurationEntry newOne = new ConfigurationEntry(key, valueString, getClassName(value.getClass()));
             newOne.setId(old.getId());
             dao.update(newOne);
         } else {
-            dao.insert(new ConfigurationStorable(key, valueString, getClassName(value.getClass())));
+            dao.insert(new ConfigurationEntry(key, valueString, getClassName(value.getClass())));
         }
     }
 
@@ -217,7 +220,7 @@ public class Configuration {
      *             Signals that an I/O exception has occurred.
      */
     private static Object getValueFromDB(ConfigurationKey key) throws DatasourceFindException, JsonParseException, JsonMappingException, IOException {
-        ConfigurationStorable configItem = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
+        ConfigurationEntry configItem = dao.findByUniqueField(new SearchParameter(SearchFields.CONFIGKEY, key));
         ConfigurationKey keyDB = ConfigurationKey.valueOf(configItem.getConfigKey());
 
         return om.readValue(configItem.getConfigValue(), keyDB.getValueType());

@@ -1,8 +1,8 @@
 package de.uni_stuttgart.riot.server.commons.db;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationStorable;
 
 /**
  * Enum for all searchable fields.

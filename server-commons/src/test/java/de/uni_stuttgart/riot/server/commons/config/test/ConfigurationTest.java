@@ -6,11 +6,11 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.server.commons.config.ConfigurationException;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 
 @TestData({ "/schema/schema_configuration.sql" })
 public class ConfigurationTest extends BaseDatabaseTest {

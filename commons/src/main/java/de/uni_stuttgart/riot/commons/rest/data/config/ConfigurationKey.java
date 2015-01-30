@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.server.commons.config;
+package de.uni_stuttgart.riot.commons.rest.data.config;
 
 /**
  * Enum which contains all keys regarding the central configuration of the server. <br>

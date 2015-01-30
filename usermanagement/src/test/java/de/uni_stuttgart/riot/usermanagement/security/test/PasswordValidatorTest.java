@@ -6,10 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.config.Configuration;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 import de.uni_stuttgart.riot.usermanagement.security.exception.PasswordValidationException;
 

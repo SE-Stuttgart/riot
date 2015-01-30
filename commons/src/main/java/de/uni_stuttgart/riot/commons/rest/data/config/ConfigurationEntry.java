@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.server.commons.config;
+package de.uni_stuttgart.riot.commons.rest.data.config;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
@@ -7,7 +7,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * 
  * @author Niklas Schnabel
  */
-public class ConfigurationStorable extends Storable {
+public class ConfigurationEntry extends Storable {
 
     /** The key. */
     private String configKey;
@@ -21,7 +21,7 @@ public class ConfigurationStorable extends Storable {
     /**
      * Instantiates a new configuration storable.
      */
-    public ConfigurationStorable() {
+    public ConfigurationEntry() {
     }
 
     /**
@@ -36,7 +36,7 @@ public class ConfigurationStorable extends Storable {
      * @param dataType
      *            the data type
      */
-    public ConfigurationStorable(Long id, ConfigurationKey key, String value, String dataType) {
+    public ConfigurationEntry(Long id, ConfigurationKey key, String value, String dataType) {
         super(id);
         this.configKey = key.name();
         this.configValue = value;
@@ -53,7 +53,7 @@ public class ConfigurationStorable extends Storable {
      * @param dataType
      *            the data type
      */
-    public ConfigurationStorable(ConfigurationKey key, String value, String dataType) {
+    public ConfigurationEntry(ConfigurationKey key, String value, String dataType) {
         super(-1L);
         this.configKey = key.toString();
         this.configValue = value;
@@ -72,7 +72,7 @@ public class ConfigurationStorable extends Storable {
      * @param dataType
      *            the data type
      */
-    public ConfigurationStorable(Long id, String key, String value, String dataType) {
+    public ConfigurationEntry(Long id, String key, String value, String dataType) {
         super(id);
         this.configKey = key;
         this.configValue = value;
@@ -142,7 +142,7 @@ public class ConfigurationStorable extends Storable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ConfigurationStorable other = (ConfigurationStorable) obj;
+        ConfigurationEntry other = (ConfigurationEntry) obj;
         if (configKey == null) {
             if (other.configKey != null)
                 return false;

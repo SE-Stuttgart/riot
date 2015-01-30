@@ -14,6 +14,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -27,21 +28,49 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.Authentication
  */
 public class LoginClient {
 
+    /** The Constant NOT_AUTH. */
     private static final int NOT_AUTH = 401;
+
+    /** The Constant ERROR_THRESHOLD. */
     private static final int ERROR_THRESHOLD = 402;
+
+    /** The Constant BAD_REQUEST. */
     private static final int BAD_REQUEST = 400;
+
+    /** The Constant APPLICATION_JSON. */
     private static final String APPLICATION_JSON = "application/json";
+
+    /** The Constant PREFIX. */
     private static final String PREFIX = "/api/v1/";
+
+    /** The Constant LOGOUT_PATH. */
     private static final String LOGOUT_PATH = PREFIX + "auth/logout";
+
+    /** The Constant LOGIN_PATH. */
     private static final String LOGIN_PATH = PREFIX + "auth/login";
+
+    /** The Constant REFRESH_PATH. */
     private static final String REFRESH_PATH = PREFIX + "auth/refresh";
+
+    /** The Constant ACCESS_TOKEN. */
     private static final String ACCESS_TOKEN = "Access-Token";
 
-    final ObjectMapper jsonMapper = new ObjectMapper();
+    /** The json mapper. */
+    private final ObjectMapper jsonMapper = new ObjectMapper();
+
+    /** The token manager. */
     private TokenManager tokenManager;
+
+    /** The device name. */
     private final String deviceName;
+
+    /** The client. */
     private final HttpClient client = new DefaultHttpClient();
+
+    /** The server url. */
     private final String serverUrl;
+
+    /** The loged in. */
     private boolean logedIn;
 
     /**
@@ -59,8 +88,14 @@ public class LoginClient {
         this.serverUrl = serverUrl;
         this.logedIn = false;
         this.tokenManager = tokenManager;
+        this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * Gets the server url.
+     *
+     * @return the server url
+     */
     public String getServerUrl() {
         return serverUrl;
     }
@@ -82,6 +117,12 @@ public class LoginClient {
         return this.internalLogin(LOGIN_PATH, new LoginRequest(username, password));
     }
 
+    /**
+     * Refresh.
+     *
+     * @throws RequestException
+     *             the request exception
+     */
     void refresh() throws RequestException {
         RefreshRequest refreshRequest = new RefreshRequest(tokenManager.getRefreshToken());
         this.internalLogin(REFRESH_PATH, refreshRequest);
@@ -101,6 +142,17 @@ public class LoginClient {
         this.put(this.serverUrl + LOGOUT_PATH, "");
     }
 
+    /**
+     * Internal login.
+     *
+     * @param path
+     *            the path
+     * @param entity
+     *            the entity
+     * @return the user
+     * @throws RequestException
+     *             the request exception
+     */
     User internalLogin(String path, Object entity) throws RequestException {
         try {
             HttpPut put = new HttpPut(serverUrl + path);
@@ -133,7 +185,18 @@ public class LoginClient {
         return null;
     }
 
-    HttpResponse put(final String target, final Object entity) throws RequestException {
+    /**
+     * Put.
+     *
+     * @param target
+     *            the target
+     * @param entity
+     *            the entity
+     * @return the http response
+     * @throws RequestException
+     *             the request exception
+     */
+    public HttpResponse put(final String target, final Object entity) throws RequestException {
         try {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
@@ -150,7 +213,18 @@ public class LoginClient {
         }
     }
 
-    HttpResponse post(final String target, final Object entity) throws RequestException {
+    /**
+     * Post.
+     *
+     * @param target
+     *            the target
+     * @param entity
+     *            the entity
+     * @return the http response
+     * @throws RequestException
+     *             the request exception
+     */
+    public HttpResponse post(final String target, final Object entity) throws RequestException {
         try {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
@@ -167,7 +241,16 @@ public class LoginClient {
         }
     }
 
-    HttpResponse delete(final String target) throws RequestException {
+    /**
+     * Delete.
+     *
+     * @param target
+     *            the target
+     * @return the http response
+     * @throws RequestException
+     *             the request exception
+     */
+    public HttpResponse delete(final String target) throws RequestException {
         try {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
@@ -181,7 +264,16 @@ public class LoginClient {
         }
     }
 
-    HttpResponse get(final String target) throws RequestException {
+    /**
+     * Get.
+     *
+     * @param target
+     *            the target
+     * @return the http response
+     * @throws RequestException
+     *             the request exception
+     */
+    public HttpResponse get(final String target) throws RequestException {
         try {
             return this.doRequest(new InternalRequest() {
                 public HttpResponse doRequest() throws JsonGenerationException, JsonMappingException, UnsupportedEncodingException, IOException {
@@ -195,12 +287,21 @@ public class LoginClient {
         }
     }
 
+    /**
+     * Do request.
+     *
+     * @param r
+     *            the r
+     * @return the http response
+     * @throws RequestException
+     *             the request exception
+     */
     HttpResponse doRequest(InternalRequest r) throws RequestException {
         try {
             HttpResponse response = r.doRequest();
             int status = response.getStatusLine().getStatusCode();
             String mediatype = "";
-            if (response.getEntity() != null ) {
+            if (response.getEntity() != null) {
                 if (response.getEntity().getContentType() != null) {
                     mediatype = response.getEntity().getContentType().getValue();
                 }
@@ -226,11 +327,30 @@ public class LoginClient {
         }
     }
 
+    /**
+     * Checks if is loged in.
+     *
+     * @return true, if is loged in
+     */
     public boolean isLogedIn() {
         return logedIn;
     }
 
+    /**
+     * Gets the client.
+     *
+     * @return the client
+     */
     HttpClient getClient() {
         return client;
+    }
+
+    /**
+     * Gets the json mapper.
+     *
+     * @return the json mapper
+     */
+    public ObjectMapper getJsonMapper() {
+        return jsonMapper;
     }
 }
