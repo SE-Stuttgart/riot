@@ -9,18 +9,23 @@ import de.uni_stuttgart.riot.thing.commons.Property;
  * 
  * @param <T>
  */
-public class PropertyChangeEvent<T> extends Event<PropertyChange<T>> {
+public class PropertyChangeEvent<T> extends Event<PropertyChangeEventInstance<T>> {
 
     @Override
-    public PropertyChange<T> createInstance(Collection<Property> params) throws Exception {
+    public PropertyChangeEventInstance<T> createInstance(Collection<Property> params) throws Exception {
         if (params.size() != 2) {
             throw new Exception("Only one parameter allowed");
         }
-        PropertyChange<T> result = null;
+        PropertyChangeEventInstance<T> result = null;
         for (Property property : params) {
-            result = new PropertyChange<T>(property);
+            result = new PropertyChangeEventInstance<T>(property);
         }
         return result;
+    }
+
+    @Override
+    public boolean isTypeOf(EventInstance eventInstance) {
+        return eventInstance instanceof PropertyChangeEventInstance;
     }
 
 }

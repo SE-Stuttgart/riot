@@ -7,6 +7,11 @@ package de.uni_stuttgart.riot.thing.commons.event;
  */
 public abstract class EventListener<T extends EventInstance> {
 
+    private final long thingId;
+    
+    public EventListener(long thingId) {
+        this.thingId = thingId;
+    }
     /**
      * this method is called when the event is fired.
      * 
@@ -14,5 +19,9 @@ public abstract class EventListener<T extends EventInstance> {
      *            fired event.
      */
     public abstract void onFired(T event);
+  
+    public long getThingId() {
+        return thingId;
+    }
 
 }

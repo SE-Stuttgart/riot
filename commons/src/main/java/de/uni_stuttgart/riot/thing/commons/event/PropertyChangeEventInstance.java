@@ -7,7 +7,7 @@ import de.uni_stuttgart.riot.thing.commons.Property;
  *
  * @param <T>
  */
-public class PropertyChange<T> extends EventInstance {
+public class PropertyChangeEventInstance<T> extends EventInstance {
 
     private final Property<T> newProperty;
 
@@ -17,7 +17,7 @@ public class PropertyChange<T> extends EventInstance {
      * @param newProperty
      *            the new property.
      */
-    public PropertyChange(Property<T> newProperty) {
+    public PropertyChangeEventInstance(Property<T> newProperty) {
         this.newProperty = newProperty;
     }
 

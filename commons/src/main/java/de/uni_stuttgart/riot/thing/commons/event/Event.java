@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.thing.commons.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import de.uni_stuttgart.riot.thing.commons.Property;
 
@@ -34,14 +35,15 @@ public abstract class Event<T extends EventInstance> {
     /**
      * unregisters event listener.
      * 
-     * @param eventListener
+     * @param thingId
      *            the event listener to unregister.
      */
-    public void unregister(EventListener<T> eventListener) {
-        boolean result = this.eventListeners.remove(eventListener);
-        if (!result) {
-            System.out.println("may throw exception (Event)"); // FIXME may throw exception
-        }
+    public void unregister(final long thingId) {
+        this.eventListeners.removeIf(new Predicate<EventListener>() {
+            public boolean test(EventListener t) {
+                return t.getThingId() == thingId;
+            }
+        });
     }
 
     /**
@@ -65,6 +67,8 @@ public abstract class Event<T extends EventInstance> {
     public void fire(T event) {
         this.notifyListeners(event);
     }
+    
+    public abstract boolean isTypeOf(EventInstance eventInstance);
 
     /**
      * creates an instance.

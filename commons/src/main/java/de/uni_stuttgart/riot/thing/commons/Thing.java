@@ -10,13 +10,13 @@ import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
 
 /**
- * A {@link Thing} (e.g. Car, House, ...) contains Properties, {@link Action}s and {@link Event}s.
+ * A {@link Thing} (e.g. Car, House, ...) contains Properties, {@link Action}s and {@link Action}s.
  *
  */
 public abstract class Thing extends Storable {
 
     private transient Map<String, Property> properties;
-    private transient Map<String, Event> events;
+    private transient Collection<Event> events;
     private transient Collection<Action> actions;
     private String name;
 
@@ -29,7 +29,7 @@ public abstract class Thing extends Storable {
     public Thing(String name) {
         this.name = name;
         this.actions = new ArrayList<Action>();
-        this.events = new HashMap<String, Event>();
+        this.setEvents(new ArrayList<Event>());
         this.properties = new HashMap<String, Property>();
     }
 
@@ -38,7 +38,7 @@ public abstract class Thing extends Storable {
      */
     public Thing() {
         this.actions = new ArrayList<Action>();
-        this.events = new HashMap<String, Event>();
+        this.setEvents(new ArrayList<Event>());
         this.properties = new HashMap<String, Property>();
     }
 
@@ -85,14 +85,6 @@ public abstract class Thing extends Storable {
         return name;
     }
 
-    public Map<String, Event> getEvents() {
-        return events;
-    }
-
-    public void setEvents(Map<String, Event> events) {
-        this.events = events;
-    }
-
     public void setProperties(Map<String, Property> properties) {
         this.properties = properties;
     }
@@ -111,5 +103,13 @@ public abstract class Thing extends Storable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Collection<Event> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Collection<Event> events) {
+        this.events = events;
     }
 }
