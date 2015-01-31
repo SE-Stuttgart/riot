@@ -2,7 +2,12 @@ package de.uni_stuttgart.riot.thing.remote;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
@@ -40,16 +45,79 @@ public class ThingLogic {
         this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO();
     }
 
+    public long resolveID(String thingName) throws DatasourceFindException{
+        return this.remoteThingSqlQueryDAO.findByUniqueField(new SearchParameter(SearchFields.NAME, thingName)).getId();
+    }
+    
+    private HashMap<Long, Queue<ActionInstance>> actionInstances;
+    private HashMap<Long, Stack<EventInstance>> eventInstances;
+
+
     /**
-     * gets the {@link RemoteThing} by its name.
+     * TODO .
      * 
-     * @param name
-     *            the thing name.
-     * @return the {@link RemoteThing}.
-     * @throws DatasourceFindException .
+     * @param username
+     * @param thingName
+     * @param properties
+     * @param actions
      */
-    public RemoteThing getRemoteThing(String name) throws DatasourceFindException {
-        return null;
+    public void registerThing(String username, String thingName, Collection<Property> properties, Collection<Action> actions) {
+
+    }
+
+    /**
+     * TODO .
+     * 
+     * @param username
+     * @param thingName
+     */
+    public void unregisterThing(String username, String thingName) {
+
+    }
+
+    public synchronized Queue<ActionInstance> getCurrentActionInstances(long thingId) {
+        Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
+        Queue<ActionInstance> result = new LinkedList<ActionInstance>();
+        while (!queue.isEmpty()) {
+            result.offer(queue.poll());
+        }
+        return result;
+    }
+
+         //FIXME thing about raceconditions on, off -> off, on
+    public synchronized void submitAction(ActionInstance actionInstance) {
+        Queue<ActionInstance> queue = this.getActionInstancesQueue(actionInstance.getInstanceOf().getThingId());
+        queue.offer(actionInstance);        
+    }
+
+    private synchronized Queue<ActionInstance> getActionInstancesQueue(long thingId) {
+        Queue<ActionInstance> queue = this.actionInstances.get(thingId);
+        if (queue == null) {
+            Queue<ActionInstance> result = new LinkedList<ActionInstance>();
+            this.actionInstances.put(thingId, result);
+            return result;
+        }
+        return queue;
+    }
+
+    /**
+     * TODO .
+     * 
+     * @param eventInstance
+     */
+    public synchronized void submitEvent(EventInstance eventInstance) {
+        Stack<EventInstance> stack = this.getEventInstancesQueue(eventInstance.getThingId());
+        stack.push(eventInstance);   
+    }
+
+    private synchronized Stack<EventInstance> getEventInstancesQueue(long thingId) {
+        Stack<EventInstance> queue = this.eventInstances.get(thingId);
+        if (queue == null) {
+            Stack<EventInstance> result = new Stack<EventInstance>();
+            this.eventInstances.put(thingId, result);
+            return result;
+        }
+        return queue;
     }
 
     /**
@@ -75,64 +143,10 @@ public class ThingLogic {
         return remoteThing;
     }
 
-    /**
-     * gets the {@link RemoteThing} by its id.
-     * 
-     * @param id
-     *            the id to be searched.
-     * @return found {@link RemoteThing}
-     * @throws DatasourceFindException
-     *             if not found.
-     */
-    public RemoteThing getThing(long id) throws DatasourceFindException {
-        RemoteThing remoteThing = this.remoteThingSqlQueryDAO.findBy(id);
-        return this.completeRemoteThing(remoteThing);
-    }
-
-    /**
-     * TODO .
-     * 
-     * @param username
-     * @param thingName
-     * @param properties
-     * @param actions
-     */
-    public void registerThing(String username, String thingName, Collection<Property> properties, Collection<Action> actions) {
-
-    }
-
-    /**
-     * TODO .
-     * 
-     * @param username
-     * @param thingName
-     */
-    public void unregisterThing(String username, String thingName) {
-
-    }
-
-    /**
-     * TODO .
-     * 
-     * @param userID
-     * @return .
-     * @throws DatasourceFindException
-     */
-    public Collection<RemoteThing> getAllThings(long userID) throws DatasourceFindException {
+    public Stack<EventInstance> getEvents() {
+        // TODO Auto-generated method stub
         return null;
     }
 
-    public Queue<ActionInstance> getCurrentActionInstances() {
-        return new ConcurrentLinkedQueue<ActionInstance>();
-    }
-
-    /**
-     * TODO .
-     * 
-     * @param eventInstance
-     */
-    public void submitEvent(EventInstance eventInstance) {
-
-    }
-
+  
 }

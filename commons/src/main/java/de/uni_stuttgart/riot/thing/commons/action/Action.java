@@ -12,6 +12,8 @@ import de.uni_stuttgart.riot.thing.commons.Thing;
  */
 public abstract class Action<T extends ActionInstance> {
 
+    private int thingId;
+    
     /**
      * Constructor.
      */
@@ -30,4 +32,11 @@ public abstract class Action<T extends ActionInstance> {
      */
     public abstract T createInstance(Collection<Property> params, Thing owner) throws Exception;
 
+    public int getThingId() {
+        return thingId;
+    }
+
+    public void setThingId(int thingId) {
+        this.thingId = thingId;
+    }
 }

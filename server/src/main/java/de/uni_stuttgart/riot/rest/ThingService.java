@@ -1,14 +1,30 @@
 package de.uni_stuttgart.riot.rest;
 
+import java.util.Queue;
+import java.util.Stack;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
+import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
+import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
  * The thing service will handle any access (create, read, update, delete) to the "things".
@@ -19,7 +35,7 @@ import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 @Produces(MediaType.APPLICATION_JSON)
 public class ThingService extends BaseResource<RemoteThing> {
 
-    private ThingLogic logic = new ThingLogic();
+    private final ThingLogic logic;
 
     /**
      * Default Constructor.
@@ -29,10 +45,36 @@ public class ThingService extends BaseResource<RemoteThing> {
      */
     public ThingService() {
         super(new RemoteThingSqlQueryDAO());
+        this.logic = new ThingLogic();
     }
 
     @Override
     public void init(RemoteThing storable) throws Exception {
         this.logic.completeRemoteThing(storable);
+    }
+
+    // FIXME switch from id to something secure.
+    @GET
+    @Path("/actions/{id}")
+    public Queue<ActionInstance> getActionInstances(@PathParam("id") long id) throws DatasourceFindException {
+        return this.logic.getCurrentActionInstances(id);
+    }
+
+    @GET
+    @Path("event")
+    public Stack<EventInstance> getEventInstances() {
+        return this.logic.getEvents();
+    }
+
+    @POST
+    @Path("event")
+    public void submitEvent(EventInstance eventInstance) {
+        this.logic.submitEvent(eventInstance);
+    }
+
+    @POST
+    @Path("action")
+    public void submitAction(ActionInstance actionInstance) {
+        this.logic.submitAction(actionInstance);
     }
 }

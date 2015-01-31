@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 public abstract class EventInstance {
 
     private Timestamp time;
+    private int thingId;
 
     /**
      * Constructor.
@@ -23,6 +24,14 @@ public abstract class EventInstance {
 
     public void setTime(Timestamp time) {
         this.time = time;
+    }
+
+    public int getThingId() {
+        return thingId;
+    }
+
+    public void setThingId(int thingId) {
+        this.thingId = thingId;
     }
 
 }
