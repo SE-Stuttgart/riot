@@ -77,14 +77,14 @@ public class ThingService extends BaseResource<RemoteThing> {
     }
 
     @POST
-    @Path("event")
+    @Path("register")
     public Response registerOnEvent(RegisterRequest request) {
         this.logic.registerOnEvent(request.getThingId(), request.getRegisterOnThingId(), request.getEvent());
         return Response.noContent().build();
     }
 
     @DELETE
-    @Path("event")
+    @Path("deregister")
     public Response deRegisterOnEvent(RegisterRequest request) {
         this.logic.deRegisterOnEvent(request.getThingId(), request.getRegisterOnThingId(), request.getEvent());
         return Response.noContent().build();

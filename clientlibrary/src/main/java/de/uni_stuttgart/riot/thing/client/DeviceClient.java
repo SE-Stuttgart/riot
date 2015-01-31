@@ -19,10 +19,17 @@ public class DeviceClient extends ThingClient {
     public Collection<RemoteThing> getMyThing(){
         ArrayList<RemoteThing> dummy = new ArrayList<RemoteThing>();
         ArrayList<Action> actions = new ArrayList<Action>();
+<<<<<<< HEAD
         Map<String,Property> properties = new HashMap<String,Property>();
         actions.add(new PropertySetAction<String>("name"));
         properties.put("name",new Property<String>("name","MyAndroid"));
         RemoteThing thingInfo1 = new RemoteThing("Smartphone",1);
+=======
+        Map<String, Property> properties = new HashMap<String, Property>();
+        actions.add(new PropertySetAction<String>("name",1));
+        properties.put("name", new Property<String>("name", "MyAndroid"));
+        RemoteThing thingInfo1 = new RemoteThing("Smartphone", 1);
+>>>>>>> RIOT-182: Events in DB
         thingInfo1.setProperties(properties);
         thingInfo1.setActions(actions);
         dummy.add(thingInfo1);

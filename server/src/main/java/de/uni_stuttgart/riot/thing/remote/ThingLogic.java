@@ -11,15 +11,20 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.EventDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.PropertyDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingActionSqlQueryDAO;
+import de.uni_stuttgart.riot.db.RemoteThingEventSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.thing.commons.Property;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.Thing;
@@ -39,6 +44,8 @@ public class ThingLogic {
     private RemoteThingActionSqlQueryDAO remoteThingActionSqlQueryDAO;
     private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
     private ActionDBObjectSqlQueryDAO actionDBObjectSqlQueryDAO;
+    private EventDBObjectSqlQueryDAO eventDBObjectSqlQueryDAO;
+    private RemoteThingEventSqlQueryDAO remoteThingEventSqlQueryDAO;
 
     /**
      * Constructor.
@@ -48,6 +55,13 @@ public class ThingLogic {
         this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
         this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO();
         this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO();
+        this.eventDBObjectSqlQueryDAO = new EventDBObjectSqlQueryDAO();
+        this.remoteThingEventSqlQueryDAO = new RemoteThingEventSqlQueryDAO();
+        this.actionInstances = new HashMap<Long, Queue<ActionInstance>>();
+        this.eventInstances = new HashMap<Long, Stack<EventInstance>>();
+        this.events = new HashMap<Long, LinkedList<Event>>();
+        this.lastConnection = new HashMap<Long, Timestamp>();
+        
     }
 
     public long resolveID(String thingName) throws DatasourceFindException {
@@ -66,9 +80,25 @@ public class ThingLogic {
      * @param thingName
      * @param properties
      * @param actions
+     * @throws DatasourceInsertException 
      */
-    public void registerThing(String username, String thingName, Collection<Property> properties, Collection<Action> actions) {
-
+    public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
+        this.remoteThingSqlQueryDAO.insert(thing);
+        for (Action action : thing.getActions()) {
+            ActionDBObject actionDBObject = new ActionDBObject(action.getFactoryString());
+            this.actionDBObjectSqlQueryDAO.insert(actionDBObject);
+            this.remoteThingActionSqlQueryDAO.insert(new RemoteThingAction(thing.getId(), actionDBObject.getId()));
+        }
+        for (iterable_type iterable_element : iterable) {
+            
+        }
+        
+        
+        
+        
+        LinkedList<Event> thingEvents = ThingLogic.this.getEvents(thing.getId());
+        thingEvents.addAll(thing.getEvents());
+        this.lastConnection(thing.getId());
     }
 
     /**
@@ -76,9 +106,11 @@ public class ThingLogic {
      * 
      * @param username
      * @param thingName
+     * @throws DatasourceDeleteException 
      */
-    public void unregisterThing(String username, String thingName) {
-
+    public synchronized void unregisterThing(RemoteThing thing) throws DatasourceDeleteException {
+        this.remoteThingSqlQueryDAO.delete(thing);
+        this.events.put(thing.getId(), null);
     }
 
     public synchronized Queue<ActionInstance> getCurrentActionInstances(long thingId) {
@@ -87,13 +119,20 @@ public class ThingLogic {
         while (!queue.isEmpty()) {
             result.offer(queue.poll());
         }
+        this.updateLastConnection(thingId);
         return result;
+    }
+
+    private void updateLastConnection(long thingId) {
+        this.lastConnection.put(thingId, new Timestamp(System.currentTimeMillis()));
     }
 
     // FIXME thing about raceconditions on, off -> off, on
     public synchronized void submitAction(ActionInstance actionInstance) {
-        Queue<ActionInstance> queue = this.getActionInstancesQueue(actionInstance.getInstanceOf().getThingId());
+        long thingId = actionInstance.getInstanceOf().getThingId(); 
+        Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
         queue.offer(actionInstance);
+        this.updateLastConnection(thingId);
     }
 
     private synchronized Queue<ActionInstance> getActionInstancesQueue(long thingId) {
@@ -161,6 +200,11 @@ public class ThingLogic {
             ActionDBObject aO = this.actionDBObjectSqlQueryDAO.findBy(ra.getActionID());
             remoteThing.addAction(aO.getTheAction(remoteThing));
         }
+        Collection<RemoteThingEvent> res = this.remoteThingEventSqlQueryDAO.findBy(searchParams, false);
+        for (RemoteThingEvent re : res) {
+            EventDBObject aO = this.eventDBObjectSqlQueryDAO.findBy(re.getEventID());
+            remoteThing.addEvent(aO.getTheEvent(remoteThing));
+        }
         return remoteThing;
     }
 
@@ -199,7 +243,7 @@ public class ThingLogic {
     public Timestamp lastConnection(long id) {
         Timestamp result = this.lastConnection.get(id);
         if (result == null)
-            return new Timestamp(Long.MIN_VALUE);
+            return new Timestamp(0);
         return result;
     }
 

@@ -12,31 +12,25 @@ import de.uni_stuttgart.riot.thing.commons.Thing;
  */
 public abstract class Action<T extends ActionInstance> {
 
-    private int thingId;
+    private long thingId;
     
     /**
      * Constructor.
      */
     public Action() {
     }
+    
+    public Action(long thingId) {
+        this.thingId = thingId;
+    }
 
-    /**
-     * Creates the instance.
-     * 
-     * @param params
-     *            collection of properties.
-     * @param owner
-     *            the owner {@link Thing}.
-     * @return the created instance.
-     * @throws Exception .
-     */
-    public abstract T createInstance(Collection<Property> params, Thing owner) throws Exception;
-
-    public int getThingId() {
+    public long getThingId() {
         return thingId;
     }
 
-    public void setThingId(int thingId) {
+    public void setThingId(long thingId) {
         this.thingId = thingId;
     }
+
+    public abstract String getFactoryString();
 }

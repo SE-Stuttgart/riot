@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing.commons;
 
+import de.uni_stuttgart.riot.thing.commons.event.Event;
+
 /**
  * Logical representation of a Thing on the server side. It represents one {@link ClientThing}.
  *
@@ -48,5 +50,4 @@ public class RemoteThing extends Thing {
     public void setOwnerID(long ownerID) {
         this.ownerID = ownerID;
     }
-
 }

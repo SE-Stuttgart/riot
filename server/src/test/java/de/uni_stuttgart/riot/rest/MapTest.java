@@ -22,7 +22,7 @@ public class MapTest {
     public void test() throws IOException {
       
         RemoteThing test = new RemoteThing("name", 2);
-        test.addAction(new PropertySetAction<String>("T"));
+        test.addAction(new PropertySetAction<String>("T",1));
         
         ObjectMapper mapper= new ObjectMapper();
         mapper.enableDefaultTyping(DefaultTyping.NON_FINAL);

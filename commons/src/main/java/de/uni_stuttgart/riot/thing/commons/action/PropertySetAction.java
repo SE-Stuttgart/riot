@@ -20,7 +20,8 @@ public class PropertySetAction<T> extends Action<PropertySetActionInstance<T>> {
      * @param propertyName
      *            .
      */
-    public PropertySetAction(String propertyName) {
+    public PropertySetAction(String propertyName, long thingId) {
+        super(thingId);
         this.propertyName = propertyName;
     }
 
@@ -38,19 +39,8 @@ public class PropertySetAction<T> extends Action<PropertySetActionInstance<T>> {
         this.propertyName = propertyName;
     }
 
-    @Override
-    public PropertySetActionInstance<T> createInstance(Collection<Property> params, Thing owner) throws Exception {
-        if (params.size() != 1) {
-            throw new Exception("Only one parameter allowed");
-        }
-        PropertySetActionInstance<T> result = null;
-        for (Property property : params) {
-            if (!owner.hasProperty(property) || !property.getName().equals(this.propertyName)) {
-                throw new Exception("Thing does not have such a property");
-            }
-            result = new PropertySetActionInstance<T>(property, this);
-        }
-        return result;
+    public PropertySetActionInstance<T> createInstance(Property<T> property){
+        return new PropertySetActionInstance<T>(property, this);
     }
 
 }

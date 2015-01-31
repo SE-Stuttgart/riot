@@ -27,4 +27,5 @@ public class PropertySetActionInstance<T> extends ActionInstance {
     public Property<T> getProperty() {
         return property;
     }
+    
 }

@@ -3,13 +3,11 @@ package de.uni_stuttgart.riot.thing.remote;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
-import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
+import de.uni_stuttgart.riot.thing.commons.event.Event;
+import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
 
-/**
- * Action object to be stored at the DB.
- *
- */
-public class ActionDBObject extends Storable {
+public class EventDBObject extends Storable {
+
 
     private final String factoryString;
 
@@ -19,7 +17,7 @@ public class ActionDBObject extends Storable {
      * @param factoryString
      *            .
      */
-    public ActionDBObject(String factoryString) {
+    public EventDBObject(String factoryString) {
         this.factoryString = factoryString;
     }
 
@@ -34,8 +32,8 @@ public class ActionDBObject extends Storable {
      *            the owner {@link Thing}
      * @return .
      */
-    public Action getTheAction(Thing owner) {
-        return new PropertySetAction("Test",owner.getId()); // FIXME ADD types (by visitor)
+    public Event getTheEvent(Thing owner) {
+        return new PropertyChangeEvent<String>(); // FIXME ADD types (by visitor)
     }
 
 }

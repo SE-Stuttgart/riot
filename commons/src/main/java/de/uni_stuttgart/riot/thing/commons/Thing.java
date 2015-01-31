@@ -33,6 +33,24 @@ public abstract class Thing extends Storable {
         this.properties = new HashMap<String, Property>();
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Thing [properties=");
+        builder.append(properties);
+        builder.append(", events=");
+        builder.append(events);
+        builder.append(", actions=");
+        builder.append(actions);
+        builder.append(", name=");
+        builder.append(name);
+        builder.append("]");
+        return builder.toString();
+    }
+
     /**
      * Constructor.
      */
@@ -69,6 +87,10 @@ public abstract class Thing extends Storable {
         this.actions.add(action);
     }
 
+    public void addEvent(Event event) {
+        this.events.add(event);
+    }
+    
     /**
      * adds property to the {@link Thing}.
      * 
