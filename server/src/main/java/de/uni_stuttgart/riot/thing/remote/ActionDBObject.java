@@ -12,6 +12,7 @@ import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 public class ActionDBObject extends Storable {
 
     private final String factoryString;
+    private final long thingId;
 
     /**
      * Constructor.
@@ -19,7 +20,8 @@ public class ActionDBObject extends Storable {
      * @param factoryString
      *            .
      */
-    public ActionDBObject(String factoryString) {
+    public ActionDBObject(long thingId, String factoryString) {
+        this.thingId = thingId;
         this.factoryString = factoryString;
     }
 
@@ -36,6 +38,10 @@ public class ActionDBObject extends Storable {
      */
     public Action getTheAction(Thing owner) {
         return new PropertySetAction("Test",owner.getId()); // FIXME ADD types (by visitor)
+    }
+
+    public long getThingId() {
+        return thingId;
     }
 
 }

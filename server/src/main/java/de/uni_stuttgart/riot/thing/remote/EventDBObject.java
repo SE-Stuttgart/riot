@@ -10,6 +10,7 @@ public class EventDBObject extends Storable {
 
 
     private final String factoryString;
+    private final long thingId;
 
     /**
      * Constructor.
@@ -17,8 +18,9 @@ public class EventDBObject extends Storable {
      * @param factoryString
      *            .
      */
-    public EventDBObject(String factoryString) {
+    public EventDBObject(long thingId, String factoryString) {
         this.factoryString = factoryString;
+        this.thingId = thingId;
     }
 
     public String getFactoryString() {
@@ -34,6 +36,10 @@ public class EventDBObject extends Storable {
      */
     public Event getTheEvent(Thing owner) {
         return new PropertyChangeEvent<String>(); // FIXME ADD types (by visitor)
+    }
+
+    public long getThingId() {
+        return thingId;
     }
 
 }

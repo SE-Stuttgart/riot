@@ -17,8 +17,6 @@ import java.util.function.Predicate;
 import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.EventDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.PropertyDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.RemoteThingActionSqlQueryDAO;
-import de.uni_stuttgart.riot.db.RemoteThingEventSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
@@ -41,22 +39,18 @@ import de.uni_stuttgart.riot.thing.commons.event.EventListener;
 public class ThingLogic {
 
     private RemoteThingSqlQueryDAO remoteThingSqlQueryDAO;
-    private RemoteThingActionSqlQueryDAO remoteThingActionSqlQueryDAO;
     private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
     private ActionDBObjectSqlQueryDAO actionDBObjectSqlQueryDAO;
     private EventDBObjectSqlQueryDAO eventDBObjectSqlQueryDAO;
-    private RemoteThingEventSqlQueryDAO remoteThingEventSqlQueryDAO;
 
     /**
      * Constructor.
      */
     public ThingLogic() {
-        this.remoteThingActionSqlQueryDAO = new RemoteThingActionSqlQueryDAO();
         this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
         this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO();
         this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO();
         this.eventDBObjectSqlQueryDAO = new EventDBObjectSqlQueryDAO();
-        this.remoteThingEventSqlQueryDAO = new RemoteThingEventSqlQueryDAO();
         this.actionInstances = new HashMap<Long, Queue<ActionInstance>>();
         this.eventInstances = new HashMap<Long, Stack<EventInstance>>();
         this.events = new HashMap<Long, LinkedList<Event>>();
@@ -85,16 +79,10 @@ public class ThingLogic {
     public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
         this.remoteThingSqlQueryDAO.insert(thing);
         for (Action action : thing.getActions()) {
-            ActionDBObject actionDBObject = new ActionDBObject(action.getFactoryString());
+            ActionDBObject actionDBObject = new ActionDBObject(thing.getId(), action.getFactoryString());
             this.actionDBObjectSqlQueryDAO.insert(actionDBObject);
-            this.remoteThingActionSqlQueryDAO.insert(new RemoteThingAction(thing.getId(), actionDBObject.getId()));
         }
-        for (iterable_type iterable_element : iterable) {
-            
-        }
-        
-        
-        
+        //TODO
         
         LinkedList<Event> thingEvents = ThingLogic.this.getEvents(thing.getId());
         thingEvents.addAll(thing.getEvents());
@@ -195,15 +183,13 @@ public class ThingLogic {
         for (PropertyDBObject property : properties) {
             remoteThing.addProperty(property.getTheProperty(remoteThing));
         }
-        Collection<RemoteThingAction> ras = this.remoteThingActionSqlQueryDAO.findBy(searchParams, false);
-        for (RemoteThingAction ra : ras) {
-            ActionDBObject aO = this.actionDBObjectSqlQueryDAO.findBy(ra.getActionID());
-            remoteThing.addAction(aO.getTheAction(remoteThing));
+        Collection<ActionDBObject> actions = this.actionDBObjectSqlQueryDAO.findBy(searchParams, false);
+        for (ActionDBObject action : actions) {
+            remoteThing.addAction(action.getTheAction(remoteThing));
         }
-        Collection<RemoteThingEvent> res = this.remoteThingEventSqlQueryDAO.findBy(searchParams, false);
-        for (RemoteThingEvent re : res) {
-            EventDBObject aO = this.eventDBObjectSqlQueryDAO.findBy(re.getEventID());
-            remoteThing.addEvent(aO.getTheEvent(remoteThing));
+        Collection<EventDBObject> events = this.eventDBObjectSqlQueryDAO.findBy(searchParams, false);
+        for (EventDBObject event : events) {
+            remoteThing.addEvent(event.getTheEvent(remoteThing));
         }
         return remoteThing;
     }

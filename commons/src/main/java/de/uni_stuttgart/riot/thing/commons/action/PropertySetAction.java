@@ -43,4 +43,9 @@ public class PropertySetAction<T> extends Action<PropertySetActionInstance<T>> {
         return new PropertySetActionInstance<T>(property, this);
     }
 
+    @Override
+    public String getFactoryString() {
+        return "TODO";
+    }
+
 }

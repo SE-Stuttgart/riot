@@ -16,7 +16,6 @@ import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
 import de.uni_stuttgart.riot.thing.remote.EventDBObject;
 import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
-import de.uni_stuttgart.riot.thing.remote.RemoteThingAction;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
 public class ThingDBTest extends JerseyDBTestBase {
@@ -49,36 +48,20 @@ public class ThingDBTest extends JerseyDBTestBase {
     @Test
     public void insertActionTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject("FactoryString"));
+        dao.insert(new ActionDBObject(1,"FactoryString"));
         ActionDBObject a = dao.findBy(4);
     }
     
     @Test
     public void insertEventTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         EventDBObjectSqlQueryDAO dao = new EventDBObjectSqlQueryDAO();
-        dao.insert(new EventDBObject("Test"));
+        dao.insert(new EventDBObject(1,"Test"));
         EventDBObject a = dao.findBy(4);
-    }
-
-    @Test
-    public void insertRemoteThingAction() throws DatasourceInsertException, DatasourceFindException, SQLException, NamingException {
-        Thing thing = this.getTestRemoteThing();
-        ActionDBObject a = this.getTestAction();
-        RemoteThingActionSqlQueryDAO dao = new RemoteThingActionSqlQueryDAO();
-        dao.insert(new RemoteThingAction(thing.getId(), a.getId()));
-        dao.findBy(1);
-    }
-    
-    @Test
-    public void insertRemoteThingEvent() throws DatasourceInsertException, DatasourceFindException, SQLException, NamingException {
-        RemoteThingActionSqlQueryDAO dao = new RemoteThingActionSqlQueryDAO();
-        dao.insert(new RemoteThingAction(1, 1));
-        dao.findBy(4);
     }
 
     public ActionDBObject getTestAction() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
         ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject("FactoryString"));
+        dao.insert(new ActionDBObject(1,"FactoryString"));
         return dao.findBy(1);
     }
 
