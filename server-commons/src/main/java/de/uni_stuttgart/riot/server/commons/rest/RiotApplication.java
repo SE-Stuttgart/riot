@@ -4,6 +4,10 @@ import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+
 /**
  * <p>
  * Configuration for the JAX-RS provider.
@@ -39,6 +43,12 @@ public class RiotApplication extends ResourceConfig {
     public RiotApplication() {
         packages(REST_PROVIDERS);
         packages(REST_SERVICES);
+
+        JacksonJaxbJsonProvider p = new JacksonJaxbJsonProvider();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
+        p.setMapper(mapper);
+        this.register(p);
     }
 
 }

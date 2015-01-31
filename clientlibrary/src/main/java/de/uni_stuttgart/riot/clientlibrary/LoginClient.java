@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
+package de.uni_stuttgart.riot.clientlibrary;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

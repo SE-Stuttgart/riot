@@ -8,8 +8,8 @@ import java.util.Collection;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;

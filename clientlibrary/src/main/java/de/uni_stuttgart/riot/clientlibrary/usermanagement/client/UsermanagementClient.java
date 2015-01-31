@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.type.TypeReference;
 
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
@@ -66,7 +67,9 @@ public class UsermanagementClient {
     public void updateUser(long userID, UserRequest userRequest) throws RequestException {
         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_USER + userID, userRequest);
         try {
-            response.getEntity().consumeContent();
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
         } catch (IOException e) {
             throw new RequestException(e);
         }
@@ -112,7 +115,9 @@ public class UsermanagementClient {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + PREFIX + "users/" + userID + DELETE_USER_ROLE + roleID);
         int result = response.getStatusLine().getStatusCode();
         try {
-            response.getEntity().consumeContent();
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
         } catch (IOException e) {
             throw new RequestException(e);
         }

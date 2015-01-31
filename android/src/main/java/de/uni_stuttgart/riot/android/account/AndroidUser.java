@@ -22,7 +22,7 @@ import android.util.Log;
 
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;

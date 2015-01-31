@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.os.NetworkOnMainThreadException;
 import de.uni_stuttgart.riot.clientlibrary.server.client.ConfigurationClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 
 /**

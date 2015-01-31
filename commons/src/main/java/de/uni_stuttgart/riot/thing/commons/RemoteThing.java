@@ -1,13 +1,13 @@
 package de.uni_stuttgart.riot.thing.commons;
 
 /**
- * TODO .
+ * Logical representation of a Thing on the server side. It represents one {@link ClientThing}.
  *
  */
 public class RemoteThing extends Thing {
 
     /**
-     * TODO .
+     * Id of the user that owns this thing.
      */
     private long ownerID;
 
@@ -30,8 +30,23 @@ public class RemoteThing extends Thing {
     public RemoteThing() {
     }
 
+    /**
+     * gets the id of user that owns this thing.
+     * 
+     * @return owner id
+     */
     public long getOwnerID() {
         return ownerID;
+    }
+
+    /**
+     * sets the owner id.
+     * 
+     * @param ownerID
+     *            if of user that owns this Thing
+     */
+    public void setOwnerID(long ownerID) {
+        this.ownerID = ownerID;
     }
 
 }
