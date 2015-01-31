@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
@@ -27,22 +26,22 @@ public class ThingDBTest extends JerseyDBTestBase {
     }
 
     private RemoteThing getTestRemoteThing() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO();
+        RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
         daoT.insert(new RemoteThing("Tes2t", 1));
         return daoT.findBy(1);
     }
 
     @Test
     public void insertRemoteThingTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        RemoteThingSqlQueryDAO dao = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        RemoteThingSqlQueryDAO dao = new RemoteThingSqlQueryDAO();
         dao.insert(new RemoteThing("Tes2t", 1));
         RemoteThing thing = dao.findBy(1);
     }
 
     @Test
     public void insertPropertyTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO();
         RemoteThing thing = this.getTestRemoteThing();
         dao.insert(new PropertyDBObject("name", "v", "vt", thing.getId()));
         PropertyDBObject p = dao.findBy(1);
@@ -50,7 +49,7 @@ public class ThingDBTest extends JerseyDBTestBase {
 
     @Test
     public void insertActionTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
         Thing thing = this.getTestRemoteThing();
         dao.insert(new ActionDBObject("FactoryString"));
         ActionDBObject a = dao.findBy(1);
@@ -60,13 +59,13 @@ public class ThingDBTest extends JerseyDBTestBase {
     public void insertRemoteThingAction() throws DatasourceInsertException, DatasourceFindException, SQLException, NamingException {
         Thing thing = this.getTestRemoteThing();
         ActionDBObject a = this.getTestAction();
-        RemoteThingActionSqlQueryDAO dao = new RemoteThingActionSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        RemoteThingActionSqlQueryDAO dao = new RemoteThingActionSqlQueryDAO();
         dao.insert(new RemoteThingAction(thing.getId(), a.getId()));
         dao.findBy(1);
     }
 
     public ActionDBObject getTestAction() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
-        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
+        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
         dao.insert(new ActionDBObject("FactoryString"));
         return dao.findBy(1);
     }

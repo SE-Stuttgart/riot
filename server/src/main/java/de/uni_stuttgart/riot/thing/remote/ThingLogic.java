@@ -1,18 +1,14 @@
 package de.uni_stuttgart.riot.thing.remote;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.naming.NamingException;
-
 import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.PropertyDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingActionSqlQueryDAO;
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -38,14 +34,10 @@ public class ThingLogic {
      * Constructor.
      */
     public ThingLogic() {
-        try {
-            this.remoteThingActionSqlQueryDAO = new RemoteThingActionSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        } catch (SQLException | NamingException e) {
-            e.printStackTrace();
-        }
+        this.remoteThingActionSqlQueryDAO = new RemoteThingActionSqlQueryDAO();
+        this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
+        this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO();
+        this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO();
     }
 
     /**

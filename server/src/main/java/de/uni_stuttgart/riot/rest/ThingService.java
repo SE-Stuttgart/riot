@@ -1,15 +1,11 @@
 package de.uni_stuttgart.riot.rest;
 
-import java.sql.SQLException;
-
-import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
@@ -31,8 +27,8 @@ public class ThingService extends BaseResource<RemoteThing> {
      * @throws SQLException .
      * @throws NamingException .
      */
-    public ThingService() throws SQLException, NamingException {
-        super(new RemoteThingSqlQueryDAO(ConnectionMgr.openConnection(), false));
+    public ThingService() {
+        super(new RemoteThingSqlQueryDAO());
     }
 
     @Override
