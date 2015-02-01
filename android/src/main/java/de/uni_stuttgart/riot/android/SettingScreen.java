@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
@@ -24,6 +26,7 @@ import de.uni_stuttgart.riot.android.database.RIOTDatabase;
  */
 public class SettingScreen extends Activity {
 
+    @InjectView(R.id.btn_lang) Button btn_language;
     private String pressedHomeScreenButton;
     private Intent intent;
     private ActionBar actionBar;
@@ -31,7 +34,6 @@ public class SettingScreen extends Activity {
     private int choice = 0;
     private int selectedLanguage;
     private Button btn_color_change;
-    private ImageButton btn_language;
 
     private RIOTDatabase db;
 
@@ -41,6 +43,7 @@ public class SettingScreen extends Activity {
 
         db = new RIOTDatabase(this);
         intent = getIntent();
+        ButterKnife.inject(this);
 
         if (db.getLanguageCount() > 0) {
             if (db.getLanguage().equals("en")) {
@@ -55,6 +58,7 @@ public class SettingScreen extends Activity {
         setLanguage();
 
         setContentView(R.layout.setting_screen);
+        
 
         // get the value of the pressed button
         pressedHomeScreenButton = intent.getStringExtra("pressedButton");
@@ -64,14 +68,6 @@ public class SettingScreen extends Activity {
         actionBar.setTitle(pressedHomeScreenButton);
         actionBar.setIcon(R.drawable.settings);
 
-        btn_language = (ImageButton) findViewById(R.id.btn_lang);
-        btn_language.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLanguageDialog();
-            }
-        });
-
         btn_color_change = (Button) findViewById(R.id.btn_change_color);
         btn_color_change.setOnClickListener(new OnClickListener() {
             @Override
@@ -80,6 +76,29 @@ public class SettingScreen extends Activity {
             }
         });
 
+    }
+    
+    @OnClick(R.id.btn_lang)
+    public void onClick(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+        builder.setTitle(R.string.language_header).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                choice = which;
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                setSelectedLanguage(choice);
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        builder.create();
+        builder.show();
     }
 
     private void setLanguage() {
@@ -95,8 +114,8 @@ public class SettingScreen extends Activity {
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
-    private void showLanguageDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    private void showLanguageDialog(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
         builder.setTitle(R.string.language_header).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 choice = which;
