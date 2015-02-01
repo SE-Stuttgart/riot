@@ -5,5 +5,17 @@ angular.module('riot').factory('User', function(Restangular) {
     return resource.one('self').get();
   };
 
+  Restangular.extendModel('users', function(model) {
+    model.addRole = function(roleID) {
+      return model.one('roles', roleID).put();
+    };
+
+    model.removeRole = function(roleID) {
+      return model.one('roles', roleID).remove();
+    };
+
+    return model;
+  });
+
   return resource;
 });
