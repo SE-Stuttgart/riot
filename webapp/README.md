@@ -65,7 +65,6 @@ Run the following commands in the root directory of the webapp to load the requi
 
 If you get a prompt during installation with the message "Unable to find a suitable version for angular, please choose one", select angular version 1.2.28 to download. Similarly, choose 1.3.10 for angular-sanitize.
 
-
 ## Project Structure
 
 The project follows the best practice guidelines for AngularJS where specific functions are grouped together into a component. Each component consists of its own folder which contains the necessary angular views, controllers, directives, tests and much more. A component can further be separated into sub-components. This structure allows a clean development process where developers should firstly consider the separation of concern before developing and create new components accordingly.
