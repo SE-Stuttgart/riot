@@ -40,15 +40,17 @@
           <thead>
             <tr role="row">
               <th style="width: 50px;">ID</th>
-              <th style="width: 250px;">Username</th>
-              <th style="width: 300px;">Firstname</th>
-              <th style="width: 300px;">Lastname</th>
+              <th style="width: 150px;">Username</th>
+              <th style="width: 200px;">E-Mail</th>
+              <th style="width: 225px;">Firstname</th>
+              <th style="width: 225px;">Lastname</th>
             </tr>
           </thead>
           <tbody>
             <tr ui-sref="admin.users.detail({userid: user.id})" ng-repeat="user in users">
               <td>{{user.id}}</td>
               <td>{{user.username}}</td>
+              <td></td>
               <td></td>
               <td></td>
             </tr>
