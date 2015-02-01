@@ -33,26 +33,28 @@ import de.uni_stuttgart.riot.android.location.LocationFragment;
  * The main window.
  */
 public class MainActivity extends Activity {
-	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
-	private ListView notificationList;
-	private ActionBarDrawerToggle mDrawerToggle;
-	private CharSequence mTitle;
-	private String[] mMenuTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private ListView notificationList;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mTitle;
+    private String[] mMenuTitles;
 
-	private Locale locale;
+    private Locale locale;
 
-	private FilterDataObjects filterObjects;
-	
-	String pressedHomeScreenButton;
+    private FilterDataObjects filterObjects;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Intent intent = getIntent();
-		pressedHomeScreenButton = intent.getStringExtra("pressedButton"); //get the value of the pressed button
-				
-		filterObjects = new FilterDataObjects(this);
+    String pressedHomeScreenButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        Intent intent = getIntent();
+        // get the value of the pressed button
+        pressedHomeScreenButton = intent.getStringExtra("pressedButton");
+
+        filterObjects = new FilterDataObjects(this);
 
         // Initialize the API client. Initialization is not allowed in the main thread.
         final MainActivity inst = this;
@@ -63,241 +65,221 @@ public class MainActivity extends Activity {
             }
         }.start();
 
-		// Sets the language
-		setLanguage();
+        // Sets the language
+        setLanguage();
 
-		setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
-		mTitle = getTitle();
-		mMenuTitles = getResources().getStringArray(R.array.menu_array);
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mTitle = getTitle();
+        mMenuTitles = getResources().getStringArray(R.array.menu_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
-				GravityCompat.START);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.drawer_list_item, mMenuTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
 
-		// ClickListener for the left ActionBar
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        // ClickListener for the left ActionBar
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-				R.drawable.ic_drawer, R.string.drawer_open,
-				R.string.drawer_close) {
-			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(mTitle);
-				invalidateOptionsMenu();
-			}
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu();
+            }
 
-			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle("Settings");
-				invalidateOptionsMenu();
-			}
-		};
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+            public void onDrawerOpened(View drawerView) {
+                getActionBar().setTitle("Settings");
+                invalidateOptionsMenu();
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-		if (savedInstanceState == null) {
-			selectItem(0);
-		}
+        if (savedInstanceState == null) {
+            selectItem(0);
+        }
 
-		// ClickListener for the Notification List
-		notificationList = (ListView) findViewById(R.id.NotificationList);
-		notificationList.setOnItemClickListener(new OnItemClickListener() {
+        // ClickListener for the Notification List
+        notificationList = (ListView) findViewById(R.id.NotificationList);
+        notificationList.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				System.out.println("click");
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                System.out.println("click");
 
-			}
-		});
+            }
+        });
 
-		// get the latest Notifications
-		new ServerConnection(this, filterObjects).execute();
-	}
+        // get the latest Notifications
+        new ServerConnection(this, filterObjects).execute();
+    }
 
+    /*
+     * ----------------- REFRESH BUTTON -----------------
+     */
 
-	/*
-	 * ----------------- REFRESH BUTTON -----------------
-	 */
+    public String getPressedHomeScreenButton() {
+        return pressedHomeScreenButton;
+    }
 
+    /**
+     * Prepare the refresh button on the right side
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	public String getPressedHomeScreenButton() {
-		return pressedHomeScreenButton;
-	}
+    /**
+     * Define displaying settings for the refresh button
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
 
+        // //get the values for the each filter from the database
+        menu.findItem(R.id.filter_error).setChecked(filterObjects.getFilterStatus(NotificationType.ERROR));
+        menu.findItem(R.id.filter_warning).setChecked(filterObjects.getFilterStatus(NotificationType.WARNING));
+        menu.findItem(R.id.filter_appointment).setChecked(filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
 
-	/**
-	 * Prepare the refresh button on the right side
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+        // Refresh button, filter buttons and the notification list is only
+        // shown in the home screen
+        if (!getActionBar().getTitle().equals("Home")) {
+            menu.findItem(R.id.action_refresh).setVisible(false);
+            for (int i = 0; i < menu.size(); i++) {
+                menu.getItem(i).setVisible(false);
+            }
+            notificationList.setAdapter(null);
+        } else {
+            menu.findItem(R.id.action_refresh).setVisible(true);
+            filterObjects.getDatabase().filterNotifications();
+        }
 
-	/**
-	 * Define displaying settings for the refresh button
-	 */
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
 
-		// //get the values for the each filter from the database
-		menu.findItem(R.id.filter_error).setChecked(
-				filterObjects.getFilterStatus(NotificationType.ERROR));
-		menu.findItem(R.id.filter_warning).setChecked(
-				filterObjects.getFilterStatus(NotificationType.WARNING));
-		menu.findItem(R.id.filter_appointment).setChecked(
-				filterObjects.getFilterStatus(NotificationType.APPOINTMENT));
+    /**
+     * Actions for the refresh button (right upper corner). It can later be extended with more options.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
-		// Refresh button, filter buttons and the notification list is only
-		// shown in the home screen
-		if (!getActionBar().getTitle().equals("Home")) {
-			menu.findItem(R.id.action_refresh).setVisible(false);
-			for (int i = 0; i < menu.size(); i++) {
-				menu.getItem(i).setVisible(false);
-			}
-			notificationList.setAdapter(null);
-		} else {
-			menu.findItem(R.id.action_refresh).setVisible(true);
-			filterObjects.getDatabase().filterNotifications();
-		}
+        switch (item.getItemId()) {
+        case R.id.filter_error:
+            filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR, false));
+            return true;
+        case R.id.filter_appointment:
+            filterObjects.setFilter(new Filter(2, item, NotificationType.APPOINTMENT, false));
+            return true;
+        case R.id.filter_warning:
+            filterObjects.setFilter(new Filter(3, item, NotificationType.WARNING, false));
+            return true;
+        case R.id.action_refresh:
+            new ServerConnection(this, filterObjects).execute();
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
-		return super.onPrepareOptionsMenu(menu);
-	}
+    /*
+     * ----------------- OPTIONS MENU -----------------
+     */
 
-	/**
-	 * Actions for the refresh button (right upper corner). It can later be
-	 * extended with more options.
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
+    /**
+     * Method for changing the language
+     */
+    private void setLanguage() {
+        if (filterObjects.getDatabase().getLanguageCount() == 0) {
+            locale = new Locale("en");
+        } else {
+            locale = new Locale(filterObjects.getDatabase().getLanguage());
+        }
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+    }
 
-		switch (item.getItemId()) {
-		case R.id.filter_error:
-			filterObjects.setFilter(new Filter(1, item, NotificationType.ERROR,
-					false));
-			return true;
-		case R.id.filter_appointment:
-			filterObjects.setFilter(new Filter(2, item,
-					NotificationType.APPOINTMENT, false));
-			return true;
-		case R.id.filter_warning:
-			filterObjects.setFilter(new Filter(3, item,
-					NotificationType.WARNING, false));
-			return true;
-		case R.id.action_refresh:
-			new ServerConnection(this, filterObjects).execute();
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
 
-	/*
-	 * ----------------- OPTIONS MENU -----------------
-	 */
+    private void selectItem(int position) {
+        Fragment fragment;
 
-	/**
-	 * Method for changing the language
-	 */
-	private void setLanguage() {
-		if (filterObjects.getDatabase().getCount() == 0) {
-			locale = new Locale("en");
-		} else {
-			locale = new Locale(filterObjects.getDatabase().getLanguage());
-		}
-		Locale.setDefault(locale);
-		Configuration config = new Configuration();
-		config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config,
-				getBaseContext().getResources().getDisplayMetrics());
-	}
+        // Opens the main fragment
+        if (position == 0) {
+            fragment = new NotificationFragment();
+            startFragment(position, fragment);
+            filterObjects.getDatabase().filterNotifications();
+        }
 
-	private class DrawerItemClickListener implements
-			ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			selectItem(position);
-		}
-	}
+        // Opens the account fragment
+        if (position == 1) {
+            fragment = new AccountFragment();
+            startFragment(position, fragment);
+        }
 
-	private void selectItem(int position) {
-		Fragment fragment;
+        // Opens the language fragment
+        if (position == 2) {
+            fragment = new LanguageFragment(filterObjects);
+            startFragment(position, fragment);
+        }
 
-		// Opens the main fragment
-		if (position == 0) {
-			fragment = new NotificationFragment();
-			startFragment(position, fragment);
-			filterObjects.getDatabase().filterNotifications();
-		}
+        // Opens the location fragment
+        if (position == 3) {
+            fragment = new LocationFragment(filterObjects);
+            startFragment(position, fragment);
+        }
+    }
 
-		// Opens the account fragment
-		if (position == 1) {
-			fragment = new AccountFragment();
-			startFragment(position, fragment);
-		}
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
+    }
 
-		// Opens the language fragment
-		if (position == 2) {
-			fragment = new LanguageFragment(filterObjects);
-			startFragment(position, fragment);
-		}
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during onPostCreate() and onConfigurationChanged()...
+     */
 
-		// Opens the location fragment
-		if (position == 3) {
-			fragment = new LocationFragment(filterObjects);
-			startFragment(position, fragment);
-		}
-	}
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
 
-	@Override
-	public void setTitle(CharSequence title) {
-		mTitle = title;
-		getActionBar().setTitle(mTitle);
-	}
+    }
 
-	/**
-	 * When using the ActionBarDrawerToggle, you must call it during
-	 * onPostCreate() and onConfigurationChanged()...
-	 */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
+    private void startFragment(int position, Fragment fragment) {
+        Bundle args = new Bundle();
+        FragmentManager fragmentManager = getFragmentManager();
 
-	}
+        args.putString("Menu", mMenuTitles[position]);
+        fragment.setArguments(args);
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
-		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
-	private void startFragment(int position, Fragment fragment) {
-		Bundle args = new Bundle();
-		FragmentManager fragmentManager = getFragmentManager();
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mMenuTitles[position]);
 
-		args.putString("Menu", mMenuTitles[position]);
-		fragment.setArguments(args);
-
-		fragmentManager.beginTransaction()
-				.replace(R.id.content_frame, fragment).commit();
-
-		mDrawerList.setItemChecked(position, true);
-		setTitle(mMenuTitles[position]);
-
-		mDrawerLayout.closeDrawer(mDrawerList);
-	}
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
 }
