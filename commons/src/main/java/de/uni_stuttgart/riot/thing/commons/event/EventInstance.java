@@ -1,37 +1,18 @@
 package de.uni_stuttgart.riot.thing.commons.event;
 
+
 import java.sql.Timestamp;
+
+import de.uni_stuttgart.riot.thing.commons.Instance;
 
 /**
  * TODO .
  *
  */
-public abstract class EventInstance {
+public abstract class EventInstance extends Instance {
 
-    private Timestamp time;
-    private int thingId;
-
-    /**
-     * Constructor.
-     */
-    public EventInstance() {
-        this.setTime(new Timestamp(System.currentTimeMillis()));
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    public int getThingId() {
-        return thingId;
-    }
-
-    public void setThingId(int thingId) {
-        this.thingId = thingId;
+    public EventInstance(Timestamp time, long thingId) {
+        super(time, thingId);
     }
 
 }

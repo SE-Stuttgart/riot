@@ -1,10 +1,6 @@
 package de.uni_stuttgart.riot.thing.remote;
 
-import com.fasterxml.jackson.databind.util.ClassUtil;
-
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
-import de.uni_stuttgart.riot.thing.commons.Property;
-import de.uni_stuttgart.riot.thing.commons.Thing;
 
 public class PropertyDBObject extends Storable {
     
@@ -20,16 +16,6 @@ public class PropertyDBObject extends Storable {
         this.val = value;
         this.thingID = thingID;
     }
-
-    public Property getTheProperty(Thing owner){
-        switch (this.getValType()) { // TODO add types
-        case "String":
-            return new Property<String>(this.getName(), this.getVal());
-        default:
-            return new Property<String>(this.getName(), this.getVal());
-        }
-    }
-    
 
     public String getName() {
         return name;

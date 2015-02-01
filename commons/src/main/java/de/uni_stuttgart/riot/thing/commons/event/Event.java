@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import de.uni_stuttgart.riot.thing.commons.Property;
 
 /**
@@ -11,6 +13,7 @@ import de.uni_stuttgart.riot.thing.commons.Property;
  *
  * @param <T>
  */
+@JsonIgnoreProperties({"eventListeners"})
 public abstract class Event<T extends EventInstance> {
 
     private Collection<EventListener<T>> eventListeners;
@@ -70,13 +73,4 @@ public abstract class Event<T extends EventInstance> {
     
     public abstract boolean isTypeOf(EventInstance eventInstance);
 
-    /**
-     * creates an instance.
-     * 
-     * @param params
-     *            collection of properties.
-     * @return the created instance.
-     * @throws Exception .
-     */
-    public abstract T createInstance(Collection<Property> params) throws Exception;
 }

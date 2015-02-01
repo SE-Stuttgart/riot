@@ -6,6 +6,7 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Queue;
+import java.util.Stack;
 
 import javax.naming.NamingException;
 import javax.validation.constraints.AssertTrue;
@@ -25,6 +26,8 @@ import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 import de.uni_stuttgart.riot.thing.commons.action.PropertySetActionInstance;
+import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
+import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 
@@ -55,16 +58,17 @@ public class ThingLogicTest extends JerseyDBTestBase {
     public void competionTest() throws DatasourceFindException{
         RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
         RemoteThing thing = daoT.findBy(1);
-        ThingLogic logic = new ThingLogic();
+        ThingLogic logic = ThingLogic.getThingLogic();
         logic.completeRemoteThing(thing);
         assertEquals(2, thing.getActions().size());
         assertEquals(2, thing.getEvents().size());
         assertEquals(2, thing.getProperties().size());
+        System.out.println(thing);
     }
     
     @Test
-    public void lastOnlinetest(){
-        ThingLogic logic = new ThingLogic();
+    public void lastOnlinetest() throws DatasourceFindException{
+        ThingLogic logic = ThingLogic.getThingLogic();
         Timestamp l1 = logic.lastConnection(1);
         assertEquals(l1, new Timestamp(0));
         logic.getCurrentActionInstances(1);
@@ -75,12 +79,12 @@ public class ThingLogicTest extends JerseyDBTestBase {
     }
     
     @Test
-    public void submitAndGetActionTest(){
-        ThingLogic logic = new ThingLogic();
+    public void submitAndGetActionTest() throws DatasourceFindException{
+        ThingLogic logic = ThingLogic.getThingLogic();
         Queue<ActionInstance> actions = logic.getCurrentActionInstances(1);
         assertEquals(0, actions.size());
-        PropertySetAction<String> action = new PropertySetAction<String>("Test",1);
-        PropertySetActionInstance<String> actionInstrance = action.createInstance(new Property<String>("Test","value"));
+        PropertySetAction<String> action = new PropertySetAction<String>("Test");
+        PropertySetActionInstance<String> actionInstrance = action.createInstance("value",1);
         logic.submitAction(actionInstrance);
         actions = logic.getCurrentActionInstances(1);
         assertEquals(1, actions.size());
@@ -90,9 +94,29 @@ public class ThingLogicTest extends JerseyDBTestBase {
     }
     
     @Test
-    public void eventTest(){
-        ThingLogic logic = new ThingLogic();
-        
+    public void eventTest() throws DatasourceFindException{
+        ThingLogic logic = ThingLogic.getThingLogic();
+        // Register for event
+        logic.registerOnEvent(42, 1, new PropertyChangeEvent());
+        Stack<EventInstance> eventI = logic.getRegisteredEvents(42);
+        // There should be no eventinstances
+        assertEquals(0, eventI.size());
+        PropertyChangeEventInstance<String> eventInstance = new PropertyChangeEventInstance<String>(new Property<String>("", ""),1,new Timestamp(0));
+        eventInstance.setThingId(1);
+        // submitting a instance 
+        logic.submitEvent(eventInstance);
+        eventI = logic.getRegisteredEvents(42);
+        // now there should be one instance
+        assertEquals(1, eventI.size());
+        eventI = logic.getRegisteredEvents(42);
+        assertEquals(0, eventI.size());
+        // deristiger
+        logic.deRegisterOnEvent(42, 1, new PropertyChangeEvent());
+        PropertyChangeEventInstance<String> eventInstance2 = new PropertyChangeEventInstance<String>(new Property<String>("", ""),1,new Timestamp(0));
+        eventInstance2.setThingId(1);
+        logic.submitEvent(eventInstance2);
+        eventI = logic.getRegisteredEvents(42);
+        assertEquals(0, eventI.size());
     }
 
 }

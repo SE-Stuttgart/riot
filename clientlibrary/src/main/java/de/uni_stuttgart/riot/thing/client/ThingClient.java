@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.thing.client;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.Stack;
@@ -10,6 +11,7 @@ import org.codehaus.jackson.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
@@ -28,12 +30,19 @@ public class ThingClient {
 
     private static final String GET_THINGS = PREFIX + "thing";
     private static final String GET_THING = PREFIX + "thing/";
-    private static final String GET_ACTIONS = PREFIX + "/thing/action/";
-    private static final String GET_EVENTS = PREFIX + "/thing/event/";
+    private static final String GET_ACTIONS = PREFIX + "thing/action/";
+    private static final String GET_EVENTS = PREFIX + "thing/event/";
 
     private static final String PUT_UPDATE_THING = PREFIX + "thing/";
 
     private static final String DELETE_THING = PREFIX + "thing/";
+
+    private static final String POST_DELETE_EVENT_REGISTRATION = PREFIX + "thing/deregister";
+    private static final String POST_EVENT_REGISTRATION = PREFIX + "thing/register";
+    
+    private static final String GET_LAST_ONLINE = PREFIX + "thing/online/";
+
+
 
     private final LoginClient loginClient;
 
@@ -99,29 +108,6 @@ public class ThingClient {
         } catch (Exception e) {
             throw new RequestException(e);
         }
-    }
-
-    /**
-     * Updates the Thing with id thingID to the given values in the thing object.
-     * 
-     * @param thingID
-     *            id of Thing to be updated
-     * @param thing
-     *            new values for the Thing
-     * @return http code (204 NO CONTENT)
-     * @throws RequestException .
-     */
-    public int updateThing(long thingID, RemoteThing thing) throws RequestException {
-        HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + PUT_UPDATE_THING + thingID, thing);
-        int result = response.getStatusLine().getStatusCode();
-        try {
-            if (response.getEntity() != null) {
-                response.getEntity().consumeContent();
-            }
-        } catch (IOException e) {
-            throw new RequestException(e);
-        }
-        return result;
     }
 
     /**
@@ -202,7 +188,24 @@ public class ThingClient {
         this.loginClient.post(this.loginClient.getServerUrl() + POST_NOTIFY_EVENT, eventInstance);
     }
 
-    // TODO register
-    // TODO deregister
+    
+    public void registerOnEvent(RegisterRequest request) throws RequestException {
+        this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION,request);
+    }
+    
+    
+    public void deRegisterOnEvent(RegisterRequest request) throws RequestException {
+        this.loginClient.post(this.loginClient.getServerUrl() + POST_DELETE_EVENT_REGISTRATION, request);
+    }
+    
+    public Timestamp getLastOnline(long thingID) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_LAST_ONLINE + thingID);
+        try {
+            Timestamp result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(),Timestamp.class);
+            return result;
+        } catch (Exception e) {
+            throw new RequestException(e);
+        }
+    }
 
 }

@@ -1,9 +1,9 @@
 package de.uni_stuttgart.riot.thing.commons.action;
 
-import java.util.Collection;
+
+import java.sql.Timestamp;
 
 import de.uni_stuttgart.riot.thing.commons.Property;
-import de.uni_stuttgart.riot.thing.commons.Thing;
 
 /**
  * TODO .
@@ -20,8 +20,7 @@ public class PropertySetAction<T> extends Action<PropertySetActionInstance<T>> {
      * @param propertyName
      *            .
      */
-    public PropertySetAction(String propertyName, long thingId) {
-        super(thingId);
+    public PropertySetAction(String propertyName) {
         this.propertyName = propertyName;
     }
 
@@ -39,13 +38,8 @@ public class PropertySetAction<T> extends Action<PropertySetActionInstance<T>> {
         this.propertyName = propertyName;
     }
 
-    public PropertySetActionInstance<T> createInstance(Property<T> property){
-        return new PropertySetActionInstance<T>(property, this);
-    }
-
-    @Override
-    public String getFactoryString() {
-        return "TODO";
+    public PropertySetActionInstance<T> createInstance(T newValue, long thingId){
+        return new PropertySetActionInstance<T>(new Property<T>(propertyName, newValue),thingId, new Timestamp(System.currentTimeMillis()));
     }
 
 }

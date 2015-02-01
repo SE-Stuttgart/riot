@@ -27,17 +27,6 @@ public class EventDBObject extends Storable {
         return factoryString;
     }
 
-    /**
-     * Returns a corresponding {@link Action} object.
-     * 
-     * @param owner
-     *            the owner {@link Thing}
-     * @return .
-     */
-    public Event getTheEvent(Thing owner) {
-        return new PropertyChangeEvent<String>(); // FIXME ADD types (by visitor)
-    }
-
     public long getThingId() {
         return thingId;
     }

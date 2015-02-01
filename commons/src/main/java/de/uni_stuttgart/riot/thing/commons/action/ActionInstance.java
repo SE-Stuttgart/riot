@@ -1,41 +1,18 @@
 package de.uni_stuttgart.riot.thing.commons.action;
 
+
 import java.sql.Timestamp;
+
+import de.uni_stuttgart.riot.thing.commons.Instance;
 
 /**
  * TODO .
  *
  */
-public abstract class ActionInstance {
+public abstract class ActionInstance extends Instance {
 
-    private Timestamp time;
-    private Action instanceOf;
-
-    /**
-     * Constructor.
-     * 
-     * @param instanceOf
-     *            .
-     */
-    public ActionInstance(Action instanceOf) {
-        this.setTime(new Timestamp(System.currentTimeMillis()));
-        this.setInstanceOf(instanceOf);
-    }
-
-    public Timestamp getTime() {
-        return time;
-    }
-
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    public Action getInstanceOf() {
-        return instanceOf;
-    }
-
-    public void setInstanceOf(Action instanceOf) {
-        this.instanceOf = instanceOf;
+    public ActionInstance(Timestamp time, long thingId) {
+        super(time, thingId);
     }
 
 }

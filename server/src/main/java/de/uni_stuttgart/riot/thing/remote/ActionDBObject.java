@@ -1,9 +1,6 @@
 package de.uni_stuttgart.riot.thing.remote;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
-import de.uni_stuttgart.riot.thing.commons.Thing;
-import de.uni_stuttgart.riot.thing.commons.action.Action;
-import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 
 /**
  * Action object to be stored at the DB.
@@ -27,17 +24,6 @@ public class ActionDBObject extends Storable {
 
     public String getFactoryString() {
         return factoryString;
-    }
-
-    /**
-     * Returns a corresponding {@link Action} object.
-     * 
-     * @param owner
-     *            the owner {@link Thing}
-     * @return .
-     */
-    public Action getTheAction(Thing owner) {
-        return new PropertySetAction("Test",owner.getId()); // FIXME ADD types (by visitor)
     }
 
     public long getThingId() {

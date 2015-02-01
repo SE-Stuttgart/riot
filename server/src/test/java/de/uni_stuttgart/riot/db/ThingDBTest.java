@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.db;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.SQLException;
 
 import javax.naming.NamingException;

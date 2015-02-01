@@ -1,6 +1,7 @@
 
 package de.uni_stuttgart.riot.thing.client;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class DeviceClient extends ThingClient {
         RemoteThing thingInfo1 = new RemoteThing("Smartphone",1);
 =======
         Map<String, Property> properties = new HashMap<String, Property>();
-        actions.add(new PropertySetAction<String>("name",1));
+        actions.add(new PropertySetAction<String>("name"));
         properties.put("name", new Property<String>("name", "MyAndroid"));
         RemoteThing thingInfo1 = new RemoteThing("Smartphone", 1);
 >>>>>>> RIOT-182: Events in DB
@@ -38,7 +39,11 @@ public class DeviceClient extends ThingClient {
     
     public Collection<EventInstance> getEventInstances(String thingName){
         ArrayList<EventInstance> dummy = new ArrayList<EventInstance>();
+<<<<<<< HEAD
         dummy.add(new PropertyChangeEventInstance<String>(new Property<String>("name","MyIphone")));
+=======
+        dummy.add(new PropertyChangeEventInstance<String>(new Property<String>("name", "MyIphone"), 1, new Timestamp(0)));
+>>>>>>> RIOT-182 - ThingService operations (create,delete)
         return dummy;
     }
     

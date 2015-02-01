@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing.commons.event;
 
+import java.sql.Timestamp;
+
 import de.uni_stuttgart.riot.thing.commons.Property;
 
 /**
@@ -17,7 +19,8 @@ public class PropertyChangeEventInstance<T> extends EventInstance {
      * @param newProperty
      *            the new property.
      */
-    public PropertyChangeEventInstance(Property<T> newProperty) {
+    public PropertyChangeEventInstance(Property<T> newProperty, long thingId, Timestamp time) {
+        super(time, thingId);
         this.newProperty = newProperty;
     }
 
