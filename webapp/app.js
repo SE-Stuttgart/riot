@@ -1,4 +1,4 @@
-angular.module('riot', ['ngLocalize', 'ngLocalize.Config', 'ngLocalize.InstalledLanguages', 'ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 'restangular', 'LocalStorageModule'])
+angular.module('riot', ['ngLocalize', 'ngLocalize.Config', 'ngLocalize.InstalledLanguages', 'ui.bootstrap', 'ui.utils', 'ui.router', 'ui.calendar', 'ngAnimate', 'restangular', 'LocalStorageModule'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
