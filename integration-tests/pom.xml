@@ -68,6 +68,8 @@
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.server</artifactId>
 			<version>${project.parent.version}</version>
+			<scope>test</scope>
+			<classifier>classes</classifier>
 		</dependency>
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>

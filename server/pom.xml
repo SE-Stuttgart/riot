@@ -102,6 +102,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<warName>riot</warName>
+					<attachClasses>true</attachClasses>
 				</configuration>
 			</plugin>
 		</plugins>

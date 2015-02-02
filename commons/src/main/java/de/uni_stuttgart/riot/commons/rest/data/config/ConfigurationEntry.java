@@ -3,7 +3,7 @@ package de.uni_stuttgart.riot.commons.rest.data.config;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * The Class ConfigurationStorable.
+ * The Class ConfigurationEntry.
  * 
  * @author Niklas Schnabel
  */
@@ -19,13 +19,13 @@ public class ConfigurationEntry extends Storable {
     private String dataType;
 
     /**
-     * Instantiates a new configuration storable.
+     * Instantiates a new configuration entry.
      */
     public ConfigurationEntry() {
     }
 
     /**
-     * Instantiates a new configuration storable.
+     * Instantiates a new configuration entry.
      *
      * @param id
      *            the id
@@ -44,7 +44,7 @@ public class ConfigurationEntry extends Storable {
     }
 
     /**
-     * Instantiates a new configuration storable.
+     * Instantiates a new configuration entry.
      *
      * @param key
      *            the key
@@ -61,7 +61,7 @@ public class ConfigurationEntry extends Storable {
     }
 
     /**
-     * Instantiates a new configuration storable.
+     * Instantiates a new configuration entry.
      *
      * @param id
      *            the id
@@ -108,7 +108,7 @@ public class ConfigurationEntry extends Storable {
 
     @Override
     public String toString() {
-        return "ConfigurationStorable [configKey=" + configKey + ", configValue=" + configValue + ", dataType=" + dataType + "]";
+        return "ConfigurationEntry [configKey=" + configKey + ", configValue=" + configValue + ", dataType=" + dataType + "]";
     }
 
     public void setConfigKey(String configKey) {

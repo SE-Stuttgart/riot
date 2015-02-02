@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.clientlibrary.server.client;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
@@ -112,6 +113,8 @@ public class ConfigurationClient {
      * @throws RequestException .
      */
     public <T> ConfigurationEntry addConfigurationEntry(ConfigurationKey key, T value) throws RequestException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
         if (key.getValueType() != value.getClass()) {
             throw new RequestException("The value '" + value + "' has the type " + value.getClass() + ", but key '" + key.name() + "' requires the type to be " + key.getValueType());
         }
