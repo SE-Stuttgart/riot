@@ -9,9 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
+import android.widget.ImageButton;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
@@ -24,8 +22,8 @@ import de.uni_stuttgart.riot.android.language.Language;
  */
 public class SettingScreen extends Activity {
 
-    @InjectView(R.id.btnLanguage) Button btnLanguage;
-    
+    private ImageButton btnLanguage;
+
     private String pressedHomeScreenButton;
     private Intent intent;
     private ActionBar actionBar;
@@ -42,7 +40,6 @@ public class SettingScreen extends Activity {
 
         db = new RIOTDatabase(this);
         intent = getIntent();
-        ButterKnife.inject(this);
 
         if (db.getLanguageCount() > 0) {
             if (db.getLanguage().equals("en")) {
@@ -67,6 +64,15 @@ public class SettingScreen extends Activity {
         actionBar.setTitle(pressedHomeScreenButton);
         actionBar.setIcon(R.drawable.settings);
 
+        //
+        btnLanguage = (ImageButton) findViewById(R.id.btnLanguage);
+        btnLanguage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLanguageDialog();
+            }
+        });
+
         btn_color_change = (Button) findViewById(R.id.btn_change_color);
         btn_color_change.setOnClickListener(new OnClickListener() {
             @Override
@@ -76,15 +82,6 @@ public class SettingScreen extends Activity {
         });
 
     }
-    
-    /**
-     * Opens the dialog.
-     */
-    @OnClick(R.id.btnLanguage)
-    public void submit() {
-        
-    }
-
 
     private void showLanguageDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

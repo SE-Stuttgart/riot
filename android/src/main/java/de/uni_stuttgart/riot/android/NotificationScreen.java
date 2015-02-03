@@ -1,7 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.Locale;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,20 +20,17 @@ import de.uni_stuttgart.riot.android.language.Language;
  * The main window.
  */
 public class NotificationScreen extends Activity {
+	
 	private ListView notificationList;
-
-	private Locale locale;
-
-	 private RIOTDatabase database;
-
-	String pressedHomeScreenButton;
+	private RIOTDatabase database;
+	private String pressedHomeScreenButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
-		
-		//get the value of the pressed button
+
+		// get the value of the pressed button
 		pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
 		database = new RIOTDatabase(this, pressedHomeScreenButton);
@@ -46,16 +41,18 @@ public class NotificationScreen extends Activity {
 		setContentView(R.layout.activity_main);
 
 		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setTitle(pressedHomeScreenButton.substring(0, 1).toUpperCase() + pressedHomeScreenButton.substring(1));
-		
-		if(pressedHomeScreenButton.equals("car")){
+		getActionBar().setTitle(
+				pressedHomeScreenButton.substring(0, 1).toUpperCase()
+						+ pressedHomeScreenButton.substring(1));
+
+		if (pressedHomeScreenButton.equals("car")) {
 			getActionBar().setIcon(R.drawable.car);
-		}else if(pressedHomeScreenButton.equals("house")){
+		} else if (pressedHomeScreenButton.equals("house")) {
 			getActionBar().setIcon(R.drawable.house);
-		}else if(pressedHomeScreenButton.equals("coffeeMachine")){
+		} else if (pressedHomeScreenButton.equals("coffeeMachine")) {
 			getActionBar().setIcon(R.drawable.coffee);
 		}
-		
+
 		// ClickListener for the Notification List
 		notificationList = (ListView) findViewById(R.id.NotificationList);
 		notificationList.setOnItemClickListener(new OnItemClickListener() {
@@ -119,8 +116,8 @@ public class NotificationScreen extends Activity {
 					NotificationType.APPOINTMENT, false));
 			return true;
 		case R.id.filter_warning:
-			database.setFilter(new Filter(3, item,
-					NotificationType.WARNING, false));
+			database.setFilter(new Filter(3, item, NotificationType.WARNING,
+					false));
 			return true;
 		case R.id.action_refresh:
 			new ServerConnection(this, database).execute();
