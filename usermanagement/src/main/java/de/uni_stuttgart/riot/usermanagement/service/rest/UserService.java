@@ -45,6 +45,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 @Path("users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@RequiresAuthentication
 public class UserService extends BaseResource<UMUser> {
 
     private final UserManagementFacade facade = UserManagementFacade.getInstance();
@@ -68,7 +69,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @GET
     @Path("/self")
-    @RequiresAuthentication
     public User getUser() throws UserManagementException {
         String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
         Token token = facade.getToken(accessToken);
@@ -88,7 +88,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @POST
     @Path("sec")
-    @RequiresAuthentication
     public User addUser(UserRequest userRequest) throws UserManagementException {
         User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
         return new User(user.getUsername(), this.getUserRoles(user));
@@ -108,7 +107,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @PUT
     @Path("/sec/{userID}")
-    @RequiresAuthentication
     public User updateUser(@PathParam("userID") Long userID, UserRequest userRequest) throws UserManagementException {
         User user = facade.getUser(userID);
 
@@ -134,7 +132,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @GET
     @Path("/{userID}/roles")
-    @RequiresAuthentication
     public Collection<Role> getUserRoles(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned roles
         Collection<Role> roles = facade.getAllRolesFromUser(userID);
@@ -160,7 +157,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @PUT
     @Path("/{userID}/roles/{roleID}")
-    @RequiresAuthentication
     public Response addUserRole(@PathParam("userID") Long userID, @PathParam("roleID") Long roleID) throws UserManagementException {
         facade.addRoleToUser(userID, roleID);
 
@@ -181,7 +177,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @DELETE
     @Path("/{userID}/roles/{roleID}")
-    @RequiresAuthentication
     public Response removeUserRole(@PathParam("userID") Long userID, @PathParam("roleID") Long roleID) throws UserManagementException {
         facade.removeRoleFromUser(userID, roleID);
 
@@ -200,7 +195,6 @@ public class UserService extends BaseResource<UMUser> {
      */
     @GET
     @Path("/{userID}/tokens")
-    @RequiresAuthentication
     public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());

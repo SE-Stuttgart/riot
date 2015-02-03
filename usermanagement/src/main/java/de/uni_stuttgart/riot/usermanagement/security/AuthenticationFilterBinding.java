@@ -19,7 +19,7 @@ public class AuthenticationFilterBinding implements DynamicFeature {
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        if (resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class)) {
+        if (resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class) || resourceInfo.getResourceClass().isAnnotationPresent(RequiresAuthentication.class)) {
             context.register(AuthenticationFilter.class);
         }
     }
