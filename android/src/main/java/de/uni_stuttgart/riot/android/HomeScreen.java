@@ -133,6 +133,26 @@ public class HomeScreen extends Activity {
 				return false;
 			}
 		});
+		
+        final ImageButton settingButton = (ImageButton) findViewById(R.id.homeScreen_settings);
+        settingButton.setOnTouchListener(new OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    settingButton.setAlpha(0.5f);
+                }
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    Intent i = new Intent(HomeScreen.this, SettingScreen.class);
+                    i.putExtra("pressedButton", getString(R.string.settings));
+                    HomeScreen.this.startActivity(i);
+                    settingButton.setAlpha(1.0f);
+                }
+
+                return false;
+            }
+        });
 
 	}
 

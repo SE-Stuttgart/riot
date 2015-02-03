@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="menu_array">
+        <item>Home</item>
+        <item>RIOT-Konto</item>
+        <item>Sprache</item>
+        <item>Standortinformationen</item>
+    </string-array>
+    
+    
+    <string-array name="language_array">
+        <item>Englisch</item>
+        <item>Deutsch</item>
+    </string-array>
+
+</resources>

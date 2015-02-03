@@ -200,7 +200,7 @@ public class MainActivity extends Activity {
 	 * Method for changing the language
 	 */
 	private void setLanguage() {
-		if (filterObjects.getDatabase().getCount() == 0) {
+		if (filterObjects.getDatabase().getLanguageCount() == 0) {
 			locale = new Locale("en");
 		} else {
 			locale = new Locale(filterObjects.getDatabase().getLanguage());

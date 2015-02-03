@@ -4,12 +4,7 @@
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
 
-    <string-array name="menu_array">
-        <item>Home</item>
-        <item>RIOT-Konto</item>
-        <item>Sprache</item>
-        <item>Standortinformationen</item>
-    </string-array>
+
 
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
@@ -22,6 +17,8 @@
     <string name="filter_warning">Warnungen</string>
 
     <!-- Fragment language (all entries for language please insert here) -->
+    <string name="language">Bitte wählen Sie eine Sprache aus</string>
+    <string name="language_header">Sprache bitte auswählen</string>
     <string name="english">Englisch</string>
     <string name="german">Deutsch</string>
     <string name="flag_uk">Flagge England</string>

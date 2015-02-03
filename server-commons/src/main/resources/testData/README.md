@@ -1,0 +1,1 @@
+Place SQL-Scripts which should not get executed by maven here.

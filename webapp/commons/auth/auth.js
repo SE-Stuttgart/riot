@@ -33,11 +33,11 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
     },
     hasRole: function(role) {
       console.error("TODO check role");
-      return false;
+      return true;
     },
     hasPermission: function(permission) {
       console.error("TODO check permission");
-      return false;
+      return true;
     },
     reset: function() {
       user = null;

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -40,7 +41,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 	private static final String TABLE_LANGUAGE = "language";
 	private static final String LANGUAGE_COLUMN_ID = "id";
-	private static final String LANGUAGE_COLUMN_DESC = "description";
 
 	private static final String TABLE_LOCATION = "location";
 	private static final String LOCATION_COLUMN_ID = "id";
@@ -53,6 +53,10 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	public RIOTDatabase(MainActivity mainActivity) {
 		super(mainActivity, DATABASE_NAME, null, DATABASE_VERION);
 		this.mainActivity = mainActivity;
+	}
+	
+	public RIOTDatabase(Context context) {
+	    super(context, DATABASE_NAME, null, DATABASE_VERION);
 	}
 
 	/**
@@ -74,7 +78,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 		String CREATE_LANGUAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_LANGUAGE + "(" + LANGUAGE_COLUMN_ID
-				+ " TEXT PRIMARY KEY," + LANGUAGE_COLUMN_DESC + " TEXT)";
+				+ " TEXT PRIMARY KEY)";
 
 		String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_LOCATION + "(" + LOCATION_COLUMN_ID
@@ -275,12 +279,13 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	 * @param description
 	 *            set the description
 	 */
-	public void addLanguage(String id, String description) {
+	public void setLanguage(String id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
+		db.execSQL("DELETE FROM " + TABLE_LANGUAGE);
+		
 		ContentValues values = new ContentValues();
 		values.put(LANGUAGE_COLUMN_ID, id);
-		values.put(LANGUAGE_COLUMN_DESC, description);
 
 		db.insert(TABLE_LANGUAGE, null, values);
 		db.close();
@@ -293,7 +298,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 	 * 
 	 * @return the number of records which are stored in the language table
 	 */
-	public int getCount() {
+	public int getLanguageCount() {
 		String countQuery = "SELECT  * FROM " + TABLE_LANGUAGE;
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = db.rawQuery(countQuery, null);
@@ -302,15 +307,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 		// return count
 		return i;
-	}
-
-	/**
-	 * Delete all records from the language table.
-	 */
-	public void deleteAllLanguages() {
-		SQLiteDatabase db = this.getWritableDatabase();
-		db.execSQL("DELETE FROM " + TABLE_LANGUAGE);
-		db.close();
 	}
 
 	/**

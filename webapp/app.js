@@ -49,17 +49,20 @@ angular.module('riot').run(function($rootScope, $state, $sce, Auth) {
   };
 
   $rootScope.$watch('dialog.header', function(newValue, oldValue) {
-    if (typeof newValue == 'string')
+    if (typeof newValue === 'string') {
       $rootScope.dialog.header = $sce.trustAsHtml(newValue || '');
+    }
   });
 
   $rootScope.$watch('dialog.body', function(newValue, oldValue) {
-    if (typeof newValue == 'string')
+    if (typeof newValue === 'string') {
       $rootScope.dialog.body = $sce.trustAsHtml(newValue || '');
+    }
   });
 
   $rootScope.$watch('dialog.footer', function(newValue, oldValue) {
-    if (typeof newValue == 'string')
+    if (typeof newValue === 'string') {
       $rootScope.dialog.footer = $sce.trustAsHtml(newValue || '');
+    }
   });
 });

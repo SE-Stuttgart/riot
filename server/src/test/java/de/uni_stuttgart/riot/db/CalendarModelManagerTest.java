@@ -20,6 +20,7 @@ import java.util.List;
 import javax.naming.NamingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
@@ -28,7 +29,6 @@ import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -42,6 +42,8 @@ import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
  */
 @TestData({ "/schema/schema_calendar.sql", "/data/testdata_calendar.sql" })
 public class CalendarModelManagerTest extends JerseyDBTestBase {
+
+    private DAO<CalendarEntry> modelManager;
 
     @Override
     protected RiotApplication configure() {
@@ -59,7 +61,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      * @throws DatasourceFindException
      */
     private HashMap<Long, CalendarEntry> createTestData(final int testDataSize) throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         // inserting test data
         HashMap<Long, CalendarEntry> savedElements = new HashMap<Long, CalendarEntry>();
         for (int i = 0; i < testDataSize; i++) {
@@ -68,6 +70,11 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
             savedElements.put(create.getId(), modelManager.findBy(create.getId()));
         }
         return savedElements;
+    }
+
+    @Before
+    public void initSUT() {
+        modelManager = new CalendarSqlQueryDAO();
     }
 
     /**
@@ -81,7 +88,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void createEntryTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         CalendarEntry model = new CalendarEntry(1, "Appointment 1", "createTest");
 
         // Creating entry
@@ -105,7 +112,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getByIdTest() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         CalendarEntry model = new CalendarEntry(1, "Appointment 1", "getByIdTest");
 
         // Creating entry
@@ -139,7 +146,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getAllTest() throws DatasourceFindException, SQLException, NamingException, DatasourceInsertException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         // retrieving all entries: collection shall contains 3 elements
         Collection<CalendarEntry> retrievedElements = modelManager.findAll();
         assertNotNull("returned collection is null", retrievedElements);
@@ -167,7 +174,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getPaginationTest() throws DatasourceFindException, SQLException, NamingException, DatasourceInsertException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         final int pageSize = 2; // LIMIT
 
         // --- retrieving first page
@@ -204,7 +211,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getPaginationAfterDeletionTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException, DatasourceDeleteException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         final int pageSize = 2; // LIMIT
         // creating test data
         HashMap<Long, CalendarEntry> savedElements = createTestData(2);
@@ -237,7 +244,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getPaginationFailedTest() throws SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         // negative offset: throws exception (negative offset and limit values are however already handled at the REST layer)
         try {
             modelManager.findAll(-1, 2); // OFFSET=-1, LIMIT = 2
@@ -268,7 +275,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getFilterAndOrTest() throws DatasourceInsertException, SQLException, NamingException, DatasourceFindException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         // creating test data
         CalendarEntry model1 = new CalendarEntry(1, "Important Appointment", "getFilterTest");
         model1.setAllDayEvent(true);
@@ -309,7 +316,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getFilterTest() throws DatasourceInsertException, DatasourceFindException, SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         Object[] elems = modelManager.findAll().toArray();
 
         // test data
@@ -379,7 +386,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getFilterPaginationTest() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
         filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Important Appointment"));
         FilteredRequest filter = new FilteredRequest();
@@ -425,7 +432,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getFilterFailedTest() throws SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
         filterAtts.add(new FilterAttribute("blabla", FilterOperator.EQ, "Important Appointment"));
         FilteredRequest filter = new FilteredRequest();
@@ -503,7 +510,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void getFilterPaginationFailedTest() throws SQLException, NamingException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
         filterAtts.add(new FilterAttribute("title", FilterOperator.EQ, "Important Appointment"));
         FilteredRequest filter = new FilteredRequest();
@@ -541,7 +548,7 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void deleteTest() throws DatasourceFindException, SQLException, NamingException, DatasourceInsertException, DatasourceDeleteException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
+
         CalendarEntry model = new CalendarEntry(1, "Appointment 1", "deleteTest");
 
         // Creating entry
@@ -583,7 +590,6 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
      */
     @Test
     public void updateTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException, DatasourceUpdateException {
-        DAO<CalendarEntry> modelManager = new CalendarSqlQueryDAO(ConnectionMgr.openConnection(), false);
 
         String title1 = "Important Appointment";
         String title2 = "Urgent Appointment";

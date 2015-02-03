@@ -1,5 +1,9 @@
 package de.uni_stuttgart.riot.server.commons.db;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.server.commons.config.ConfigurationStorable;
+
 /**
  * Enum for all searchable fields.
  * 
@@ -47,23 +51,26 @@ public enum SearchFields {
      * Search field for: {@link TokenRole#getTokenID()}.
      */
     TOKENID("tokenID"),
-
     /**
-     * Search field for:.
+     * Search field for: {@link Token#getTokenValue()}.
      */
     REFRESHTOKEN("refreshtokenValue"),
     /**
-     * Search field for:.
+     * Search field for: {@link Token#getRefreshtokenValue()}.
      */
     TOKENVALID("valid"),
     /**
-     * Search field for:.
+     * Search field for: UMUser.getLoginAttempCount.
      */
     LOGINATTEMPTCOUNT("loginAttemptCount"),
     /**
      * Search field for:.
      */
-    TABLEPK("id");
+    TABLEPK("id"),
+    /**
+     * Search field for: {@link ConfigurationStorable#getConfigKey()}.
+     * */
+    CONFIGKEY("configKey");
 
     private final String text;
 

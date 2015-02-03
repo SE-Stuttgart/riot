@@ -6,7 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.usermanagement.configuration.Configuration;
+import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
+import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
+import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 import de.uni_stuttgart.riot.usermanagement.security.exception.PasswordValidationException;
 
@@ -15,7 +18,8 @@ import de.uni_stuttgart.riot.usermanagement.security.exception.PasswordValidatio
  *
  * @author Niklas Schnabel
  */
-public class PasswordValidatorTest {
+@TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
+public class PasswordValidatorTest extends BaseDatabaseTest {
 
     /**
      * Test method for {@link de.uni_stuttgart.riot.usermanagement.security.PasswordValidator#validate(java.lang.String)}.
@@ -103,7 +107,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordValid1() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(10, 20, 3, 2, 2, 2, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(10, 20, 3, 2, 2, 2, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertTrue(pv.validate("1Q24e!§dqewqwe1/T"));
         assertTrue(pv.validate("\\k]>Bs22*~zNKC6c"));
         assertTrue(pv.validate("[F[H%8G2qS`<ct(7^;"));
@@ -114,7 +118,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordValid2() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(3, 10, 0, 1, 1, 0, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(3, 10, 0, 1, 1, 0, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertTrue(pv.validate("aaBBcc"));
         assertTrue(pv.validate("12aU"));
         assertTrue(pv.validate("eEe"));
@@ -125,7 +129,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordValid3() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(1, 10, 0, 0, 0, 1, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(1, 10, 0, 0, 0, 1, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertTrue(pv.validate("*"));
         assertTrue(pv.validate("123asdf#"));
         assertTrue(pv.validate("df%"));
@@ -136,7 +140,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordInvalid1() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(10, 20, 3, 2, 2, 2, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(10, 20, 3, 2, 2, 2, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertFalse(pv.validate("1Q24e!§dqewqwe1/T3412")); // too long
         assertFalse(pv.validate("123aaBB*")); // too short
         assertFalse(pv.validate("[F[H%GG2qS`<ct(7^;")); // too less numbers
@@ -147,7 +151,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordInvalid2() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(3, 10, 0, 1, 1, 0, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(3, 10, 0, 1, 1, 0, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertFalse(pv.validate("aaBBccDDeeF")); // too long
         assertFalse(pv.validate("aU")); // too short
         assertFalse(pv.validate("EEEEE")); // too less lower case chars
@@ -156,7 +160,7 @@ public class PasswordValidatorTest {
 
     @Test
     public void testValidateComplexPasswordInvalid3() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(1, 10, 0, 0, 0, 1, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(1, 10, 0, 0, 0, 1, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertFalse(pv.validate("")); // too short
         assertFalse(pv.validate("§§§§§§§§§§§")); // too long
         assertFalse(pv.validate("dfdsaf")); // too less special chars
@@ -170,14 +174,14 @@ public class PasswordValidatorTest {
 
     @Test
     public void testGetter() throws PasswordValidationException {
-        PasswordValidator pv = new PasswordValidator(5, 20, 1, 2, 3, 4, Configuration.getPasswordValidationAllowedSpecialCharacters());
+        PasswordValidator pv = new PasswordValidator(5, 20, 1, 2, 3, 4, Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars));
         assertEquals(5, pv.getMinLength());
         assertEquals(20, pv.getMaxLength());
         assertEquals(1, pv.getMinAmountNumbers());
         assertEquals(2, pv.getMinAmountLowerCaseLetters());
         assertEquals(3, pv.getMinAmountUpperCaseLetters());
         assertEquals(4, pv.getMinAmountSpecialCharacters());
-        assertEquals(Configuration.getPasswordValidationAllowedSpecialCharacters(), pv.getAllowedSpecialCharacters());
+        assertEquals(Configuration.getString(ConfigurationKey.um_pwValidator_allowedSpecialChars), pv.getAllowedSpecialCharacters());
     }
 
     @Test(expected = PasswordValidationException.class)
