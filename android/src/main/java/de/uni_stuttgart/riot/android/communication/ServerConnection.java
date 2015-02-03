@@ -9,27 +9,22 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.MainActivity;
-import de.uni_stuttgart.riot.android.NotificationAdapter;
-import de.uni_stuttgart.riot.android.NotificationType;
-import de.uni_stuttgart.riot.android.database.FilterDataObjects;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.text.format.DateFormat;
 import android.util.Log;
-import android.widget.ListView;
 import android.widget.Toast;
+import de.uni_stuttgart.riot.android.NotificationScreen;
+import de.uni_stuttgart.riot.android.NotificationType;
+import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> {
 
-	private MainActivity mainActivity;
-	private FilterDataObjects filterObjects;
+	private NotificationScreen notificationScreen;
+	private RIOTDatabase database;
 
-	public ServerConnection(MainActivity mainActivity, FilterDataObjects filterObjects) {
-		this.mainActivity = mainActivity;
-		this.filterObjects = filterObjects;
+	public ServerConnection(NotificationScreen notificationScreen, RIOTDatabase database) {
+		this.notificationScreen = notificationScreen;
+		this.database = database;
 	}
 
 	@Override
@@ -45,7 +40,7 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 			List<Notification> notificationList = new ArrayList<Notification>();
 
 			if (testNotification == null) {
-				Toast.makeText(mainActivity.getApplicationContext(),
+				Toast.makeText(notificationScreen,
 						"Server Connection Error", 5).show();
 			} else {
 
@@ -73,8 +68,8 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 
 	@Override
 	protected void onPostExecute(List<Notification> notificationList) {	
-		filterObjects.getDatabase().updateNotificationEntries(notificationList);
-		filterObjects.getDatabase().filterNotifications();
+		database.updateNotificationEntries(notificationList);
+		database.filterNotifications();
 	}
 
 }

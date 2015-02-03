@@ -43,11 +43,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="de.uni_stuttgart.riot.android.MainActivity"
+            android:name="de.uni_stuttgart.riot.android.NotificationScreen"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="de.uni_stuttgart.riot.android.SettingScreen"
+            android:screenOrientation="portrait" >
+        </activity>
+                <activity
+            android:name="de.uni_stuttgart.riot.android.MainScreen"
             android:screenOrientation="portrait" >
         </activity>
 

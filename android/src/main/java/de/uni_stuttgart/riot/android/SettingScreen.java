@@ -1,13 +1,10 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.Locale;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +14,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
+import de.uni_stuttgart.riot.android.language.Language;
 
 /**
  * Setting screen.
@@ -26,7 +24,8 @@ import de.uni_stuttgart.riot.android.database.RIOTDatabase;
  */
 public class SettingScreen extends Activity {
 
-    @InjectView(R.id.btn_lang) Button btn_language;
+    @InjectView(R.id.btnLanguage) Button btnLanguage;
+    
     private String pressedHomeScreenButton;
     private Intent intent;
     private ActionBar actionBar;
@@ -53,17 +52,17 @@ public class SettingScreen extends Activity {
             }
         } else {
             db.setLanguage("en");
+            selectedLanguage = 0;
         }
 
-        setLanguage();
+        Language.setLanguage(this);
 
         setContentView(R.layout.setting_screen);
-        
 
-        // get the value of the pressed button
+        // Get the value of the pressed button
         pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
-        // sets the title and icon of the Actionbar
+        // Sets the title and icon of the action bar
         actionBar = getActionBar();
         actionBar.setTitle(pressedHomeScreenButton);
         actionBar.setIcon(R.drawable.settings);
@@ -78,44 +77,17 @@ public class SettingScreen extends Activity {
 
     }
     
-    @OnClick(R.id.btn_lang)
-    public void onClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setTitle(R.string.language_header).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                choice = which;
-            }
-        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                setSelectedLanguage(choice);
-            }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-        builder.create();
-        builder.show();
+    /**
+     * Opens the dialog.
+     */
+    @OnClick(R.id.btnLanguage)
+    public void submit() {
+        
     }
 
-    private void setLanguage() {
-        Locale locale;
-        if (db.getLanguageCount() == 0) {
-            locale = new Locale("en");
-        } else {
-            locale = new Locale(db.getLanguage());
-        }
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-    }
 
-    private void showLanguageDialog(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+    private void showLanguageDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.language_header).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 choice = which;

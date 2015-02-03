@@ -8,16 +8,16 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.NotificationType;
-import de.uni_stuttgart.riot.android.database.FilterDataObjects;
+import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class FilterFragment extends Fragment {
 
-	private FilterDataObjects filterObjects;
+	private RIOTDatabase database;
 	private CheckBox check_error, check_appointment, check_warning;
 
-	public FilterFragment(FilterDataObjects filterObjects) {
-		this.filterObjects = filterObjects;
+	public FilterFragment(RIOTDatabase database) {
+		this.database = database;
 	}
 
 	@Override
@@ -32,12 +32,12 @@ public class FilterFragment extends Fragment {
 				.findViewById(R.id.filter_appointment_check);
 		check_warning = (CheckBox) view.findViewById(R.id.filter_warning_check);
 
-		check_error.setChecked(filterObjects
-				.getFilterStatus(NotificationType.ERROR));
-		check_appointment.setChecked(filterObjects
-				.getFilterStatus(NotificationType.APPOINTMENT));
-		check_warning.setChecked(filterObjects
-				.getFilterStatus(NotificationType.WARNING));
+		check_error.setChecked(database
+				.getFilterSettings(NotificationType.ERROR));
+		check_appointment.setChecked(database
+				.getFilterSettings(NotificationType.APPOINTMENT));
+		check_warning.setChecked(database
+				.getFilterSettings(NotificationType.WARNING));
 		
 		
 		return view;

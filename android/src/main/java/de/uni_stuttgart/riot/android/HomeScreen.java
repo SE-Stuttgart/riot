@@ -52,23 +52,23 @@ public class HomeScreen extends Activity {
 
 		final ImageButton carButton = (ImageButton) findViewById(R.id.homeScreen_carButton);
 		carButton.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN) {
-					carButton.setAlpha(0.5f);
-				}
-
-				if (event.getAction() == MotionEvent.ACTION_UP) {
-					Intent carScreen = new Intent(HomeScreen.this,
-							MainActivity.class);
-					carScreen.putExtra("pressedButton", "car");
-					HomeScreen.this.startActivity(carScreen);
-					carButton.setAlpha(1.0f);
-				}
-
+			
+				@Override
+				public boolean onTouch(View arg0, MotionEvent event) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						carButton.setAlpha(0.5f);
+					}
+					
+	                if (event.getAction() == MotionEvent.ACTION_UP) {
+	                    Intent carScreen = new Intent(HomeScreen.this, NotificationScreen.class);
+	                    carScreen.putExtra("pressedButton", "car");
+	                    HomeScreen.this.startActivity(carScreen);
+	                    carButton.setAlpha(1.0f);
+	                }
 				return false;
-			}
+				}
+
+			
 		});
 
 		final ImageButton houseButton = (ImageButton) findViewById(R.id.homeScreen_houseButton);
@@ -82,7 +82,7 @@ public class HomeScreen extends Activity {
 
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Intent houseScreen = new Intent(HomeScreen.this,
-							MainActivity.class);
+							NotificationScreen.class);
 					houseScreen.putExtra("pressedButton", "house");
 					HomeScreen.this.startActivity(houseScreen);
 					houseButton.setAlpha(1.0f);
@@ -103,7 +103,7 @@ public class HomeScreen extends Activity {
 
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Intent coffeeScreen = new Intent(HomeScreen.this,
-							MainActivity.class);
+							NotificationScreen.class);
 					coffeeScreen.putExtra("pressedButton", "coffeeMachine");
 					HomeScreen.this.startActivity(coffeeScreen);
 					coffeMachineButton.setAlpha(1.0f);
