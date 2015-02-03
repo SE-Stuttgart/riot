@@ -121,6 +121,13 @@ public class ThingClient {
     public int deregisterThing(long thingID) throws RequestException {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + DELETE_THING + thingID);
         int result = response.getStatusLine().getStatusCode();
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
         return result;
     }
 
@@ -173,7 +180,14 @@ public class ThingClient {
      *             if Action instance could not be submitted.
      */
     public void submitActionInstance(ActionInstance actionInstance) throws RequestException {
-        this.loginClient.post(this.loginClient.getServerUrl() + POST_SUBMIT_ACTION, actionInstance);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_SUBMIT_ACTION, actionInstance);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
     }
 
     /**
@@ -185,17 +199,38 @@ public class ThingClient {
      *             if Thing could not be added.
      */
     public void notifyEvent(EventInstance eventInstance) throws RequestException {
-        this.loginClient.post(this.loginClient.getServerUrl() + POST_NOTIFY_EVENT, eventInstance);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_NOTIFY_EVENT, eventInstance);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
     }
 
     
     public void registerOnEvent(RegisterRequest request) throws RequestException {
-        this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION,request);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION,request);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
     }
     
     
     public void deRegisterOnEvent(RegisterRequest request) throws RequestException {
-        this.loginClient.post(this.loginClient.getServerUrl() + POST_DELETE_EVENT_REGISTRATION, request);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_DELETE_EVENT_REGISTRATION, request);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
     }
     
     public Timestamp getLastOnline(long thingID) throws RequestException {

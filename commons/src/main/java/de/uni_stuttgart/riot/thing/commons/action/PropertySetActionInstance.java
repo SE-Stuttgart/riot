@@ -38,4 +38,9 @@ public class PropertySetActionInstance<T> extends ActionInstance {
     public void setProperty(Property<T> property) {
         this.property = property;
     }
+
+    @Override
+    public void accept(ActionInstanceVisitor actionInstanceVisitor) {
+        actionInstanceVisitor.handle(this);
+    }
 }

@@ -15,4 +15,6 @@ public abstract class ActionInstance extends Instance {
         super(time, thingId);
     }
 
+    public abstract void accept(ActionInstanceVisitor actionInstanceVisitor);
+
 }
