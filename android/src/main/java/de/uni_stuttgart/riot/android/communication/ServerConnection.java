@@ -9,8 +9,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,13 +35,8 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
             final String url = "http://rest-service.guides.spring.io/greeting";
             RestTemplate restTemplate = new RestTemplate();
 
-            if (isNetworkAvailable()) {
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                testNotification = restTemplate.getForObject(url, Notification.class);
-            } else {
-                Toast.makeText(notificationScreen, "No internet connection", Toast.LENGTH_SHORT).show();
-                // notificationScreen.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
-            }
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            testNotification = restTemplate.getForObject(url, Notification.class);
 
             if (testNotification == null) {
                 Toast.makeText(notificationScreen, "Server Connection Error", 5).show();
@@ -68,12 +61,6 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
         }
 
         return null;
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) notificationScreen.getSystemService(notificationScreen.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override

@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
@@ -20,110 +23,110 @@ import de.uni_stuttgart.riot.android.language.Language;
  * The main window.
  */
 public class NotificationScreen extends Activity {
-	
-	private ListView notificationList;
-	private RIOTDatabase database;
-	private String pressedHomeScreenButton;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Intent intent = getIntent();
+    private ListView notificationList;
+    private RIOTDatabase database;
+    private String pressedHomeScreenButton;
 
-		// get the value of the pressed button
-		pressedHomeScreenButton = intent.getStringExtra("pressedButton");
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
 
-		database = new RIOTDatabase(this, pressedHomeScreenButton);
+        // get the value of the pressed button
+        pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
-		// Sets the language
-		Language.setLanguage(this);
+        database = new RIOTDatabase(this, pressedHomeScreenButton);
 
-		setContentView(R.layout.activity_main);
+        // Sets the language
+        Language.setLanguage(this);
 
-		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setTitle(
-				pressedHomeScreenButton.substring(0, 1).toUpperCase()
-						+ pressedHomeScreenButton.substring(1));
+        setContentView(R.layout.activity_main);
 
-		if (pressedHomeScreenButton.equals("car")) {
-			getActionBar().setIcon(R.drawable.car);
-		} else if (pressedHomeScreenButton.equals("house")) {
-			getActionBar().setIcon(R.drawable.house);
-		} else if (pressedHomeScreenButton.equals("coffeeMachine")) {
-			getActionBar().setIcon(R.drawable.coffee);
-		}
+        getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setTitle(pressedHomeScreenButton.substring(0, 1).toUpperCase() + pressedHomeScreenButton.substring(1));
 
-		// ClickListener for the Notification List
-		notificationList = (ListView) findViewById(R.id.NotificationList);
-		notificationList.setOnItemClickListener(new OnItemClickListener() {
+        if (pressedHomeScreenButton.equals("car")) {
+            getActionBar().setIcon(R.drawable.car);
+        } else if (pressedHomeScreenButton.equals("house")) {
+            getActionBar().setIcon(R.drawable.house);
+        } else if (pressedHomeScreenButton.equals("coffeeMachine")) {
+            getActionBar().setIcon(R.drawable.coffee);
+        }
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				System.out.println("click");
+        // ClickListener for the Notification List
+        notificationList = (ListView) findViewById(R.id.NotificationList);
+        notificationList.setOnItemClickListener(new OnItemClickListener() {
 
-			}
-		});
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                System.out.println("click");
 
-		// get the latest Notifications
-		new ServerConnection(this, database).execute();
-	}
+            }
+        });
 
-	/**
-	 * Prepare the refresh button on the right side
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+        if (isNetworkAvailable()) {
+            // get the latest Notifications
+            new ServerConnection(this, database).execute();
+        } else {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-	/**
-	 * Define displaying settings for the refresh button
-	 */
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
-		// //get the values for the each filter from the database
-		menu.findItem(R.id.filter_error).setChecked(
-				database.getFilterSettings(NotificationType.ERROR));
-		menu.findItem(R.id.filter_warning).setChecked(
-				database.getFilterSettings(NotificationType.WARNING));
-		menu.findItem(R.id.filter_appointment).setChecked(
-				database.getFilterSettings(NotificationType.APPOINTMENT));
+    /**
+     * Prepare the refresh button on the right side
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-		menu.findItem(R.id.action_refresh).setVisible(true);
-		database.filterNotifications();
+    /**
+     * Define displaying settings for the refresh button
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
 
-		return super.onPrepareOptionsMenu(menu);
-	}
+        // //get the values for the each filter from the database
+        menu.findItem(R.id.filter_error).setChecked(database.getFilterSettings(NotificationType.ERROR));
+        menu.findItem(R.id.filter_warning).setChecked(database.getFilterSettings(NotificationType.WARNING));
+        menu.findItem(R.id.filter_appointment).setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
 
-	/**
-	 * Actions for the refresh button (right upper corner). It can later be
-	 * extended with more options.
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+        menu.findItem(R.id.action_refresh).setVisible(true);
+        database.filterNotifications();
 
-		switch (item.getItemId()) {
-		case R.id.filter_error:
-			database.setFilter(new Filter(1, item, NotificationType.ERROR,
-					false));
-			return true;
-		case R.id.filter_appointment:
-			database.setFilter(new Filter(2, item,
-					NotificationType.APPOINTMENT, false));
-			return true;
-		case R.id.filter_warning:
-			database.setFilter(new Filter(3, item, NotificationType.WARNING,
-					false));
-			return true;
-		case R.id.action_refresh:
-			new ServerConnection(this, database).execute();
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    /**
+     * Actions for the refresh button (right upper corner). It can later be extended with more options.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+        case R.id.filter_error:
+            database.setFilter(new Filter(1, item, NotificationType.ERROR, false));
+            return true;
+        case R.id.filter_appointment:
+            database.setFilter(new Filter(2, item, NotificationType.APPOINTMENT, false));
+            return true;
+        case R.id.filter_warning:
+            database.setFilter(new Filter(3, item, NotificationType.WARNING, false));
+            return true;
+        case R.id.action_refresh:
+            new ServerConnection(this, database).execute();
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 
 }
