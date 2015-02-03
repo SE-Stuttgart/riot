@@ -12,6 +12,9 @@ public abstract class Instance {
         this.time = time;
     }
     
+    public Instance() {
+    }
+    
     public Timestamp getTime() {
         return time;
     }

@@ -14,5 +14,8 @@ public abstract class EventInstance extends Instance {
     public EventInstance(Timestamp time, long thingId) {
         super(time, thingId);
     }
+    
+    public EventInstance() {
+    }
 
 }

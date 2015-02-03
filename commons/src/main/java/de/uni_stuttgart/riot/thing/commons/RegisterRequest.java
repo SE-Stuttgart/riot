@@ -11,8 +11,8 @@ public class RegisterRequest {
     public RegisterRequest() {
     }
     
-    public RegisterRequest(long thingid, long registerOnThingId, Event action) {
-        this.event = action;
+    public RegisterRequest(long thingid, long registerOnThingId, Event event) {
+        this.event = event;
         this.thingId = thingid;
         this.registerOnThingId = registerOnThingId;
     }

@@ -11,7 +11,7 @@ import de.uni_stuttgart.riot.thing.commons.Property;
  */
 public class PropertyChangeEventInstance<T> extends EventInstance {
 
-    private final Property<T> newProperty;
+    private Property<T> newProperty;
 
     /**
      * Constructor.
@@ -21,10 +21,18 @@ public class PropertyChangeEventInstance<T> extends EventInstance {
      */
     public PropertyChangeEventInstance(Property<T> newProperty, long thingId, Timestamp time) {
         super(time, thingId);
-        this.newProperty = newProperty;
+        this.setNewProperty(newProperty);
+    }
+    
+    public PropertyChangeEventInstance() {
     }
 
     public Property<T> getNewProperty() {
         return newProperty;
     }
+
+    public void setNewProperty(Property<T> newProperty) {
+        this.newProperty = newProperty;
+    }
+
 }

@@ -26,7 +26,7 @@ public class ThingClient {
 
     private static final String POST_ADD_THING = PREFIX + "thing";
     private static final String POST_SUBMIT_ACTION = PREFIX + "thing/action";
-    private static final String POST_NOTIFY_EVENT = PREFIX + "thing/event";
+    private static final String POST_NOTIFY_EVENT = PREFIX + "thing/notify";
 
     private static final String GET_THINGS = PREFIX + "thing";
     private static final String GET_THING = PREFIX + "thing/";

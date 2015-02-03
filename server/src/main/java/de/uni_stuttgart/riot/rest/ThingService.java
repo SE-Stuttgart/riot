@@ -101,7 +101,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     }
 
     @POST
-    @Path("event")
+    @Path("notify")
     public Response notifyEvent(EventInstance eventInstance) throws DatasourceFindException {
         this.logic.submitEvent(eventInstance);
         return Response.noContent().build();
@@ -132,7 +132,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @PUT
     @Path("{id}")
     public Response update(@PathParam("id") long id, RemoteThing model) {
-        return Response.status(Status.MOVED_PERMANENTLY).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
