@@ -1,6 +1,10 @@
 package de.uni_stuttgart.riot.android;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.account.AndroidUser;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -29,6 +33,23 @@ public class HomeScreen extends Activity {
 
 		setContentView(R.layout.home_screen);
 
+		// Initialize the API client. Initialization is not allowed in the main
+		// thread.
+		final HomeScreen inst = this;
+		new Thread() {
+			@Override
+			public void run() {
+				RIOTApiClient.getInstance().init(inst, "androidApp");
+				try {
+					System.out.println(RIOTApiClient.getInstance().getUserManagementClient().getRoles().size());
+				} catch (RequestException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}.start();
+
 		final ImageButton carButton = (ImageButton) findViewById(R.id.homeScreen_carButton);
 		carButton.setOnTouchListener(new OnTouchListener() {
 
@@ -37,7 +58,7 @@ public class HomeScreen extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					carButton.setAlpha(0.5f);
 				}
-				
+
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Intent carScreen = new Intent(HomeScreen.this,
 							MainActivity.class);
@@ -49,7 +70,7 @@ public class HomeScreen extends Activity {
 				return false;
 			}
 		});
-		
+
 		final ImageButton houseButton = (ImageButton) findViewById(R.id.homeScreen_houseButton);
 		houseButton.setOnTouchListener(new OnTouchListener() {
 
@@ -58,7 +79,7 @@ public class HomeScreen extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					houseButton.setAlpha(0.5f);
 				}
-				
+
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Intent houseScreen = new Intent(HomeScreen.this,
 							MainActivity.class);
@@ -79,7 +100,7 @@ public class HomeScreen extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					coffeMachineButton.setAlpha(0.5f);
 				}
-				
+
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					Intent coffeeScreen = new Intent(HomeScreen.this,
 							MainActivity.class);
@@ -91,7 +112,7 @@ public class HomeScreen extends Activity {
 				return false;
 			}
 		});
-		
+
 		final ImageButton calendarButton = (ImageButton) findViewById(R.id.homeScreen_calendarButton);
 		calendarButton.setOnTouchListener(new OnTouchListener() {
 
@@ -100,7 +121,7 @@ public class HomeScreen extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					calendarButton.setAlpha(0.5f);
 				}
-				
+
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					calendarButton.setAlpha(0.5f);
 					Intent i = new Intent(Intent.ACTION_VIEW);
@@ -116,10 +137,9 @@ public class HomeScreen extends Activity {
 	}
 
 	/*
-	private static boolean isCoordsOnButton(int fingerX, int fingerY,
-			ImageButton button) {
-		return (fingerX >= button.getLeft() && fingerX <= button.getRight()
-				&& fingerY >= button.getTop() && fingerY <= button.getBottom());
-	}
-	*/
+	 * private static boolean isCoordsOnButton(int fingerX, int fingerY,
+	 * ImageButton button) { return (fingerX >= button.getLeft() && fingerX <=
+	 * button.getRight() && fingerY >= button.getTop() && fingerY <=
+	 * button.getBottom()); }
+	 */
 }

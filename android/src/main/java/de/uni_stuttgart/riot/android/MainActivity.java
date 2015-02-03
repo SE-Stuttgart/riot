@@ -52,16 +52,7 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		pressedHomeScreenButton = intent.getStringExtra("pressedButton"); //get the value of the pressed button
 				
-		filterObjects = new FilterDataObjects(this);
-
-        // Initialize the API client. Initialization is not allowed in the main thread.
-        final MainActivity inst = this;
-        new Thread() {
-            @Override
-            public void run() {
-                RIOTApiClient.getInstance().init(inst, "androidApp"); // TODO device name
-            }
-        }.start();
+		filterObjects = new FilterDataObjects(this);        
 
 		// Sets the language
 		setLanguage();
