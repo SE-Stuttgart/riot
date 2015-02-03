@@ -5,22 +5,11 @@ angular.module('riot').config(function($stateProvider) {
     });
 });
 
-angular.module('riot').controller('CalendarCtrl', function($scope, $http) {
+angular.module('riot').controller('CalendarCtrl', function($scope, Calendar) {
     $scope.events = [];
     $scope.eventSources = [$scope.events];
-	/*
-    $http.get(url).
-    success(function(data, status, headers, config) {
-        $scope.restData = 'OK: STATUS CODE ' + status + " " + data;
-    }).
-    error(function(data, status, headers, config) {
-        $scope.restData = 'STATUS CODE ' + status + " " + data;
-    });
-	*/
-	$http.get('https://localhost:8181/riot/api/v1/calendar').then(function(response) {
-	//Restangular.all('calendar').getList().then(function(events) {
-		$scope.restData = response.data;
-		//$scope.restData = events;
+	Calendar.getList().then(function(events) {
+		$scope.restData = events;
 		var restDataLength = $scope.restData.length;
 		for (var i = 0; i < restDataLength; i++) {
 			var rd = $scope.restData[i];
@@ -28,6 +17,8 @@ angular.module('riot').controller('CalendarCtrl', function($scope, $http) {
 				id: rd.id,
 				title: rd.title,
 				allDay: rd.allDayEvent,
+				location: rd.location,
+				//description: rd.description,
 				start: new Date(rd.startTime),
 				end: new Date(rd.endTime)
 			});
@@ -36,23 +27,27 @@ angular.module('riot').controller('CalendarCtrl', function($scope, $http) {
 		$scope.alertMessage = 'Error ' + reason;
 	});
     $scope.alertOnEventClick = function(date, jsEvent, view) {
-        $scope.alertMessage = date.title + ' ' + date.start + ' ' + date.end + ' was clicked ';
+        $("#startTime").html(moment(date.start).format('DD.MM.YYYY hh:mm'));
+        $("#endTime").html(moment(date.end).format('DD.MM.YYYY hh:mm'));
+		$("#location").html(date.location);
+        $("#eventInfo").html(date.description);
+        $("#eventContent").dialog({ modal: true, title: date.title, width:350});
+        //$scope.alertMessage = date.title + ' ' + date.start + ' ' + date.end + ' was clicked ';
     };
 	$scope.alertOnDayClick = function(date, jsEvent, view) {
-        $scope.alertMessage = date + ' was clicked ';
+        //$scope.alertMessage = date + ' was clicked ';
     };
     $scope.uiConfig = {
         calendar: {
-            editable: true,
+            editable: false,
             header: {
-                left: 'title',
-                center: '',
-                right: 'today prev,next'
+				left: 'title',
+				center: '',
+				right: 'today prev,next'
             },
+			timeFormat: 'HH:mm',
             eventClick: $scope.alertOnEventClick,
 			dayClick: $scope.alertOnDayClick
         }
     };
-    $scope.uiConfig.calendar.dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    $scope.uiConfig.calendar.dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 });

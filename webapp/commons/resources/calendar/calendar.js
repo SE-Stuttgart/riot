@@ -1,6 +1,5 @@
-angular.module('riot').factory('calendar',function() {
-
-	var calendar = {};
-
-	return calendar;
+angular.module('riot').factory('Calendar',function(Restangular) {
+	var resource = Restangular.service('calendar');
+	
+	return resource;
 });

@@ -4,10 +4,12 @@ describe('CalendarCtrl', function() {
 
 	var scope,ctrl;
 
+	/*
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
       ctrl = $controller('CalendarCtrl', {$scope: scope});
     }));	
+	*/
 
 	it('should ...', inject(function() {
 

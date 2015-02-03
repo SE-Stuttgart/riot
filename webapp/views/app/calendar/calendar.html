@@ -1,9 +1,15 @@
 <div class="calender" ng-controller="CalendarCtrl">
-  <div class="row">
-    <div class="col-lg-12">
-      <h1 class="page-header">Calendar</h1>
-    </div>
-  </div>
-  <p>{{alertMessage}}</p>
-  <div ui-calendar="uiConfig.calendar" ng-model="eventSources">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Calendar</h1>
+		</div>
+	</div>
+	<p>{{alertMessage}}</p>
+	<div id="eventContent" title="Event Details" style="display:none;">  
+		Start: <span id="startTime"></span><br>
+		End: <span id="endTime"></span><br>
+		Location: <span id="location"></span><br><br>
+		<p id="eventInfo"></p>
+	</div>  
+	<div ui-calendar="uiConfig.calendar" ng-model="eventSources">
 </div>
