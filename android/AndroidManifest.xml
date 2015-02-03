@@ -50,6 +50,10 @@
             android:name="de.uni_stuttgart.riot.android.SettingScreen"
             android:screenOrientation="portrait" >
         </activity>
+                <activity
+            android:name="de.uni_stuttgart.riot.android.MainScreen"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <!--
         This implements the account we'll use as an attachment point for our SyncAdapter.

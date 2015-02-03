@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/flag_uk"
-        android:src="@drawable/uk" />
+        android:src="@drawable/flag_uk" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/flag_de"
-            android:src="@drawable/de" />
+            android:src="@drawable/flag_de" />
 
         <TextView
             android:layout_width="wrap_content"

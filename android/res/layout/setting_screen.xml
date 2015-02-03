@@ -13,7 +13,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageButton
-        android:id="@+id/btn_lang"
+        android:id="@+id/btnLanguage"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_centerVertical="true" />

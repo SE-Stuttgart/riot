@@ -32,7 +32,7 @@ public class HomeScreen extends Activity {
                 }
 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Intent carScreen = new Intent(HomeScreen.this, MainActivity.class);
+                    Intent carScreen = new Intent(HomeScreen.this, MainScreen.class);
                     carScreen.putExtra("pressedButton", "car");
                     HomeScreen.this.startActivity(carScreen);
                     carButton.setAlpha(1.0f);

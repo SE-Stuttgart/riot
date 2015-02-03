@@ -49,12 +49,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         Intent intent = getIntent();
         // get the value of the pressed button
         pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
-        filterObjects = new FilterDataObjects(this);
+        filterObjects = new FilterDataObjects(this, pressedHomeScreenButton);
 
         // Initialize the API client. Initialization is not allowed in the main thread.
         final MainActivity inst = this;
