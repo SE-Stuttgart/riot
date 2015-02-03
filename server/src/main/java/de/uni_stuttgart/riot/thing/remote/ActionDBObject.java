@@ -13,9 +13,8 @@ public class ActionDBObject extends Storable {
 
     /**
      * Constructor.
-     * 
-     * @param factoryString
-     *            .
+     * @param factoryString .
+     * @param thingId .
      */
     public ActionDBObject(long thingId, String factoryString) {
         this.thingId = thingId;

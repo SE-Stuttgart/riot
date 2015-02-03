@@ -51,7 +51,8 @@ public class ThingService extends BaseResource<RemoteThing> {
 
     /**
      * Default Constructor.
-     * @throws DatasourceFindException 
+     * 
+     * @throws DatasourceFindException
      * 
      * @throws SQLException .
      * @throws NamingException .
@@ -111,7 +112,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     public void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
         this.logic.submitAction(actionInstance);
     }
-    
+
     /**
      * Overrides create of baseresource.
      */

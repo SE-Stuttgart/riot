@@ -12,18 +12,18 @@ public abstract class ClientThing extends Thing implements Runnable {
     private boolean started;
     private final ThingClient thingClient;
 
+    protected abstract void initActions();
+
+    protected abstract void initProperties();
+
+    protected abstract void handleActionInstances(ActionInstance actionInstance);
+
     public ClientThing(ThingClient thingClient, String name, long delay) {
         super(name);
         this.delay = delay;
         this.started = true;
         this.thingClient = thingClient;
     }
-
-    protected abstract void initActions();
-
-    protected abstract void initProperties();
-
-    protected abstract void handleActionInstances(ActionInstance actionInstance);
 
     @Override
     public void run() {

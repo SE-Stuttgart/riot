@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.logic.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Collection;
 

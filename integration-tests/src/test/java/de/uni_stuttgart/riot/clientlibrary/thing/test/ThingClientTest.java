@@ -68,13 +68,13 @@ public class ThingClientTest extends ShiroEnabledTest {
         assertEquals(1, newThing.getEvents().size());
         assertEquals(1, newThing.getProperties().size());
     }
-    
+
     @Test
-    public void lastOnlineTest() throws ClientProtocolException, RequestException, IOException{
+    public void lastOnlineTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLogedInThingClient();
         assertEquals(new Timestamp(0), thingClient.getLastOnline(5));
         thingClient.getActionInstances(1);
-        Timestamp tm = new Timestamp(System.currentTimeMillis()- 1000);
+        Timestamp tm = new Timestamp(System.currentTimeMillis() - 1000);
         assertEquals(true, tm.before(thingClient.getLastOnline(1)));
     }
 

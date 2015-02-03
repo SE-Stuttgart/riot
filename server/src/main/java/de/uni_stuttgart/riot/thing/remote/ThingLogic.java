@@ -3,16 +3,10 @@ package de.uni_stuttgart.riot.thing.remote;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.EventDBObjectSqlQueryDAO;
@@ -36,17 +30,23 @@ import de.uni_stuttgart.riot.thing.commons.event.EventListener;
  * Contains all logic regarding to {@link Thing}.
  *
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ThingLogic {
 
+    private static ThingLogic instance;
+    
     private RemoteThingSqlQueryDAO remoteThingSqlQueryDAO;
     private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
     private ActionDBObjectSqlQueryDAO actionDBObjectSqlQueryDAO;
     private EventDBObjectSqlQueryDAO eventDBObjectSqlQueryDAO;
-    
-    private static ThingLogic instance;
-    
-    public static ThingLogic getThingLogic() throws DatasourceFindException{
-        if(instance == null){
+
+    private HashMap<Long, Queue<ActionInstance>> actionInstances;
+    private HashMap<Long, LinkedList<Event>> events;
+    private HashMap<Long, Stack<EventInstance>> eventInstances;
+    private HashMap<Long, Timestamp> lastConnection;
+
+    public static ThingLogic getThingLogic() throws DatasourceFindException {
+        if (instance == null) {
             instance = new ThingLogic();
         }
         return instance;
@@ -54,7 +54,8 @@ public class ThingLogic {
 
     /**
      * Constructor.
-     * @throws DatasourceFindException 
+     * 
+     * @throws DatasourceFindException
      */
     private ThingLogic() throws DatasourceFindException {
         this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
@@ -80,11 +81,6 @@ public class ThingLogic {
         return this.remoteThingSqlQueryDAO.findByUniqueField(new SearchParameter(SearchFields.NAME, thingName)).getId();
     }
 
-    private HashMap<Long, Queue<ActionInstance>> actionInstances;
-    private HashMap<Long, LinkedList<Event>> events;
-    private HashMap<Long, Stack<EventInstance>> eventInstances;
-    private HashMap<Long, Timestamp> lastConnection;
-
     /**
      * TODO .
      * 
@@ -92,10 +88,10 @@ public class ThingLogic {
      * @param thingName
      * @param properties
      * @param actions
-     * @throws DatasourceInsertException 
+     * @throws DatasourceInsertException
      */
     public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
-        try{
+        try {
             this.remoteThingSqlQueryDAO.insert(thing);
             for (Action action : thing.getActions()) {
                 String actionString = JsonUtil.getJsonUtil().toJson(action);
@@ -109,15 +105,12 @@ public class ThingLogic {
             }
             for (Property property : thing.getProperties().values()) {
                 String propertyValueString = JsonUtil.getJsonUtil().toJson(property.getValue());
-                PropertyDBObject propertyDBObject = new PropertyDBObject(property.getName(),
-                        propertyValueString,
-                        property.getValue().getClass().getCanonicalName(),
-                        thing.getId());
+                PropertyDBObject propertyDBObject = new PropertyDBObject(property.getName(), propertyValueString, property.getValue().getClass().getCanonicalName(), thing.getId());
                 this.propertySqlQueryDAO.insert(propertyDBObject);
             }
             internalRegister(thing);
             this.lastConnection(thing.getId());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatasourceInsertException(e);
         }
     }
@@ -134,7 +127,7 @@ public class ThingLogic {
      * 
      * @param username
      * @param thingName
-     * @throws DatasourceDeleteException 
+     * @throws DatasourceDeleteException
      */
     public synchronized void unregisterThing(long id) throws DatasourceDeleteException {
         this.events.put(id, null);
@@ -158,7 +151,7 @@ public class ThingLogic {
 
     // FIXME thing about raceconditions on, off -> off, on
     public synchronized void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
-        long thingId = actionInstance.getThingId(); 
+        long thingId = actionInstance.getThingId();
         Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
         queue.offer(actionInstance);
         this.updateLastConnection(thingId);
@@ -167,7 +160,7 @@ public class ThingLogic {
     private synchronized Queue<ActionInstance> getActionInstancesQueue(long thingId) throws DatasourceFindException {
         Queue<ActionInstance> queue = this.actionInstances.get(thingId);
         if (queue == null) {
-            throw new DatasourceFindException("Thing with id :"+thingId+ "could not be found");
+            throw new DatasourceFindException("Thing with id :" + thingId + "could not be found");
         }
         return queue;
     }
@@ -184,11 +177,11 @@ public class ThingLogic {
      * TODO .
      * 
      * @param eventInstance
-     * @throws DatasourceFindException 
+     * @throws DatasourceFindException
      */
     public synchronized void submitEvent(EventInstance eventInstance) throws DatasourceFindException {
-        LinkedList<Event> events = this.getEvents(eventInstance.getThingId());
-        for (Event event : events) {
+        LinkedList<Event> eventL = this.getEvents(eventInstance.getThingId());
+        for (Event event : eventL) {
             if (event.isTypeOf(eventInstance)) {
                 event.fire(eventInstance);
                 break;
@@ -199,7 +192,7 @@ public class ThingLogic {
     private synchronized LinkedList<Event> getEvents(long thingId) throws DatasourceFindException {
         LinkedList<Event> queue = this.events.get(thingId);
         if (queue == null) {
-            throw new DatasourceFindException("Thing with id :"+thingId+ "could not be found");
+            throw new DatasourceFindException("Thing with id :" + thingId + "could not be found");
         }
         return queue;
     }
@@ -213,7 +206,7 @@ public class ThingLogic {
      * @throws DatasourceFindException .
      */
     public RemoteThing completeRemoteThing(RemoteThing remoteThing) throws DatasourceFindException {
-        try{
+        try {
             ArrayList<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(new SearchParameter(SearchFields.THINGID, remoteThing.getId()));
             Collection<PropertyDBObject> properties = this.propertySqlQueryDAO.findBy(searchParams, false);
@@ -227,27 +220,25 @@ public class ThingLogic {
                 Action a = JsonUtil.getJsonUtil().toObject(action.getFactoryString(), Action.class);
                 remoteThing.addAction(a);
             }
-            Collection<EventDBObject> events = this.eventDBObjectSqlQueryDAO.findBy(searchParams, false);
-            for (EventDBObject event : events) {
+            Collection<EventDBObject> eventL = this.eventDBObjectSqlQueryDAO.findBy(searchParams, false);
+            for (EventDBObject event : eventL) {
                 Event e = JsonUtil.getJsonUtil().toObject(event.getFactoryString(), Event.class);
                 remoteThing.addEvent(e);
             }
             return remoteThing;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatasourceFindException(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void deRegisterOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
         for (Event e : this.getEvents(registerOnthingId)) {
-            if(e.equals(event)) {
+            if (e.equals(event)) {
                 e.unregister(thingId);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void registerOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
         final Stack<EventInstance> eIStack = this.getEventInstancesStack(thingId);
         for (Event e : this.getEvents(registerOnthingId)) {
@@ -272,8 +263,9 @@ public class ThingLogic {
 
     public Timestamp lastConnection(long id) {
         Timestamp result = this.lastConnection.get(id);
-        if (result == null)
+        if (result == null) {
             return new Timestamp(0);
+        }
         return result;
     }
 

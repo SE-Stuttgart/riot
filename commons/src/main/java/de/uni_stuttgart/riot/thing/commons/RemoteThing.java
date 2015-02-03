@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.thing.commons;
 
-import de.uni_stuttgart.riot.thing.commons.event.Event;
 
 /**
  * Logical representation of a Thing on the server side. It represents one {@link ClientThing}.
