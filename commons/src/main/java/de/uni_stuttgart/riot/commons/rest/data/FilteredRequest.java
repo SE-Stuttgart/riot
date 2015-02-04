@@ -14,8 +14,8 @@ public class FilteredRequest {
 
     private boolean orMode;
     private List<FilterAttribute> filterAttributes;
-    private long offset = 0;
-    private long limit = 0;
+    private int offset = 0;
+    private int limit = 0;
 
     public boolean isOrMode() {
         return orMode;
@@ -33,19 +33,19 @@ public class FilteredRequest {
         this.filterAttributes = filterAttributes;
     }
 
-    public long getOffset() {
+    public int getOffset() {
         return offset;
     }
 
-    public void setOffset(long offset) {
+    public void setOffset(int offset) {
         this.offset = offset;
     }
 
-    public long getLimit() {
+    public int getLimit() {
         return limit;
     }
 
-    public void setLimit(long limit) {
+    public void setLimit(int limit) {
         this.limit = limit;
     }
 }

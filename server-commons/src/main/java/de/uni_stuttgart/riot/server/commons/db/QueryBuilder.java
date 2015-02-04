@@ -92,15 +92,15 @@ public interface QueryBuilder {
      * Builds the query for finding objects by several search parameters. <br>
      * <br>
      * Such as: <code>SELECT * FROM T WHERE t.id = [t's id] [and | or] [...]</code>
-     * 
+     *
      * @param tableName
      *            the table name in which the query will be executed
      * @param params
      *            the search parameters
-     * @param or
-     *            if true 'or' logic will be used. If false 'and' will be used
      * @param connection
      *            represents a connection to the database
+     * @param or
+     *            if true 'or' logic will be used. If false 'and' will be used
      * @return {@link Query} for retrieval of all matching t objects
      * @throws SQLException
      *             internal sql error
@@ -161,4 +161,36 @@ public interface QueryBuilder {
      *             invalid filter
      */
     Query buildFindWithFiltering(String tableName, Connection connection, FilteredRequest filter, Class<?> clazz) throws SQLException, DatasourceFindException;
+
+    /**
+     * Builds the sql query to get the total number of entities.
+     *
+     * @param tableName
+     *            the table name
+     * @param connection
+     *            the connection
+     * @return the query
+     * @throws SQLException
+     *             the SQL exception
+     */
+    Query buildGetTotal(String tableName, Connection connection) throws SQLException;
+
+    /**
+     * Builds the query to get the total number of elements that apply to the filter.
+     *
+     * @param tableName
+     *            the table name
+     * @param connection
+     *            the connection
+     * @param filter
+     *            the filter
+     * @param clazz
+     *            the clazz
+     * @return the query
+     * @throws SQLException
+     *             the SQL exception
+     * @throws DatasourceFindException
+     *             the datasource find exception
+     */
+    Query buildTotalFoundElements(String tableName, Connection connection, FilteredRequest filter, Class<?> clazz) throws SQLException, DatasourceFindException;
 }

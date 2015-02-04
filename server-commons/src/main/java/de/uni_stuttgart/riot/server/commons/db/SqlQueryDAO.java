@@ -14,6 +14,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException;
+import de.uni_stuttgart.riot.server.commons.rest.PaginatedCollection;
 
 /**
  * 
@@ -150,7 +151,15 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
         }
         try (Connection connection = getConnection()) {
             Query stmt = queryBuilder.buildFindWithPagination(TableMapper.getTableName(getMyClazz().getSimpleName()), connection, offset, limit);
-            return stmt.executeAndFetch(getMyClazz());
+            // pagination
+            PaginatedCollection<T> resultWithPag = new PaginatedCollection<T>(stmt.executeAndFetch(getMyClazz()));
+            resultWithPag.setLimit(limit);
+            resultWithPag.setOffset(offset);
+
+            stmt = queryBuilder.buildGetTotal(TableMapper.getTableName(getMyClazz().getSimpleName()), connection);
+            resultWithPag.setTotal(stmt.executeAndFetchFirst(Integer.class));
+
+            return resultWithPag;
         } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
@@ -164,7 +173,21 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
 
         try (Connection connection = getConnection()) {
             Query stmt = queryBuilder.buildFindWithFiltering(TableMapper.getTableName(getMyClazz().getSimpleName()), connection, filter, getMyClazz());
-            return stmt.executeAndFetch(getMyClazz());
+            Collection<T> result = stmt.executeAndFetch(getMyClazz());
+
+            // pagination
+            if (filter.getLimit() > 0 && filter.getOffset() >= 0) {
+                PaginatedCollection<T> resultWithPag = new PaginatedCollection<T>(result);
+                resultWithPag.setLimit(filter.getLimit());
+                resultWithPag.setOffset(filter.getOffset());
+                stmt = queryBuilder.buildTotalFoundElements(TableMapper.getTableName(getMyClazz().getSimpleName()), connection, filter, getMyClazz());
+
+                resultWithPag.setTotal(stmt.executeAndFetchFirst(Integer.class));
+                return resultWithPag;
+            } else {
+                return result;
+            }
+
         } catch (SQLException e) {
             throw new DatasourceFindException(e);
         }
@@ -185,5 +208,4 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             throw new DatasourceFindException(e);
         }
     }
-
 }

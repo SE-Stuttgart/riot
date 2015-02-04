@@ -90,8 +90,10 @@ public abstract class BaseResource<E extends Storable> {
     }
 
     /**
-     * //TODO Comment.
-     * @param storable .
+     * Initializes given parameter object, for example by filling it with its children, if necessary.
+     * 
+     * @param storable
+     *            object to be initialized / filled.
      * @throws Exception .
      */
     public abstract void init(E storable) throws Exception;
@@ -130,6 +132,7 @@ public abstract class BaseResource<E extends Storable> {
             }
         }
         return result;
+
     }
 
     /**
@@ -155,6 +158,7 @@ public abstract class BaseResource<E extends Storable> {
                 this.init(e);
             }
             return result;
+
         } catch (de.uni_stuttgart.riot.server.commons.db.exception.NotFoundException e) {
             throw new NotFoundException();
         } catch (Exception e1) {
