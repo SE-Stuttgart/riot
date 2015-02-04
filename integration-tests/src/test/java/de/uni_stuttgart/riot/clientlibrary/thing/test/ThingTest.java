@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Queue;
 import java.util.Stack;
 
 import javax.ws.rs.core.Application;
@@ -21,7 +20,6 @@ import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
-import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
 
@@ -68,12 +66,13 @@ public class ThingTest extends ShiroEnabledTest {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         Stack<EventInstance> eventInstances = thingClient.getEventInstances(42);
         PropertyChangeEventInstance<Boolean> i = (PropertyChangeEventInstance<Boolean>) eventInstances.pop();
         assertEquals(true, i.getNewProperty().getValue());
         assertEquals("State", i.getNewProperty().getName());
+        frigde.stop();
     }
 
 }

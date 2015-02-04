@@ -16,16 +16,18 @@ import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
 import de.uni_stuttgart.riot.thing.commons.action.PropertySetActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
-import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
 
+/**
+ * The Class represent the concrete Thing "Frigde".
+ */
 public class Frigde extends ClientThing {
 
     public Property<Boolean> state = new Property<Boolean>("State", false);
     public Property<Integer> temp = new Property<Integer>("Temp", 4);
-    
+
     public PropertyChangeEvent<Boolean> stateChangeEvent = new PropertyChangeEvent<Boolean>("State");
     public PropertyChangeEvent<Integer> tempChangeEvent = new PropertyChangeEvent<Integer>("Temp");
-    
+
     public PropertySetAction<Boolean> setStateAction = new PropertySetAction<Boolean>("State");
     public PropertySetAction<Integer> setTempAction = new PropertySetAction<Integer>("Temp");
 
@@ -35,24 +37,24 @@ public class Frigde extends ClientThing {
 
     @Override
     protected void handleActionInstances(ActionInstance actionInstance) {
-        System.out.println(actionInstance);
+        // System.out.println(actionInstance);
         actionInstance.accept(new ActionInstanceVisitor() {
             public <T> void handle(PropertySetActionInstance<T> propertySetActionInstance) {
-                if (propertySetActionInstance.getProperty().getName().equals("State")){
+                if (propertySetActionInstance.getProperty().getName().equals("State")) {
                     Boolean newVal = (Boolean) propertySetActionInstance.getProperty().getValue();
                     Frigde.this.state.setValue(newVal);
                     try {
                         Frigde.this.notifyEvent(stateChangeEvent.createInstance(newVal, Frigde.this.getId()));
                     } catch (RequestException e) {
-                        e.printStackTrace();
+                        // FIXME Handle exception: retry?
                     }
-                } else if (propertySetActionInstance.getProperty().getName().equals("Temp")){
+                } else if (propertySetActionInstance.getProperty().getName().equals("Temp")) {
                     Integer newVal = (Integer) propertySetActionInstance.getProperty().getValue();
                     Frigde.this.temp.setValue(newVal);
                     try {
                         Frigde.this.notifyEvent(tempChangeEvent.createInstance(newVal, Frigde.this.getId()));
                     } catch (RequestException e) {
-                        e.printStackTrace();
+                        // FIXME Handle exception: retry?
                     }
                 }
             }

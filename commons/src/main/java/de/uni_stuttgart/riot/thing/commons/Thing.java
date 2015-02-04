@@ -10,13 +10,18 @@ import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
 
 /**
- * A {@link Thing} (e.g. Car, House, ...) contains Properties, {@link Action}s and {@link Action}s.
+ * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s.
  *
  */
 public abstract class Thing extends Storable {
 
+    /** The properties of this Thing. */
     private transient Map<String, Property> properties;
+
+    /** The supported events by this Thing. */
     private transient Collection<Event> events;
+
+    /** The supported actions bx this Thing. */
     private transient Collection<Action> actions;
     private String name;
 
@@ -33,7 +38,18 @@ public abstract class Thing extends Storable {
         this.properties = new HashMap<String, Property>();
     }
 
-    /* (non-Javadoc)
+    /**
+     * Constructor.
+     */
+    public Thing() {
+        this.actions = new ArrayList<Action>();
+        this.setEvents(new ArrayList<Event>());
+        this.properties = new HashMap<String, Property>();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -49,15 +65,6 @@ public abstract class Thing extends Storable {
         builder.append(name);
         builder.append("]");
         return builder.toString();
-    }
-
-    /**
-     * Constructor.
-     */
-    public Thing() {
-        this.actions = new ArrayList<Action>();
-        this.setEvents(new ArrayList<Event>());
-        this.properties = new HashMap<String, Property>();
     }
 
     // TODO geht das so
@@ -90,7 +97,7 @@ public abstract class Thing extends Storable {
     public void addEvent(Event event) {
         this.events.add(event);
     }
-    
+
     /**
      * adds property to the {@link Thing}.
      * 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Queue;
 import java.util.Stack;
 
 import javax.ws.rs.core.Application;
@@ -24,7 +25,9 @@ import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.commons.Property;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
+import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
+import de.uni_stuttgart.riot.thing.commons.action.PropertySetActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
@@ -103,12 +106,12 @@ public class ThingClientTest extends ShiroEnabledTest {
         Collection<RemoteThing> things = thingClient.getThings();
         assertEquals(2, things.size());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void registerTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLogedInThingClient();
-        
+
         PropertyChangeEvent<String> p1Event = new PropertyChangeEvent<String>("P1-Name");
         PropertyChangeEvent<String> p2Event = new PropertyChangeEvent<String>("P2-Name");
 
@@ -118,20 +121,20 @@ public class ThingClientTest extends ShiroEnabledTest {
         thingClient.registerOnEvent(registerRequestP1);
         Stack<EventInstance> events = thingClient.getEventInstances(42);
         assertEquals(0, events.size());
-       
+
         thingClient.notifyEvent(p1Event.createInstance("TEST", 1));
         thingClient.notifyEvent(p1Event.createInstance("TEST1", 1));
         thingClient.notifyEvent(p1Event.createInstance("TEST2", 1));
         events = thingClient.getEventInstances(42);
         assertEquals(3, events.size());
-       
-        thingClient.deRegisterOnEvent(registerRequestP1);
+
+        thingClient.deRegisterFromEvent(registerRequestP1);
         thingClient.notifyEvent(p1Event.createInstance("TEST", 1));
         thingClient.notifyEvent(p1Event.createInstance("TEST1", 1));
         thingClient.notifyEvent(p1Event.createInstance("TEST2", 1));
         events = thingClient.getEventInstances(42);
         assertEquals(0, events.size());
-        
+
         thingClient.registerOnEvent(registerRequestP1);
         thingClient.registerOnEvent(registerRequestP2);
         thingClient.notifyEvent(p2Event.createInstance("TEST_P2_1", 1));
@@ -148,5 +151,33 @@ public class ThingClientTest extends ShiroEnabledTest {
         assertEquals("TEST_P1", i2.getNewProperty().getValue());
         assertEquals("P2-Name", i3.getNewProperty().getName());
         assertEquals("TEST_P2_1", i3.getNewProperty().getValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getActionsTest() throws ClientProtocolException, RequestException, IOException {
+        ThingClient thingClient = this.getLogedInThingClient();
+        int thingId1 = 1;
+        int thingId2 = 2;
+        // submitting actions
+        PropertySetAction<String> property = new PropertySetAction<String>("status");
+        PropertySetActionInstance<String> instance1 = property.createInstance("ON", thingId1); // thing ID = 1
+        PropertySetActionInstance<String> instance2 = property.createInstance("OFF", thingId2); // thing ID = 2
+        thingClient.submitActionInstance(instance1);
+        thingClient.submitActionInstance(instance2);
+
+        // thing ID = 1
+        Queue<ActionInstance> actionInstances = thingClient.getActionInstances(thingId1);
+        assertEquals("Wrong number of action instances", 1, actionInstances.size());
+        assertEquals(instance1.getProperty().getName(), ((PropertySetActionInstance<String>) actionInstances.peek()).getProperty().getName());
+        assertEquals(instance1.getProperty().getValue(), ((PropertySetActionInstance<String>) actionInstances.peek()).getProperty().getValue());
+        assertEquals(instance1.getThingId(), ((PropertySetActionInstance<String>) actionInstances.peek()).getThingId());
+
+        // thing ID = 2
+        actionInstances = thingClient.getActionInstances(thingId2);
+        assertEquals("Wrong number of action instances", 1, actionInstances.size());
+        assertEquals(instance2.getProperty().getName(), ((PropertySetActionInstance<String>) actionInstances.peek()).getProperty().getName());
+        assertEquals(instance2.getProperty().getValue(), ((PropertySetActionInstance<String>) actionInstances.peek()).getProperty().getValue());
+        assertEquals(instance2.getThingId(), ((PropertySetActionInstance<String>) actionInstances.peek()).getThingId());
     }
 }

@@ -3,7 +3,7 @@ package de.uni_stuttgart.riot.thing.commons.action;
 import de.uni_stuttgart.riot.thing.commons.Thing;
 
 /**
- * This class represents an action to be executed by a {@link Thing}.
+ * This class represents an action that can be executed by a {@link Thing}.
  *
  * @param <T>
  */

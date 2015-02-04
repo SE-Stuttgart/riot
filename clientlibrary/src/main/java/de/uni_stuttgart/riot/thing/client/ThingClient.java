@@ -33,17 +33,14 @@ public class ThingClient {
     private static final String GET_ACTIONS = PREFIX + "thing/action/";
     private static final String GET_EVENTS = PREFIX + "thing/event/";
 
-    private static final String PUT_UPDATE_THING = PREFIX + "thing/";
-
     private static final String DELETE_THING = PREFIX + "thing/";
 
     private static final String POST_DELETE_EVENT_REGISTRATION = PREFIX + "thing/deregister";
     private static final String POST_EVENT_REGISTRATION = PREFIX + "thing/register";
-    
+
     private static final String GET_LAST_ONLINE = PREFIX + "thing/online/";
 
-
-
+    /** The login client for authentication handling. */
     private final LoginClient loginClient;
 
     /**
@@ -111,7 +108,7 @@ public class ThingClient {
     }
 
     /**
-     * deregisters the Thing with id thingID.
+     * unregisters the Thing with id thingID.
      * 
      * @param thingID
      *            id of thing to be deleted
@@ -209,9 +206,16 @@ public class ThingClient {
         }
     }
 
-    
+    /**
+     * Registers on an event.
+     *
+     * @param request
+     *            the register request
+     * @throws RequestException
+     *             the request exception
+     */
     public void registerOnEvent(RegisterRequest request) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION,request);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION, request);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
@@ -220,9 +224,16 @@ public class ThingClient {
             throw new RequestException(e);
         }
     }
-    
-    
-    public void deRegisterOnEvent(RegisterRequest request) throws RequestException {
+
+    /**
+     * Unregisters from an event.
+     *
+     * @param request
+     *            the request to unregister
+     * @throws RequestException
+     *             the request exception
+     */
+    public void deRegisterFromEvent(RegisterRequest request) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_DELETE_EVENT_REGISTRATION, request);
         try {
             if (response.getEntity() != null) {
@@ -232,15 +243,23 @@ public class ThingClient {
             throw new RequestException(e);
         }
     }
-    
+
+    /**
+     * Gets the last time the Thing with thingID was online.
+     *
+     * @param thingID
+     *            the thing id
+     * @return the last online
+     * @throws RequestException
+     *             the request exception
+     */
     public Timestamp getLastOnline(long thingID) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_LAST_ONLINE + thingID);
         try {
-            Timestamp result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(),Timestamp.class);
+            Timestamp result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Timestamp.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
-
 }
