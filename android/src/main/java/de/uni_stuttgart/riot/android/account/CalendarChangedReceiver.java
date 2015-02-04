@@ -14,6 +14,11 @@ import android.util.Log;
 public class CalendarChangedReceiver extends BroadcastReceiver {
     private static final String TAG = "CalendarChangedReceiver";
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "calendar changed! " + intent.toUri(Intent.URI_INTENT_SCHEME));
@@ -23,7 +28,7 @@ public class CalendarChangedReceiver extends BroadcastReceiver {
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
         Account acc = AndroidUser.getAccount(context);
-        if(acc != null) {
+        if (acc != null) {
             ContentResolver.requestSync(acc, acc.name, settingsBundle);
         }
     }

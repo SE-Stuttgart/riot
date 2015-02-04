@@ -7,14 +7,15 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.BaseColumns;
 import android.provider.CalendarContract;
 import android.util.Log;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
-import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
 
 /**
- * Created by dirkmb on 12/7/14.
+ * This class handles all calendar actions, creation of events, adding new calendars, changing the color and loading the calendar to an
+ * given account
  */
 public class Calendar {
     private static final String TAG = "Calendar";
@@ -57,13 +58,20 @@ public class Calendar {
         }
     }
 
+    /**
+     * search for a calendar with the given name
+     * 
+     * @param calendarName
+     *            name of the calender
+     * @return the id of the calendar, -1 if none found
+     */
     private long getCalendar(String calendarName) {
         Cursor cur = null;
         Uri calendarsURI = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, account.type).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
 
         try {
-            cur = client.query(calendarsURI, new String[] { CalendarContract.Calendars._ID }, null, null, null);
-            if (cur != null && cur.moveToFirst()) {
+            cur = client.query(calendarsURI, new String[] { BaseColumns._ID }, null, null, null);
+            if ((cur != null) && cur.moveToFirst()) {
                 String myCalendarID = cur.getString(0);
                 Log.v(TAG, "Got Calendar id: " + myCalendarID);
                 return Long.parseLong(myCalendarID.trim());
@@ -76,6 +84,11 @@ public class Calendar {
         return -1;
     }
 
+    /**
+     * change the color of the current calendar
+     * 
+     * @param color
+     */
     public void changeColor(int color) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, color & 0xFFFFFFFF);
@@ -87,17 +100,25 @@ public class Calendar {
         }
     }
 
+    /**
+     * create a new calendar with the name and title
+     * 
+     * @param calendarName
+     *            the internal name of the calendar
+     * @param calendarTitle
+     *            the title (displayed in the calendar app)
+     * @return the id of the calendar, -1 on error
+     */
     private long addCalendar(String calendarName, String calendarTitle) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
         values.put(CalendarContract.Calendars.ACCOUNT_TYPE, account.type);
         values.put(CalendarContract.Calendars.NAME, calendarName);
         values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendarTitle);
-        values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xFFC3EA6E); // NOCS FIXME
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xFFC3EA6E);
         values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
         values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
         values.put(CalendarContract.Calendars.VISIBLE, 1);
-        // values.put(Calendars.ALLOWED_REMINDERS, Reminders.METHOD_ALERT);
 
         values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, CalendarContract.Calendars.CAL_ACCESS_OWNER);
         values.put(CalendarContract.Calendars.CAN_ORGANIZER_RESPOND, 1);
@@ -182,6 +203,13 @@ public class Calendar {
         }
     }
 
+    /**
+     * creates a new event in the current calendar
+     * 
+     * @param entry
+     *            the androidEventEntry which is added
+     * @return the id of the new event
+     */
     public long addEvent(AndroidCalendarEventEntry entry) {
         ContentValues cv = new ContentValues();
         cv.put(CalendarContract.Events.CALENDAR_ID, calendarId);

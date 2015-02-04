@@ -38,8 +38,15 @@ public class SyncService extends Service {
         Log.i(TAG, "Service destroyed");
     }
 
+    /**
+     * Return an object that allows the system to invoke the sync adapter.
+     */
     @Override
     public IBinder onBind(Intent intent) {
+        /*
+         * Get the object that allows external processes to call onPerformSync(). The object is created in the base class code when the
+         * SyncAdapter constructors call super()
+         */
         return syncAdapter.getSyncAdapterBinder();
     }
 

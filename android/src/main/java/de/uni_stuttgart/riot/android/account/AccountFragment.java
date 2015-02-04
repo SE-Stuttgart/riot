@@ -1,19 +1,12 @@
 package de.uni_stuttgart.riot.android.account;
 
-import com.sun.org.apache.xpath.internal.operations.And;
-
-import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,11 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import de.uni_stuttgart.riot.android.ColorPicker;
-
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.MainActivity;
+import de.uni_stuttgart.riot.android.ColorPicker;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 
 /**
@@ -39,32 +29,37 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
     EditText editUsername;
     EditText editPassword;
 
+    /**
+     * @author dirkmb thread for the server connection
+     */
     private class DoLoginRequest extends AsyncTask<String, Integer, Long> {
 
         private String username;
         private String password;
         Context mContext;
 
-        DoLoginRequest(String username, String password, Context mContext)
-        {
+        DoLoginRequest(String username, String password, Context mContext) {
             this.username = username;
             this.password = password;
             this.mContext = mContext;
         }
 
+        @Override
         protected Long doInBackground(String[] parameter) {
-            if(androidUser.logIn(username, password)) {
+            if (androidUser.logIn(username, password)) {
                 return 1L;
             }
             return 0L;
         }
 
+        @Override
         protected void onProgressUpdate(Integer... progress) {
-            //setProgressPercent(progress[0]);
+            // setProgressPercent(progress[0]);
         }
 
+        @Override
         protected void onPostExecute(Long result) {
-            if(result == 1) {
+            if (result == 1) {
                 Toast.makeText(mContext, "Your login was correct.", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(mContext, "Your login was NOT correct.", Toast.LENGTH_LONG).show();
@@ -72,10 +67,13 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
         }
     }
 
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
 
         // Initialize the API client. Initialization is not allowed in the main thread.
         final Context ctx = getActivity();
@@ -106,6 +104,11 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
         return view;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     */
     @Override
     public void onClick(View view) {
         // do what you want to do when button is clicked
@@ -113,8 +116,7 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
         case R.id.btn_add_acc:
             final String username = editUsername.getText().toString();
             final String password = editPassword.getText().toString();
-            if(username.isEmpty() || password.isEmpty())
-            {
+            if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(view.getContext(), "Please insert username and password.", Toast.LENGTH_LONG).show();
             } else {
                 new DoLoginRequest(username, password, getActivity()).execute();
@@ -141,34 +143,39 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.uni_stuttgart.riot.android.ColorPicker.OnColorChangedListener#colorChanged(int) change the color of a calendar
+     */
     @Override
     public void colorChanged(int color) {
         if (cal == null) {
-//            ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
-//            cal = new Calendar(AndroidUser.getAccount(getContext()), client, "RIOT");
+            // ContentProviderClient client = getActivity().getContentResolver().acquireContentProviderClient(CalendarContract.AUTHORITY);
+            // cal = new Calendar(AndroidUser.getAccount(getContext()), client, "RIOT");
         }
         cal.changeColor(color);
     }
 
-    void AnswerIntent(String username)
-    {
-        if(androidUser.getAccount(getActivity())==null) {
+    /**
+     * @param username
+     *            the username which is used as account name, and send back if we got called form the system account manager
+     */
+    void AnswerIntent(String username) {
+        if (AndroidUser.getAccount(getActivity()) == null) {
             boolean accountCreated = androidUser.CreateAndroidAccount(username, getActivity());
             Bundle extras = getActivity().getIntent().getExtras();
             if (extras != null) {
-                if (accountCreated) {  //Pass the new account back to the account manager
-                    AccountAuthenticatorResponse response = extras
-                            .getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+                if (accountCreated) { // Pass the new account back to the account manager
+                    AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
                     Bundle result = new Bundle();
                     result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
-                    result.putString(AccountManager.KEY_ACCOUNT_TYPE,
-                            getString(R.string.ACCOUNT_TYPE));
+                    result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.ACCOUNT_TYPE));
                     response.onResult(result);
                 }
                 getActivity().finish();
             }
-        }
-        else {
+        } else {
             // TODO account already exists in the system, what to do with the intend?
         }
     }

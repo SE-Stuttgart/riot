@@ -6,7 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * FIXME Provide description.
+ * this class is needed cause android needs an contentProvier if we want to use a syncadapter, since we save the synced data in the account
+ * there is no need for an real content provider.
  */
 public class DummyProvider extends ContentProvider {
 
