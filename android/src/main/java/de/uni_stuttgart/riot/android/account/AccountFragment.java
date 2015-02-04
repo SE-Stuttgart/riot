@@ -11,6 +11,7 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.view.LayoutInflater;
@@ -35,9 +36,40 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
     AndroidUser androidUser;
     Calendar cal = null;
 
-
     EditText editUsername;
     EditText editPassword;
+
+    private class DoLoginRequest extends AsyncTask<String, Integer, Long> {
+
+        private String username;
+        private String password;
+
+        DoLoginRequest(String username, String password)
+        {
+            this.username = username;
+            this.password = password;
+        }
+
+        protected Long doInBackground(String[] parameter) {
+            if(androidUser.logIn(username, password)) {
+                return 1L;
+            }
+            return 0L;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            //setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(Long result) {
+            if(result == 1) {
+                Toast.makeText(getActivity(), "Your login was correct.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getActivity(), "Your login was NOT correct.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,18 +115,7 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
             {
                 Toast.makeText(view.getContext(), "Please insert username and password.", Toast.LENGTH_LONG).show();
             } else {
-                final Context ctx = getActivity();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        if (androidUser.logIn(username, password)) {
-                            AnswerIntent(username);
-                        } else {
-                            Toast.makeText(ctx, "Your login was not correct.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }.start();
+                new DoLoginRequest(username, password).execute();
             }
             break;
 

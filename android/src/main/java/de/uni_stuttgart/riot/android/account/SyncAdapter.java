@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.account;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProvider;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.CalendarContract;
@@ -93,15 +95,13 @@ class MySSLSocketFactory extends SSLSocketFactory {
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SyncAdapter";
 
-    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot";
-
     CalendarClient mCalendarClient;
     AndroidUser mAndroidUser;
 
     public SyncAdapter(Context context) {
         super(context, true);
         Log.v(TAG, "SyncAdapter created");
-        mCalendarClient = new CalendarClient(new LoginClient(API_URL, "FooFoo", new DefaultTokenManager()));
+        mCalendarClient = new CalendarClient(RIOTApiClient.getInstance().getLoginClient());
         mAndroidUser = new AndroidUser(getContext());
     }
 
@@ -146,10 +146,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
+    public class CalendarSyncTask extends AsyncTask<ContentProviderClient, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(ContentProviderClient... provider) {
+            syncCalendar(provider[0]);
+            return null;
+        }
+    }
+
+
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Performing sync for authority " + authority);
-        syncCalendar(provider);
+        new CalendarSyncTask().execute(provider);
     }
 
 
