@@ -73,8 +73,9 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 
 	@Override
 	protected void onPostExecute(List<Notification> notificationList) {	
-		filterObjects.getDatabase().updateNotificationEntries(notificationList);
-		filterObjects.getDatabase().filterNotifications();
+//TODO problem with the DB? FIXME seems that a column does not exist
+// 		filterObjects.getDatabase().updateNotificationEntries(notificationList);
+//		filterObjects.getDatabase().filterNotifications();
 	}
 
 }

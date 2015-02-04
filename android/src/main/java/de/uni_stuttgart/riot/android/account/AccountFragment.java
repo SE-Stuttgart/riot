@@ -43,11 +43,13 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
 
         private String username;
         private String password;
+        Context mContext;
 
-        DoLoginRequest(String username, String password)
+        DoLoginRequest(String username, String password, Context mContext)
         {
             this.username = username;
             this.password = password;
+            this.mContext = mContext;
         }
 
         protected Long doInBackground(String[] parameter) {
@@ -63,9 +65,9 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
 
         protected void onPostExecute(Long result) {
             if(result == 1) {
-                Toast.makeText(getActivity(), "Your login was correct.", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, "Your login was correct.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getActivity(), "Your login was NOT correct.", Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, "Your login was NOT correct.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -115,7 +117,7 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
             {
                 Toast.makeText(view.getContext(), "Please insert username and password.", Toast.LENGTH_LONG).show();
             } else {
-                new DoLoginRequest(username, password).execute();
+                new DoLoginRequest(username, password, getActivity()).execute();
             }
             break;
 

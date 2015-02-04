@@ -47,8 +47,10 @@ public class TokenManager implements de.uni_stuttgart.riot.clientlibrary.userman
         accountManager = AccountManager.get(context);
 
         try {
-            accessToken = accountManager.blockingGetAuthToken(account, ACCESS_TOKEN, false);
-            refreshToken = accountManager.blockingGetAuthToken(account, REFRESH_TOKEN, false);
+            if(account != null) {
+                accessToken = accountManager.blockingGetAuthToken(account, ACCESS_TOKEN, false);
+                refreshToken = accountManager.blockingGetAuthToken(account, REFRESH_TOKEN, false);
+            }
         } catch (OperationCanceledException e) {
             throw new RuntimeException(e);
         } catch (AuthenticatorException e) {

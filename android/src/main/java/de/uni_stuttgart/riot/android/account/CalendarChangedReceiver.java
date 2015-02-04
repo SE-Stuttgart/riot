@@ -23,6 +23,8 @@ public class CalendarChangedReceiver extends BroadcastReceiver {
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
         Account acc = AndroidUser.getAccount(context);
-        ContentResolver.requestSync(acc, acc.name, settingsBundle);
+        if(acc != null) {
+            ContentResolver.requestSync(acc, acc.name, settingsBundle);
+        }
     }
 }

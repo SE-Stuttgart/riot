@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
 
 		filterObjects = new FilterDataObjects(this);
 
-
+/*
         // Initialize the API client. Initialization is not allowed in the main thread.
         final MainActivity inst = this;
         new Thread() {
@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
                 RIOTApiClient.getInstance().init(inst, "androidApp"); // TODO device name
             }
         }.start();
+*/
 
         // Database stuff
         // this.deleteDatabase("Database");
@@ -102,7 +103,9 @@ public class MainActivity extends Activity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // open the account settings
-        if(getIntent().getAction().equals("de.uni_stuttgart.riot.android.account.LOGIN")) {
+
+        if(getIntent() != null && getIntent().getAction() != null &&
+                getIntent().getAction().equals("de.uni_stuttgart.riot.android.account.LOGIN")) {
             AccountFragment fragment = new AccountFragment();
             startFragment(1, fragment);
         }
