@@ -35,6 +35,23 @@ public class CalendarEntry extends Storable {
     }
 
     /**
+     * Copy Constructor.
+     *
+     * @param entry
+     *            the entry to copy
+     */
+    public CalendarEntry(CalendarEntry entry) {
+        super(entry.getId());
+        this.title = entry.getTitle();
+        this.description = entry.getDescription();
+        this.startTime = entry.getStartTime();
+        this.endTime = entry.getEndTime();
+        this.location = entry.getLocation();
+        this.allDayEvent = entry.isAllDayEvent();
+    }
+
+
+    /**
      * Instantiates a new calendar entry.
      *
      * @param id
