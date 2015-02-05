@@ -1,17 +1,16 @@
-<div class="col-md-12">
-	<div class="col-md-9 config-text">
-		<h4 data-i18n="configuration.{{ configItem.configKey }}"></h4>
-        <!-- <p class="config-explanation">{{ configItem.text }}</p> -->
-        <p class="config-explanation">{{ configItem.description }}</p>
-	</div>
-	<div class="col-md-3 config-value">
-		<input type="text" name="configValue" class="form-control" ng-if="configItem.dataType == 'String'" ng-model="configItem.configValue">
+<div class="form-group">
+  <div class="col-md-9">
+    <h4 data-i18n="configuration.{{ configItem.configKey }}"></h4>
+    <p class="config-explanation">{{ configItem.description }}</p>
+  </div>
+  <div class="config-value col-md-3">
+    <input type="text" name="configValue" class="form-control" ng-if="configItem.dataType == 'String'" ng-model="configItem.configValue">
 
-		<input type="number" min="0" name="configValue" class="form-control" step="any" ng-if="isTypeNumber()" ng-model="configItem.configValue">
+    <input type="number" min="0" name="configValue" class="form-control" step="any" ng-if="isTypeNumber()" ng-model="configItem.configValue">
 
-		<div ng-if="isTypeBoolean()" >
-			<input bs-switch name="configValue" ng-model="configItem.configValue" type="checkbox">
-		</div>
-	</div>
-	<div class="config-bottom"></div>
+    <div ng-if="isTypeBoolean()" >
+      <input bs-switch name="configValue" ng-model="configItem.configValue" type="checkbox">
+    </div>
+  </div>
+  <div class="config-bottom"></div>
 </div>
