@@ -49,5 +49,7 @@
     <string name="location_distance">Distance from current position to</string>
     <string name="location_store_distance">Notify within a range of</string>
     <string name="change_color">Change Color</string>
+    <string name="ACCOUNT_TYPE">de.uni_stuttgart.riot.android.account.type</string>
+    <string name="ACCOUNT_SYNC_FREQ">1800</string>
 
 </resources>

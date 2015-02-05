@@ -31,16 +31,11 @@ import android.util.Log;
  * Service to authenticate FIXME complete description.
  */
 public class AccountAuthenticatorService extends Service {
-
     private static final String TAG = "AccountService";
-    private static AccountAuthenticator accountAuthenticator;
 
-    private AccountAuthenticator getAuthenticator() {
-        if (accountAuthenticator == null) {
-            accountAuthenticator = new AccountAuthenticator(this);
-        }
-        return accountAuthenticator;
-    }
+    // Instance field that stores the authenticator object
+    private AccountAuthenticator mAccountAuthenticator;
+
 
     @Override
     public void onCreate() {
@@ -52,69 +47,23 @@ public class AccountAuthenticatorService extends Service {
         Log.i(TAG, "Service destroyed");
     }
 
+    private AccountAuthenticator getAuthenticator() {
+        // Create a new authenticator object if needed
+        if (mAccountAuthenticator == null) {
+            mAccountAuthenticator = new AccountAuthenticator(this);
+        }
+        return mAccountAuthenticator;
+    }
+
+    /*
+     * When the system binds to this Service to make the RPC call
+     * return the authenticator's IBinder.
+     */
     @Override
     public IBinder onBind(Intent intent) {
         if (intent.getAction().equals(android.accounts.AccountManager.ACTION_AUTHENTICATOR_INTENT)) {
             return getAuthenticator().getIBinder();
         }
         return null;
-    }
-
-    /**
-     * FIXME Provide description.
-     */
-    public class AccountAuthenticator extends AbstractAccountAuthenticator {
-        private Context context;
-
-        /**
-         * Creates a new AccountAuthenticator.
-         * 
-         * @param context
-         *            The Android context.
-         */
-        public AccountAuthenticator(Context context) {
-            super(context);
-            this.context = context;
-        }
-
-        @Override
-        public Bundle editProperties(AccountAuthenticatorResponse accountAuthenticatorResponse, String s) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Bundle addAccount(AccountAuthenticatorResponse accountAuthenticatorResponse, String s, String s2, String[] strings, Bundle options) throws NetworkErrorException {
-            /*
-             * Intent intent = new Intent(context, Main.class); intent.putExtra(AccountManager .KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,
-             * accountAuthenticatorResponse); Bundle bundle = new Bundle(); bundle.putParcelable(AccountManager.KEY_INTENT, intent); return
-             * bundle;
-             */
-            return null;
-        }
-
-        @Override
-        public Bundle confirmCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, Bundle bundle) throws NetworkErrorException {
-            return null;
-        }
-
-        @Override
-        public Bundle getAuthToken(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getAuthTokenLabel(String s) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Bundle updateCredentials(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String s, Bundle bundle) throws NetworkErrorException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Bundle hasFeatures(AccountAuthenticatorResponse accountAuthenticatorResponse, Account account, String[] strings) throws NetworkErrorException {
-            throw new UnsupportedOperationException();
-        }
     }
 }
