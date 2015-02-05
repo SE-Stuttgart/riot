@@ -5,15 +5,10 @@ import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.test.BaseResourceTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.usermanagement.security.AuthenticationFilterBinding;
 import de.uni_stuttgart.riot.usermanagement.service.rest.PermissionService;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class PermissionRestTest extends BaseResourceTest<PermissionService, Permission> {
-
-    public PermissionRestTest() {
-        AuthenticationFilterBinding.enable = false;
-    }
 
     @Override
     public String getSubPath() {

@@ -5,17 +5,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
@@ -23,7 +20,6 @@ import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Use a mock implementation of the BaseResource to check if the behavior is as expected.
@@ -32,26 +28,6 @@ import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
  *
  */
 public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Storable> extends JerseyDBTestBase {
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected Application configure() {
-        return new RiotApplication();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
-    }
 
     public abstract String getSubPath();
 

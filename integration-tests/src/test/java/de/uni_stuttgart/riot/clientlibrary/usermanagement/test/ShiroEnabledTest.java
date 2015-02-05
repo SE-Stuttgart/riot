@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.test;
 
+import javax.ws.rs.core.Application;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -13,22 +15,29 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Abstract test case enabling Shiro in test environments.
  */
-public abstract class ShiroEnabledTest extends JerseyDBTestBase{
+public abstract class ShiroEnabledTest extends JerseyDBTestBase {
 
     private static ThreadState subjectThreadState;
 
     public ShiroEnabledTest() {
     }
-    
+
+    @Override
+    protected Application configure() {
+        // We use the full RiotApplication including the security providers.
+        return new RiotApplication();
+    }
+
     @BeforeClass
     public static void beforeClass() {
-        //0.  Build and set the SecurityManager used to build Subject instances used in your tests
-        //    This typically only needs to be done once per class if your shiro.ini doesn't change,
-        //    otherwise, you'll need to do this logic in each test that is different
+        // Build and set the SecurityManager used to build Subject instances used in your tests
+        // This typically only needs to be done once per class if your shiro.ini doesn't change,
+        // otherwise, you'll need to do this logic in each test that is different
         Factory<SecurityManager> factory = new IniSecurityManagerFactory("file:../usermanagement/src/main/resources/shiro.ini");
         setSecurityManager(factory.getInstance());
     }
@@ -36,7 +45,8 @@ public abstract class ShiroEnabledTest extends JerseyDBTestBase{
     /**
      * Allows subclasses to set the currently executing {@link Subject} instance.
      *
-     * @param subject the Subject instance
+     * @param subject
+     *            the Subject instance
      */
     protected void setSubject(Subject subject) {
         clearSubject();
@@ -81,9 +91,9 @@ public abstract class ShiroEnabledTest extends JerseyDBTestBase{
             SecurityManager securityManager = getSecurityManager();
             LifecycleUtils.destroy(securityManager);
         } catch (UnavailableSecurityManagerException e) {
-            //we don't care about this when cleaning up the test environment
-            //(for example, maybe the subclass is a unit test and it didn't
-            // need a SecurityManager instance because it was using only 
+            // we don't care about this when cleaning up the test environment
+            // (for example, maybe the subclass is a unit test and it didn't
+            // need a SecurityManager instance because it was using only
             // mock Subject instances)
         }
         setSecurityManager(null);
