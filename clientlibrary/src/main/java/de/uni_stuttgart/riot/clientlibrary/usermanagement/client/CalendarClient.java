@@ -2,10 +2,10 @@ package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
 // this file needs to be in this package cause the loginClient jsonMapper and the get,post,put,delete functions are only visible here
 
+import java.util.Collection;
+
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.type.TypeReference;
-
-import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
@@ -24,50 +24,55 @@ public class CalendarClient {
 
     /**
      * Constructor.
-     * @param loginClient the {@link LoginClient} to be used
+     * 
+     * @param loginClient
+     *            the {@link LoginClient} to be used
      */
     public CalendarClient(LoginClient loginClient) {
         this.loginClient = loginClient;
     }
 
-
     /**
      * Creates the event on the server.
-     * @param entry new values for the event
+     * 
+     * @param entry
+     *            new values for the event
      * @return the updated Entry
      * @throws RequestException .
      */
     public CalendarEntry createEvent(CalendarEntry entry) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + EVENTS, entry);
         try {
-            CalendarEntry result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), CalendarEntry.class);
+            CalendarEntry result = loginClient.getJsonMapper().readValue(response.getEntity().getContent(), CalendarEntry.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
 
-
     /**
      * Updates the event.
-     * @param entry new values for the event
+     * 
+     * @param entry
+     *            new values for the event
      * @return the updated Entry
      * @throws RequestException .
      */
     public CalendarEntry updateEvent(CalendarEntry entry) throws RequestException {
         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + EVENTS + entry.getId(), entry);
         try {
-            CalendarEntry result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), CalendarEntry.class);
+            CalendarEntry result = loginClient.getJsonMapper().readValue(response.getEntity().getContent(), CalendarEntry.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
 
-
     /**
      * Delete the event on the server.
-     * @param entry new values for the event
+     * 
+     * @param entry
+     *            new values for the event
      * @return the updated Entry
      * @throws RequestException .
      */
@@ -80,16 +85,17 @@ public class CalendarClient {
         }
     }
 
-
     /**
      * Get all events from the server.
+     * 
      * @return the list of all events
      * @throws RequestException .
      */
     public Collection<CalendarEntry> getEvents() throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + EVENTS);
         try {
-            Collection<CalendarEntry> result = this.loginClient.jsonMapper.readValue(response.getEntity().getContent(), new TypeReference<Collection<CalendarEntry>>() { });
+            Collection<CalendarEntry> result = loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<CalendarEntry>>() {
+            });
             return result;
         } catch (Exception e) {
             throw new RequestException(e);

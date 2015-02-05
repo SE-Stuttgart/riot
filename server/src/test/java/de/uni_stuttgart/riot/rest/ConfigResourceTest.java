@@ -15,8 +15,6 @@ import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
-import de.uni_stuttgart.riot.server.commons.config.ConfigurationStorable;
 
 /**
  * Test class for the calendar which uses the Jersey Test Framework.
