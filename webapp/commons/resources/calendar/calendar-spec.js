@@ -1,10 +1,10 @@
-describe('calendar', function() {
+describe('Calendar', function() {
 
   beforeEach(module('riot'));
 
-  it('should ...', inject(function(calendar) {
+  it('should ...', inject(function(Calendar) {
 
-	//expect(calendar.doSomething()).toEqual('something');
+	//expect(Calendar.doSomething()).toEqual('something');
 
   }));
 
