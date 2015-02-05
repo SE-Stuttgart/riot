@@ -18,6 +18,7 @@ import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 import de.uni_stuttgart.riot.commons.test.BaseResourceTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.usermanagement.security.AuthenticationFilterBinding;
 
 /**
  * Test class for the calendar which uses the Jersey Test Framework.
@@ -28,6 +29,10 @@ import de.uni_stuttgart.riot.commons.test.TestData;
 public class CalendarResourceTest extends BaseResourceTest<CalendarResource, CalendarEntry> {
 
     private static final String CALENDAR = "calendar/";
+
+    public CalendarResourceTest() {
+        AuthenticationFilterBinding.enable = false;
+    }
 
     /**
      * Tests if a GET request to the resource works.

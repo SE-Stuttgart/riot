@@ -17,9 +17,12 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 @Provider
 public class AuthenticationFilterBinding implements DynamicFeature {
 
+    /** Enable or disable the filter. Standard: Enabled */
+    public static boolean enable = true;
+
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        if (resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class) || resourceInfo.getResourceClass().isAnnotationPresent(RequiresAuthentication.class)) {
+        if (enable && (resourceInfo.getResourceMethod().isAnnotationPresent(RequiresAuthentication.class) || resourceInfo.getResourceClass().isAnnotationPresent(RequiresAuthentication.class))) {
             context.register(AuthenticationFilter.class);
         }
     }
