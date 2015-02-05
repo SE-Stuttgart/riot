@@ -33,7 +33,7 @@ Retrieving at maximum {limit} calendar entries.
 
 	GET /calendar?limit={limit}
 
-Retrieving at maximum {limit} calendar entries, starting at calendar entry id {offset}
+Retrieving at maximum {limit} calendar entries, starting at position {offset}.
 
 	GET /calendar?offset={offset}&limit={limit}
 
@@ -41,13 +41,31 @@ Retrieving at maximum {limit} calendar entries, starting at calendar entry id {o
 
 limit - maximum number of calendar entries to return.
 
-offset - the beggining calendar entry id.
+offset - the beggining position.
 
 #### Response
 
 HTTP OK (200) response if operation was succesful; or
 
 HTTP Bad Request (400) response if parameters have invalid values.
+
+The Response Header contains the information: offset, limit and total (total number of calendar entries).
+
+### Retrieve Calendar Entries using Filter
+
+	POST /calendar/filter
+
+#### Request Body
+
+JSON payload (FilteredRequest) representing the filter to be applied. Offset and limit can be also specified on the request.
+
+#### Response
+
+HTTP OK (200) response if operation was succesful; or
+
+HTTP Bad Request (400) response if parameters at FilteredRequest have invalid values.
+
+The Response Header contains the information: offset, limit and total (total number of calendar entries that applied to the filter).
 
 ### Retrieve Calendar Entry
 

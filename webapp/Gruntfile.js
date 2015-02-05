@@ -94,6 +94,7 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['img/**'], dest: 'dist/'},
+	  {src: ['languages/**'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
           {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
           //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
@@ -197,10 +198,80 @@ module.exports = function (grunt) {
       during_watch: {
         browsers: ['PhantomJS']
       },
+    },
+    convert_messages: {
+      options: {
+        languages: ['de', 'en'],
+        files: ['thing']
+      }
     }
   });
+  
+  // Grunt Task to remove .lang.json files from languages folder
+  grunt.registerTask('clean_messages', 'Will remove languages/xx/yy.lang.json', function() {
+    grunt.file.recurse('languages/', function(abspath, rootdir, subdir, filename) {
+      if (filename.substr(-10) === '.lang.json') {
+        grunt.log.writeln("Removing " + abspath);
+        grunt.file.delete(abspath);
+      }
+    });
+  });
+  
+  // Grunt Task to convert .properties from commons project to JSON files for AngularJS
+  grunt.registerTask('convert_messages', 'Will read .properties files from commons project and create the localization JSON files for angularjs.', function() {
+    var options = this.options({
+      languages: [],
+      files: []
+    });
+    
+    // Create empty array for each language
+    var stringsByLang = {};
+    options.languages.forEach(function(language) {
+      stringsByLang[language] = [];      
+    });
+    
+    // Read files from commons project
+    grunt.file.recurse('../commons/src/main/resources/languages/', function(abspath, rootdir, subdir, filename) {
+      filename = filename.toLowerCase();
+      if (filename.substr(-11) !== '.properties') {
+        return;
+      }
+      var filenameWithoutExtension = filename.substr(0, filename.length - 11);
+      
+      // Get the language suffix from the file name
+      var lang = filenameWithoutExtension.substring(filenameWithoutExtension.lastIndexOf('_') + 1);
+      if (options.languages.indexOf(lang) === -1) {
+        grunt.log.writeln("Ignoring " + filename + " because of unknown language " + lang);
+        return;
+      }
+      grunt.log.writeln("Reading " + filename);
+      
+      // Read line by line, insert each non-empty, non-comment line into the output JSON-object
+      var output = {};
+      var content = grunt.file.read(abspath)
+        .trim()
+        .split("\n")
+        .map(function(line) { return line.trim(); })
+        .filter(function(line) { return line.length && line[0] !== '#'; }) // Remove empty lines and comment lines
+        .forEach(function(line) {
+          
+          // Split at the first '=' character
+          var index = line.indexOf('=');
+          if (index === -1) {
+            return null;
+          }
+          
+          // Create the object that Angular needs
+          output[line.substr(0, index)] = line.substr(index+1);
+        });
+        
+        var outFile = 'languages/' + lang + '/' + filenameWithoutExtension.substring(0, filenameWithoutExtension.length - lang.length - 1) + '.lang.json';
+        grunt.log.writeln("Writing to " + outFile);
+        grunt.file.write(outFile, JSON.stringify(output));
+    });
+  });
 
-  grunt.registerTask('build',['jshint','clean:before','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
+  grunt.registerTask('build',['jshint','clean:before','clean_messages','convert_messages','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
   grunt.registerTask('serve', ['dom_munger:read','jshint','connect', 'watch']);
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
   grunt.registerTask('test-headless',['dom_munger:read','karma:during_watch']);

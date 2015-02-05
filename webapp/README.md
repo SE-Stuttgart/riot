@@ -63,7 +63,7 @@ Run the following commands in the root directory of the webapp to load the requi
     npm install
     bower install
 
-If you get a prompt during installation with the message "Unable to find a suitable version for angular, please choose one", select angular version 1.2.28 to download.
+If you get a prompt during installation with the message "Unable to find a suitable version for angular, please choose one", select angular version 1.2.28 to download. Similarly, choose 1.3.10 for angular-sanitize.
 
 
 ## Project Structure

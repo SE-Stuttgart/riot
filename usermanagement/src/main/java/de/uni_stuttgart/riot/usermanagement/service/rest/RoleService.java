@@ -34,6 +34,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 @Path("roles")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@RequiresAuthentication
 public class RoleService extends BaseResource<Role> {
 
     UserManagementFacade facade = UserManagementFacade.getInstance();
@@ -57,7 +58,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @GET
     @Path("/{roleID}/permissions")
-    @RequiresAuthentication
     public Collection<Permission> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
         // TODO limit returned permissions
         return facade.getAllPermissionsOfRole(roleID).stream().collect(Collectors.toList());
@@ -77,7 +77,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @PUT
     @Path("/{roleID}/permissions/{permissionID}")
-    @RequiresAuthentication
     public Response addUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.addPermissionToRole(roleID, permissionID);
 
@@ -98,7 +97,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @DELETE
     @Path("/{roleID}/permissions/{permissionID}")
-    @RequiresAuthentication
     public Response removeUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.deletePermissionFromRole(roleID, permissionID);
 

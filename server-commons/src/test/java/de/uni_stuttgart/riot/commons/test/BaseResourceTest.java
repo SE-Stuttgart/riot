@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.commons.test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -98,16 +99,21 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
 
         // normal behavior
         final int pageSize = 2;
-        resp = target(this.getSubPath()).queryParam("offset", 1).queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
+        final int offset = 1;
+        resp = target(this.getSubPath()).queryParam("offset", offset).queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-        Collection<T> models = resp.readEntity(new GenericType<List<T>>() {
+        Collection<T> models = resp.readEntity(new GenericType<Collection<T>>() {
         });
         assertThat(models, hasSize(pageSize));
+        assertEquals("wrong offset", String.valueOf(offset), resp.getHeaders().getFirst("offset"));
+        assertEquals("wrong limit", String.valueOf(pageSize), resp.getHeaders().getFirst("limit"));
+        String expectedTotal = String.valueOf(this.getTestDataSize());
+        assertEquals("wrong total", expectedTotal, resp.getHeaders().getFirst("total"));
 
         // using only limit parameter: api/resource?limit=2
         resp = target(this.getSubPath()).queryParam("limit", pageSize).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-        models = resp.readEntity(new GenericType<List<T>>() {
+        models = resp.readEntity(new GenericType<Collection<T>>() {
         });
         assertThat(models, hasSize(pageSize));
     }
@@ -116,15 +122,23 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
     public void testGetFiltering() {
         List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
         filterAtts.add(this.getFilter());
+        final int pageSize = 2;
+        final int offset = 0;
         FilteredRequest reqEntity = new FilteredRequest();
         reqEntity.setOrMode(false);
         reqEntity.setFilterAttributes(filterAtts);
+        reqEntity.setOffset(offset);
+        reqEntity.setLimit(pageSize);
 
         Response resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Collection<T> models = resp.readEntity(new GenericType<List<T>>() {
         });
         assertThat(models, hasSize(1));
+        assertEquals("wrong offset", String.valueOf(offset), resp.getHeaders().getFirst("offset"));
+        assertEquals("wrong limit", String.valueOf(pageSize), resp.getHeaders().getFirst("limit"));
+        String expectedTotal = "1";
+        assertEquals("wrong total", expectedTotal, resp.getHeaders().getFirst("total"));
 
         // post must fail with invalid body
         resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(null);
@@ -171,15 +185,18 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
     @Test
     public void testUpdateOne() {
         Entity<T> testEntity = Entity.entity(this.getNewObject(), MediaType.APPLICATION_JSON_TYPE);
+        T testValue = this.getNewObject();
+        testValue.setId(Long.valueOf(this.getTestDataSize()));
+
+        // updates the last element
         Response resp = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
         // retrieved object must have the "comment" field updated
         Response a = target(this.getSubPath() + "/" + this.getTestDataSize()).request(MediaType.APPLICATION_JSON).get();
         assertEquals(Response.Status.OK.getStatusCode(), a.getStatus());
         T updated = a.readEntity(this.getObjectClass());
-        T testValue = this.getNewObject();
-        testValue.setId(Long.valueOf(this.getTestDataSize()));
-        assertEquals(testValue, updated);
+
+        assertTrue(testValue.equals(updated));
         // resource doesnt exist, so put request should return 404
         resp = target(this.getSubPath() + "/" + (this.getTestDataSize() + 1)).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
