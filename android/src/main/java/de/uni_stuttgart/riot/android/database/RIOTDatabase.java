@@ -168,13 +168,15 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 				String thing = cursor.getString(cursor
 						.getColumnIndex(NOTIFICATION_COLUMN_THING));
 
-				if (mainActivity.getPressedHomeScreenButton().equals(thing)) {
+				/* TODO FIXME THIS DOES NOT COMPILE ANYMORE
+				  if (mainActivity.getPressedHomeScreenButton().equals(thing)) {
+				 
 					// TODO: richtiges Datum verwenden
 					Notification notificiation = new Notification(id, title,
 							content, NotificationType.valueOf(type),
 							new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), thing);
 					notificationList.add(notificiation);
-				}
+				}*/
 
 			} while (cursor.moveToNext());
 

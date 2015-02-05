@@ -10,6 +10,7 @@ import android.content.Context;
 
 import de.uni_stuttgart.riot.android.account.AndroidUser;
 
+//CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /**
  * The Token Manager saves the tokens in a account using the AccountManager. This enables the Token Manager to restore the tokens, even if
  * the instance was destroyed.

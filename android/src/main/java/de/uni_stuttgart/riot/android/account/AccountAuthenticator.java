@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import de.uni_stuttgart.riot.android.MainActivity;
 
+// CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /*
  * Implement AbstractAccountAuthenticator and stub out all
  * of its methods

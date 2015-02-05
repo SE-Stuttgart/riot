@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
+//CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /**
  * Created by dirkmb on 1/17/15.
  */

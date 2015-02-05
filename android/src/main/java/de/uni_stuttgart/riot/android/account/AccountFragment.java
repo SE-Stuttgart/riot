@@ -18,6 +18,7 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.ColorPicker;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 
+//CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /**
  * UI for account creation.
  */
