@@ -1,0 +1,55 @@
+<div class="row" ng-controller="CalendarDetailCtrl">
+  <div class="col-lg-7">
+    <h3><strong>Calendar Entry</strong></h3>
+    <form name="formUserDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formUserDetail.$valid && save()">
+      <!-- title -->
+      <div class="form-group">
+        <label class="control-label col-md-2" for="title">Title</label>
+        <div class="col-md-8">
+          <input id="title" name="title" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.title">
+        </div>
+      </div>
+
+      <!-- location -->
+      <div class="form-group">
+        <label class="control-label col-md-2" for="location">Location</label>
+        <div class="col-md-8">
+          <input id="location" name="location" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.location">
+        </div>
+      </div>
+
+      <!-- startTime -->
+      <div class="form-group">
+        <label class="control-label col-md-2" for="startTime">Start</label>
+        <div class="col-md-8">
+          <input id="startTime" name="startTime" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.startTime">
+        </div>
+      </div>
+
+      <!-- endTime -->
+      <div class="form-group">
+        <label class="control-label col-md-2" for="endTime">End</label>
+        <div class="col-md-8">
+          <input id="endTime" name="endTime" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.endTime">
+        </div>
+      </div>
+
+      <!-- description -->
+      <div class="form-group">
+        <label class="control-label col-md-2" for="description">Description</label>
+        <div class="col-md-8">
+          <textarea id="description" name="description" rows="3" class="form-control" ng-model="calendarEntryDetail.description"></textarea>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div class="form-group">
+        <div class="col-md-offset-2 col-md-8">
+          <button type="submit" class="btn btn-default">Save</button>
+          <button ui-sref="app.calendar.list" type="button" class="btn btn-default">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-5"></div>
+</div>
