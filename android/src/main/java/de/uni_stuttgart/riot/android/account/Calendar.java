@@ -11,6 +11,8 @@ import android.provider.BaseColumns;
 import android.provider.CalendarContract;
 import android.util.Log;
 
+import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
+
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 
 /**

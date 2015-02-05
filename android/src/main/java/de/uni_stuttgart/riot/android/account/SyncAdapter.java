@@ -18,6 +18,7 @@ import android.provider.CalendarContract;
 import android.provider.CalendarContract.Calendars;
 import android.util.Log;
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.CalendarClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
