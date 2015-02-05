@@ -1,9 +1,10 @@
 <form class="navbar-form" role="search" ng-submit="submit()" ng-controller="LoginFormCtrl">
+  <span class="fa fa-lg fa-spinner fa-spin" ng-if="login"></span>
   <div class="form-group">
     <input type="text" name="username" placeholder="Username" class="form-control" ng-model="username">
   </div>
   <div class="form-group">
     <input type="password" name="password" placeholder="Password" class="form-control" ng-model="password">
   </div>
-  <button type="submit" class="btn btn-default">Sign In</button>
+  <button type="submit" class="btn btn-default" ng-disabled="login">Sign In</button>
 </form>

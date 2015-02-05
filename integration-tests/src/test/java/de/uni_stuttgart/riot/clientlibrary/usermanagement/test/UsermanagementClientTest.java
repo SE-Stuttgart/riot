@@ -23,7 +23,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
-@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
+@TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class UsermanagementClientTest extends ShiroEnabledTest {
 
     /*

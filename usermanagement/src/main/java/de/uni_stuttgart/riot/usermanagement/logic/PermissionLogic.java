@@ -1,12 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
-import javax.naming.NamingException;
-
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
@@ -15,7 +11,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPer
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the permissions.
  * 
@@ -24,21 +19,16 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePer
  */
 public class PermissionLogic {
 
-    private DAO<Permission> dao;
+    private DAO<Permission> dao = new PermissionSqlQueryDAO();
 
     /**
-     * Constructor.
+     * Adds a new permission entry.
+     * 
+     * @param permission
+     *            The permission to be added.
+     * @throws AddPermissionException
+     *             When adding the permission failed.
      */
-    public PermissionLogic() {
-        try {
-            dao = new PermissionSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        } catch (NamingException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void addPermission(Permission permission) throws AddPermissionException {
         try {
             dao.insert(permission);
@@ -53,6 +43,7 @@ public class PermissionLogic {
      * @param id
      *            The id of the permission to remove
      * @throws DeletePermissionException
+     *             When deleting the permission failed.
      */
     public void deletePermission(Long id) throws DeletePermissionException {
         try {
@@ -63,13 +54,14 @@ public class PermissionLogic {
     }
 
     /**
-     * Change an existing permission
+     * Change an existing permission.
      * 
      * @param id
      *            The id of the permission to change
      * @param permission
      *            The new content of the permission
      * @throws UpdatePermissionException
+     *             When updating the permission failed.
      */
     public void updatePermission(Long id, Permission permission) throws UpdatePermissionException {
         try {
@@ -86,6 +78,7 @@ public class PermissionLogic {
      *            The id of the permission to get
      * @return The retrieved permission
      * @throws GetPermissionException
+     *             When the permission could not be retrieved.
      */
     public Permission getPermission(Long id) throws GetPermissionException {
         try {
@@ -100,6 +93,7 @@ public class PermissionLogic {
      * 
      * @return All existing permissions in a collection
      * @throws GetAllPermissionsException
+     *             When retrieving all per missions failed.
      */
     public Collection<Permission> getAllPermissions() throws GetAllPermissionsException {
         try {

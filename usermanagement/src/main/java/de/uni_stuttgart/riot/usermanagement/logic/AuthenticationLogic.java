@@ -1,11 +1,8 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.naming.NamingException;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -14,7 +11,6 @@ import org.apache.shiro.subject.Subject;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
@@ -29,7 +25,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.Refre
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding the authorization process.
  * 
@@ -38,31 +33,18 @@ import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
  */
 public class AuthenticationLogic {
 
+    /**
+     * How often can a user enter a wrong password for a single user name?
+     */
+    public static final int MAX_LOGIN_RETRIES = 5;
+
     // How long is the bearer token valid. Time in ms. Current value: 2h (=min * sec * ms)
     private static final int VALID_TOKEN_TIME_IN_MS = 120 * 60 * 1000;
 
     // If the token already exists in the db, how often should be tried to generate a unique token
     private static final int TOKEN_GENERATION_MAX_RETRIES = 20;
 
-    /**
-     * How often can a user enter a wrong password for a single user name?
-     */
-    public static final int MAX_LOGIN_RETRIES = 5;
-
-    private DAO<Token> dao;
-
-    /**
-     * Constructor.
-     */
-    public AuthenticationLogic() {
-        try {
-            dao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(), false);
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private DAO<Token> dao = new TokenSqlQueryDAO();
 
     /**
      * Generate one bearer and one refresh token.
@@ -106,7 +88,7 @@ public class AuthenticationLogic {
 
                     // get all roles of the user
                     Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO();
 
                     // assign the token the same roles as the user has
                     for (Role role : roles) {
@@ -130,11 +112,10 @@ public class AuthenticationLogic {
      * Generate a new set of bearer and refresh token from a given refresh token.
      * 
      * @param providedRefreshToken
-     *            The refresh token used for generating the new tokens
-     * @throws LoginException
+     *            The refresh token used for generating the new tokens.
+     * @return A response containing the bearer and refresh token.
+     * @throws RefreshException
      *             Thrown if any error happens
-     * 
-     * @return A response containing the bearer and refresh token
      */
     public Token refreshToken(String providedRefreshToken) throws RefreshException {
 
@@ -145,7 +126,7 @@ public class AuthenticationLogic {
             // test, if token is valid
             if (token != null && token.isValid()) {
 
-                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO();
 
                 // generate a new token and save it in the db
                 Token newToken = generateAndSaveTokens(token.getUserID());
@@ -177,8 +158,8 @@ public class AuthenticationLogic {
      * 
      * @param currentBearerToken
      *            The current bearer token used to authenticate the user. Will no longer be valid after calling this method.
-     * @throws Thrown
-     *             if any error happens
+     * @throws LogoutException
+     *             if any error happens.
      */
     public void logout(String currentBearerToken) throws LogoutException {
         try {
@@ -204,7 +185,8 @@ public class AuthenticationLogic {
         int retries = TOKEN_GENERATION_MAX_RETRIES;
         Exception lastException = null;
 
-        Timestamp issueTime = new Timestamp(System.currentTimeMillis() - 1000000);// FIXME use git - master
+        // TODO This is not necessarily the issue time?
+        Timestamp issueTime = new Timestamp(System.currentTimeMillis() - 1000000); // NOCS FIXME use git - master
         Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
 
         do {

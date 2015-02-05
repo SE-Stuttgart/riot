@@ -1,11 +1,9 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,7 +18,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
@@ -37,19 +34,17 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
 @Path("roles")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@RequiresAuthentication
 public class RoleService extends BaseResource<Role> {
 
     UserManagementFacade facade = UserManagementFacade.getInstance();
-    
-    /**
-     * Const.
-     * @throws SQLException .
-     * @throws NamingException .
-     */
-    public RoleService() throws SQLException, NamingException {
-        super(new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false));
-    }
 
+    /**
+     * Constructor.
+     */
+    public RoleService() {
+        super(new RoleSqlQueryDAO());
+    }
 
     /**
      * Get permissions of a role. FIXME This method seems to have the wrong name (has nothing to do with users?).
@@ -63,7 +58,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @GET
     @Path("/{roleID}/permissions")
-    @RequiresAuthentication
     public Collection<Permission> getUserRoles(@PathParam("roleID") Long roleID) throws UserManagementException {
         // TODO limit returned permissions
         return facade.getAllPermissionsOfRole(roleID).stream().collect(Collectors.toList());
@@ -83,7 +77,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @PUT
     @Path("/{roleID}/permissions/{permissionID}")
-    @RequiresAuthentication
     public Response addUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.addPermissionToRole(roleID, permissionID);
 
@@ -104,7 +97,6 @@ public class RoleService extends BaseResource<Role> {
      */
     @DELETE
     @Path("/{roleID}/permissions/{permissionID}")
-    @RequiresAuthentication
     public Response removeUserRole(@PathParam("roleID") Long roleID, @PathParam("permissionID") Long permissionID) throws UserManagementException {
         facade.deletePermissionFromRole(roleID, permissionID);
 

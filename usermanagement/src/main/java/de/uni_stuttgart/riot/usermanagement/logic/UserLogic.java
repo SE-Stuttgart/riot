@@ -1,25 +1,23 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
+import de.uni_stuttgart.riot.server.commons.config.ConfigurationKey;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserRoleSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDao;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
@@ -34,7 +32,6 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserExcep
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * Contains all logic regarding an user.
  * 
@@ -43,31 +40,20 @@ import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
  */
 public class UserLogic {
 
-    private DAO<UMUser> dao;
-
-    /**
-     * Constructor.
-     */
-    public UserLogic() {
-        try {
-            dao = new UserSqlQueryDao(ConnectionMgr.openConnection(), false);
-        } catch (NamingException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    private DAO<UMUser> dao = new UserSqlQueryDAO();
 
     /**
      * Add a new user to the system.
      * 
      * @param username
-     *            The new user
+     *            The new user.
      * @param clearTextPassword
-     *            The password of the user as clear text
+     *            The password of the user as clear text.
+     * @return The added user.
      * @throws AddUserException
+     *             When adding the user failed.
      * 
-     * @return The added user
+     * 
      */
     public UMUser addUser(String username, String clearTextPassword) throws AddUserException {
         try {
@@ -95,9 +81,9 @@ public class UserLogic {
      * Delete an existing user.
      * 
      * @param id
-     *            The id of the user
+     *            The id of the user.
      * @throws DeleteUserException
-     *             Thrown if any error occurs
+     *             Thrown if any error occurs.
      */
     public void deleteUser(Long id) throws DeleteUserException {
         try {
@@ -111,10 +97,11 @@ public class UserLogic {
      * Update an existing user.
      * 
      * @param user
-     *            The new content of the user
+     *            The new content of the user.
      * @param clearTextPassword
      *            The password of the user as clear text. If the password should not be updated use null.
      * @throws UpdateUserException
+     *             When updating the user failed.
      */
     public void updateUser(UMUser user, String clearTextPassword) throws UpdateUserException {
         try {
@@ -141,8 +128,11 @@ public class UserLogic {
     /**
      * Retrieve an existing user.
      * 
-     * @return The user
+     * @param id
+     *            The user's id.
+     * @return The user.
      * @throws GetUserException
+     *             When getting the user failed.
      */
     public UMUser getUser(Long id) throws GetUserException {
         try {
@@ -153,12 +143,13 @@ public class UserLogic {
     }
 
     /**
-     * Retrive an existing user
+     * Retrive an existing user by his name.
      * 
      * @param username
-     *            Username of the user
-     * @return The user
+     *            Username of the user.
+     * @return The user.
      * @throws GetUserException
+     *             When getting the user failed.
      */
     public UMUser getUser(String username) throws GetUserException {
 
@@ -171,12 +162,13 @@ public class UserLogic {
     }
 
     /**
-     * Get user by token.
+     * Get user by token by one of his tokens.
      * 
      * @param token
      *            The token of the user.
      * @return Returns user.
      * @throws GetUserException
+     *             When getting the user failed.
      */
     public UMUser getUser(Token token) throws GetUserException {
         try {
@@ -189,8 +181,9 @@ public class UserLogic {
     /**
      * Retrieve all existing users.
      * 
-     * @return Collection containing all users
+     * @return Collection containing all users.
      * @throws GetAllUsersException
+     *             When getting the users failed.
      */
     public Collection<UMUser> getAllUsers() throws GetAllUsersException {
         try {
@@ -204,14 +197,15 @@ public class UserLogic {
      * Add an existing role to an existing user.
      * 
      * @param userId
-     *            The id of the user
+     *            The id of the user.
      * @param roleId
-     *            The id of the role
+     *            The id of the role.
      * @throws AddRoleToUserException
+     *             When adding the user role failed.
      */
     public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
         try {
-            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO();
             UserRole ur = new UserRole(userId, roleId);
             roleDao.insert(ur);
         } catch (Exception e) {
@@ -226,6 +220,7 @@ public class UserLogic {
      *            The id of the user
      * @return Collection with roles
      * @throws GetRolesFromUserException
+     *             When getting the roles failed.
      */
     public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
         if (id == null) {
@@ -233,8 +228,8 @@ public class UserLogic {
         }
 
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
-            DAO<Role> roleDao = new RoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO();
+            DAO<Role> roleDao = new RoleSqlQueryDAO();
 
             // get all roles with the given user id
             Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
@@ -262,11 +257,12 @@ public class UserLogic {
      *            The id of a user
      * @param roleId
      *            The id of the role
-     * @throws GetRolesFromUserException
+     * @throws RemoveRoleFromUserException
+     *             When getting the roles failed.
      */
     public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
         try {
-            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO();
 
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
             searchParams.add(new SearchParameter(SearchFields.USERID, userId));
@@ -288,9 +284,10 @@ public class UserLogic {
      * Get all active Tokens of a user. If no active token exists, a GetActiveTokenException is thrown.
      * 
      * @param userId
-     *            The id of a user
-     * @return Collection with tokens
+     *            The id of a user.
+     * @return Collection with tokens.
      * @throws GetActiveTokenException
+     *             When getting the token failed.
      */
     public Collection<Token> getActiveTokensFromUser(Long userId) throws GetActiveTokenException {
         if (userId == null) {
@@ -298,7 +295,7 @@ public class UserLogic {
         }
 
         try {
-            DAO<Token> tokenDao = new TokenSqlQueryDAO(ConnectionMgr.openConnection(), false);
+            DAO<Token> tokenDao = new TokenSqlQueryDAO();
 
             // get all active tokens with the given user id
             Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
@@ -315,8 +312,8 @@ public class UserLogic {
      * Test if the user is valid.
      * 
      * @param user
-     *            The user to test
-     * @return true if valid, else false
+     *            The user to test.
+     * @return true if valid, else false.
      */
     private boolean isUserValid(UMUser user) {
 
@@ -328,11 +325,10 @@ public class UserLogic {
      * Hash the password of a user.
      * 
      * @param user
-     *            The user of whom the password shall be hashed
+     *            The user of whom the password shall be hashed.
      */
     private void hashPassword(UMUser user, String clearTextPassword) {
-        // TODO Read amount of iterations from some sort of centralized configuration file/database
-        user.setHashIterations(200000);
+        user.setHashIterations(Configuration.getInt(ConfigurationKey.um_hashIterations));
 
         user.setPasswordSalt(AuthenticationUtil.generateSalt());
 

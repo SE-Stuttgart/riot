@@ -67,12 +67,12 @@ public class LoginClient {
 
     /**
      * Login for the given user, must be called before using any request.
-     * 
+     *
      * @param username
      *            .
      * @param password
      *            .
-     * @return .
+     * @return the user response
      * @throws RequestException
      *             Remote Exception
      * @throws ClientProtocolException .

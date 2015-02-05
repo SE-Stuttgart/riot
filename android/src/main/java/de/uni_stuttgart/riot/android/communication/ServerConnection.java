@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.communication;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -47,15 +49,15 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 						"Server Connection Error", 5).show();
 			} else {
 
-				Notification n1 = new Notification(1, "FIRE!!!", testNotification.getContent(), NotificationType.ERROR, new Date());	
+				Notification n1 = new Notification(1, "FIRE!!!", "Call 112", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "house");	
 				notificationList.add(n1);				
-				Notification n2 = new Notification(2, "Work starts at 08:00", testNotification.getContent(), NotificationType.APPOINTMENT, new Date());
-				notificationList.add(n2);				
-				Notification n3 = new Notification(3, "Training at 18:00", testNotification.getContent(), NotificationType.APPOINTMENT, new Date());
+				Notification n2 = new Notification(2, "Refill water", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "coffeeMachine");	
+				notificationList.add(n2);
+				Notification n3 = new Notification(3, "Refill beans", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "coffeeMachine");	
 				notificationList.add(n3);
-				Notification n4 = new Notification(4, "Buy some food.", testNotification.getContent(), NotificationType.WARNING, new Date());
+				Notification n4 = new Notification(4, "Buy some food", "Bananas, Beer, Butter", NotificationType.WARNING, new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), "house");
 				notificationList.add(n4);
-				Notification n5 = new Notification(5, "Refuel car.", testNotification.getContent(), NotificationType.WARNING, new Date());
+				Notification n5 = new Notification(5, "Refuel car", "", NotificationType.WARNING, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "car");
 				notificationList.add(n5);
 							
 				return notificationList;

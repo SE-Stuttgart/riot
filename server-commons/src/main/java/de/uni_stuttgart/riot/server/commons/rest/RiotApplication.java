@@ -23,10 +23,11 @@ public class RiotApplication extends ResourceConfig {
      */
     public RiotApplication() {
         packages("de.uni_stuttgart.riot.rest", //
+                "de.uni_stuttgart.riot.server.commons.rest", //
                 "de.uni_stuttgart.riot.calendar", //
                 "de.uni_stuttgart.riot.contacts", //
+                "de.uni_stuttgart.riot.config", //
                 "de.uni_stuttgart.riot.usermanagement.service.rest", //
                 "de.uni_stuttgart.riot.usermanagement.security");
     }
-
 }

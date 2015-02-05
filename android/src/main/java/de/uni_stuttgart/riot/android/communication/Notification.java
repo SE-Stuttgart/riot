@@ -12,19 +12,29 @@ public class Notification {
 	private String title;
 	private String content;
 	private NotificationType type;
-	private Date date;
-	
+	private String date;
+	private String thing;
+
 	public Notification(){
-		
+
 	}
-	
-	public Notification(int id, String title, String content, NotificationType type, Date date){
+
+	public Notification(int id, String title, String content, NotificationType type, String date, String thing){
 		this.id = id;
 		this.title = title;
 		this.content = content;
 		this.type = type;
 		this.date = date;
-    }
+		this.thing = thing;
+	}
+
+	public String getThingName() {
+		return thing;
+	}
+
+	public void getThingName(String thing) {
+		this.thing = thing;
+	}
 
 	public void setId(int id) {
 		this.id = id;
@@ -57,12 +67,12 @@ public class Notification {
 	public String getTitle() {
 		return title;
 	}
-	
-	public void setDate(Date date){
+
+	public void setDate(String date){
 		this.date = date;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 

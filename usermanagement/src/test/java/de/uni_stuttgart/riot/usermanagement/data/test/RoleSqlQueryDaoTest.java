@@ -17,9 +17,10 @@ import de.uni_stuttgart.riot.usermanagement.data.test.common.DaoTestBase;
 
 public class RoleSqlQueryDaoTest extends DaoTestBase {
 
+    private RoleSqlQueryDAO dao = new RoleSqlQueryDAO();
+
     @Test
     public void insertAndFindTest() throws DatasourceFindException, DatasourceInsertException, SQLException {
-        RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         Role testrole = new Role(new Long(42), "TestRole");
         dao.insert(testrole);
         Role findRole = dao.findBy(testrole.getId());
@@ -28,7 +29,6 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test
     public void findUpdateFindTest() throws DatasourceUpdateException, DatasourceFindException, SQLException {
-        RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         Role findRole = dao.findBy(new Long(1));
         findRole.setRoleName("testRoleName");
         dao.update(findRole);
@@ -38,7 +38,6 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceFindException.class)
     public void deleteTest() throws DatasourceFindException, DatasourceDeleteException, SQLException {
-        RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         Role role = dao.findBy(new Long(1));
         dao.delete(role);
         dao.findBy(new Long(1));
@@ -46,13 +45,11 @@ public class RoleSqlQueryDaoTest extends DaoTestBase {
 
     @Test(expected = DatasourceUpdateException.class)
     public void errorUpdateTest() throws DatasourceUpdateException, SQLException {
-        RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         dao.update(new Role(new Long(32), ""));
     }
 
     @Test
     public void findAllTest() throws DatasourceFindException, SQLException {
-        RoleSqlQueryDAO dao = new RoleSqlQueryDAO(this.getConn(), false);
         Collection<Role> role = dao.findAll();
         assertEquals(4, role.size());
     }

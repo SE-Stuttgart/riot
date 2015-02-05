@@ -24,6 +24,9 @@
     <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
     <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
     <script src="bower_components/restangular/dist/restangular.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-localization/angular-localization.js"></script>
     <!-- Add New Bower Component JS Above -->
 
     <!-- Main App JS -->
@@ -49,9 +52,25 @@
     <script src="views/app/navigation/navbar/navbar.js"></script>
     <script src="views/app/navigation/sidebar/sidebar.js"></script>
     <script src="views/app/profile/profile.js"></script>
+    <script src="views/admin/users/users.js"></script>
+    <script src="views/admin/users/users-list/users-list.js"></script>
+    <script src="views/admin/users/users-detail/users-detail.js"></script>
+    <script src="views/admin/status/status.js"></script>
     <!-- Add New Component JS Above -->
 
     <div ui-view></div>
+
+    <div id="dialog" class="modal fade" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" ng-bind-html="dialog.header"></h4>
+          </div>
+          <div class="modal-body" ng-bind-html="dialog.body"></div>
+          <div class="modal-footer" ng-bind-html="dialog.footer"></div>
+        </div>
+      </div>
+    </div>
 
   </body>
 </html>

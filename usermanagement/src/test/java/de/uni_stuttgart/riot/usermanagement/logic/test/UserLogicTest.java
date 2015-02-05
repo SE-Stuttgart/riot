@@ -37,6 +37,7 @@ public class UserLogicTest extends LogicTestBase {
      */
 
     @Test
+    @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testAddUserValid() throws Exception {
         UMUser user1 = ul.addUser("newUserName", "pwW123!");
         UMUser user2 = ul.getUser(user1.getId());
@@ -116,6 +117,7 @@ public class UserLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testUpdateUserValidPwChange() throws Exception {
         UMUser user = ul.getUser(1L);
         String pwHashBefore = user.getHashedPassword();

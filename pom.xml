@@ -16,8 +16,9 @@
 	</properties>
 
 	<modules>
+		<module>maven-plugin</module>
 		<module>commons</module>
-	  <module>server-commons</module>
+		<module>server-commons</module>
 		<module>usermanagement</module>
 		<module>server</module>
 		<module>clientlibrary</module>
@@ -50,6 +51,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.3</version>
+			</dependency>
 
 			<!-- Server -->
 			<dependency>

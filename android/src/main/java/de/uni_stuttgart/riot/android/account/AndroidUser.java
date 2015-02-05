@@ -1,28 +1,27 @@
 package de.uni_stuttgart.riot.android.account;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.app.Activity;
-
-import com.google.gson.Gson;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.ClientProtocolException;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * This class contains the currently logged in user and allows the management of this user. The clear text password will not be saved
  * persistently, because of security reasons. Instead the authentication and refresh tokens are saved persistently for further
@@ -58,23 +57,27 @@ public class AndroidUser {
     /**
      * Instantiates a new user.
      *
-     * @param activity
+     * @param context
      *            the activity
      */
-    public AndroidUser(Activity activity) {
-        accountManager = AccountManager.get(activity);
-        account = RIOTAccount.getRIOTAccount(activity).getAccount();
+    public AndroidUser(Context context) {
+        accountManager = AccountManager.get(context);
+        account = RIOTAccount.getRIOTAccount(context).getAccount();
         umClient = RIOTApiClient.getInstance().getUserManagementClient();
         loginClient = RIOTApiClient.getInstance().getLoginClient();
 
         String userData = accountManager.getUserData(account, USER);
         if (StringUtils.isNotEmpty(userData)) {
-            user = new Gson().fromJson(userData, User.class);
+            try {
+                user = new ObjectMapper().readValue(userData, User.class);
+            } catch (JsonParseException e) {
+                // FIXME Use NotificationManager
+            } catch (JsonMappingException e) {
+                // FIXME Use NotificationManager
+            } catch (IOException e) {
+                // FIXME Use NotificationManager
+            }
         }
-    }
-
-    public UsermanagementClient getUmClient() {
-        return umClient;
     }
 
     /**
@@ -90,14 +93,11 @@ public class AndroidUser {
             user = loginClient.login(username, password);
             saveUserInAccount();
         } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (RequestException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         }
     }
 
@@ -107,36 +107,31 @@ public class AndroidUser {
     public void logOut() {
         try {
             loginClient.logout();
+            user = null;
+            saveUserInAccount();
         } catch (JsonGenerationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (RequestException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // FIXME Use NotificationManager
         }
     }
 
     /**
      * Fetch roles and permissions from the server.
+     *
+     * @throws RequestException
+     *             the request exception
      */
-    public void refreshRolesAndPermissions() {
-//        try {
-//            Collection<Role> userRoles = umClient.getUserRoles(user.getUser().getId());
-//            user.setRoles(userRoles);
-//            saveUserInAccount();
-//        } catch (RequestException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
+    public void refreshRolesAndPermissions() throws RequestException {
+        Collection<Role> userRoles = umClient.getUserRoles(user.getId());
+        user.setRoles(userRoles);
+        saveUserInAccount();
     }
 
     /**
@@ -169,15 +164,15 @@ public class AndroidUser {
      * @return true, if successful
      */
     public boolean hasRole(String roleName) {
-//        if (user == null) {
-//            return false;
-//        }
-//
-//        for (Role roles : user.getRoles()) {
-//            if (StringUtils.equals(roles.getRole().getRoleName(), roleName)) {
-//                return true;
-//            }
-//        }
+        if (user == null) {
+            return false;
+        }
+
+        for (Role roles : user.getRoles()) {
+            if (StringUtils.equals(roles.getRoleName(), roleName)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -189,17 +184,17 @@ public class AndroidUser {
      * @return true, if successful
      */
     public boolean hasPermission(String permissionName) {
-//        if (user == null) {
-//            return false;
-//        }
-//
-//        for (Role roles : user.getRoles()) {
-//            for (Permission permissions : roles.getPermissions()) {
-//                if (StringUtils.equals(permissions.getPermission().getPermissionValue(), permissionName)) {
-//                    return true;
-//                }
-//            }
-//        }
+        if (user == null) {
+            return false;
+        }
+
+        for (Role roles : user.getRoles()) {
+            for (Permission permissions : roles.getPermissions()) {
+                if (StringUtils.equals(permissions.getPermissionValue(), permissionName)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -208,10 +203,18 @@ public class AndroidUser {
      */
     private void saveUserInAccount() {
         if (user != null) {
-            String userJson = new Gson().toJson(user);
-            accountManager.setUserData(account, USER, userJson);
+            try {
+                String userJson = new ObjectMapper().writeValueAsString(user);
+                accountManager.setUserData(account, USER, userJson);
+            } catch (JsonGenerationException e) {
+                // FIXME Use NotificationManager
+            } catch (JsonMappingException e) {
+                // FIXME Use NotificationManager
+            } catch (IOException e) {
+                // FIXME Use NotificationManager
+            }
         } else {
-            // delte the user
+            // delete the user
             accountManager.setUserData(account, USER, null);
         }
     }

@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.database;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -21,30 +22,31 @@ import de.uni_stuttgart.riot.android.location.MyLocation;
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class RIOTDatabase extends SQLiteOpenHelper {
 
-	private final static int DATABASE_VERION = 1;
-	private final static String DATABASE_NAME = "Database";
+	private static final int DATABASE_VERION = 1;
+	private static final String DATABASE_NAME = "Database";
 
 	private static final String TABLE_FILTER = "filter";
-	private final static String FILTER_COLUMN_ID = "id";
-	private final static String FILTER_COLUMN_TYPE = "type";
-	private final static String FILTER_COLUMN_CHECKED = "is_checked";
+	private static final String FILTER_COLUMN_ID = "id";
+	private static final String FILTER_COLUMN_TYPE = "type";
+	private static final String FILTER_COLUMN_CHECKED = "is_checked";
 
-	private final static String TABLE_NOTIFICATION = "notification";
-	private final static String NOTIFICATION_COLUMN_TITLE = "title";
-	private final static String NOTIFICATION_COLUMN_TYPE = "type";
-	private final static String NOTIFICATION_COLUMN_ID = "id";
-	private final static String NOTIFICATION_COLUMN_CONTENT = "content";
-	private final static String NOTIFICATION_COLUMN_DATE = "date";
+	private static final String TABLE_NOTIFICATION = "notification";
+	private static final String NOTIFICATION_COLUMN_TITLE = "title";
+	private static final String NOTIFICATION_COLUMN_TYPE = "type";
+	private static final String NOTIFICATION_COLUMN_ID = "id";
+	private static final String NOTIFICATION_COLUMN_CONTENT = "content";
+	private static final String NOTIFICATION_COLUMN_DATE = "date";
+	private static final String NOTIFICATION_COLUMN_THING = "thing";
 
-	private final static String TABLE_LANGUAGE = "language";
-	private final static String LANGUAGE_COLUMN_ID = "id";
-	private final static String LANGUAGE_COLUMN_DESC = "description";
-	
-	private final static String TABLE_LOCATION = "location";
-	private final static String LOCATION_COLUMN_ID = "id";
-	private final static String LOCATION_COLUMN_DESC = "description";
-	private final static String LOCATION_COLUMN_LONGITUDE = "longitude";
-	private final static String LOCATION_COLUMN_LATITUDE = "latitude";
+	private static final String TABLE_LANGUAGE = "language";
+	private static final String LANGUAGE_COLUMN_ID = "id";
+	private static final String LANGUAGE_COLUMN_DESC = "description";
+
+	private static final String TABLE_LOCATION = "location";
+	private static final String LOCATION_COLUMN_ID = "id";
+	private static final String LOCATION_COLUMN_DESC = "description";
+	private static final String LOCATION_COLUMN_LONGITUDE = "longitude";
+	private static final String LOCATION_COLUMN_LATITUDE = "latitude";
 
 	private MainActivity mainActivity;
 
@@ -67,12 +69,13 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 				+ " INTEGER PRIMARY KEY," + NOTIFICATION_COLUMN_TYPE + " TEXT,"
 				+ NOTIFICATION_COLUMN_TITLE + " TEXT,"
 				+ NOTIFICATION_COLUMN_CONTENT + " TEXT, "
-				+ NOTIFICATION_COLUMN_DATE + " TEXT )";
+				+ NOTIFICATION_COLUMN_DATE + " TEXT, "
+				+ NOTIFICATION_COLUMN_THING + " TEXT)";
 
 		String CREATE_LANGUAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_LANGUAGE + "(" + LANGUAGE_COLUMN_ID
 				+ " TEXT PRIMARY KEY," + LANGUAGE_COLUMN_DESC + " TEXT)";
-		
+
 		String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_LOCATION + "(" + LOCATION_COLUMN_ID
 				+ " TEXT PRIMARY KEY," + LOCATION_COLUMN_DESC + " TEXT,"
@@ -85,7 +88,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		db.execSQL(CREATE_LOCATION_TABLE);
 	}
 
-	// Upgrading database
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older version of the table if existed
@@ -96,7 +98,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 		// Create table again
 		onCreate(db);
-
 	}
 
 	/**
@@ -129,14 +130,14 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 			System.out.println("Filter Eintrag neu anlegen");
 			db.insert(TABLE_FILTER, null, values);
 		}
-		
+
 		filterNotifications();
 
 		cursor.close();
 		db.close();
 	}
-	
-	public void filterNotifications(){
+
+	public void filterNotifications() {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String filteredNotifications = "SELECT * FROM " + TABLE_NOTIFICATION
 				+ " INNER JOIN " + TABLE_FILTER + " ON " + TABLE_NOTIFICATION
@@ -160,18 +161,23 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 				String type = cursor.getString(cursor
 						.getColumnIndex(NOTIFICATION_COLUMN_TYPE));
-				// System.out.println("test" + type);
+
 				String date = cursor.getString(cursor
 						.getColumnIndex(NOTIFICATION_COLUMN_DATE));
-				// System.out.println("test" + date);
 
-				// TODO: richtiges Datum verwenden
-				Notification notificiation = new Notification(id, title,
-						content, NotificationType.valueOf(type), new Date());
-				notificationList.add(notificiation);
+				String thing = cursor.getString(cursor
+						.getColumnIndex(NOTIFICATION_COLUMN_THING));
+
+				if (mainActivity.getPressedHomeScreenButton().equals(thing)) {
+					// TODO: richtiges Datum verwenden
+					Notification notificiation = new Notification(id, title,
+							content, NotificationType.valueOf(type),
+							new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), thing);
+					notificationList.add(notificiation);
+				}
 
 			} while (cursor.moveToNext());
-			
+
 			cursor.close();
 			db.close();
 		}
@@ -237,8 +243,8 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 			values.put(NOTIFICATION_COLUMN_TYPE, notification.getType()
 					.toString());
 			values.put(NOTIFICATION_COLUMN_CONTENT, notification.getContent());
-			values.put(NOTIFICATION_COLUMN_DATE, notification.getDate()
-					.toString());
+			values.put(NOTIFICATION_COLUMN_DATE, notification.getDate());
+			values.put(NOTIFICATION_COLUMN_THING, notification.getThingName());
 
 			Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NOTIFICATION
 					+ " WHERE " + NOTIFICATION_COLUMN_ID + " = ?",
@@ -260,7 +266,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
 		db.close();
 	}
-
 
 	/**
 	 * Add a new language into the table language.
@@ -330,7 +335,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		String id = cursor.getString(0);
 		return id;
 	}
-	
+
 	public void updateLocation(MyLocation location) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -356,7 +361,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 		cursor.close();
 		db.close();
 	}
-	
+
 	public List<MyLocation> getLocation() {
 		SQLiteDatabase db = this.getReadableDatabase();
 		List<MyLocation> myLocation = new LinkedList<MyLocation>();
