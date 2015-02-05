@@ -18,12 +18,19 @@ public class PropertyChangeEventInstance<T> extends EventInstance {
      * 
      * @param newProperty
      *            the new property.
+     * @param thingId
+     *            the thing id
+     * @param time
+     *            creation time
      */
     public PropertyChangeEventInstance(Property<T> newProperty, long thingId, Timestamp time) {
         super(time, thingId);
         this.setNewProperty(newProperty);
     }
-    
+
+    /**
+     * Default constructor.
+     */
     public PropertyChangeEventInstance() {
     }
 

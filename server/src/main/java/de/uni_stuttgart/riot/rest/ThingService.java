@@ -19,24 +19,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
-import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
-import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
-import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
  * The thing service will handle any access (create, read, update, delete) to the "things".
@@ -53,9 +45,7 @@ public class ThingService extends BaseResource<RemoteThing> {
      * Default Constructor.
      * 
      * @throws DatasourceFindException
-     * 
-     * @throws SQLException .
-     * @throws NamingException .
+     *      Exception on initialization of things.
      */
     public ThingService() throws DatasourceFindException {
         super(new RemoteThingSqlQueryDAO());
@@ -67,25 +57,49 @@ public class ThingService extends BaseResource<RemoteThing> {
         this.logic.completeRemoteThing(storable);
     }
 
+    /**
+     * {@link ThingLogic#lastConnection(long)}.
+     * @param id
+     *      id
+     * @return
+     *      time
+     */
     @GET
     @Path("/online/{id}")
     public Timestamp lastConnection(@PathParam("id") long id) {
         return this.logic.lastConnection(id);
     }
 
-    // FIXME switch from id to something secure.
+    /**
+     * {@link ThingLogic#getCurrentActionInstances(long)}.
+     * @param id .
+     * @return .
+     * @throws DatasourceFindException .
+     */
     @GET
     @Path("/action/{id}")
     public Queue<ActionInstance> getActionInstances(@PathParam("id") long id) throws DatasourceFindException {
         return this.logic.getCurrentActionInstances(id);
     }
 
+    /**
+     * {@link ThingLogic#getRegisteredEvents(long)}.
+     * @param id .
+     * @return .
+     * @throws DatasourceFindException .
+     */
     @GET
     @Path("event/{id}")
     public Stack<EventInstance> getEventInstances(@PathParam("id") long id) throws DatasourceFindException {
         return this.logic.getRegisteredEvents(id);
     }
 
+    /**
+     * {@link ThingLogic#registerOnEvent(long, long, de.uni_stuttgart.riot.thing.commons.event.Event)}.
+     * @param request .
+     * @return .
+     * @throws DatasourceFindException .
+     */
     @POST
     @Path("register")
     public Response registerOnEvent(RegisterRequest request) throws DatasourceFindException {
@@ -93,6 +107,12 @@ public class ThingService extends BaseResource<RemoteThing> {
         return Response.noContent().build();
     }
 
+    /**
+     * {@link ThingLogic#deRegisterOnEvent(long, long, de.uni_stuttgart.riot.thing.commons.event.Event)}.
+     * @param request .
+     * @return .
+     * @throws DatasourceFindException .
+     */
     @POST
     @Path("deregister")
     public Response deRegisterOnEvent(RegisterRequest request) throws DatasourceFindException {
@@ -100,6 +120,12 @@ public class ThingService extends BaseResource<RemoteThing> {
         return Response.noContent().build();
     }
 
+    /**
+     * {@link ThingLogic#submitEvent(EventInstance)}.
+     * @param eventInstance .
+     * @return .
+     * @throws DatasourceFindException .
+     */
     @POST
     @Path("notify")
     public Response notifyEvent(EventInstance eventInstance) throws DatasourceFindException {
@@ -107,14 +133,23 @@ public class ThingService extends BaseResource<RemoteThing> {
         return Response.noContent().build();
     }
 
+    /**
+     * {@link ThingLogic#submitAction(ActionInstance)}.
+     * @param actionInstance .
+     * @throws DatasourceFindException .
+     */
     @POST
     @Path("action")
     public void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
         this.logic.submitAction(actionInstance);
     }
-
+    
     /**
-     * Overrides create of baseresource.
+     * (non-Javadoc).
+     * @see de.uni_stuttgart.riot.server.commons.rest.BaseResource#create(de.uni_stuttgart.riot.commons.rest.data.Storable)
+     * @param model .
+     * @return .
+     * @throws DatasourceInsertException .
      */
     @POST
     public Response create(RemoteThing model) throws DatasourceInsertException {
@@ -127,16 +162,23 @@ public class ThingService extends BaseResource<RemoteThing> {
     }
 
     /**
-     * Overrides update of baseresource.
+     * (non-Javadoc).
+     * @see de.uni_stuttgart.riot.server.commons.rest.BaseResource#update(long, de.uni_stuttgart.riot.commons.rest.data.Storable)
+     * @param id .
+     * @param model .
+     * @return .
      */
     @PUT
     @Path("{id}")
     public Response update(@PathParam("id") long id, RemoteThing model) {
-        return Response.status(Status.NOT_FOUND).build();
+        return Response.noContent().build();
     }
 
     /**
-     * Overrides delete of baseresource.
+     * (non-Javadoc).
+     * @see de.uni_stuttgart.riot.server.commons.rest.BaseResource#delete(long)
+     * @param id .
+     * @return .
      */
     @DELETE
     @Path("{id}")

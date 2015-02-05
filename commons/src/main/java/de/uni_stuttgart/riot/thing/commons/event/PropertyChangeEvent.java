@@ -36,13 +36,23 @@ public class PropertyChangeEvent<T> extends Event<PropertyChangeEventInstance<T>
     public void setPropertyName(String propertyName) {
         this.propertyName = propertyName;
     }
+
+    /**
+     * Creates a instance of this event.
+     * 
+     * @param newValue
+     *            the new value
+     * @param thingId
+     *            the thing id
+     * @return the instance
+     */
     public PropertyChangeEventInstance<T> createInstance(T newValue, long thingId) {
-        return new PropertyChangeEventInstance<T>(new Property<T>(propertyName,newValue),thingId,new Timestamp(System.currentTimeMillis()));
+        return new PropertyChangeEventInstance<T>(new Property<T>(propertyName, newValue), thingId, new Timestamp(System.currentTimeMillis()));
     }
 
     @Override
     public boolean isTypeOf(EventInstance eventInstance) {
-        if(eventInstance instanceof PropertyChangeEventInstance){
+        if (eventInstance instanceof PropertyChangeEventInstance) {
             PropertyChangeEventInstance eI = (PropertyChangeEventInstance) eventInstance;
             return eI.getNewProperty().getName().equals(this.propertyName);
         }
@@ -59,18 +69,23 @@ public class PropertyChangeEvent<T> extends Event<PropertyChangeEventInstance<T>
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         PropertyChangeEvent other = (PropertyChangeEvent) obj;
         if (propertyName == null) {
-            if (other.propertyName != null)
+            if (other.propertyName != null) {
                 return false;
-        } else if (!propertyName.equals(other.propertyName))
+            }
+        } else if (!propertyName.equals(other.propertyName)) {
             return false;
+        }
         return true;
     }
 }

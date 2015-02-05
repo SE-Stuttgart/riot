@@ -6,14 +6,12 @@ import java.util.function.Predicate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import de.uni_stuttgart.riot.thing.commons.Property;
-
 /**
- * TODO .
- *
+ * Representation of an Event that could be fired from a thing.
+ * 
  * @param <T>
  */
-@JsonIgnoreProperties({"eventListeners"})
+@JsonIgnoreProperties({ "eventListeners" })
 public abstract class Event<T extends EventInstance> {
 
     private Collection<EventListener<T>> eventListeners;
@@ -70,7 +68,14 @@ public abstract class Event<T extends EventInstance> {
     public void fire(T event) {
         this.notifyListeners(event);
     }
-    
+
+    /**
+     * Returns true if and only if the given instance is of this type.
+     * 
+     * @param eventInstance
+     *            the instance
+     * @return true if so, false otherwise
+     */
     public abstract boolean isTypeOf(EventInstance eventInstance);
 
 }

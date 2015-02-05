@@ -1,7 +1,5 @@
 package de.uni_stuttgart.riot.db;
 
-import static org.junit.Assert.assertEquals;
-
 import java.sql.SQLException;
 
 import javax.naming.NamingException;
@@ -10,11 +8,14 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.db.thing.ActionDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.EventDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
-import de.uni_stuttgart.riot.thing.commons.Thing;
 import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
 import de.uni_stuttgart.riot.thing.remote.EventDBObject;
 import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
@@ -24,9 +25,9 @@ public class ThingDBTest extends JerseyDBTestBase {
 
     @Override
     protected RiotApplication configure() {
-        return new RiotApplication();
+        return new RiotApplication(false);
     }
-    
+
     private RemoteThing getTestRemoteThing() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
         return daoT.findBy(1);
@@ -50,20 +51,20 @@ public class ThingDBTest extends JerseyDBTestBase {
     @Test
     public void insertActionTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject(1,"FactoryString"));
+        dao.insert(new ActionDBObject(1, "FactoryString"));
         ActionDBObject a = dao.findBy(4);
     }
-    
+
     @Test
     public void insertEventTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         EventDBObjectSqlQueryDAO dao = new EventDBObjectSqlQueryDAO();
-        dao.insert(new EventDBObject(1,"Test"));
+        dao.insert(new EventDBObject(1, "Test"));
         EventDBObject a = dao.findBy(4);
     }
 
     public ActionDBObject getTestAction() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
         ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject(1,"FactoryString"));
+        dao.insert(new ActionDBObject(1, "FactoryString"));
         return dao.findBy(1);
     }
 

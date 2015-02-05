@@ -23,7 +23,7 @@ import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
 
-@TestData({ "/schema/schema_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
+@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingTest extends ShiroEnabledTest {
 
     /*
@@ -33,7 +33,7 @@ public class ThingTest extends ShiroEnabledTest {
      */
     @Override
     protected Application configure() {
-        return new RiotApplication();
+        return new RiotApplication(true);
     }
 
     /*
@@ -56,6 +56,7 @@ public class ThingTest extends ShiroEnabledTest {
     public void scenario() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClientF = this.getLogedInThingClient();
         ThingClient thingClient = this.getLogedInThingClient();
+        thingClient.getActionInstances(1);
         Frigde frigde = new Frigde(thingClientF, "Peter", 500);
         frigde.register();
         frigde.start();
@@ -73,6 +74,7 @@ public class ThingTest extends ShiroEnabledTest {
         assertEquals(true, i.getNewProperty().getValue());
         assertEquals("State", i.getNewProperty().getName());
         frigde.stop();
+        thingClient.getActionInstances(1);
     }
 
 }

@@ -1,5 +1,13 @@
 package de.uni_stuttgart.riot.rest;
 
+import static org.junit.Assert.assertEquals;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.junit.Test;
+
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.test.BaseResourceTest;
@@ -32,6 +40,10 @@ public class ThingServiceTest extends BaseResourceTest<ThingService, RemoteThing
     @Override
     public Class<RemoteThing> getObjectClass() {
         return RemoteThing.class;
+    }
+    
+    @Test
+    public void testUpdateOne() {
     }
 
 }

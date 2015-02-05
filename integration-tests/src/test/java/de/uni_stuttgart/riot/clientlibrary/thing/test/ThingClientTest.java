@@ -42,7 +42,7 @@ public class ThingClientTest extends ShiroEnabledTest {
      */
     @Override
     protected Application configure() {
-        return new RiotApplication();
+        return new RiotApplication(true);
     }
 
     /*

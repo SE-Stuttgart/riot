@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
-import de.uni_stuttgart.riot.db.ActionDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.EventDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.PropertyDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.ActionDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.EventDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -27,7 +27,7 @@ import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventListener;
 
 /**
- * Contains all logic regarding to {@link Thing}.
+ * Contains all logic regarding to {@link Thing} handling.
  *
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -45,18 +45,6 @@ public class ThingLogic {
     private HashMap<Long, Stack<EventInstance>> eventInstances;
     private HashMap<Long, Timestamp> lastConnection;
 
-    public static ThingLogic getThingLogic() throws DatasourceFindException {
-        if (instance == null) {
-            instance = new ThingLogic();
-        }
-        return instance;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @throws DatasourceFindException
-     */
     private ThingLogic() throws DatasourceFindException {
         this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
         this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO();
@@ -68,6 +56,20 @@ public class ThingLogic {
         this.lastConnection = new HashMap<Long, Timestamp>();
         this.initStoredThings();
     }
+    
+    /**
+     * Getter for {@link ThingLogic}.
+     * @return
+     *      Instance of {@link ThingLogic}
+     * @throws DatasourceFindException
+     *      Exception on initialization of Thing due to datasource exception.
+     */
+    public static ThingLogic getThingLogic() throws DatasourceFindException {
+        if (instance == null) {
+            instance = new ThingLogic();
+        }
+        return instance;
+    }
 
     private void initStoredThings() throws DatasourceFindException {
         Collection<RemoteThing> things = this.remoteThingSqlQueryDAO.findAll();
@@ -77,18 +79,26 @@ public class ThingLogic {
         }
     }
 
+    /**
+     * Resolves the thing id by from a given thing name.
+     * @param thingName
+     *      name of a thing
+     * @return
+     *      unique thing id
+     * @throws DatasourceFindException
+     *      if there is no thing with name thingname
+     */
     public long resolveID(String thingName) throws DatasourceFindException {
         return this.remoteThingSqlQueryDAO.findByUniqueField(new SearchParameter(SearchFields.NAME, thingName)).getId();
     }
 
     /**
-     * TODO .
-     * 
-     * @param username
-     * @param thingName
-     * @param properties
-     * @param actions
+     * Registers a thing in the thing logic. Includes storing the thing in the datasource.
+     * This operation must be called once for every thing to be used in any way regarding server operations.
+     * @param thing
+     *      Thing to be registered.
      * @throws DatasourceInsertException
+     *      Exception during insertion of the thing into the datasource
      */
     public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
         try {
@@ -123,11 +133,11 @@ public class ThingLogic {
     }
 
     /**
-     * TODO .
-     * 
-     * @param username
-     * @param thingName
+     * Unregisters a thing. Includes removal of the thing from the datasource.
+     * @param id
+     *      thing id of the thing to be unregistered.
      * @throws DatasourceDeleteException
+     *      Exception during removal form datasource, e.g. no thing with given id exists in the datasource
      */
     public synchronized void unregisterThing(long id) throws DatasourceDeleteException {
         this.events.put(id, null);
@@ -135,6 +145,16 @@ public class ThingLogic {
         this.remoteThingSqlQueryDAO.delete(id);
     }
 
+    /**
+     * Returns all {@link ActionInstance}s that had been submitted for the thing with id thingid (since last call).
+     * @param thingId
+     *      id of thing
+     * @return
+     *      actionInstacnes that had been submitted
+     * @throws DatasourceFindException
+     *      If thing with given id is not registered.
+     *      
+     */
     public synchronized Queue<ActionInstance> getCurrentActionInstances(long thingId) throws DatasourceFindException {
         Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
         Queue<ActionInstance> result = new LinkedList<ActionInstance>();
@@ -149,8 +169,17 @@ public class ThingLogic {
         this.lastConnection.put(thingId, new Timestamp(System.currentTimeMillis()));
     }
 
-    // FIXME thing about raceconditions on, off -> off, on
+    /**
+     * Submits the given {@link ActionInstance} to the thing with id  {@link ActionInstance#getThingId()}.
+     * So that the result of calling {@link ThingLogic#getCurrentActionInstances()} with {@link ActionInstance#getThingId()}
+     * would include the given a actionInstance.
+     * @param actionInstance
+     *      {@link ActionInstance} that should be submitted
+     * @throws DatasourceFindException
+     *      if there is no thing with {@link ActionInstance#getThingId()} registered
+     */
     public synchronized void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
+        //FIXME Racecondition ?
         long thingId = actionInstance.getThingId();
         Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
         queue.offer(actionInstance);
@@ -174,10 +203,12 @@ public class ThingLogic {
     }
 
     /**
-     * TODO .
-     * 
+     * Submits a {@link EventInstance} to the server so that every thing that was registered on that (event,thing) 
+     * will receive the instance by calling {@link ThingLogic#getRegisteredEvents(long)}.
      * @param eventInstance
+     *      {@link EventInstance} to be submitted.
      * @throws DatasourceFindException
+     *      if there is no thing with {@link EventInstance#getThingId()} registered
      */
     public synchronized void submitEvent(EventInstance eventInstance) throws DatasourceFindException {
         LinkedList<Event> eventL = this.getEvents(eventInstance.getThingId());
@@ -231,7 +262,19 @@ public class ThingLogic {
         }
     }
 
-    public void deRegisterOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
+    /**
+     * Deregisters the given thing (thingID) from the event (event) of thing (registerOnthingId).
+     * @param thingId
+     *      thing that wants to deregister.
+     * @param registerOnthingId
+     *     thing
+     * @param event
+     *     event
+     * @throws DatasourceFindException
+     *      if there is no thing with thingId or registerOnthingId registered
+     *      
+     */
+    public synchronized void deRegisterOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
         for (Event e : this.getEvents(registerOnthingId)) {
             if (e.equals(event)) {
                 e.unregister(thingId);
@@ -239,7 +282,18 @@ public class ThingLogic {
         }
     }
 
-    public void registerOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
+    /**
+     * Registers the given thing (thingid) on the event of thing with id registerOnthingId.
+     * @param thingId
+     *      thing that wants to register
+     * @param registerOnthingId
+     *      registerOnthingId
+     * @param event
+     *          event
+     * @throws DatasourceFindException
+     *      if there is no thing with thingId or registerOnthingId registered
+     */
+    public synchronized void registerOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
         final Stack<EventInstance> eIStack = this.getEventInstancesStack(thingId);
         for (Event e : this.getEvents(registerOnthingId)) {
             if (e.equals(event)) {
@@ -253,7 +307,17 @@ public class ThingLogic {
         }
     }
 
-    public Stack<EventInstance> getRegisteredEvents(long id) throws DatasourceFindException {
+    /**
+     * Returns all eventinstances that had been submitted and were thing with id is registered on 
+     * since the last call.
+     * @param id
+     *      id of the thing that wants to retrive his eventinstances.
+     * @return
+     *      the eventInstances
+     * @throws DatasourceFindException
+     *      if there is no thing with thingId or registerOnthingId registered
+     */
+    public synchronized Stack<EventInstance> getRegisteredEvents(long id) throws DatasourceFindException {
         Stack<EventInstance> currentEventInstances = this.getEventInstancesStack(id);
         Stack<EventInstance> result = new Stack<EventInstance>();
         result.addAll(currentEventInstances);
@@ -261,7 +325,15 @@ public class ThingLogic {
         return result;
     }
 
-    public Timestamp lastConnection(long id) {
+    /**
+     * Returns the last time the given thing has called the server.
+     * Returns 1.1.1970 if the thing has never called the server.
+     * @param id
+     *      thing id
+     * @return
+     *      last server call time
+     */
+    public synchronized Timestamp lastConnection(long id) {
         Timestamp result = this.lastConnection.get(id);
         if (result == null) {
             return new Timestamp(0);

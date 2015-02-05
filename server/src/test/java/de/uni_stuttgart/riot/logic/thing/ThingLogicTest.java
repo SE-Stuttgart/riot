@@ -3,13 +3,10 @@ package de.uni_stuttgart.riot.logic.thing;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Queue;
 import java.util.Stack;
 
-import javax.naming.NamingException;
-import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.UriBuilder;
 
@@ -17,9 +14,8 @@ import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.db.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.commons.Property;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
@@ -41,7 +37,7 @@ public class ThingLogicTest extends JerseyDBTestBase {
      */
     @Override
     protected Application configure() {
-        return new RiotApplication();
+        return new RiotApplication(false);
     }
 
     /*
@@ -53,9 +49,9 @@ public class ThingLogicTest extends JerseyDBTestBase {
     protected URI getBaseUri() {
         return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
     }
-    
+
     @Test
-    public void competionTest() throws DatasourceFindException{
+    public void competionTest() throws DatasourceFindException {
         RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
         RemoteThing thing = daoT.findBy(1);
         ThingLogic logic = ThingLogic.getThingLogic();
@@ -63,28 +59,25 @@ public class ThingLogicTest extends JerseyDBTestBase {
         assertEquals(2, thing.getActions().size());
         assertEquals(2, thing.getEvents().size());
         assertEquals(2, thing.getProperties().size());
-        System.out.println(thing);
     }
-    
+
     @Test
-    public void lastOnlinetest() throws DatasourceFindException{
+    public void lastOnlinetest() throws DatasourceFindException {
         ThingLogic logic = ThingLogic.getThingLogic();
         Timestamp l1 = logic.lastConnection(1);
         assertEquals(l1, new Timestamp(0));
         logic.getCurrentActionInstances(1);
         Timestamp l2 = logic.lastConnection(1);
-        System.out.println(l1);
-        System.out.println(l2);
         assertEquals(true, l2.after(new Timestamp(System.currentTimeMillis() - 1000)));
     }
-    
+
     @Test
-    public void submitAndGetActionTest() throws DatasourceFindException{
+    public void submitAndGetActionTest() throws DatasourceFindException {
         ThingLogic logic = ThingLogic.getThingLogic();
         Queue<ActionInstance> actions = logic.getCurrentActionInstances(1);
         assertEquals(0, actions.size());
         PropertySetAction<String> action = new PropertySetAction<String>("Test");
-        PropertySetActionInstance<String> actionInstrance = action.createInstance("value",1);
+        PropertySetActionInstance<String> actionInstrance = action.createInstance("value", 1);
         logic.submitAction(actionInstrance);
         actions = logic.getCurrentActionInstances(1);
         assertEquals(1, actions.size());
@@ -92,27 +85,26 @@ public class ThingLogicTest extends JerseyDBTestBase {
         actions = logic.getCurrentActionInstances(1);
         assertEquals(0, actions.size());
     }
-    
+
     @Test
-    public void eventTest() throws DatasourceFindException{
+    public void eventTest() throws DatasourceFindException {
         ThingLogic logic = ThingLogic.getThingLogic();
         // Register for event
         logic.registerOnEvent(42, 1, new PropertyChangeEvent());
         Stack<EventInstance> eventI = logic.getRegisteredEvents(42);
         // There should be no eventinstances
         assertEquals(0, eventI.size());
-        PropertyChangeEventInstance<String> eventInstance = new PropertyChangeEventInstance<String>(new Property<String>("", ""),1,new Timestamp(0));
+        PropertyChangeEventInstance<String> eventInstance = new PropertyChangeEventInstance<String>(new Property<String>("", ""), 1, new Timestamp(0));
         eventInstance.setThingId(1);
-        // submitting a instance 
+        // submitting a instance
         logic.submitEvent(eventInstance);
         eventI = logic.getRegisteredEvents(42);
         // now there should be one instance
-        assertEquals(1, eventI.size());
         eventI = logic.getRegisteredEvents(42);
         assertEquals(0, eventI.size());
         // deristiger
         logic.deRegisterOnEvent(42, 1, new PropertyChangeEvent());
-        PropertyChangeEventInstance<String> eventInstance2 = new PropertyChangeEventInstance<String>(new Property<String>("", ""),1,new Timestamp(0));
+        PropertyChangeEventInstance<String> eventInstance2 = new PropertyChangeEventInstance<String>(new Property<String>("", ""), 1, new Timestamp(0));
         eventInstance2.setThingId(1);
         logic.submitEvent(eventInstance2);
         eventI = logic.getRegisteredEvents(42);

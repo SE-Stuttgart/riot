@@ -29,7 +29,7 @@
 	</repositories>
 
 	<dependencies>
-		<!-- Other RIOT projects -->
+		<!-- Commons, Usermanagement and Server -->
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.commons</artifactId>

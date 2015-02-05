@@ -9,6 +9,10 @@ public abstract class EventListener<T extends EventInstance> {
 
     private final long thingId;
     
+    /**
+     * Constructor.
+     * @param thingId .
+     */
     public EventListener(long thingId) {
         this.thingId = thingId;
     }

@@ -5,8 +5,7 @@ import java.sql.Timestamp;
 import de.uni_stuttgart.riot.thing.commons.Instance;
 
 /**
- * TODO .
- *
+ * Instance of Action.
  */
 public abstract class ActionInstance extends Instance {
 
@@ -22,6 +21,10 @@ public abstract class ActionInstance extends Instance {
         super(time, thingId);
     }
 
+    /**
+     * Visitor pattern. calls the specific handle operation
+     * @param actionInstanceVisitor Visitor.
+     */
     public abstract void accept(ActionInstanceVisitor actionInstanceVisitor);
 
 }

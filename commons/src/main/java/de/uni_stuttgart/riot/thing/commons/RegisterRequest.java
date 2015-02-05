@@ -5,6 +5,7 @@ import de.uni_stuttgart.riot.thing.commons.event.Event;
 /**
  * The request message to register on events. It is used in {@link ThingService}.
  */
+@SuppressWarnings("rawtypes")
 public class RegisterRequest {
 
     private long registerOnThingId;

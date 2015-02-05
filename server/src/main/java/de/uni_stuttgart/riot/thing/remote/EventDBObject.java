@@ -1,22 +1,32 @@
 package de.uni_stuttgart.riot.thing.remote;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
-import de.uni_stuttgart.riot.thing.commons.Thing;
-import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
-import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
 
+/**
+ * Event object to be stored at the DB.
+ *
+ */
 public class EventDBObject extends Storable {
 
 
+    /**
+     * Factory string that is used to read/write the {@link Event} object from/to the datasource.
+     * Currently json serialization is used.  
+     */
     private final String factoryString;
+    
+    /**
+     * Id of the thing this action relates to.
+     */
     private final long thingId;
 
     /**
-     * Constructor.
-     * 
+     * Constructor for {@link EventDBObject}.
      * @param factoryString
-     *            .
+     *          the factory string.
+     * @param thingId
+     *          the thing id.
      */
     public EventDBObject(long thingId, String factoryString) {
         this.factoryString = factoryString;

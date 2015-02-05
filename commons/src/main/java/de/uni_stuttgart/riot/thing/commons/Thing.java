@@ -13,6 +13,7 @@ import de.uni_stuttgart.riot.thing.commons.event.Event;
  * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s.
  *
  */
+@SuppressWarnings("rawtypes")
 public abstract class Thing extends Storable {
 
     /** The properties of this Thing. */
@@ -67,7 +68,6 @@ public abstract class Thing extends Storable {
         return builder.toString();
     }
 
-    // TODO geht das so
     /**
      * checks if it has the given property.
      * 
@@ -94,6 +94,12 @@ public abstract class Thing extends Storable {
         this.actions.add(action);
     }
 
+    /**
+     * adds event to the {@link Thing}.
+     * 
+     * @param event
+     *            {@link Event} to add.
+     */
     public void addEvent(Event event) {
         this.events.add(event);
     }

@@ -44,6 +44,14 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
 
     private DAO<CalendarEntry> modelManager;
 
+<<<<<<< HEAD
+=======
+    @Override
+    protected RiotApplication configure() {
+        return new RiotApplication(false);
+    }
+
+>>>>>>> RIOT-182 Checkstyle 
     /**
      * help method to create test data in DB.
      * 
