@@ -1,4 +1,13 @@
-angular.module('riot', ['ngLocalize', 'ngLocalize.Config', 'ngLocalize.InstalledLanguages', 'ui.bootstrap', 'ui.utils', 'ui.router', 'ui.calendar', 'ngAnimate', 'restangular', 'LocalStorageModule'])
+angular.module('riot', ['ngLocalize', 
+                        'ngLocalize.Config', 
+                        'ngLocalize.InstalledLanguages', 
+                        'ui.bootstrap', 
+                        'ui.utils', 
+                        'ui.router', 
+                        'ui.calendar', 
+                        'ngAnimate', 
+                        'restangular', 
+                        'LocalStorageModule'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
@@ -17,7 +26,7 @@ angular.module('riot', ['ngLocalize', 'ngLocalize.Config', 'ngLocalize.Installed
   'de': 'de' // This maps 'de-*' to 'de'
 });
 
-angular.module('riot').run(function($injector, $window, $rootScope, $state, $sce, Auth, locale, localeConf) {
+angular.module('riot').run(function($rootScope, $injector, $window, $state, $sce, Auth, locale, localeConf) {
   
   // Workaround for bug in angular-localization.
   // Note: When removing this workaround, also remove the '$injector', '$window', 'locale' and 'localeConf' parameters of this function, if they are not needed anymore.

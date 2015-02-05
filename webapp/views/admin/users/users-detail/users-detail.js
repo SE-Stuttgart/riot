@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('UsersDetailCtrl',function($scope, $stateParams, $q, User, Role){
+angular.module('riot').controller('UsersDetailCtrl', function($scope, $stateParams, $q, User, Role){
   var init = function() {
     $scope.getRoles();
     $scope.getUser();
@@ -42,7 +42,7 @@ angular.module('riot').controller('UsersDetailCtrl',function($scope, $stateParam
   };
 
   $scope.save = function() {
-    if ($scope.userDetail.password1 === $scope.userDetail.password2 && $scope.userDetail.password1 != '') {
+    if ($scope.userDetail.password1 === $scope.userDetail.password2 && $scope.userDetail.password1 !== '') {
       $scope.userDetail.password = $scope.userDetail.password1;
     }
 

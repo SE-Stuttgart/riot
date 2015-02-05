@@ -9,7 +9,7 @@ angular.module('riot').controller('UsersListCtrl',function($scope, User){
   var init = function() {
     $scope.current = 1;
     $scope.limit = 10;
-    $scope.total = 100;
+    $scope.total = 10;
     $scope.filter = null;
 
     $scope.getUsers();

@@ -1,6 +1,6 @@
 angular.module('riot').config(function($stateProvider, $urlRouterProvider) {
   $stateProvider.state('admin.users', {
-  	abstract: true,
+    abstract: true,
     url: '/users',
     templateUrl: 'views/admin/users/users.html'
   });

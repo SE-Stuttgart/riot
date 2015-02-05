@@ -10,13 +10,13 @@ angular.module('riot').controller('AuthorizationListCtrl',function($scope, Role,
     $scope.rolesList = {};
     $scope.rolesList.current = 1;
     $scope.rolesList.limit = 10;
-    $scope.rolesList.total = 100;
+    $scope.rolesList.total = 10;
     $scope.rolesList.filter = null;
 
     $scope.permissionsList = {};
     $scope.permissionsList.current = 1;
     $scope.permissionsList.limit = 10;
-    $scope.permissionsList.total = 100;
+    $scope.permissionsList.total = 10;
     $scope.permissionsList.filter = null;
 
     $scope.getRoles();
