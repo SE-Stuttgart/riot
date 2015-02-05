@@ -3,6 +3,9 @@
     <!-- navigation -->
     <div ng-include="'views/app/navigation/navbar/navbar.html'"></div>
 
+    <!-- alert notification -->
+    <alert id="alert" ng-hide="alert.hide" type="alert.type" close="alert.close()">{{ alert.msg }}</alert>
+
     <!-- view -->
     <div class="page-wrapper" ui-view></div>
   </div>

@@ -1,10 +1,13 @@
 @import "bower_components/bootstrap/less/bootstrap.less";
 //@import "bower_components/bootstrap/less/theme.less";
 @import "bower_components/font-awesome/less/font-awesome.less";
+@import (css) "bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css";
+@import (css) "bower_components/ladda-bootstrap/dist/ladda-themeless.css";
 @fa-font-path: "bower_components/font-awesome/fonts";
 @import "bower_components/fullcalendar/fullcalendar.css";
 /* Component LESS */
 
+@import "variables.less";
 @import "views/app/app.less";
 @import "views/app/navigation/navbar/user/user.less";
 @import "views/app/navigation/navbar/alerts/alerts.less";
@@ -31,6 +34,9 @@
 @import "views/admin/authorization/role-detail/role-detail.less";
 @import "views/admin/authorization/permission-detail/permission-detail.less";
 @import "views/admin/authorization/authorization-list/authorization-list.less";
+@import "views/admin/configuration/configuration.less";
+@import "views/admin/configuration/configuration-item/configuration-item.less";
+@import "commons/directives/loading-button/loading-button.less";
 /* Add Component LESS Above */
 /* Required for Angular UI Bootstrap */
 

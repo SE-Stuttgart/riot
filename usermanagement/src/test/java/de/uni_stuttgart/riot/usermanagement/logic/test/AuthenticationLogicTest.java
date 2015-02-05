@@ -13,8 +13,10 @@ import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
@@ -90,8 +92,9 @@ public class AuthenticationLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testLoginMaxRetries() throws Exception {
-        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+        for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {
@@ -109,8 +112,9 @@ public class AuthenticationLogicTest extends LogicTestBase {
     }
 
     @Test
+    @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testLoginMaxRetriesReset() throws Exception {
-        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES - 1; i++) {
+        for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries) - 1; i++) {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {
@@ -121,7 +125,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         // reset the login retry count with a correct login
         al.login("Yoda", "YodaPW");
 
-        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES - 1; i++) {
+        for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries) - 1; i++) {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {
@@ -133,7 +137,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
     @Test
     @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
     public void testLoginMaxRetriesUpdateUser() throws Exception {
-        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+        for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {
@@ -146,7 +150,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         UMUser user = ul.getUser("Yoda");
         ul.updateUser(user, "newPW12!");
 
-        for (int i = 0; i <= AuthenticationLogic.MAX_LOGIN_RETRIES; i++) {
+        for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {

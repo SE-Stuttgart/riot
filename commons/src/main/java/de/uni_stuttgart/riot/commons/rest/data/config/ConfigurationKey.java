@@ -42,6 +42,12 @@ public enum ConfigurationKey {
     /** The allowed special characters. */
     um_pwValidator_allowedSpecialChars(String.class),
 
+    /** The maximum amount of failed logins, before a user gets locked. */
+    um_maxLoginRetries(Integer.class),
+
+    /** The time in seconds the authentication token is valid. */
+    um_authTokenValidTime(Integer.class),
+
     /** Integer key. Used only for testing. */
     test_int(Integer.class),
 

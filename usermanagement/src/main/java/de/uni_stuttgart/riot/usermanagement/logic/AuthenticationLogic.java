@@ -9,8 +9,10 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 
+import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
+import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
@@ -33,16 +35,10 @@ import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
  */
 public class AuthenticationLogic {
 
-    /**
-     * How often can a user enter a wrong password for a single user name?
-     */
-    public static final int MAX_LOGIN_RETRIES = 5;
-
-    // How long is the bearer token valid. Time in ms. Current value: 2h (=min * sec * ms)
-    private static final int VALID_TOKEN_TIME_IN_MS = 120 * 60 * 1000;
-
     // If the token already exists in the db, how often should be tried to generate a unique token
     private static final int TOKEN_GENERATION_MAX_RETRIES = 20;
+
+    private static final int MS_IN_SECONDS = 1000;
 
     private DAO<Token> dao = new TokenSqlQueryDAO();
 
@@ -65,7 +61,7 @@ public class AuthenticationLogic {
 
             UMUser user = ul.getUser(username);
 
-            if (user.getLoginAttemptCount() > MAX_LOGIN_RETRIES) {
+            if (user.getLoginAttemptCount() > Configuration.getInt(ConfigurationKey.um_maxLoginRetries)) {
                 throw new LoginException("Password was too many times wrong. Please change the password.");
             }
 
@@ -187,7 +183,7 @@ public class AuthenticationLogic {
 
         // TODO This is not necessarily the issue time?
         Timestamp issueTime = new Timestamp(System.currentTimeMillis() - 1000000); // NOCS FIXME use git - master
-        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + VALID_TOKEN_TIME_IN_MS);
+        Timestamp expirationTime = new Timestamp(System.currentTimeMillis() + Configuration.getInt(ConfigurationKey.um_authTokenValidTime) * MS_IN_SECONDS);
 
         do {
             // generate new tokens

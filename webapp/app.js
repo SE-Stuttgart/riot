@@ -7,7 +7,8 @@ angular.module('riot', ['ngLocalize',
                         'ui.calendar', 
                         'ngAnimate', 
                         'restangular', 
-                        'LocalStorageModule'])
+                        'LocalStorageModule',
+                        'frapontillo.bootstrap-switch'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
@@ -36,7 +37,7 @@ angular.module('riot').run(function($rootScope, $injector, $window, $state, $sce
     cookieStore = $injector.get('$cookieStore');
   }
   locale.setLocale(cookieStore ? cookieStore.get(localeConf.cookieName) : ($window.navigator.userLanguage || $window.navigator.language || localeConf.defaultLocale));
-  
+
   //check authorization on state change
   $rootScope.$on('$stateChangeStart', function(e, state) {
     state.data = state.data || {};
