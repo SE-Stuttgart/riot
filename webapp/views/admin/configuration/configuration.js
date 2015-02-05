@@ -8,6 +8,7 @@ angular.module('riot').config(function($stateProvider) {
 angular.module('riot').controller('ConfigCtrl', function($scope, $q, Configuration, locale) {
 
   var configItemsSave;
+  var alertId = null;
 
   //get all configuration entries over the REST interface
   Configuration.getList().then(function(config) {
@@ -26,34 +27,34 @@ angular.module('riot').controller('ConfigCtrl', function($scope, $q, Configurati
     configItemsSave = angular.copy($scope.configItems);
   });
 
-  // locale.ready('common').then(function() {
-    $scope.submit = function() {
-      var toSubmit = [];
-      for (var i = 0; i < $scope.configItems.length; i++) {
-        if (!equalsConfigItems($scope.configItems[i], configItemsSave[i])) {
-          toSubmit.push($scope.configItems[i]);
-        }
+  $scope.submit = function() {
+    var toSubmit = [];
+    for (var i = 0; i < $scope.configItems.length; i++) {
+      if (!equalsConfigItems($scope.configItems[i], configItemsSave[i])) {
+        toSubmit.push($scope.configItems[i]);
       }
+    }
 
-      //submit the changed items to the server
-      var putPromises = [];
-      angular.forEach(toSubmit, function(configItem, key) {
-        putPromises.push(configItem.put());
-      });
+    //submit the changed items to the server
+    var putPromises = [];
+    angular.forEach(toSubmit, function(configItem, key) {
+      putPromises.push(configItem.put());
+    });
 
-      return $q.all(putPromises).then(function() {
-        var resourceName = locale.getString('common.resource_configuration');
-        $scope.alert.showSuccess(locale.getString('common.resource_updateSuccess', {
-          resource: resourceName
-        }));
-      }, function() {
-        var resourceName = locale.getString('common.resource_configuration');
-        $scope.alert.showError(locale.getString('common.resource_updateError', {
-          resource: resourceName
-        }));
-      });
-    };
-  // });
+    return $q.all(putPromises).then(function() {
+      var resourceName = locale.getString('common.resource_configuration');
+      $scope.alerts.close(alertId);
+      alertId = $scope.alerts.showSuccess(locale.getString('common.resource_updateSuccess', {
+        resource: resourceName
+      }));
+    }, function() {
+      var resourceName = locale.getString('common.resource_configuration');
+      $scope.alerts.close(alertId);
+      alertId = $scope.alerts.showError(locale.getString('common.resource_updateError', {
+        resource: resourceName
+      }));
+    });
+  };
 
   $scope.reset = function() {
     $scope.configItems = configItemsSave;

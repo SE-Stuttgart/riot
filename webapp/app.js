@@ -8,7 +8,8 @@ angular.module('riot', ['ngLocalize',
                         'ngAnimate', 
                         'restangular', 
                         'LocalStorageModule',
-                        'frapontillo.bootstrap-switch'])
+                        'frapontillo.bootstrap-switch',
+                        'ngAnimate'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
@@ -28,7 +29,6 @@ angular.module('riot', ['ngLocalize',
 });
 
 angular.module('riot').run(function($rootScope, $injector, $window, $state, $sce, Auth, locale, localeConf) {
-  
   // Workaround for bug in angular-localization.
   // Note: When removing this workaround, also remove the '$injector', '$window', 'locale' and 'localeConf' parameters of this function, if they are not needed anymore.
   // https://github.com/doshprompt/angular-localization/commit/8c438d103d1b48b32859cfddba9c541a819d2b50#diff-c4b0761c7fda8e32bbb08e9de5b78627R275
@@ -71,6 +71,46 @@ angular.module('riot').run(function($rootScope, $injector, $window, $state, $sce
       }
     }
   });
+
+  //alerts
+  $rootScope.alerts = {};
+  $rootScope.alerts.list = [];
+  $rootScope.alerts.id = 0;
+
+  $rootScope.alerts.close = function(id) {
+    for (var i = 0; i < $rootScope.alerts.list.length; i++) {
+      if ($rootScope.alerts.list[i].id == id) {
+        $rootScope.alerts.list.splice(i, 1);
+      }
+    }
+  };
+
+  $rootScope.alerts.showSuccess = function(msg) {
+    return $rootScope.alerts.show('success', msg);
+  };
+
+  $rootScope.alerts.showInfo = function(msg) {
+    return $rootScope.alerts.show('info', msg);
+  };
+
+  $rootScope.alerts.showWarning = function(msg) {
+    return $rootScope.alerts.show('warning', msg);
+  };
+
+  $rootScope.alerts.showError = function(msg) {
+    return $rootScope.alerts.show('danger', msg);
+  };
+
+  $rootScope.alerts.show = function(type, msg) {
+    var id = $rootScope.alerts.id++;
+    $rootScope.alerts.list.push({
+      id: id,
+      type: type,
+      msg: msg
+    });
+
+    return id;
+  };
 
   //dialog
   $rootScope.dialog = {

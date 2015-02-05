@@ -1,10 +1,12 @@
 <div class="app admin" ng-controller="AdminCtrl">
-  <div class="wrapper" ng-controller="AppCtrl">
+  <div class="wrapper">
     <!-- navigation -->
     <div ng-include="'views/app/navigation/navbar/navbar.html'"></div>
 
     <!-- alert notification -->
-    <alert id="alert" ng-hide="alert.hide" type="alert.type" close="alert.close()">{{ alert.msg }}</alert>
+    <div class="alertContainer">
+      <alert id="alert" type="alert.type" close="alerts.close(alert.id)" ng-repeat="alert in alerts.list">{{alert.msg}}</alert>
+    </div>
 
     <!-- view -->
     <div class="page-wrapper" ui-view></div>
