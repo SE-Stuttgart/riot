@@ -18,6 +18,10 @@ import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.InternalRequest;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptionWrapper;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.TokenManager;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;

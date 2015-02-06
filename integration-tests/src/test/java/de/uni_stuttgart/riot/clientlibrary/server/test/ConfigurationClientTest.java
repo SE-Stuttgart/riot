@@ -12,9 +12,9 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.server.client.ConfigurationClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
@@ -32,7 +32,7 @@ public class ConfigurationClientTest extends ShiroEnabledTest {
      */
     @Override
     protected Application configure() {
-        return new RiotApplication();
+        return new RiotApplication(false);
     }
 
     /*

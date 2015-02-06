@@ -31,29 +31,6 @@ public class ConfigResourceTest extends JerseyDBTestBase {
     private static final GenericType<Collection<ConfigurationEntry>> TYPE_CONFIG_STORABLE_COLLECTION = new GenericType<Collection<ConfigurationEntry>>() {
     };
 
-<<<<<<< HEAD
-=======
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected RiotApplication configure() {
-        return new RiotApplication(false);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
-    }
-
->>>>>>> RIOT-182 Checkstyle 
     /**
      * Tests if a GET request to the resource works.
      */

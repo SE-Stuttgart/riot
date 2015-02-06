@@ -1,12 +1,13 @@
 package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 
 // this file needs to be in this package cause the loginClient jsonMapper and the get,post,put,delete functions are only visible here
-
+// TODO: LoginClient is not anymore in package: de.uni_stuttgart.riot.clientlibrary.usermanagement.client
 import java.util.Collection;
 
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.type.TypeReference;
 
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
 /**

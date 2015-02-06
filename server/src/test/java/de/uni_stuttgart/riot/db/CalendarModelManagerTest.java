@@ -34,6 +34,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteExcepti
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Tests the operations executed at the persistence layer.
@@ -44,14 +45,11 @@ public class CalendarModelManagerTest extends JerseyDBTestBase {
 
     private DAO<CalendarEntry> modelManager;
 
-<<<<<<< HEAD
-=======
     @Override
     protected RiotApplication configure() {
         return new RiotApplication(false);
     }
 
->>>>>>> RIOT-182 Checkstyle 
     /**
      * help method to create test data in DB.
      * 

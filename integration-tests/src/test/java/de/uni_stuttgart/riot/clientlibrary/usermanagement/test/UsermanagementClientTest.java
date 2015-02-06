@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.ws.rs.core.Application;
+
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
@@ -17,12 +19,11 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class UsermanagementClientTest extends ShiroEnabledTest {
 
-<<<<<<< HEAD
-=======
     /*
      * (non-Javadoc)
      * 
@@ -33,17 +34,6 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
         return new RiotApplication(true);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
-    }
-
->>>>>>> RIOT-182 Checkstyle 
     @Test
     public void getUserTest() throws ClientProtocolException, RequestException, IOException {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());

@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.codehaus.jackson.type.TypeReference;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
