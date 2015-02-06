@@ -20,17 +20,29 @@
 
       <!-- startTime -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="startTime">Start</label>
+        <label class="control-label col-md-2" for="startTime">Start Date</label>
         <div class="col-md-8">
-          <input id="startTime" name="startTime" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.startTime">
+          <div class="input-group col-md-6">
+            <input id="startTime" name="startTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.startTime" is-open="datepickerStart" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerStart = !datepickerStart;"><i class="fa fa-calendar"></i></button>
+            </span>
+          </div>
+          <timepicker ng-model="calendarEntryDetail.startTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
         </div>
       </div>
 
       <!-- endTime -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="endTime">End</label>
+        <label class="control-label col-md-2" for="endTime">End Date</label>
         <div class="col-md-8">
-          <input id="endTime" name="endTime" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.endTime">
+          <div class="input-group col-md-6">
+            <input id="endTime" name="endTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.endTime" is-open="datepickerEnd" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerEnd = !datepickerEnd;"><i class="fa fa-calendar"></i></button>
+            </span>
+          </div>
+          <timepicker ng-model="calendarEntryDetail.endTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
         </div>
       </div>
 

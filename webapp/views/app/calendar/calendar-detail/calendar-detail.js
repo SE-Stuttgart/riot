@@ -10,6 +10,20 @@ angular.module('riot').controller('CalendarDetailCtrl', function($scope, $stateP
 
   var init = function() {
     $scope.getCalendarEntry();
+    $scope.datepickerOptions = {
+      format: 'dd.MM.yyyy',
+      formatYear: 'yy',
+      startingDay: 1,
+      currentText: 'Today',
+      clearText: 'Clear',
+      closeText: 'Close'
+    };
+    $scope.timepickerOptions = {
+      meridian: false,
+      minuteStep: 5,
+      hourStep: 1
+    };
+    $scope.a = new Date();
   };
 
   $scope.getCalendarEntry = function() {
