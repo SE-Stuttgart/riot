@@ -2,6 +2,7 @@
 'use strict';
 
 var pkg = require('./package.json');
+var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
 //Using exclusion patterns slows down Grunt significantly
 //instead of creating a set of patterns like '**/*.js' and '!**/node_modules/**'
@@ -38,11 +39,37 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
     connect: {
-      main: {
-        options: {
-          port: 9001
-        }
-      }
+        server: {
+        	options: {
+        		host: 'localhost',
+        		port: 9001,
+                middleware: function (connect, options) {
+                    if (!Array.isArray(options.base)) {
+                        options.base = [options.base];
+                    }
+                    // Setup the proxy
+                    var middlewares = [proxySnippet];
+                    // Serve static files.
+                    options.base.forEach(function(base) {
+                        middlewares.push(connect.static(base));
+                    });
+                    // Make directory browse-able.
+                    var directory = options.directory || options.base[options.base.length - 1];
+                    middlewares.push(connect.directory(directory));
+                    return middlewares;
+                }
+            },
+        	proxies: [{
+        		context: '/api',
+        		host: 'localhost',
+        		port: 8181,
+        	    changeOrigin: true,
+        	    https: true,
+        	    rewrite: {
+        	       '^/api': '/riot/api'
+        	    }
+        	}]
+        },
     },
     watch: {
       main: {
@@ -272,7 +299,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('build',['jshint','clean:before','clean_messages','convert_messages','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-  grunt.registerTask('serve', ['dom_munger:read','jshint','connect', 'watch']);
+  grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'configureProxies:server', 'connect:server', 'watch'])
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
   grunt.registerTask('test-headless',['dom_munger:read','karma:during_watch']);
 
