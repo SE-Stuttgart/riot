@@ -40,9 +40,9 @@ module.exports = function (grunt) {
   grunt.initConfig({
     connect: {
         server: {
-        	options: {
-        		host: 'localhost',
-        		port: 9001,
+          options: {
+            host: 'localhost',
+            port: 9001,
                 middleware: function (connect, options) {
                     if (!Array.isArray(options.base)) {
                         options.base = [options.base];
@@ -59,16 +59,16 @@ module.exports = function (grunt) {
                     return middlewares;
                 }
             },
-        	proxies: [{
-        		context: '/api',
-        		host: 'localhost',
-        		port: 8181,
-        	    changeOrigin: true,
-        	    https: true,
-        	    rewrite: {
-        	       '^/api': '/riot/api'
-        	    }
-        	}]
+          proxies: [{
+            context: '/api',
+            host: 'localhost',
+            port: 8181,
+              changeOrigin: true,
+              https: true,
+              rewrite: {
+                 '^/api': '/riot/api'
+              }
+          }]
         },
     },
     watch: {
@@ -121,7 +121,7 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['img/**'], dest: 'dist/'},
-	  {src: ['languages/**'], dest: 'dist/'},
+    {src: ['languages/**'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
           {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
           //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
@@ -299,7 +299,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('build',['jshint','clean:before','clean_messages','convert_messages','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-  grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'configureProxies:server', 'connect:server', 'watch'])
+  grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'configureProxies:server', 'connect:server', 'watch']);
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
   grunt.registerTask('test-headless',['dom_munger:read','karma:during_watch']);
 
