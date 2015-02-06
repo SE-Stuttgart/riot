@@ -6,6 +6,8 @@ angular.module('riot').config(function($stateProvider) {
 });
 
 angular.module('riot').controller('PermissionDetailCtrl', function($scope, $stateParams, Permission){
+  var alertId = null;
+
   var init = function() {
     $scope.getPermission();
   };
@@ -17,9 +19,15 @@ angular.module('riot').controller('PermissionDetailCtrl', function($scope, $stat
   };
 
   $scope.save = function() {
-    $scope.permissionDetail.put().then(function() {
-      $scope.getPermission();
-    });
+    return $scope.permissionDetail.put().then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated permission');
+        $scope.getPermission();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update permission: ' + reason);
+        $scope.getPermission();
+      });
   };
 
   init();

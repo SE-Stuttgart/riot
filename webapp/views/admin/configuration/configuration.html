@@ -9,7 +9,7 @@
       <form name="configForm">
         <configuration-item ng-repeat="configItem in configItems" config="configItem"></configuration-item>
         <div class="config-controls">
-          <loading-button submit="submit()">Submit</loading-button>
+          <button type="button" class="btn btn-primary" submit="submit()" loading-button="submit">Submit</button>
           <input type="button" class="btn btn-default" value="Reset" ng-click="reset()">
         </div>
       </form>

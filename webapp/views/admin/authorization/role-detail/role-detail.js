@@ -6,6 +6,8 @@ angular.module('riot').config(function($stateProvider) {
 });
 
 angular.module('riot').controller('RoleDetailCtrl',function($scope, $stateParams, Role, Permission){
+  var alertId = null;
+
   var init = function() {
     $scope.getPermissions();
     $scope.getRole();
@@ -24,24 +26,43 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $stateParams
   };
 
   $scope.removeRolePermission = function(role, permission) {
-    role.removePermission(permission.id).then(function() {
-      $scope.getRole();
-    });
+    return role.removePermission(permission.id).then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated role');
+        $scope.getRole();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update role: ' + reason);
+        $scope.getRole();
+      });
   };
 
   $scope.addRolePermission = function(role, permission) {
-    if (role, permission) {
-      role.addPermission(permission.id).then(function() {
-        $scope.getRole();
-        $scope.selectedPermission = null;
-      });
+    if (role && permission) {
+      return role.addPermission(permission.id).then(function() {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showSuccess('Successfully updated role');
+          $scope.selectedPermission = null;
+          $scope.getRole();
+        }, function(reason) {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showError('Couldn\'t update role: ' + reason);
+          $scope.selectedPermission = null;
+          $scope.getRole();
+        });
     }
   };
 
   $scope.save = function() {
-    $scope.roleDetail.put().then(function() {
-      $scope.getRole();
-    });
+    return $scope.roleDetail.put().then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated role');
+        $scope.getRole();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update role: ' + reason);
+        $scope.getRole();
+      });
   };
 
   init();

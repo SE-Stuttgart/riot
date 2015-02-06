@@ -1,20 +1,20 @@
 angular.module('riot').directive('loadingButton', function() {
   return {
-    restrict: 'EA',
-    replace: true,
-    transclude: true,
+    restrict: 'A',
     scope: {
-      submit: '&' //needs to return a promise
+      submit: '&'
     },
-    templateUrl: 'commons/directives/loading-button/loading-button.html',
     link: function(scope, element, attrs, fn) {
-      scope.internalSubmit = function() {
-        var l = Ladda.create(document.querySelector('#loading-btn'));
+      element.addClass('ladda-button');
+      element.attr('data-style', 'expand-left');
+      element.append('<span class="ladda-label" ng-transclude></span>');
+      element.on('click', function() {
+        var l = Ladda.create(element[0]);
         l.start();
         scope.submit().then(function() {
           l.stop();
         });
-      };
+      });
     }
   };
 });

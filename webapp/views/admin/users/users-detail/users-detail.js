@@ -5,7 +5,9 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('UsersDetailCtrl', function($scope, $stateParams, $q, User, Role){
+angular.module('riot').controller('UsersDetailCtrl', function($scope, $stateParams, User, Role){
+  var alertId = null;
+
   var init = function() {
     $scope.getRoles();
     $scope.getUser();
@@ -28,17 +30,30 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
 
   $scope.addUserRole = function(user, role) {
     if (user && role) {
-      $scope.userDetail.addRole(role.id).then(function() {
-        $scope.getUser();
-        $scope.selectedRole = null;
-      });
+      return $scope.userDetail.addRole(role.id).then(function() {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showSuccess('Successfully updated user');
+          $scope.getUser();
+          $scope.selectedRole = null;
+        }, function(reason) {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+          $scope.getUser();
+          $scope.selectedRole = null;
+        });
     }
   };
 
   $scope.removeUserRole = function(user, role) {
-    $scope.userDetail.removeRole(role.id).then(function() {
-      $scope.getUser();
-    });
+    return $scope.userDetail.removeRole(role.id).then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated user');
+        $scope.getUser();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+        $scope.getUser();
+      });
   };
 
   $scope.save = function() {
@@ -46,10 +61,15 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
       $scope.userDetail.password = $scope.userDetail.password1;
     }
 
-    //update user
-    $scope.userDetail.put().then(function() {
-      $scope.getUser();
-    });
+    return $scope.userDetail.put().then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated user');
+        $scope.getUser();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+        $scope.getUser();
+      });
   };
 
   init();

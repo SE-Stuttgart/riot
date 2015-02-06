@@ -42,18 +42,18 @@ angular.module('riot').controller('ConfigCtrl', function($scope, $q, Configurati
     });
 
     return $q.all(putPromises).then(function() {
-      var resourceName = locale.getString('common.resource_configuration');
-      $scope.alerts.close(alertId);
-      alertId = $scope.alerts.showSuccess(locale.getString('common.resource_updateSuccess', {
-        resource: resourceName
-      }));
-    }, function() {
-      var resourceName = locale.getString('common.resource_configuration');
-      $scope.alerts.close(alertId);
-      alertId = $scope.alerts.showError(locale.getString('common.resource_updateError', {
-        resource: resourceName
-      }));
-    });
+        var resourceName = locale.getString('common.resource_configuration');
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess(locale.getString('common.resource_updateSuccess', {
+          resource: resourceName
+        }));
+      }, function() {
+        var resourceName = locale.getString('common.resource_configuration');
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError(locale.getString('common.resource_updateError', {
+          resource: resourceName
+        }));
+      });
   };
 
   $scope.reset = function() {
