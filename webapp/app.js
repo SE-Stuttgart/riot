@@ -79,7 +79,7 @@ angular.module('riot').run(function($rootScope, $injector, $window, $state, $sce
 
   $rootScope.alerts.close = function(id) {
     for (var i = 0; i < $rootScope.alerts.list.length; i++) {
-      if ($rootScope.alerts.list[i].id == id) {
+      if ($rootScope.alerts.list[i].id === id) {
         $rootScope.alerts.list.splice(i, 1);
       }
     }

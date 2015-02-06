@@ -6,6 +6,8 @@ angular.module('riot').config(function($stateProvider) {
 });
 
 angular.module('riot').controller('CalendarDetailCtrl', function($scope, $stateParams, Calendar) {
+  var alertId = null;
+
   var init = function() {
     $scope.getCalendarEntry();
   };
@@ -17,9 +19,15 @@ angular.module('riot').controller('CalendarDetailCtrl', function($scope, $stateP
   };
 
   $scope.save = function() {
-    $scope.calendarEntryDetail.put().then(function() {
-      $scope.getCalendarEntry();
-    });
+    return $scope.calendarEntryDetail.put().then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated calendar entry');
+        $scope.getCalendarEntry();
+      }, function(reason) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update calendar entry: ' + reason);
+        $scope.getCalendarEntry();
+      });
   };
 
   init();

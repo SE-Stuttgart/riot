@@ -5,6 +5,7 @@ angular.module('riot').directive('loadingButton', function() {
       submit: '&'
     },
     link: function(scope, element, attrs, fn) {
+      /* jshint ignore:start */
       element.addClass('ladda-button');
       element.attr('data-style', 'expand-left');
       element.append('<span class="ladda-label" ng-transclude></span>');
@@ -15,6 +16,7 @@ angular.module('riot').directive('loadingButton', function() {
           l.stop();
         });
       });
+      /* jshint ignore:end */
     }
   };
 });
