@@ -1,16 +1,17 @@
 package de.uni_stuttgart.riot.android;
 
 import android.view.MenuItem;
+import de.uni_stuttgart.riot.android.notification.NotificationType;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
-public class Filter {
+public class FilterItem {
 
     private int id;
     private MenuItem item;
     private NotificationType type;
     private boolean checked;
 
-    public Filter(int id, MenuItem item, NotificationType type, boolean checked) {
+    public FilterItem(int id, MenuItem item, NotificationType type, boolean checked) {
         this.id = id;
         this.item = item;
         this.type = type;

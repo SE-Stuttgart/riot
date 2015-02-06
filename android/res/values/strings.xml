@@ -3,39 +3,33 @@
 
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
-
-    <string name="drawer_open">Open Drawer</string>
-    <string name="drawer_close">Close Drawer</string>
     <string name="settings">Settings</string>
 
-    <!-- Fragment main (all entries for main please insert here) -->
+    <!-- Main (all entries for main please insert here) -->
     <string name="filter_appointment">Appointments</string>
     <string name="filter_error">Errors</string>
     <string name="filter_warning">Warnings</string>
 
-    <!-- Fragment language (all entries for language please insert here) -->
-    <string name="language">Please select your preferred language</string>
-    <string name="language_header">Please select your language</string>
-    <string name="english">English</string>
-    <string name="german">German</string>
-    <string name="flag_uk">Flag United Kingdom</string>
-    <string name="flag_de">Flag Germany</string>
-    <string name="lang_header">Please select your preferred language</string>
-    <string name="desc_uk">Sets the language to English-UK.</string>
-    <string name="desc_ger">Sets the language to German.</string>
+    <!-- Settings (all entries for language please insert here) -->
+    <string name="language">Language</string>
+    <string name="changeLanguage">Change language</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="color">Calendar color</string>
+    <string name="changeColor">Change color</string>
 
-    <!-- Fragment account (all entries for account please insert here) -->
+    <!-- Account (all entries for account please insert here) -->
     <string name="add_account">Add Account</string>
     <string name="add_event">Add Event</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
 
-    <!-- Fragment filter (all entries for language please insert here) -->
+    <!-- Filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Show only Error messages if selected</string>
     <string name="desc_filter_appointment">Show only Appointments if selected</string>
     <string name="desc_filter_warning">Show only Warning messages if selected</string>
 
-    <!-- Fragment location (all entries for language please insert here) -->
+    <!-- Location (all entries for language please insert here) -->
     <string name="location_show">Show available Location</string>
     <string name="location_hide">Hide available Location</string>
     <string name="location_current_position">Current position</string>
@@ -43,6 +37,5 @@
     <string name="location_longitude">Longitude</string>
     <string name="location_distance">Distance from current position to</string>
     <string name="location_store_distance">Notify within a range of</string>
-    <string name="change_color">Change Color</string>
 
 </resources>

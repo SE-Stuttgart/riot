@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
@@ -22,7 +21,8 @@ import de.uni_stuttgart.riot.android.language.Language;
  */
 public class SettingScreen extends Activity {
 
-    private ImageButton btnLanguage;
+    private Button btnLanguage;
+    private Button btnColorCalendar;
 
     private String pressedHomeScreenButton;
     private Intent intent;
@@ -30,7 +30,6 @@ public class SettingScreen extends Activity {
 
     private int choice = 0;
     private int selectedLanguage;
-    private Button btn_color_change;
 
     private RIOTDatabase db;
 
@@ -65,7 +64,7 @@ public class SettingScreen extends Activity {
         actionBar.setIcon(R.drawable.settings);
 
         //
-        btnLanguage = (ImageButton) findViewById(R.id.btnLanguage);
+        btnLanguage = (Button) findViewById(R.id.btnLanguage);
         btnLanguage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,8 +72,8 @@ public class SettingScreen extends Activity {
             }
         });
 
-        btn_color_change = (Button) findViewById(R.id.btn_change_color);
-        btn_color_change.setOnClickListener(new OnClickListener() {
+        btnColorCalendar = (Button) findViewById(R.id.btnColor);
+        btnColorCalendar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO: change color and open color picker
@@ -85,16 +84,16 @@ public class SettingScreen extends Activity {
 
     private void showLanguageDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.language_header).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.language).setSingleChoiceItems(R.array.language_array, selectedLanguage, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 choice = which;
             }
-        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        }).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 setSelectedLanguage(choice);
             }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();

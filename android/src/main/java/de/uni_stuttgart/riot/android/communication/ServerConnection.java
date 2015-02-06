@@ -13,8 +13,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 import de.uni_stuttgart.riot.android.NotificationScreen;
-import de.uni_stuttgart.riot.android.NotificationType;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
+import de.uni_stuttgart.riot.android.notification.Notification;
+import de.uni_stuttgart.riot.android.notification.NotificationType;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> {

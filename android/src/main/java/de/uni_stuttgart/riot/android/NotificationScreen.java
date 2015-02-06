@@ -17,6 +17,7 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
+import de.uni_stuttgart.riot.android.notification.NotificationType;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -41,7 +42,7 @@ public class NotificationScreen extends Activity {
         // Sets the language
         Language.setLanguage(this);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.notification_screen);
 
         getActionBar().setHomeButtonEnabled(true);
         getActionBar().setTitle(pressedHomeScreenButton.substring(0, 1).toUpperCase() + pressedHomeScreenButton.substring(1));
@@ -114,13 +115,13 @@ public class NotificationScreen extends Activity {
 
         switch (item.getItemId()) {
         case R.id.filter_error:
-            database.setFilter(new Filter(1, item, NotificationType.ERROR, false));
+            database.setFilter(new FilterItem(1, item, NotificationType.ERROR, false));
             return true;
         case R.id.filter_appointment:
-            database.setFilter(new Filter(2, item, NotificationType.APPOINTMENT, false));
+            database.setFilter(new FilterItem(2, item, NotificationType.APPOINTMENT, false));
             return true;
         case R.id.filter_warning:
-            database.setFilter(new Filter(3, item, NotificationType.WARNING, false));
+            database.setFilter(new FilterItem(3, item, NotificationType.WARNING, false));
             return true;
         case R.id.action_refresh:
             new ServerConnection(this, database).execute();

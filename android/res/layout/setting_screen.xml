@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2C3539"
     android:orientation="vertical" >
 
     <TextView
@@ -10,36 +11,44 @@
         android:paddingStart="10dp"
         android:paddingTop="20dp"
         android:text="@string/language"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#0080FF" />
 
-    <ImageButton
-        android:id="@+id/btnLanguage"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_centerVertical="true" />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="#0080FF" />
 
-    <!--
     <Button
-        android:id="@+id/btn_lang"
+        android:id="@+id/btnLanguage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/language_header" />
-    -->
+        android:text="@string/changeLanguage"
+        android:textColor="#0080FF" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="10dp"
-        android:paddingTop="35dp"
-        android:text="@string/language"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:paddingTop="20dp"
+        android:text="@string/color"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#0080FF" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="#0080FF" />
 
     <Button
-        android:id="@+id/btn_change_color"
+        android:id="@+id/btnColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/change_color" />
-    
-    
+        android:text="@string/changeColor"
+        android:textColor="#0080FF" />
 
 </LinearLayout>
