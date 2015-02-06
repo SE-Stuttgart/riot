@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.clientlibrary.server.client;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public class ConfigurationClient {
     public int updateConfigurationEntry(long configId, ConfigurationEntry configEntry) throws RequestException {
         configEntry.setId(configId);
         HttpResponse response = this.loginClient.put(this.loginClient.getServerUrl() + UPDATE_CONFIG + configId, configEntry);
-        return response.getStatusLine().getStatusCode();
+        return returnStatusCode(response);
     }
 
     /**
@@ -82,8 +83,7 @@ public class ConfigurationClient {
      */
     public int removeConfigurationEntry(long configId) throws RequestException {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + DELETE_CONFIG_ID + configId);
-        int result = response.getStatusLine().getStatusCode();
-        return result;
+        return returnStatusCode(response);
     }
 
     /**
@@ -96,8 +96,7 @@ public class ConfigurationClient {
      */
     public int removeConfigurationEntry(ConfigurationKey configKey) throws RequestException {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + DELETE_CONFIG_KEY + configKey.name());
-        int result = response.getStatusLine().getStatusCode();
-        return result;
+        return returnStatusCode(response);
     }
 
     /**
@@ -406,5 +405,26 @@ public class ConfigurationClient {
         } catch (Exception e) {
             throw new RequestException(e);
         }
+    }
+
+    /**
+     * Return status code of a response.
+     *
+     * @param response
+     *            the response
+     * @return the int
+     * @throws RequestException
+     *             the request exception
+     */
+    private int returnStatusCode(HttpResponse response) throws RequestException {
+        if (response != null) {
+            try {
+                response.getEntity().consumeContent();
+            } catch (IOException e) {
+                throw new RequestException(e);
+            }
+            return response.getStatusLine().getStatusCode();
+        }
+        throw new RequestException("Couldn't get a valid response (response == null)");
     }
 }

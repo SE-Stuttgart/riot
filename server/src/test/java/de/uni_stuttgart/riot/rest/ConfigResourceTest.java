@@ -15,7 +15,6 @@ import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
  * Test class for the calendar which uses the Jersey Test Framework.
@@ -31,26 +30,6 @@ public class ConfigResourceTest extends JerseyDBTestBase {
     /** The Constant TYPE_CONFIG_STORABLE_COLLECTION. */
     private static final GenericType<Collection<ConfigurationEntry>> TYPE_CONFIG_STORABLE_COLLECTION = new GenericType<Collection<ConfigurationEntry>>() {
     };
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected RiotApplication configure() {
-        return new RiotApplication();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
-    }
 
     /**
      * Tests if a GET request to the resource works.
