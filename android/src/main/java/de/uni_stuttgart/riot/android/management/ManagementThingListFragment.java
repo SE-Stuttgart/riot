@@ -8,7 +8,8 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 24.01.2015
+ * Created by Benny on 24.01.2015.
+ * Fragment that displays all things in a list.
  */
 public class ManagementThingListFragment extends ManagementListFragment {
 

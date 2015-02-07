@@ -6,22 +6,39 @@ import java.util.HashMap;
 
 /**
  * Created by Benny on 09.01.2015.
+ * This enum is for identify the online state of a storable item (like a user, a device or a thing).
  */
 public enum OnlineState {
+    /**
+     * Shows that a item is "away".
+     */
     STATUS_AWAY(0, "away", android.R.drawable.presence_away),
+    /**
+     * Shows that a item is "busy".
+     */
     STATUS_BUSY(1, "busy", android.R.drawable.presence_busy),
+    /**
+     * Shows that a item is "invisible".
+     */
     STATUS_INVISIBLE(2, "invisible", android.R.drawable.presence_invisible),
+    /**
+     * Shows that a item is "offline".
+     */
     STATUS_OFFLINE(3, "offline", android.R.drawable.presence_offline),
+    /**
+     * Shows that a item is "online".
+     */
     STATUS_ONLINE(4, "online", android.R.drawable.presence_online);
+
+    private static HashMap<Long, OnlineState> enumIdMap = new HashMap<Long, OnlineState>();
+    private static HashMap<String, OnlineState> enumMessageMap = new HashMap<String, OnlineState>();
 
     private long id;
     private String message;
     private int imageResource;
-    private static HashMap<Long, OnlineState> enumIdMap = new HashMap<Long, OnlineState>();
-    private static HashMap<String, OnlineState> enumMessageMap = new HashMap<String, OnlineState>();
 
     /**
-     * Maps all enumerations with the id as key
+     * Maps all enumerations with the id as key.
      */
     static {
         for (OnlineState obj : EnumSet.allOf(OnlineState.class)) {
@@ -33,7 +50,7 @@ public enum OnlineState {
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param imageResource the resource id of the image
      */
@@ -44,7 +61,7 @@ public enum OnlineState {
     }
 
     /**
-     * Help to get the resource id
+     * Help to get the resource id.
      *
      * @return the resource id of the image for that online state
      */
@@ -53,7 +70,7 @@ public enum OnlineState {
     }
 
     /**
-     * Returns the enum mapped with the given value
+     * Returns the enum mapped with the given value.
      *
      * @param message is the message of the searched enum
      * @return the enum object with the given value
@@ -63,7 +80,7 @@ public enum OnlineState {
     }
 
     /**
-     * Returns the enum mapped with the given value
+     * Returns the enum mapped with the given value.
      *
      * @param id is the id of the searched enum
      * @return the enum object with the given value

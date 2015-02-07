@@ -12,6 +12,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * Created by Benny on 09.01.2015.
+ * Is the list adapter for the list for the ManagementListFragment class.
  */
 public class ManagementListAdapter extends ArrayAdapter<Storable> {
 

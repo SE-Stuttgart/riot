@@ -8,7 +8,9 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 25.01.2015
+ * Created by Benny on 25.01.2015.
+ * Fragment that displays all details of a thing.
+ * It also provides to edit this information.
  */
 public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
@@ -30,8 +32,10 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     @Override
     protected void displayDetailData() {
         // Save the default values
-        Long id, defaultId = getDefaultId();
-        String thingName, defaultThingName = getDefaultThingName();
+        Long id;
+        Long defaultId = getDefaultId();
+        String thingName;
+        String defaultThingName = getDefaultThingName();
 
         // Get values of the item when the item is an instance of the expected class
         if (isInstanceOf(data)) {
@@ -53,14 +57,14 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
         // Set the id value
         if (defaultId != null && defaultId != 0) {
-            ((EditText) view.findViewById(R.id.thing_id_edit)).setText(defaultId.toString());
-            view.findViewById(R.id.thing_id_edit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.thingIdEdit)).setText(defaultId.toString());
+            view.findViewById(R.id.thingIdEdit).setEnabled(this.enableElements);
         }
 
         // Set the thing name value
         if (defaultThingName != null && !defaultThingName.isEmpty()) {
-            ((EditText) view.findViewById(R.id.thing_name_edit)).setText(defaultThingName);
-            view.findViewById(R.id.thing_name_edit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.thingNameEdit)).setText(defaultThingName);
+            view.findViewById(R.id.thingNameEdit).setEnabled(this.enableElements);
         }
     }
 

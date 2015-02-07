@@ -8,7 +8,9 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 25.01.2015
+ * Created by Benny on 25.01.2015.
+ * Fragment that displays all details of a device.
+ * It also provides to edit this information.
  */
 public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
 
@@ -30,8 +32,10 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
     @Override
     protected void displayDetailData() {
         // Save the default values
-        Long id, defaultId = getDefaultId();
-        String deviceName, defaultDeviceName = getDefaultDeviceName();
+        Long id;
+        Long defaultId = getDefaultId();
+        String deviceName;
+        String defaultDeviceName = getDefaultDeviceName();
 
         // Get values of the item when the item is an instance of the expected class
         if (isInstanceOf(data)) {
@@ -53,14 +57,14 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
 
         // Set the id value
         if (defaultId != null && defaultId != 0) {
-            ((EditText) view.findViewById(R.id.device_id_edit)).setText(defaultId.toString());
-            view.findViewById(R.id.device_id_edit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.deviceIdEdit)).setText(defaultId.toString());
+            view.findViewById(R.id.deviceIdEdit).setEnabled(this.enableElements);
         }
 
         // Set the device name value
         if (defaultDeviceName != null && !defaultDeviceName.isEmpty()) {
-            ((EditText) view.findViewById(R.id.device_name_edit)).setText(defaultDeviceName);
-            view.findViewById(R.id.device_name_edit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.deviceNameEdit)).setText(defaultDeviceName);
+            view.findViewById(R.id.deviceNameEdit).setEnabled(this.enableElements);
         }
     }
 

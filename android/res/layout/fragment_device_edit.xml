@@ -14,47 +14,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/device_id"
-            android:id="@+id/device_id_text" />
+            android:id="@+id/deviceIdText" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/device_id_edit"
+            android:id="@+id/deviceIdEdit"
             android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/device_name"
-            android:id="@+id/user_name_text" />
+            android:id="@+id/userNameText" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/device_name_edit"
+            android:id="@+id/deviceNameEdit"
             android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/detail_edit_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="118dp"
-                android:text="@string/user_save"
-                android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
-
-            <Button
-                android:id="@+id/detail_abort_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="118dp"
-                android:text="@string/user_abort"
-                android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
-        </LinearLayout>
+        <include layout="@layout/fragment_edit_buttons" />
 
     </LinearLayout>
 </ScrollView>

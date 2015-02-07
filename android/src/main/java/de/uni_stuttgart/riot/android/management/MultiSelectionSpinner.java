@@ -16,43 +16,61 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This code is from the website: http://v4all123.blogspot.in/2013/09/spinner-with-multiple-selection-in.html
- * Date of posting: 2013'09'01
- * Time of posting: 20:09
- * Author: Gunaseelan A
+ * This code is from the website: http://v4all123.blogspot.in/2013/09/spinner-with-multiple-selection-in.html.
+ * Date of posting: 2013'09'01.
+ * Time of posting: 20:09.
+ * Author: Gunaseelan A.
  * ...
  * Modified by Benny on 16.12.2014.
+ * This class provides a spinner that allows multiple selection.
  */
-
 public class MultiSelectionSpinner extends Spinner implements
         OnMultiChoiceClickListener {
-    String[] _items = null;
+    String[] items = null;
     boolean[] mSelection = null;
 
-    ArrayAdapter<String> simple_adapter;
+    ArrayAdapter<String> simpleAdapter;
 
+    /**
+     * .
+     *
+     * @param context .
+     */
     public MultiSelectionSpinner(Context context) {
         super(context);
 
-        simple_adapter = new ArrayAdapter<String>(context,
+        simpleAdapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_spinner_item);
-        super.setAdapter(simple_adapter);
+        super.setAdapter(simpleAdapter);
     }
 
+    /**
+     * .
+     *
+     * @param context .
+     * @param attrs   .
+     */
     public MultiSelectionSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        simple_adapter = new ArrayAdapter<String>(context,
+        simpleAdapter = new ArrayAdapter<String>(context,
                 android.R.layout.simple_spinner_item);
-        super.setAdapter(simple_adapter);
+        super.setAdapter(simpleAdapter);
     }
 
+    /**
+     * .
+     *
+     * @param dialog    .
+     * @param which     .
+     * @param isChecked .
+     */
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
         if (mSelection != null && which < mSelection.length) {
             mSelection[which] = isChecked;
 
-            simple_adapter.clear();
-            simple_adapter.add(buildSelectedItemString());
+            simpleAdapter.clear();
+            simpleAdapter.add(buildSelectedItemString());
         } else {
             throw new IllegalArgumentException(
                     "Argument 'which' is out of bounds.");
@@ -62,7 +80,7 @@ public class MultiSelectionSpinner extends Spinner implements
     @Override
     public boolean performClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMultiChoiceItems(_items, mSelection, this);
+        builder.setMultiChoiceItems(items, mSelection, this);
         builder.show();
         return true;
     }
@@ -73,37 +91,62 @@ public class MultiSelectionSpinner extends Spinner implements
                 "setAdapter is not supported by MultiSelectSpinner.");
     }
 
+    /**
+     * .
+     *
+     * @param items .
+     */
     public void setItems(String[] items) {
-        _items = items;
-        mSelection = new boolean[_items.length];
-        simple_adapter.clear();
-        simple_adapter.add(_items[0]);
+        this.items = items;
+        mSelection = new boolean[this.items.length];
+        simpleAdapter.clear();
+        simpleAdapter.add(this.items[0]);
         Arrays.fill(mSelection, false);
     }
 
+    /**
+     * .
+     *
+     * @param items .
+     */
     public void setItems(List<String> items) {
         setItems(items.toArray(new String[items.size()]));
     }
 
+    /**
+     * .
+     *
+     * @param items .
+     */
     public void setItems(Set<String> items) {
         setItems(items.toArray(new String[items.size()]));
     }
 
+    /**
+     * .
+     *
+     * @param selection .
+     */
     public void setSelection(String[] selection) {
         for (int i = 0; i < mSelection.length; i++) {
             mSelection[i] = false;
         }
         for (String sel : selection) {
-            for (int j = 0; j < _items.length; ++j) {
-                if (_items[j].equals(sel)) {
+            for (int j = 0; j < items.length; ++j) {
+                if (items[j].equals(sel)) {
                     mSelection[j] = true;
                 }
             }
         }
-        simple_adapter.clear();
-        simple_adapter.add(buildSelectedItemString());
+        simpleAdapter.clear();
+        simpleAdapter.add(buildSelectedItemString());
     }
 
+    /**
+     * .
+     *
+     * @param value .
+     */
     public void setSelectionEnabled(boolean value) {
 // ToDo
 //        setClickable(value);
@@ -111,14 +154,28 @@ public class MultiSelectionSpinner extends Spinner implements
 //        getSelectedView().setEnabled(value);
     }
 
+    /**
+     * .
+     * @param selection .
+     */
     public void setSelection(List<String> selection) {
         setSelection(selection.toArray(new String[selection.size()]));
     }
 
+    /**
+     * .
+     *
+     * @param selection .
+     */
     public void setSelection(Set<String> selection) {
         setSelection(selection.toArray(new String[selection.size()]));
     }
 
+    /**
+     * .
+     *
+     * @param index .
+     */
     public void setSelection(int index) {
         for (int i = 0; i < mSelection.length; i++) {
             mSelection[i] = false;
@@ -129,10 +186,15 @@ public class MultiSelectionSpinner extends Spinner implements
             throw new IllegalArgumentException("Index " + index
                     + " is out of bounds.");
         }
-        simple_adapter.clear();
-        simple_adapter.add(buildSelectedItemString());
+        simpleAdapter.clear();
+        simpleAdapter.add(buildSelectedItemString());
     }
 
+    /**
+     * .
+     *
+     * @param selectedIndicies .
+     */
     public void setSelection(int[] selectedIndicies) {
         for (int i = 0; i < mSelection.length; i++) {
             mSelection[i] = false;
@@ -145,23 +207,33 @@ public class MultiSelectionSpinner extends Spinner implements
                         + " is out of bounds.");
             }
         }
-        simple_adapter.clear();
-        simple_adapter.add(buildSelectedItemString());
+        simpleAdapter.clear();
+        simpleAdapter.add(buildSelectedItemString());
     }
 
+    /**
+     * .
+     *
+     * @return .
+     */
     public List<String> getSelectedStrings() {
         List<String> selection = new LinkedList<String>();
-        for (int i = 0; i < _items.length; ++i) {
+        for (int i = 0; i < items.length; ++i) {
             if (mSelection[i]) {
-                selection.add(_items[i]);
+                selection.add(items[i]);
             }
         }
         return selection;
     }
 
+    /**
+     * .
+     *
+     * @return .
+     */
     public List<Integer> getSelectedIndicies() {
         List<Integer> selection = new LinkedList<Integer>();
-        for (int i = 0; i < _items.length; ++i) {
+        for (int i = 0; i < items.length; ++i) {
             if (mSelection[i]) {
                 selection.add(i);
             }
@@ -169,39 +241,49 @@ public class MultiSelectionSpinner extends Spinner implements
         return selection;
     }
 
+    /**
+     * .
+     *
+     * @return .
+     */
     private String buildSelectedItemString() {
         StringBuilder sb = new StringBuilder();
         boolean foundOne = false;
 
-        for (int i = 0; i < _items.length; ++i) {
+        for (int i = 0; i < items.length; ++i) {
             if (mSelection[i]) {
                 if (foundOne) {
                     sb.append(", ");
                 }
                 foundOne = true;
 
-                sb.append(_items[i]);
+                sb.append(items[i]);
             }
         }
         return sb.toString();
     }
 
     /**
-     * Saves the selected elements in an array list
+     * Saves the selected elements in an array list.
      *
      * @return the array list that includes the selected elements
      */
     public ArrayList<String> getSelectedItemsAsArrayList() {
         ArrayList<String> arrayList = new ArrayList<String>();
 
-        for (int i = 0; i < _items.length; ++i) {
+        for (int i = 0; i < items.length; ++i) {
             if (mSelection[i]) {
-                arrayList.add(_items[i]);
+                arrayList.add(items[i]);
             }
         }
         return arrayList;
     }
 
+    /**
+     * .
+     *
+     * @return .
+     */
     public String getSelectedItemsAsString() {
         StringBuilder sb = new StringBuilder();
         boolean foundOne = false;

@@ -17,13 +17,15 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
 /**
- * Created by Benny on 10.01.2015
+ * Created by Benny on 10.01.2015.
+ * Is the main abstract fragment for all management classes.
  */
 public abstract class ManagementFragment extends Fragment {
 
+    protected static final String BUNDLE_OBJECT_ID = "bundle_object_id";
+
     // Attributes
     protected View view; // ToDo is it also possible to use public "getView()" method?? [[or do I need the view later??]]
-    protected static String BUNDLE_OBJECT_ID = "bundle_object_id";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,15 +40,6 @@ public abstract class ManagementFragment extends Fragment {
 
         // Display data
         displayData();
-
-        // Login with user?
-        // androidUser.logIn("R2D2", "R2D2PW");
-        // androidUser.logIn("Yoda", "YodaPW");
-        // MainActivity.au.logIn("Vader", "VaderPW"); // TODO server-connection (also use an extra thread)
-        // displayData(MainActivity.au); // TODO server-connection
-
-        // Logout the user
-        // MainActivity.au.logOut(); // TODO server-connection
 
         return this.view;
     }
@@ -121,8 +114,9 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<DummyThing> getThings() {
+        final int number = 20;
         ArrayList<DummyThing> things = new ArrayList<DummyThing>();
-        for (long i = 1; i < 20; i++) {
+        for (long i = 1; i < number; i++) {
             DummyThing thing = new DummyThing(i, "Thing_" + String.valueOf(i));
             things.add(thing);
         }
@@ -152,8 +146,9 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<DummyDevice> getDevices() {
+        final int number = 20;
         ArrayList<DummyDevice> devices = new ArrayList<DummyDevice>();
-        for (long i = 0; i < 20; i++) {
+        for (long i = 0; i < number; i++) {
             DummyDevice device = new DummyDevice(i, "Device_" + String.valueOf(i));
             devices.add(device);
         }
@@ -183,21 +178,24 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<DummyUser> getUsers() {
+        final int numberPermissions = 3;
         ArrayList<Permission> permissionList = new ArrayList<Permission>();
-        for (long i = 1; i < 3; i++) {
+        for (long i = 1; i < numberPermissions; i++) {
             Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
             permissionList.add(permission);
         }
 
+        final int numberRoles = 5;
         ArrayList<Role> roleList = new ArrayList<Role>();
-        for (long i = 1; i < 5; i++) {
+        for (long i = 1; i < numberRoles; i++) {
             Role role = new Role(i, "Role_" + String.valueOf(i));
             role.setPermissions(permissionList);
             roleList.add(role);
         }
 
+        final int numberUsers = 10;
         ArrayList<DummyUser> userList = new ArrayList<DummyUser>();
-        for (long i = 1; i < 10; i++) {
+        for (long i = 1; i < numberUsers; i++) {
             DummyUser user = new DummyUser(i, "User_" + String.valueOf(i));
             user.setRoles(roleList);
             userList.add(user);
@@ -229,8 +227,9 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<Role> getRoles() {
+        final int number = 10;
         ArrayList<Role> roles = new ArrayList<Role>();
-        for (long i = 1; i < 10; i++) {
+        for (long i = 1; i < number; i++) {
             Role role = new Role(i, "Role_" + String.valueOf(i));
             roles.add(role);
         }
@@ -279,8 +278,9 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<Permission> getPermissions() {
+        final int number = 10;
         ArrayList<Permission> permissions = new ArrayList<Permission>();
-        for (long i = 1; i < 10; i++) {
+        for (long i = 1; i < number; i++) {
             Permission permission = new Permission(i, "Permission_" + String.valueOf(i));
             permissions.add(permission);
         }

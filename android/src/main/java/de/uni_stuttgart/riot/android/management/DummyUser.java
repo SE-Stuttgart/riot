@@ -9,12 +9,16 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
- * Dummy class - is an extension of the current user class
- * Created by Benny on 22.01.2015
+ * Dummy class - is an extension of the current user class.
+ * Created by Benny on 22.01.2015.
  */
 public class DummyUser extends User {
 
-
+    /**
+     * Constructor.
+     * @param id .
+     * @param userName .
+     */
     public DummyUser(long id, String userName) {
         super(id, userName);
     }
@@ -25,7 +29,8 @@ public class DummyUser extends User {
      * @return .
      */
     public OnlineState getOnlineState() {
-        return OnlineState.getEnumById(this.getId() % 5);
+        final int number = 5;
+        return OnlineState.getEnumById(this.getId() % number);
     }
 
     /**

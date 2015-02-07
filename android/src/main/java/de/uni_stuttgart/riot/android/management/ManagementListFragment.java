@@ -15,7 +15,8 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 09.01.2015
+ * Created by Benny on 09.01.2015.
+ * Abstract fragment that provides a list to show all elements of a storable item typ.
  */
 public abstract class ManagementListFragment extends ManagementFragment {
 
@@ -31,7 +32,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     @Override
     protected void displayData() {
 
-       // UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
+        // UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
 
         // Collection<User> userCollection = androidUser.getUmClient().getUsers(); // TODO server-connection
         // ArrayList<User> userList = new ArrayList<User>(userCollection);
@@ -43,7 +44,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
         }
 
         ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), getActivity(), R.layout.list_item_managment_list, data);
-        ListView listView = (ListView) this.view.findViewById(R.id.management_listView);
+        ListView listView = (ListView) this.view.findViewById(R.id.managementListView);
         listView.setAdapter(managementListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,6 +87,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     /**
      * Returns the subject for the list item.
      *
+     * @param item the item
      * @return the subject for the list item
      */
     protected abstract String getSubject(Storable item);
@@ -100,6 +102,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     /**
      * Returns the description of the list item.
      *
+     * @param item the item
      * @return the description of the list item
      */
     protected abstract String getDescription(Storable item);
@@ -114,6 +117,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     /**
      * Returns the image uri of the list item.
      *
+     * @param item the item
      * @return the image uri of the list item
      */
     protected abstract String getImageUri(Storable item);
@@ -128,6 +132,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     /**
      * Returns the image resource id of the list item.
      *
+     * @param item the item
      * @return the image resource id of the list item
      */
     protected abstract int getImageId(Storable item);
@@ -142,75 +147,147 @@ public abstract class ManagementListFragment extends ManagementFragment {
     /**
      * Returns the online state of the list item.
      *
+     * @param item the item
      * @return the online state of the list item
      */
     protected abstract OnlineState getOnlineState(Storable item);
 
 
+    /**
+     * Set values of the given item to the view elements.
+     *
+     * @param view includes the elements of the current view
+     * @param item includes the data
+     */
     public void doGetView(View view, Storable item) {
         // Save the default values
-        String subject, defaultSubject = getDefaultSubject();
-        String description, defaultDescription = getDefaultDescription();
-        int imageId, defaultImageId = getDefaultImageId();
-        String imageUri, defaultImageUri = getDefaultImageUri();
-        OnlineState onlineState, defaultOnlineState = getDefaultOnlineState();
+        String defaultSubject = getDefaultSubject();
+        String defaultDescription = getDefaultDescription();
+        int defaultImageId = getDefaultImageId();
+        String defaultImageUri = getDefaultImageUri();
+        OnlineState defaultOnlineState = getDefaultOnlineState();
 
         // Get values of the item when the item is an instance of the expected class
         if (isInstanceOf(item)) {
-            subject = getSubject(item);
-            description = getDescription(item);
-            imageId = getImageId(item);
-            imageUri = getImageUri(item);
-            onlineState = getOnlineState(item);
-
-            // Save the subject
-            if (subject != null && !subject.isEmpty()) {
-                defaultSubject = subject;
-            }
-
-            // Save the description
-            if (description != null && !description.isEmpty()) {
-                defaultDescription = description;
-            }
-
-            // Save the image id
-            if (imageId != 0) {
-                defaultImageId = imageId;
-            }
-
-            // Save the image uri
-            if (imageUri != null && !imageUri.isEmpty()) {
-                defaultImageUri = imageUri;
-            }
-
-            // Save the online state
-            if (onlineState != null) {
-                defaultOnlineState = onlineState;
-            }
+            defaultSubject = doGetSubject(item, defaultSubject);
+            defaultDescription = doGetDescription(item, defaultDescription);
+            defaultImageId = doGetImageId(item, defaultImageId);
+            defaultImageUri = doGetImageUri(item, defaultImageUri);
+            defaultOnlineState = doGetOnlineState(item, defaultOnlineState);
         }
 
         // Set the subject value
         if (defaultSubject != null && !defaultSubject.isEmpty()) {
-            ((TextView) view.findViewById(R.id.listItem_management_subject)).setText(defaultSubject);
+            ((TextView) view.findViewById(R.id.listItemManagementSubject)).setText(defaultSubject);
         }
 
         // Set the description value
         if (defaultDescription != null && !defaultDescription.isEmpty()) {
-            ((TextView) view.findViewById(R.id.listItem_management_description)).setText(defaultDescription);
+            ((TextView) view.findViewById(R.id.listItemManagementDescription)).setText(defaultDescription);
         }
 
         // Set the image value
         if (defaultImageId != 0) {
-            ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageResource(defaultImageId);
+            ((ImageView) view.findViewById(R.id.listItemManagementPicture)).setImageResource(defaultImageId);
         } else if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
-            ((ImageView) view.findViewById(R.id.listItem_management_picture)).setImageURI(Uri.parse(defaultImageUri));
+            ((ImageView) view.findViewById(R.id.listItemManagementPicture)).setImageURI(Uri.parse(defaultImageUri));
             // ToDo maybe load asynchronous??
         }
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.listItem_management_onlineState)).setImageResource(defaultOnlineState.getR());
+            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(defaultOnlineState.getR());
         }
+    }
+
+    /**
+     * Get the subject from the item.
+     *
+     * @param item           includes the values
+     * @param defaultSubject is the default value if the item does not have the wanted value
+     * @return the value from the item or the default value
+     */
+    private String doGetSubject(Storable item, String defaultSubject) {
+        // Get subject from item
+        String subject = getSubject(item);
+
+        // Check if item had a subject
+        if (subject != null && !subject.isEmpty()) {
+            return subject;
+        }
+        return defaultSubject;
+    }
+
+    /**
+     * Get the description from the item.
+     *
+     * @param item               includes the values
+     * @param defaultDescription is the default value if the item does not have the wanted value
+     * @return the value from the item or the default value
+     */
+    private String doGetDescription(Storable item, String defaultDescription) {
+        // Get description from item
+        String description = getDescription(item);
+
+        // Check if item had a description
+        if (description != null && !description.isEmpty()) {
+            return description;
+        }
+        return defaultDescription;
+    }
+
+    /**
+     * Get the image id from the item.
+     *
+     * @param item           includes the values
+     * @param defaultImageId is the default value if the item does not have the wanted value
+     * @return the value from the item or the default value
+     */
+    private int doGetImageId(Storable item, int defaultImageId) {
+        // Get subject from image id
+        int imageId = getImageId(item);
+
+        // Check if item had a image id
+        if (imageId != 0) {
+            return imageId;
+        }
+        return defaultImageId;
+    }
+
+    /**
+     * Get the image uri from the item.
+     *
+     * @param item            includes the values
+     * @param defaultImageUri is the default value if the item does not have the wanted value
+     * @return the value from the item or the default value
+     */
+    private String doGetImageUri(Storable item, String defaultImageUri) {
+        // Get image uri from item
+        String imageUri = getImageUri(item);
+
+        // Check if item had a image uri
+        if (imageUri != null && !imageUri.isEmpty()) {
+            return imageUri;
+        }
+        return defaultImageUri;
+    }
+
+    /**
+     * Get the online state from the item.
+     *
+     * @param item               includes the values
+     * @param defaultOnlineState is the default value if the item does not have the wanted value
+     * @return the value from the item or the default value
+     */
+    private OnlineState doGetOnlineState(Storable item, OnlineState defaultOnlineState) {
+        // Get online state from item
+        OnlineState onlineState = getOnlineState(item);
+
+        // Check if item had a online state
+        if (onlineState != null) {
+            return onlineState;
+        }
+        return defaultOnlineState;
     }
 
     /**

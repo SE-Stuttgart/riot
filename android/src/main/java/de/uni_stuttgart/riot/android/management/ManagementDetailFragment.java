@@ -8,13 +8,15 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 25.01.2015
+ * Created by Benny on 25.01.2015.
+ * This is an abstract fragment for displaying more information about a list item from the ManagementListFragment.
  */
 public abstract class ManagementDetailFragment extends ManagementFragment {
 
+    protected static final String BUNDLE_ENABLE_ELEMENTS = "bundle_enable_elements";
+
     protected long itemId;
     protected boolean enableElements;
-    protected static String BUNDLE_ENABLE_ELEMENTS = "bundle_enable_elements";
     protected Storable data;
 
     @Override
@@ -31,23 +33,23 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
     @Override
     protected void displayData() {
         // Set values and on click event off the buttons
-        Button button_abort = (Button) view.findViewById(R.id.detail_abort_button);
-        button_abort.setOnClickListener(new View.OnClickListener() {
+        Button buttonAbort = (Button) view.findViewById(R.id.detailAbortButton);
+        buttonAbort.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setOnAbortClick(view);
             }
         });
-        button_abort.setText(getAbortText());
+        buttonAbort.setText(getAbortText());
 
-        Button button_edit = (Button) view.findViewById(R.id.detail_edit_button);
-        button_edit.setOnClickListener(new View.OnClickListener() {
+        Button buttonEdit = (Button) view.findViewById(R.id.detailEditButton);
+        buttonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setOnEditClick(view);
             }
         });
-        button_edit.setText(getEditText());
+        buttonEdit.setText(getEditText());
 
 
         // Set values of the data objects
