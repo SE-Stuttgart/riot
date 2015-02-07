@@ -45,16 +45,6 @@ public class ThingClientTest extends ShiroEnabledTest {
         return new RiotApplication(true);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
-    }
-
     public ThingClient getLogedInThingClient() throws ClientProtocolException, RequestException, IOException {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
         loginClient.login("Yoda", "YodaPW");

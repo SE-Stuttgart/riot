@@ -17,6 +17,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectMapper.DefaultTyping;
 
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.InternalRequest;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -93,6 +94,7 @@ public class LoginClient {
         this.logedIn = false;
         this.tokenManager = tokenManager;
         this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
     }
 
     /**
@@ -166,9 +168,14 @@ public class LoginClient {
             put.setEntity(jsonEntity);
             HttpResponse r = LoginClient.this.client.execute(put);
             int status = r.getStatusLine().getStatusCode();
-            String mediaType = r.getEntity().getContentType().getValue();
+            String mediatype = "";
+            if (r.getEntity() != null) {
+                if (r.getEntity().getContentType() != null) {
+                    mediatype = r.getEntity().getContentType().getValue();
+                }
+            }
             if (status >= BAD_REQUEST) {
-                if (mediaType.equals(APPLICATION_JSON)) {
+                if (mediatype.equals(APPLICATION_JSON)) {
                     RequestExceptionWrapper error = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), RequestExceptionWrapper.class);
                     error.throwIT();
                 } else {

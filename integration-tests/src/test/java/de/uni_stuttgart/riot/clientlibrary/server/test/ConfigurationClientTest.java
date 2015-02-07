@@ -32,17 +32,7 @@ public class ConfigurationClientTest extends ShiroEnabledTest {
      */
     @Override
     protected Application configure() {
-        return new RiotApplication(false);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
+        return new RiotApplication(true);
     }
 
     @Test

@@ -30,7 +30,7 @@ public abstract class ShiroEnabledTest extends JerseyDBTestBase {
     @Override
     protected Application configure() {
         // We use the full RiotApplication including the security providers.
-        return new RiotApplication(false);
+        return new RiotApplication(true);
     }
 
     @BeforeClass

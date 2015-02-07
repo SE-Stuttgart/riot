@@ -40,7 +40,7 @@ public class ConvertMessagesToAndroidMojo extends AbstractMojo {
     @Parameter(required = true)
     List<String> languages;
 
-    @Parameter(required = false, defaultValue = "${project.basedir}/res/")
+    @Parameter(required = false, defaultValue = "${project.basedir}/src/main/res/")
     private String outputBaseDirectory;
 
     @Override
