@@ -27,6 +27,10 @@ import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.FilterDataObjects;
 import de.uni_stuttgart.riot.android.language.LanguageFragment;
 import de.uni_stuttgart.riot.android.location.LocationFragment;
+import de.uni_stuttgart.riot.android.management.ManagementDeviceListFragment;
+import de.uni_stuttgart.riot.android.management.ManagementThingListFragment;
+import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
+import de.uni_stuttgart.riot.android.messages.IM;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -64,6 +68,9 @@ public class MainActivity extends Activity {
             }
         }.start();
 */
+
+        // Save the application context in the singleton objects
+        IM.INSTANCES.setContext(getApplicationContext());
 
         // Database stuff
         // this.deleteDatabase("Database");
@@ -126,6 +133,14 @@ public class MainActivity extends Activity {
 
         // get the latest Notifications
         new ServerConnection(this, filterObjects).execute();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Delete all saved notifications
+        IM.INSTANCES.getNF().clearPreparedNotifications();
     }
 
     /*
@@ -248,6 +263,25 @@ public class MainActivity extends Activity {
             fragment = new LocationFragment(filterObjects);
             startFragment(position, fragment);
         }
+
+        // Opens the user list fragment
+        if (position == 4) {
+            fragment = new ManagementUserListFragment();
+            startFragment(position, fragment);
+        }
+
+        // Opens the thing list fragment
+        if (position == 5) {
+            fragment = new ManagementThingListFragment();
+            startFragment(position, fragment);
+        }
+
+        // Opens the device list fragment
+        if (position == 6) {
+            fragment = new ManagementDeviceListFragment();
+            startFragment(position, fragment);
+        }
+        // ToDo: <--
     }
 
     @Override
