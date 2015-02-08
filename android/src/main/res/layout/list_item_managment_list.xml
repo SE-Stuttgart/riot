@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><!-- ToDo online state close to the image and arrow to the right (for viewing details) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/list_item_margin_left"
+    android:layout_marginRight="@dimen/list_item_margin_left"
+    android:layout_marginTop="@dimen/list_item_margin_top">
+
+    <ImageView
+        android:id="@+id/listItemManagementPicture"
+        android:layout_width="@dimen/list_item_image_size"
+        android:layout_height="@dimen/list_item_image_size"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/listItemManagementOnlineState"
+        android:layout_width="@dimen/list_item_online_status_size"
+        android:layout_height="@dimen/list_item_online_status_size"
+        android:layout_gravity="center" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/list_item_margin_left"
+        android:layout_marginRight="@dimen/list_item_margin_left">
+
+        <TextView
+            android:id="@+id/listItemManagementSubject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/list_item_subject_size" />
+
+        <TextView
+            android:id="@+id/listItemManagementDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/list_item_description_size" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/listItemManagementDetails"
+        android:layout_width="@dimen/list_item_details_size"
+        android:layout_height="@dimen/list_item_details_size"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_info_details" />
+</LinearLayout>

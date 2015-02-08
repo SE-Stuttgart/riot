@@ -9,6 +9,9 @@
         <item>RIOT-Konto</item>
         <item>Sprache</item>
         <item>Standortinformationen</item>
+        <item>UserListe</item>
+        <item>ThingsListe</item>
+        <item>DevicesListe</item>
     </string-array>
 
     <string name="drawer_open">Open Drawer</string>
@@ -35,6 +38,8 @@
     <string name="add_event">Event hinzufügen</string>
     <string name="acc_username">Benutzername:</string>
     <string name="acc_password">Passwort:</string>
+    <string name="user_role">Benutzer-Rolle:</string>
+    <string name="user_permission">Benutzer-Rechte:</string>
 
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Zeigt alle Fehler Meldungen an</string>
@@ -51,4 +56,32 @@
     <string name="location_store_distance">Benachrichtigung wird angezeigt in einer Reichweite von</string>
     <string name="change_color">Farbe ändern</string>
 
+    <!-- Notification (all entries for language please insert here) -->
+    <string-array name="priority">
+        <item>maximaler</item>
+        <item>hoher</item>
+        <item>normalen</item>
+        <item>niedriger</item>
+        <item>minimalsten</item>
+    </string-array>
+    <string name="notification_messages_with">\u00A0Meldungen mit\u00A0</string>
+    <string name="notification_priority">\u00A0Priorität</string>
+    <string name="user_edit">User Editieren</string>
+    <string name="user_save">Speichern</string>
+    <string name="user_abort">Abbrechen</string>
+    <string name="processDialogExecute">Daten werden geladen …</string>
+    <string name="user_list">User Liste</string>
+    <string name="device_list">Geräte Liste</string>
+    <string name="thing_list">Ding List</string>
+    <string name="user_detail">User Detail</string>
+    <string name="user_back">Zurück</string>
+    <string name="user_id">Id</string>
+    <string name="user_image">Image</string>
+    <string name="user_online_state">Online-State</string>
+    <string name="device_name">Device Name</string>
+    <string name="device_detail">Device Detail</string>
+    <string name="thing_id">Id</string>
+    <string name="thing_name">Thing Name</string>
+    <string name="device_id">Id</string>
+    <string name="thing_detail">Thing Detail</string>
 </resources>
