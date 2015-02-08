@@ -5,7 +5,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
  * Dummy class.
- * Created by Benny on 22.01.2015.
+ *
+ * @author Benny
  */
 public class DummyThing extends Storable {
 

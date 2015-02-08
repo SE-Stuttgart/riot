@@ -15,8 +15,9 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 09.01.2015.
  * Abstract fragment that provides a list to show all elements of a storable item typ.
+ *
+ * @author Benny
  */
 public abstract class ManagementListFragment extends ManagementFragment {
 

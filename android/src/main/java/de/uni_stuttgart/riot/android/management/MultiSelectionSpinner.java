@@ -21,8 +21,9 @@ import java.util.Set;
  * Time of posting: 20:09.
  * Author: Gunaseelan A.
  * ...
- * Modified by Benny on 16.12.2014.
  * This class provides a spinner that allows multiple selection.
+ *
+ * @author Benny (modified)
  */
 public class MultiSelectionSpinner extends Spinner implements
         OnMultiChoiceClickListener {
@@ -156,6 +157,7 @@ public class MultiSelectionSpinner extends Spinner implements
 
     /**
      * .
+     *
      * @param selection .
      */
     public void setSelection(List<String> selection) {

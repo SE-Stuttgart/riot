@@ -12,9 +12,10 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 25.01.2015.
  * Fragment that displays all details of an user.
  * It also provides to edit this information.
+ *
+ * @author Benny
  */
 public class ManagementUserDetailFragment extends ManagementDetailFragment {
 

@@ -17,8 +17,9 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
 /**
- * Created by Benny on 10.01.2015.
  * Is the main abstract fragment for all management classes.
+ *
+ * @author Benny
  */
 public abstract class ManagementFragment extends Fragment {
 

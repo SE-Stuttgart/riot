@@ -5,8 +5,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by Benny on 12.12.2014.
  * This class provides sending messages to the user by a toast or a log message.
+ *
+ * @author Benny
  */
 public class MessageHandler {
 

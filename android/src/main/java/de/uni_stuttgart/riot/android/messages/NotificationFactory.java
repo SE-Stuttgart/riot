@@ -13,8 +13,9 @@ import java.util.Vector;
 import de.enpro.android.riot.R;
 
 /**
- * Created by Benny on 12.12.2014.
  * This class provides building notifications and show them in the android system.
+ *
+ * @author Benny
  */
 public class NotificationFactory {
 

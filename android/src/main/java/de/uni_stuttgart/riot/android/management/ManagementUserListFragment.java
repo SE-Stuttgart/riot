@@ -8,8 +8,9 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 24.01.2015.
  * Fragment that displays all users in a list.
+ *
+ * @author Benny
  */
 public class ManagementUserListFragment extends ManagementListFragment {
 

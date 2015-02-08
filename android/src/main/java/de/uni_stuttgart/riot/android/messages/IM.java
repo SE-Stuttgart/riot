@@ -3,8 +3,9 @@ package de.uni_stuttgart.riot.android.messages;
 import android.content.Context;
 
 /**
- * Created by Benny on 10.01.2015.
  * InstanceManager Enum that saves all singleton instances of the application.
+ *
+ * @author Benny
  */
 public enum IM {
     /**

@@ -10,13 +10,15 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
  * Dummy class - is an extension of the current user class.
- * Created by Benny on 22.01.2015.
+ *
+ * @author Benny
  */
 public class DummyUser extends User {
 
     /**
      * Constructor.
-     * @param id .
+     *
+     * @param id       .
      * @param userName .
      */
     public DummyUser(long id, String userName) {

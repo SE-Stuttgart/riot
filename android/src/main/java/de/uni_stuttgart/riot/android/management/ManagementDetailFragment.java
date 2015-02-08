@@ -8,8 +8,9 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Created by Benny on 25.01.2015.
  * This is an abstract fragment for displaying more information about a list item from the ManagementListFragment.
+ *
+ * @author Benny
  */
 public abstract class ManagementDetailFragment extends ManagementFragment {
 

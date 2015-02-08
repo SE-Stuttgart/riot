@@ -5,8 +5,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
- * Created by Benny on 09.01.2015.
  * This enum is for identify the online state of a storable item (like a user, a device or a thing).
+ *
+ * @author Benny
  */
 public enum OnlineState {
     /**
