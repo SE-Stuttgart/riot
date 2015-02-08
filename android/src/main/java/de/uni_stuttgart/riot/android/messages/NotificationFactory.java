@@ -13,46 +13,51 @@ import java.util.Vector;
 import de.enpro.android.riot.R;
 
 /**
- * Created by Benny on 12.12.2014.
+ * This class provides building notifications and show them in the android system.
+ *
+ * @author Benny
  */
 public class NotificationFactory {
+
+    // private static String NOTIFICATION_GROUP = "RIOT-Group";
+    private static final int POSITIVE = 2;
+    private static final int NUMBER_OF_RESERVED_NOTIFICATION_ID = 5;
+
     private Context context;
-    private String NOTIFICATION_GROUP = "RIOT-Group";
     private int notificationId;
     private HashMap<Integer, Vector<Notification.Builder>> notificationList;
     private Notification.Builder[] stackedNotificationList;
-    private static int POSITIVE = 2;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public NotificationFactory() {
         init();
     }
 
     /**
-     * Initializes the attributes
+     * Initializes the attributes.
      */
     private void init() {
-        notificationId = 10; // the first five ids are for the stacked notifications
+        notificationId = NUMBER_OF_RESERVED_NOTIFICATION_ID; // the first five ids are for the stacked notifications
         notificationList = new HashMap<Integer, Vector<Notification.Builder>>();
         notificationList.put(Notification.PRIORITY_MAX + POSITIVE, new Vector<Notification.Builder>());
         notificationList.put(Notification.PRIORITY_HIGH + POSITIVE, new Vector<Notification.Builder>());
         notificationList.put(Notification.PRIORITY_DEFAULT + POSITIVE, new Vector<Notification.Builder>());
         notificationList.put(Notification.PRIORITY_LOW + POSITIVE, new Vector<Notification.Builder>());
         notificationList.put(Notification.PRIORITY_MIN + POSITIVE, new Vector<Notification.Builder>());
-        stackedNotificationList = new Notification.Builder[5];
+        stackedNotificationList = new Notification.Builder[NUMBER_OF_RESERVED_NOTIFICATION_ID];
     }
 
     /**
-     * Clears all prepared (saved) notifications
+     * Clears all prepared (saved) notifications.
      */
     public void clearPreparedNotifications() {
         init();
     }
 
     /**
-     * Saves the application context
+     * Saves the application context.
      *
      * @param pContext the context of the application
      */
@@ -61,7 +66,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a critical notification with the highest priority
+     * Prepares a critical notification with the highest priority.
      *
      * @param title the title of the notification
      */
@@ -70,7 +75,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a critical notification with the highest priority
+     * Prepares a critical notification with the highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -80,7 +85,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a critical notification with the highest priority
+     * Prepares a critical notification with the highest priority.
      *
      * @param title  the title of the notification
      * @param body   the body of the notification
@@ -91,7 +96,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a critical notification with the highest priority
+     * Prepares a critical notification with the highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -103,7 +108,7 @@ public class NotificationFactory {
 
 
     /**
-     * Prepares a important notification with the second highest priority
+     * Prepares a important notification with the second highest priority.
      *
      * @param title the title of the notification
      */
@@ -112,7 +117,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a important notification with the second highest priority
+     * Prepares a important notification with the second highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -122,7 +127,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a important notification with the second highest priority
+     * Prepares a important notification with the second highest priority.
      *
      * @param title  the title of the notification
      * @param body   the body of the notification
@@ -133,7 +138,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a important notification with the second highest priority
+     * Prepares a important notification with the second highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -145,7 +150,7 @@ public class NotificationFactory {
 
 
     /**
-     * Prepares a default notification with the second highest priority
+     * Prepares a default notification with the second highest priority.
      *
      * @param title the title of the notification
      */
@@ -154,7 +159,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a default notification with the second highest priority
+     * Prepares a default notification with the second highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -164,7 +169,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a default notification with the second highest priority
+     * Prepares a default notification with the second highest priority.
      *
      * @param title  the title of the notification
      * @param body   the body of the notification
@@ -175,7 +180,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a default notification with the second highest priority
+     * Prepares a default notification with the second highest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -187,7 +192,7 @@ public class NotificationFactory {
 
 
     /**
-     * Prepares a unimportant notification with the second lowest priority
+     * Prepares a unimportant notification with the second lowest priority.
      *
      * @param title the title of the notification
      */
@@ -196,7 +201,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a unimportant notification with the second lowest priority
+     * Prepares a unimportant notification with the second lowest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -206,7 +211,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a unimportant notification with the second lowest priority
+     * Prepares a unimportant notification with the second lowest priority.
      *
      * @param title  the title of the notification
      * @param body   the body of the notification
@@ -217,7 +222,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a unimportant notification with the second lowest priority
+     * Prepares a unimportant notification with the second lowest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -229,7 +234,7 @@ public class NotificationFactory {
 
 
     /**
-     * Prepares a uncritical notification with the lowest priority
+     * Prepares a uncritical notification with the lowest priority.
      *
      * @param title the title of the notification
      */
@@ -238,7 +243,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a uncritical notification with the lowest priority
+     * Prepares a uncritical notification with the lowest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -248,7 +253,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a uncritical notification with the lowest priority
+     * Prepares a uncritical notification with the lowest priority.
      *
      * @param title  the title of the notification
      * @param body   the body of the notification
@@ -259,7 +264,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a uncritical notification with the lowest priority
+     * Prepares a uncritical notification with the lowest priority.
      *
      * @param title the title of the notification
      * @param body  the body of the notification
@@ -271,7 +276,7 @@ public class NotificationFactory {
 
 
     /**
-     * Prepares a notification with the given priority
+     * Prepares a notification with the given priority.
      *
      * @param title    the title of the notification
      * @param priority the priority of the notification
@@ -281,7 +286,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a notification with the given priority
+     * Prepares a notification with the given priority.
      *
      * @param title    the title of the notification
      * @param body     the body of the notification
@@ -292,7 +297,7 @@ public class NotificationFactory {
     }
 
     /**
-     * Prepares a notification with the given priority
+     * Prepares a notification with the given priority.
      *
      * @param title    the title of the notification
      * @param body     the body of the notification
@@ -300,12 +305,16 @@ public class NotificationFactory {
      * @param priority the priority of the notification
      */
     private void prepareNotification(String title, String body, int iconId, int priority) {
+        if (this.context == null) {
+            // ToDo information!!!
+            return;
+        }
         prepareNotification(title, body, BitmapFactory.decodeResource(
                 context.getResources(), iconId), priority);
     }
 
     /**
-     * Prepares a notification with the given priority
+     * Prepares a notification with the given priority.
      *
      * @param title    the title of the notification
      * @param body     the body of the notification
@@ -313,6 +322,10 @@ public class NotificationFactory {
      * @param priority the priority of the notification
      */
     private void prepareNotification(String title, String body, Bitmap icon, int priority) {
+        if (this.context == null) {
+            // ToDo information!!!
+            return;
+        }
         Notification.Builder notification = new Notification.Builder(this.context);
 
         // ToDo: Design Big and Small icon
@@ -402,13 +415,18 @@ public class NotificationFactory {
 
 
     /**
-     * Displays a prepared notification
+     * Displays a prepared notification.
      */
     public void showStackedNotification() {
+        if (this.context == null) {
+            // ToDo information!!!
+            return;
+        }
+
         // Cancel all notifications
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < NUMBER_OF_RESERVED_NOTIFICATION_ID; i++) {
             if (stackedNotificationList[i] == null) {
                 // Display all notifications if there does not exists a stacked notification for this priority
                 if (!notificationList.get(i).isEmpty()) {
@@ -426,11 +444,16 @@ public class NotificationFactory {
     }
 
     /**
-     * Displays a prepared notification
+     * Displays a prepared notification.
      *
      * @param notification the notification that will be shown
      */
     private void showNotification(Notification.Builder notification) {
+        if (this.context == null) {
+            // ToDo information!!!
+            return;
+        }
+
         notificationId++;
         ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE))
                 .notify(notificationId, notification.build());

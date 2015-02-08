@@ -5,26 +5,29 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by Benny on 12.12.2014.
+ * This class provides sending messages to the user by a toast or a log message.
+ *
+ * @author Benny
  */
 public class MessageHandler {
+
     private Context context;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public MessageHandler() {
         init();
     }
 
     /**
-     * Initializes the attributes
+     * Initializes the attributes.
      */
     private void init() {
     }
 
     /**
-     * Saves the application context
+     * Saves the application context.
      *
      * @param pContext the context of the application
      */
@@ -33,7 +36,7 @@ public class MessageHandler {
     }
 
     /**
-     * Writes a message with the Log.DEBUG priority
+     * Writes a message with the Log.DEBUG priority.
      *
      * @param text the message that will be saved
      */
@@ -42,7 +45,7 @@ public class MessageHandler {
     }
 
     /**
-     * Writes a message with the Log.ERROR priority
+     * Writes a message with the Log.ERROR priority.
      *
      * @param text the message that will be saved
      */
@@ -52,7 +55,7 @@ public class MessageHandler {
     }
 
     /**
-     * Writes a message with the Log.INFO priority
+     * Writes a message with the Log.INFO priority.
      *
      * @param text the message that will be saved
      */
@@ -61,7 +64,7 @@ public class MessageHandler {
     }
 
     /**
-     * Writes a message with the Log.VERBOSE priority
+     * Writes a message with the Log.VERBOSE priority.
      *
      * @param text the message that will be saved
      */
@@ -70,7 +73,7 @@ public class MessageHandler {
     }
 
     /**
-     * Writes a message with the Log.WARN priority
+     * Writes a message with the Log.WARN priority.
      *
      * @param text the message that will be saved
      */
@@ -80,7 +83,7 @@ public class MessageHandler {
 
 
     /**
-     * Shows a toast with short duration
+     * Shows a toast with short duration.
      *
      * @param text the message that will be shown
      */
@@ -91,7 +94,7 @@ public class MessageHandler {
     }
 
     /**
-     * Shows a toast with long duration
+     * Shows a toast with long duration.
      *
      * @param text the message that will be shown
      */
@@ -101,30 +104,35 @@ public class MessageHandler {
     }
 
     /**
-     * Shows a toast with the given text and duration
+     * Shows a toast with the given text and duration.
      *
      * @param text     the message that will be shown
      * @param duration the time the message will visible
      */
     private void showToast(String text, int duration) {
+        if (this.context == null) {
+            // ToDo information!!!
+            return;
+        }
         Toast.makeText(this.context, text, duration).show();
         // ToDo: If app is in background show notification?
         // ToDo: Show no notification if app is in foreground??
     }
 
     /**
-     * Finds the name of the calling class and the calling method
+     * Finds the name of the calling class and the calling method.
      *
      * @return the name of the calling class and the calling method
      */
     private String getCallingClassAndMethodName() {
-        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[4];
+        final int stackTraceNumber = 4;
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stackTraceNumber];
         return "##" + getCallingClassName(stackTraceElement) + "##"
                 + getCallingMethodName(stackTraceElement);
     }
 
     /**
-     * Returns the name of the calling class
+     * Returns the name of the calling class.
      *
      * @param stackTraceElement the last element before this method
      * @return the name of the calling class
@@ -134,7 +142,7 @@ public class MessageHandler {
     }
 
     /**
-     * Returns the name of the calling method
+     * Returns the name of the calling method.
      *
      * @param stackTraceElement the last element before this method
      * @return the name of the calling method
