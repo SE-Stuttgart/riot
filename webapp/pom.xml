@@ -84,8 +84,6 @@
 						</goals>
 					    <configuration>
 					        <arguments>build</arguments>
-					         <!-- optional: force build until jshint errors are resolved, or until lint config is changed -->
-					        <arguments>--force</arguments> 
 					    </configuration>
 					</execution>		
 				</executions>
