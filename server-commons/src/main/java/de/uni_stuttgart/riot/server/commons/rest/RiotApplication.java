@@ -39,6 +39,13 @@ public class RiotApplication extends ResourceConfig {
 
     /**
      * Configures the application.
+     */
+    public RiotApplication() {
+        this(true);
+    }
+
+    /**
+     * Configures the application.
      * 
      * @param jsonTyping
      *            if json serialization should add type information
