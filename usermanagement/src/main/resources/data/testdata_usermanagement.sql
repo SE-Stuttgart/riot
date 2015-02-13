@@ -30,6 +30,11 @@ INSERT INTO roles_permissions(permissionid, roleid)
      (3, 3),
      (2, 4);
 
+INSERT INTO users_permissions(permissionid, userid)
+    VALUES (2, 1),
+     (4, 1),
+     (3, 3);
+
 INSERT INTO tokens_roles(tokenid, roleid)
     VALUES (1, 1),
      (2, 2),
