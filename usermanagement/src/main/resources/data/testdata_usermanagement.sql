@@ -19,8 +19,10 @@ INSERT INTO roles(rolename)
      ('Dark');
 
 INSERT INTO permissions( permissionvalue)
-    VALUES ('lightsaber:*'),
-     ('darkstar:*'),
+    VALUES ('thing:1:*'),
+     ('thing:create'),
+     ('thing:3:read'),
+     ('thing:*'),
      ('x'),
      ('y');
 
@@ -31,8 +33,8 @@ INSERT INTO roles_permissions(permissionid, roleid)
      (2, 4);
 
 INSERT INTO users_permissions(permissionid, userid)
-    VALUES (2, 1),
-     (4, 1),
+    VALUES (1, 1),
+     (2, 1),
      (3, 3);
 
 INSERT INTO tokens_roles(tokenid, roleid)

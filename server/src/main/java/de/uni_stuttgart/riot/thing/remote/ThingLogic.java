@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.db.thing.ActionDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.thing.EventDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
@@ -25,6 +26,8 @@ import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventListener;
+import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
  * Contains all logic regarding to {@link Thing} handling.
@@ -103,6 +106,8 @@ public class ThingLogic {
     public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
         try {
             this.remoteThingSqlQueryDAO.insert(thing);
+            UserManagementFacade facade = UserManagementFacade.getInstance();
+            facade.addNewPermissionToUser(thing.getOwnerID(), new Permission("thing:" + thing.getId() + ":*"));
             for (Action action : thing.getActions()) {
                 String actionString = JsonUtil.getJsonUtil().toJson(action);
                 ActionDBObject actionDBObject = new ActionDBObject(thing.getId(), actionString);

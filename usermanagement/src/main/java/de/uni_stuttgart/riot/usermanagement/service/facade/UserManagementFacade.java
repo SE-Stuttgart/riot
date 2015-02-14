@@ -10,6 +10,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
@@ -419,6 +420,22 @@ public class UserManagementFacade {
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         roleLogic.addPermissionToRole(roleId, permissionId);
+    }
+    
+    /**
+     * Adds the new permission to user.
+     *
+     * @param userId
+     *            the user id
+     * @param permission
+     *            the permission
+     * @throws GetPermissionException
+     *             the get permission exception
+     * @throws DatasourceInsertException
+     *             the datasource insert exception
+     */
+    public void addNewPermissionToUser(Long userId, Permission permission) throws GetPermissionException, DatasourceInsertException {
+        userLogic.addNewPermissionToUser(userId, permission);
     }
 
     /**

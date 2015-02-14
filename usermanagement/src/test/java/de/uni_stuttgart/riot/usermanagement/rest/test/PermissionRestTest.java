@@ -17,7 +17,7 @@ public class PermissionRestTest extends BaseResourceTest<PermissionService, Perm
 
     @Override
     public int getTestDataSize() {
-        return 4;
+        return 6;
     }
 
     @Override

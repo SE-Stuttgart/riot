@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -40,6 +42,7 @@ public class AccessTokenRealm extends AuthorizingRealm {
      */
     public AccessTokenRealm() {
         setAuthenticationTokenClass(AccessToken.class);
+        setPermissionResolver(new CustomWildcardPermissionResolver());
     }
 
     @Override
@@ -99,7 +102,7 @@ public class AccessTokenRealm extends AuthorizingRealm {
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roleNames);
         info.setStringPermissions(permissions);
-
+        
         return info;
     }
 

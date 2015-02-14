@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -69,9 +71,9 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
      * Test get with server pagination.
      */
     @Test
-    public void testGetPagination() {
+    public void testGetPagination() {        
         // negative offset: expects a 400 for bad request
-        Response resp = target(this.getSubPath()).queryParam("offset", -1).queryParam("limit", 2).request(MediaType.APPLICATION_JSON).get();
+        Response resp = target(this.getSubPath()).queryParam("offset", -1).queryParam("limit", 2).request(MediaType.APPLICATION_JSON).header("Access-Token", "token1").get();
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
         // negative limit: expect a 400 for bad request

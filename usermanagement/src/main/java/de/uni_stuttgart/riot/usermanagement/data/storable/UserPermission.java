@@ -2,82 +2,73 @@ package de.uni_stuttgart.riot.usermanagement.data.storable;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
- * {@link RolePermission} represents the n:m relation between {@link Role} and {@link Permission}. Thus this class only maps Roles to
+ * {@link UserPermission} represents the n:m relation between {@link User} and {@link Permission}. Thus this class only maps Users to
  * Permission not adding any information.
  * 
- * @author Jonas Tangermann
+ * @author Niklas Schnabel
  *
  */
-public class RolePermission extends Storable {
+public class UserPermission extends Storable {
 
     /** The permission id. */
     private Long permissionID;
     
     /** The role id. */
-    private Long roleID;
+    private Long userID;
 
     /**
-     * Instantiates a new role permission.
+     * Instantiates a new user permission.
      */
-    public RolePermission() {
+    public UserPermission() {
         permissionID = -1L;
-        roleID = -1L;
+        userID = -1L;
     }
 
     /**
-     * Instantiates a new role permission.
+     * Instantiates a new user permission.
      *
-     * @param role
-     *            the role
+     * @param user
+     *            the user
      * @param permission
      *            the permission
      */
-    public RolePermission(Role role, Permission permission) {
+    public UserPermission(User user, Permission permission) {
         super(-1L);
-        this.roleID = role.getId();
+        this.userID = user.getId();
         this.permissionID = permission.getId();
     }
 
     /**
-     * Instantiates a new role permission.
+     * Instantiates a new user permission.
      *
-     * @param roleID
+     * @param userID
      *            the role id
      * @param permissionID
      *            the permission id
      */
-    public RolePermission(Long roleID, Long permissionID) {
+    public UserPermission(Long userID, Long permissionID) {
         super(-1L);
-        this.roleID = roleID;
+        this.userID = userID;
         this.permissionID = permissionID;
     }
 
     /**
-     * Instantiates a new role permission.
+     * Instantiates a new user permission.
      *
-     * @param roleID
+     * @param userID
      *            the role id
      * @param permissionID
      *            the permission id
-     * @param rolePermissionID
+     * @param userPermissionID
      *            the role permission id
      */
-    public RolePermission(Long roleID, Long permissionID, Long rolePermissionID) {
-        super(rolePermissionID);
-        this.roleID = roleID;
+    public UserPermission(Long userID, Long permissionID, Long userPermissionID) {
+        super(userPermissionID);
+        this.userID = userID;
         this.permissionID = permissionID;
-    }
-
-    /**
-     * Gets the role id.
-     *
-     * @return the role id
-     */
-    public Long getRoleID() {
-        return roleID;
     }
 
     /**
@@ -89,6 +80,15 @@ public class RolePermission extends Storable {
         return permissionID;
     }
 
+    /**
+     * Gets the user id.
+     *
+     * @return the user id
+     */
+    public Long getUserID() {
+        return userID;
+    }
+
     /* (non-Javadoc)
      * @see de.uni_stuttgart.riot.commons.rest.data.Storable#hashCode()
      */
@@ -97,7 +97,7 @@ public class RolePermission extends Storable {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((permissionID == null) ? 0 : permissionID.hashCode());
-        result = prime * result + ((roleID == null) ? 0 : roleID.hashCode());
+        result = prime * result + ((userID == null) ? 0 : userID.hashCode());
         return result;
     }
 
@@ -105,32 +105,25 @@ public class RolePermission extends Storable {
      * @see de.uni_stuttgart.riot.commons.rest.data.Storable#equals(java.lang.Object)
      */
     @Override
+    //CHECKSTYLE: OFF - Autgenerated method
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj))
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        RolePermission other = (RolePermission) obj;
+        UserPermission other = (UserPermission) obj;
         if (permissionID == null) {
-            if (other.permissionID != null) {
+            if (other.permissionID != null)
                 return false;
-            }
-        } else if (!permissionID.equals(other.permissionID)) {
+        } else if (!permissionID.equals(other.permissionID))
             return false;
-        }
-        if (roleID == null) {
-            if (other.roleID != null) {
+        if (userID == null) {
+            if (other.userID != null)
                 return false;
-            }
-        } else if (!roleID.equals(other.roleID)) {
+        } else if (!userID.equals(other.userID))
             return false;
-        }
         return true;
     }
-
 }

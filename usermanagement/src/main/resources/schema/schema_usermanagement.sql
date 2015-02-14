@@ -36,7 +36,7 @@ FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
 CREATE TABLE permissions
 (
 id SERIAL,
-permissionValue varchar(50) NOT NULL,
+permissionValue varchar(50) unique NOT NULL,
 PRIMARY KEY (id)
 );
 

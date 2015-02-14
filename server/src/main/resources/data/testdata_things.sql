@@ -1,5 +1,5 @@
 
-INSERT INTO Thing (name,ownerID) values('Android',1),('Haus',1),('Blah',1);
+INSERT INTO Thing (name,ownerID) values('Android',1),('Haus',1),('Blah',2);
 
 INSERT INTO ActionDBObject (thingid, factoryString) 
 values (1,'["de.uni_stuttgart.riot.thing.commons.action.PropertySetAction",{"propertyName":"P1-Name"}]'),
