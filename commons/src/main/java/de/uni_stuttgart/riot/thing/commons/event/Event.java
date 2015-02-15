@@ -2,7 +2,7 @@ package de.uni_stuttgart.riot.thing.commons.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Predicate;
+import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -40,11 +40,11 @@ public abstract class Event<T extends EventInstance> {
      *            the event listener to unregister.
      */
     public void unregister(final long thingId) {
-        this.eventListeners.removeIf(new Predicate<EventListener>() {
-            public boolean test(EventListener t) {
-                return t.getThingId() == thingId;
+        for (Iterator<EventListener<T>> it = this.eventListeners.iterator(); it.hasNext(); /* */) {
+            if (it.next().getThingId() == thingId) {
+                it.remove();
             }
-        });
+        }
     }
 
     /**
