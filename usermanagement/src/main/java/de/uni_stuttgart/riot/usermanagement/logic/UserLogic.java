@@ -55,14 +55,14 @@ public class UserLogic {
      * 
      * 
      */
-    public UMUser addUser(String username, String clearTextPassword) throws AddUserException {
+    public UMUser addUser(String username, String email,String clearTextPassword) throws AddUserException {
         try {
             Validate.notEmpty(username, "username must not be empty");
             Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
 
             PasswordValidator pv = new PasswordValidator();
             if (pv.validate(clearTextPassword)) {
-                UMUser user = new UMUser(username);
+                UMUser user = new UMUser(username, email);
                 hashPassword(user, clearTextPassword);
 
                 dao.insert(user);

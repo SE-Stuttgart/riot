@@ -130,8 +130,8 @@ public class UserManagementFacade {
      * @throws AddUserException
      *             Thrown if any errors occur
      */
-    public User addUser(String username, String clearTextPassword) throws AddUserException {
-        return (User) userLogic.addUser(username, clearTextPassword);
+    public User addUser(String username, String email, String clearTextPassword) throws AddUserException {
+        return (User) userLogic.addUser(username, email,clearTextPassword);
     }
 
     /**

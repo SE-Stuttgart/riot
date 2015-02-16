@@ -11,6 +11,7 @@ CREATE TABLE users
 (
 id SERIAL NOT NULL,
 username varchar(50) unique NOT NULL,
+email varchar(50) NOT NULL,
 hashedPassword varchar(256) NOT NULL,
 passwordSalt varchar(256) NOT NULL,
 hashIterations int NOT NULL,

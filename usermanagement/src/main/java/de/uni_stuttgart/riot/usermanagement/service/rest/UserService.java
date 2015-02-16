@@ -73,7 +73,7 @@ public class UserService extends BaseResource<UMUser> {
         String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
         Token token = facade.getToken(accessToken);
         User u = facade.getUser(token);
-        return new User(u.getUsername(), this.getUserRoles(u));
+        return new User(u.getUsername(),u.getEmail(), this.getUserRoles(u));
     }
 
     /**
@@ -89,8 +89,8 @@ public class UserService extends BaseResource<UMUser> {
     @POST
     @Path("sec")
     public User addUser(UserRequest userRequest) throws UserManagementException {
-        User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
-        return new User(user.getUsername(), this.getUserRoles(user));
+        User user = facade.addUser(userRequest.getUsername(), userRequest.getEmail(),userRequest.getPassword());
+        return new User(user.getUsername(), user.getEmail(), this.getUserRoles(user));
     }
 
     /**
@@ -117,7 +117,7 @@ public class UserService extends BaseResource<UMUser> {
         facade.updateUser(user, userRequest.getPassword());
 
         // the user contains after it is updated all the information it is updated with
-        return new User(user.getUsername(), this.getUserRoles(user));
+        return new User(user.getUsername(), user.getEmail(), this.getUserRoles(user));
     }
 
     /**
