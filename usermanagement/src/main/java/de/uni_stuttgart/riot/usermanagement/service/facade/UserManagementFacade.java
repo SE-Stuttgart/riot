@@ -124,6 +124,8 @@ public class UserManagementFacade {
      * 
      * @param username
      *            The user name of the user,
+     * @param email
+     *            The email of the user,
      * @param clearTextPassword
      *            The password of the user as clear text,
      * @return The added user,
@@ -131,7 +133,7 @@ public class UserManagementFacade {
      *             Thrown if any errors occur
      */
     public User addUser(String username, String email, String clearTextPassword) throws AddUserException {
-        return (User) userLogic.addUser(username, email,clearTextPassword);
+        return (User) userLogic.addUser(username, email, clearTextPassword);
     }
 
     /**

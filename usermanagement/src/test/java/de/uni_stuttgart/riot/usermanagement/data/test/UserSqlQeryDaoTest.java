@@ -23,7 +23,7 @@ public class UserSqlQeryDaoTest extends DaoTestBase {
 
     @Test
     public void insertAndFindTest() throws DatasourceInsertException, DatasourceFindException, SQLException {
-        UMUser testuser = new UMUser(new Long(42), "TestUser", "email@test.org","TestUserPW", "TestUserSalt", 42);
+        UMUser testuser = new UMUser(new Long(42), "TestUser", "email@test.org", "TestUserPW", "TestUserSalt", 42);
         dao.insert(testuser);
         UMUser findUser = dao.findBy(testuser.getId());
         assertEquals(testuser, findUser);

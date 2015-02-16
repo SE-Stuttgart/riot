@@ -55,7 +55,7 @@ public class AuthenticationService {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
             User u = UserManagementFacade.getInstance().getUser(token);
-            User user = new User(u.getUsername(), u.getEmail(),this.getUserRoles(u));
+            User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new LoginException(e.getMessage(), e);
@@ -78,7 +78,7 @@ public class AuthenticationService {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
             User u = UserManagementFacade.getInstance().getUser(token);
-            User user = new User(u.getUsername(), u.getEmail(),this.getUserRoles(u));
+            User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
             return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
         } catch (UserManagementException e) {
             throw new RefreshException(e.getMessage(), e);

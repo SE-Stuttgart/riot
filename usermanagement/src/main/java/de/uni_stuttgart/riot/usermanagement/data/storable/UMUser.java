@@ -46,7 +46,7 @@ public class UMUser extends User {
      *            the hash iterations
      */
     public UMUser(long id, String username, String email, String hashedPassword, String passwordSalt, int hashIterations) {
-        super(id, email,username);
+        super(id, username, email);
         this.setHashedPassword(hashedPassword);
         this.setPasswordSalt(passwordSalt);
         this.setHashIterations(hashIterations);
@@ -71,8 +71,8 @@ public class UMUser extends User {
      * @param loginAttemptCount
      *            the login attemp count
      */
-    public UMUser(long id, String username, String email,String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
-        super(id, email, username);
+    public UMUser(long id, String username, String email, String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
+        super(id, username, email);
         this.setHashedPassword(hashedPassword);
         this.setPasswordSalt(passwordSalt);
         this.setHashIterations(hashIterations);
@@ -95,8 +95,8 @@ public class UMUser extends User {
      * @param loginAttemptCount
      *            the login attemp count
      */
-    public UMUser(String username, String email,String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
-        super(username,email);
+    public UMUser(String username, String email, String hashedPassword, String passwordSalt, int hashIterations, int loginAttemptCount) {
+        super(username, email);
         this.setHashedPassword(hashedPassword);
         this.setPasswordSalt(passwordSalt);
         this.setHashIterations(hashIterations);

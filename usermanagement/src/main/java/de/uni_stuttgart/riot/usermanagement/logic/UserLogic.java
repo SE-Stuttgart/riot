@@ -49,13 +49,15 @@ public class UserLogic {
      *            The new user.
      * @param clearTextPassword
      *            The password of the user as clear text.
+    * @param email
+     *            The mail of the user
      * @return The added user.
      * @throws AddUserException
      *             When adding the user failed.
      * 
      * 
      */
-    public UMUser addUser(String username, String email,String clearTextPassword) throws AddUserException {
+    public UMUser addUser(String username, String email, String clearTextPassword) throws AddUserException {
         try {
             Validate.notEmpty(username, "username must not be empty");
             Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
