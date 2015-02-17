@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.management;
+package de.uni_stuttgart.riot.commons.model;
 
 
 import java.util.EnumSet;
@@ -13,30 +13,21 @@ public enum OnlineState {
     /**
      * Shows that a item is "away".
      */
-    STATUS_AWAY(0, "away", android.R.drawable.presence_away),
-    /**
-     * Shows that a item is "busy".
-     */
-    STATUS_BUSY(1, "busy", android.R.drawable.presence_busy),
-    /**
-     * Shows that a item is "invisible".
-     */
-    STATUS_INVISIBLE(2, "invisible", android.R.drawable.presence_invisible),
+    STATUS_AWAY(0, "away"),
     /**
      * Shows that a item is "offline".
      */
-    STATUS_OFFLINE(3, "offline", android.R.drawable.presence_offline),
+    STATUS_OFFLINE(1, "offline"),
     /**
      * Shows that a item is "online".
      */
-    STATUS_ONLINE(4, "online", android.R.drawable.presence_online);
+    STATUS_ONLINE(2, "online");
 
     private static HashMap<Long, OnlineState> enumIdMap = new HashMap<Long, OnlineState>();
     private static HashMap<String, OnlineState> enumMessageMap = new HashMap<String, OnlineState>();
 
     private long id;
     private String message;
-    private int imageResource;
 
     /**
      * Maps all enumerations with the id as key.
@@ -55,20 +46,11 @@ public enum OnlineState {
      *
      * @param imageResource the resource id of the image
      */
-    OnlineState(long id, String message, int imageResource) {
+    OnlineState(long id, String message) {
         this.id = id;
         this.message = message;
-        this.imageResource = imageResource;
     }
 
-    /**
-     * Help to get the resource id.
-     *
-     * @return the resource id of the image for that online state
-     */
-    public int getR() {
-        return this.imageResource;
-    }
 
     /**
      * Returns the enum mapped with the given value.

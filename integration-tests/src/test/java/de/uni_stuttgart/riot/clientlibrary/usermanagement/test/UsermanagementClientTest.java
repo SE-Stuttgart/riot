@@ -5,15 +5,18 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.jws.soap.SOAPBinding.Use;
 import javax.ws.rs.core.Application;
 
 import org.apache.http.client.ClientProtocolException;
+import org.eclipse.persistence.jpa.jpql.Assert.AssertException;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
@@ -173,9 +176,20 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
         assertEquals(4, permissions.size());
     }
 
+    @Test 
+    public void onlineStateTest() throws ClientProtocolException, RequestException, IOException {
+        UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
+        OnlineState onlinestateYoda = usermanagementClient.getOnlineState(1);
+        OnlineState onlineStateNotYoda = usermanagementClient.getOnlineState(3);
+        assertEquals(OnlineState.STATUS_ONLINE, onlinestateYoda);
+        assertEquals(OnlineState.STATUS_OFFLINE, onlineStateNotYoda);
+
+    }
+    
     public UsermanagementClient getLogedInUserMClient() throws ClientProtocolException, RequestException, IOException {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
         loginClient.login("Yoda", "YodaPW");
         return new UsermanagementClient(loginClient);
     }
+   
 }

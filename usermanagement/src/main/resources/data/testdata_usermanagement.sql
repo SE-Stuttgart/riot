@@ -10,7 +10,7 @@ INSERT INTO users(username, email,hashedPassword, passwordSalt, hashIterations, 
 INSERT INTO tokens(userID, tokenvalue, refreshtokenValue,valid, expirationtime)
     VALUES ( 1, 'token1','token1R', true, TIMESTAMP '2024-10-19 10:23:54'),
      ( 2, 'token2','token2R', true, TIMESTAMP '2024-10-19 10:23:54'),
-     ( 3, 'token3','token3R', true, TIMESTAMP '2024-10-19 10:23:54');
+     ( 3, 'token3','token3R', false, TIMESTAMP '2024-10-19 10:23:54');
     
 INSERT INTO roles(rolename)
     VALUES ( 'Master'),

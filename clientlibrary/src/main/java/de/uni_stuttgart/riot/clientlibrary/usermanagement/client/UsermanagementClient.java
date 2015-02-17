@@ -9,6 +9,7 @@ import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
@@ -25,6 +26,8 @@ public class UsermanagementClient {
     private static final String GET_ROLES = PREFIX + "roles";
     private static final String GET_PERMISSIONS = PREFIX + "permissions";
     private static final String GET_USER_ROLES = "/roles";
+    private static final String GET_USER_STATE = "/state";
+
 
     private static final String GET_USER = PREFIX + "users/";
     private static final String GET_ROLE = PREFIX + "roles/";
@@ -291,6 +294,23 @@ public class UsermanagementClient {
         try {
             Role result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Role.class);
             return result;
+        } catch (Exception e) {
+            throw new RequestException(e);
+        }
+    }
+    
+    /**
+     * Returns the online state of user with given id.
+     * @param userId
+     *            users id
+     * @return the onlinestate
+     * @throws RequestException .
+     */
+    public OnlineState getOnlineState(long userId) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_USER + userId + GET_USER_STATE);
+        try {
+            int result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Integer.class);
+            return OnlineState.getEnumById(result);
         } catch (Exception e) {
             throw new RequestException(e);
         }

@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
@@ -198,6 +199,25 @@ public class UserService extends BaseResource<UMUser> {
     public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
+    }
+    
+    /**
+     * Returns the current user online state (online or offline).
+     * @param userID 
+     * @return online if the user currently is logged in, offline otherwise.
+     * @throws UserManagementException   
+     *              Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
+     */
+    @GET
+    @Path("/{userID}/state")
+    public int getUserOnlineState(@PathParam("userID") Long userID) throws UserManagementException {
+        Collection<Token> tokens = facade.getActiveTokensFromUser(userID);
+        if (tokens.isEmpty()) {
+            return OnlineState.STATUS_OFFLINE.ordinal();
+        } else {
+            return OnlineState.STATUS_ONLINE.ordinal();
+        }
     }
 
     private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import java.util.LinkedHashSet;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -85,7 +86,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.userOnlineState)).setImageResource(defaultOnlineState.getR());
+            ((ImageView) view.findViewById(R.id.userOnlineState)).setImageResource(42); // FIXME Setting the right image
             view.findViewById(R.id.userOnlineState).setEnabled(this.enableElements);
         }
 
