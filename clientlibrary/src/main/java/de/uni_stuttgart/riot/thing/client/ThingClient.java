@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.thing.client;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Queue;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.commons.Thing;
@@ -23,6 +25,7 @@ import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
  *
  */
 public class ThingClient {
+
     private static final String PREFIX = "/api/v1/";
 
     private static final String POST_ADD_THING = PREFIX + "thing";
@@ -40,6 +43,10 @@ public class ThingClient {
     private static final String POST_EVENT_REGISTRATION = PREFIX + "thing/register";
 
     private static final String GET_LAST_ONLINE = PREFIX + "thing/online/";
+
+    private static final long TEN_MIN = 1000 * 60 * 10;
+    private static final long FIVE_MIN = 1000 * 60 * 5;
+
 
     /** The login client for authentication handling. */
     private final LoginClient loginClient;
@@ -261,6 +268,24 @@ public class ThingClient {
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
+        }
+    }
+    
+    /**
+     * Returns the current online state for the given thing.
+     * @param thingID the thing id
+     * @return the current online state
+     * @throws RequestException .
+     */
+    public OnlineState getOnlineState(long thingID) throws RequestException {
+        long now = System.currentTimeMillis();
+        Timestamp lastOnline = this.getLastOnline(thingID);
+        if (lastOnline.before(new Timestamp(now - TEN_MIN))) {
+            return OnlineState.STATUS_OFFLINE;
+        } else if (lastOnline.before(new Timestamp(now - FIVE_MIN))) {
+            return OnlineState.STATUS_AWAY;
+        } else {
+            return OnlineState.STATUS_ONLINE;
         }
     }
 }
