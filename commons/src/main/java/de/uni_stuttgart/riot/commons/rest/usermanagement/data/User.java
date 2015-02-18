@@ -121,6 +121,15 @@ public class User extends Storable {
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
+    
+    /**
+     * Checks for valid id.
+     *
+     * @return true, if successful
+     */
+    public boolean hasValidId() {
+        return this.getId() >= 0 ? true : false;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

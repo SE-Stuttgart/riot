@@ -181,6 +181,19 @@ public class UserManagementFacade {
     }
 
     /**
+     * Get a single user.
+     *
+     * @param username
+     *            the username
+     * @return User with the given id.
+     * @throws GetUserException
+     *             Thrown if any errors occur
+     */
+    public User getUser(String username) throws GetUserException {
+        return (User) userLogic.getUser(username);
+    }
+
+    /**
      * Get user by token.
      * 
      * @param token

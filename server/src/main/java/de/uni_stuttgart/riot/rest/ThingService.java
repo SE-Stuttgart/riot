@@ -34,10 +34,13 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertExcepti
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
+import de.uni_stuttgart.riot.thing.commons.ShareRequest;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
 import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
-import de.uni_stuttgart.riot.usermanagement.security.AccessToken;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 
 /**
  * The thing service will handle any access (create, read, update, delete) to the "things".
@@ -48,11 +51,6 @@ import de.uni_stuttgart.riot.usermanagement.security.AccessToken;
 @Produces(MediaType.APPLICATION_JSON)
 @RequiresAuthentication
 public class ThingService extends BaseResource<RemoteThing> {
-
-    private static final String WILDCARD = "*";
-    private static final String ACTION_READ = "read";
-    private static final String ACTION_DELETE = "delete";
-    private static final String ACTION_UPDATE = "update";
 
     private final ThingLogic logic;
 
@@ -82,7 +80,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @GET
     @Path("/online/{id}")
     public Timestamp lastConnection(@PathParam("id") long id) {
-        assertPermitted(Long.toString(id), ACTION_READ);
+        assertPermitted(id, ThingPermission.READ);
         return this.logic.lastConnection(id);
     }
 
@@ -97,7 +95,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @GET
     @Path("/action/{id}")
     public Queue<ActionInstance> getActionInstances(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(Long.toString(id), ACTION_READ);
+        assertPermitted(id, ThingPermission.READ);
         return this.logic.getCurrentActionInstances(id);
     }
 
@@ -112,7 +110,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @GET
     @Path("event/{id}")
     public Stack<EventInstance> getEventInstances(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(Long.toString(id), ACTION_READ);
+        assertPermitted(id, ThingPermission.READ);
         return this.logic.getRegisteredEvents(id);
     }
 
@@ -128,7 +126,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @Path("register")
     public Response registerOnEvent(RegisterRequest request) throws DatasourceFindException {
         if (request != null) {
-            assertPermitted(Long.toString(request.getThingId()), ACTION_UPDATE);
+            assertPermitted(request.getThingId(), ThingPermission.UPDATE);
             this.logic.registerOnEvent(request.getThingId(), request.getRegisterOnThingId(), request.getEvent());
         }
         return Response.noContent().build();
@@ -146,7 +144,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @Path("deregister")
     public Response deRegisterOnEvent(RegisterRequest request) throws DatasourceFindException {
         if (request != null) {
-            assertPermitted(Long.toString(request.getThingId()), ACTION_UPDATE);
+            assertPermitted(request.getThingId(), ThingPermission.UPDATE);
             this.logic.deRegisterOnEvent(request.getThingId(), request.getRegisterOnThingId(), request.getEvent());
         }
         return Response.noContent().build();
@@ -164,7 +162,7 @@ public class ThingService extends BaseResource<RemoteThing> {
     @Path("notify")
     public Response notifyEvent(EventInstance eventInstance) throws DatasourceFindException {
         if (eventInstance != null) {
-            assertPermitted(Long.toString(eventInstance.getThingId()), ACTION_READ);
+            assertPermitted(eventInstance.getThingId(), ThingPermission.READ);
             this.logic.submitEvent(eventInstance);
         }
         return Response.noContent().build();
@@ -181,8 +179,33 @@ public class ThingService extends BaseResource<RemoteThing> {
     @Path("action")
     public void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
         if (actionInstance != null) {
-            assertPermitted(Long.toString(actionInstance.getThingId()), ACTION_UPDATE);
+            assertPermitted(actionInstance.getThingId(), ThingPermission.UPDATE);
             this.logic.submitAction(actionInstance);
+        }
+    }
+
+    /**
+     * Share a thing with another user.
+     *
+     * @param shareRequest
+     *            the share request
+     * @throws DatasourceFindException
+     *             the datasource find exception
+     * @throws GetPermissionException
+     *             the get permission exception
+     * @throws GetUserException
+     *             the get user exception
+     * @throws DatasourceInsertException
+     *             the datasource insert exception
+     */
+    @POST
+    @Path("share")
+    public void share(ShareRequest shareRequest) throws DatasourceFindException, GetPermissionException, GetUserException, DatasourceInsertException {
+        if (shareRequest != null) {
+            assertPermitted(shareRequest.getThingId(), ThingPermission.SHARE);
+            this.logic.share(shareRequest.getThingId(), shareRequest.getUserId(), shareRequest.getPermission());
+        } else {
+            throw new BadRequestException("An empty request is not allowed");
         }
     }
 
@@ -228,7 +251,7 @@ public class ThingService extends BaseResource<RemoteThing> {
                 return Response.status(Status.NOT_FOUND).build();
             }
         } catch (DatasourceFindException e) {
-            //do nothing
+            // do nothing
         }
         return Response.noContent().build();
     }
@@ -246,8 +269,8 @@ public class ThingService extends BaseResource<RemoteThing> {
     @Path("{id}")
     public Response delete(@PathParam("id") long id) {
         try {
-            //TODO find a better way for making the tests run
-            //check if security manager is available and therefore shiro is enabled
+            // TODO find a better way for making the tests run
+            // used to make the tests run. check if security manager is available and therefore shiro is enabled
             SecurityUtils.getSecurityManager();
         } catch (Exception e) {
             try {
@@ -256,9 +279,9 @@ public class ThingService extends BaseResource<RemoteThing> {
                 throw new NotFoundException("No such resource exists or it has already been deleted.", e1);
             }
             return Response.noContent().build();
-        } 
-        
-        assertPermitted(Long.toString(id), ACTION_DELETE);
+        }
+
+        assertPermitted(id, ThingPermission.DELETE);
 
         try {
             this.logic.unregisterThing(id);
@@ -286,45 +309,26 @@ public class ThingService extends BaseResource<RemoteThing> {
     public Collection<RemoteThing> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
 
         try {
-            //TODO find a better way for making the tests run
-            //check if security manager is available and therefore shiro is enabled
+            // TODO find a better way for making the tests run
+            // used to make the tests run. check if security manager is available and therefore shiro is enabled
             SecurityUtils.getSecurityManager();
         } catch (Exception e) {
             return super.get(offset, limit);
-        }        
-        
+        }
+
         // throws an exception if the user has no thing which he can access
-        assertPermitted(WILDCARD, ACTION_READ);
+        assertPermitted(-1L, ThingPermission.READ);
 
         Collection<RemoteThing> things = super.get(offset, limit);
         Collection<RemoteThing> filteredThings = new ArrayList<RemoteThing>();
 
         // filter the things out of which the user has not even the permission to read them
         for (RemoteThing thing : things) {
-            if (isPermitted(Long.toString(thing.getId()), ACTION_READ)) {
+            if (isPermitted(thing.getId(), ThingPermission.READ)) {
                 filteredThings.add(thing);
             }
         }
         return filteredThings;
-    }
-
-    /**
-     * Builds the permission from different parts.
-     *
-     * @param parts
-     *            the parts
-     * @return the string
-     */
-    private String buildThingPermission(final String... parts) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("thing");
-
-        for (String part : parts) {
-            sb.append(":");
-            sb.append(part);
-        }
-
-        return sb.toString();
     }
 
     /**
@@ -335,14 +339,12 @@ public class ThingService extends BaseResource<RemoteThing> {
      *            the parts
      * @return true, if is permitted. If not permitted a {@link ForbiddenException} will be thrown.
      */
-    private void assertPermitted(final String... parts) {
-        if (!SecurityUtils.getSubject().isPermitted(buildThingPermission(parts))) {
-            //CHECKSTYLE: OFF
-            System.out.println("############ The user is not permitted to do the desired action: " + buildThingPermission(parts));
+    private void assertPermitted(long id, ThingPermission permission) {
+        if (!SecurityUtils.getSubject().isPermitted(permission.buildShiroPermission(id))) {
             throw new ForbiddenException("The user is not permitted to do the desired action");
         }
     }
-    
+
     /**
      * Checks if the user is permitted.
      *
@@ -350,9 +352,9 @@ public class ThingService extends BaseResource<RemoteThing> {
      *            the parts
      * @return true, if is permitted
      */
-    private boolean isPermitted(final String... parts) {
+    private boolean isPermitted(long id, ThingPermission permission) {
         try {
-            assertPermitted(parts);
+            assertPermitted(id, permission);
             return true;
         } catch (ForbiddenException e) {
             return false;
