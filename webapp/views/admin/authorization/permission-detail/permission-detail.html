@@ -1,10 +1,10 @@
 <div class="row" ng-controller="PermissionDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>General</strong></h3>
+    <h3><strong>{{ 'user.general' | i18n }}</strong></h3>
     <form name="formPermissionDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formPermissionDetail.$valid && save()">
       <!-- permissionid -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="permissionid">Permission ID</label>
+        <label class="control-label col-md-2" for="permissionid">{{ 'user.permissionId' | i18n }}</label>
         <div class="col-md-8">
           <input id="permissionid" name="permissionid" type="text" placeholder="" class="form-control" ng-model="permissionDetail.id" disabled>
         </div>
@@ -12,7 +12,7 @@
 
       <!-- value -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="value">Value</label>
+        <label class="control-label col-md-2" for="value">{{ 'user.value' | i18n }}</label>
         <div class="col-md-8">
           <input id="value" value="value" type="text" placeholder="" class="form-control" ng-model="permissionDetail.permissionValue">
         </div>
@@ -20,7 +20,7 @@
 
       <!-- description -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="description">Description</label>
+        <label class="control-label col-md-2" for="description">{{ 'user.description' | i18n }}</label>
         <div class="col-md-8">
           <textarea id="description" name="description" class="form-control" rows="4" ng-model="permissionDetail.description"></textarea>
         </div>
@@ -29,8 +29,8 @@
       <!-- Save -->
       <div class="form-group">
         <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">Save</button>
-          <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">Cancel</button>
+          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
+          <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
         </div>
       </div>
     </form>
