@@ -78,6 +78,11 @@
 			<version>18.0.0</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.jakewharton</groupId>
+			<artifactId>butterknife</artifactId>
+			<version>6.1.0</version>
+		</dependency>
 
 		<!-- Spring -->
 		<dependency>
@@ -92,7 +97,12 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.4.4</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.robolectric</groupId>
+			<artifactId>robolectric</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -146,7 +156,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
