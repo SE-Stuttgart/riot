@@ -1,7 +1,5 @@
 package de.uni_stuttgart.riot.android.notification;
 
-import de.uni_stuttgart.riot.android.notification.NotificationType;
-
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class Notification {
 

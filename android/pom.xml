@@ -78,11 +78,6 @@
 			<version>18.0.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.jakewharton</groupId>
-			<artifactId>butterknife</artifactId>
-			<version>6.1.0</version>
-		</dependency>
 
 		<!-- Spring -->
 		<dependency>

@@ -14,9 +14,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
+import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.notification.NotificationType;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -38,6 +40,18 @@ public class NotificationScreen extends Activity {
 		pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
 		database = new RIOTDatabase(this, pressedHomeScreenButton);
+
+        // Initialize the API client. Initialization is not allowed in the main thread.
+        final NotificationScreen inst = this;
+        new Thread() {
+            @Override
+            public void run() {
+                RIOTApiClient.getInstance().init(inst, "androidApp"); // TODO device name
+            }
+        }.start();
+
+        // Save the application context in the singleton objects
+        IM.INSTANCES.setContext(getApplicationContext());
 
 		// Sets the language
 		Language.setLanguage(this);
@@ -77,6 +91,14 @@ public class NotificationScreen extends Activity {
 					.show();
 		}
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Delete all saved notifications
+        IM.INSTANCES.getNF().clearPreparedNotifications();
+    }
 
 	private boolean isNetworkAvailable() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);

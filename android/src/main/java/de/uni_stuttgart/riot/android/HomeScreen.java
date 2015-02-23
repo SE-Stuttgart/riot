@@ -13,8 +13,17 @@ import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.language.Language;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 
+/**
+ * This is the new MainAcitity which starts the other activitys.
+ */
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class HomeScreen extends Activity {
 
+    /**
+     * onCreate method
+     * @param savedInstanceState
+     *          the last states
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
