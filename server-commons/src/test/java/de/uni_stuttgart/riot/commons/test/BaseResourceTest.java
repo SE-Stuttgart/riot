@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
@@ -58,6 +59,10 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         Collection<T> models = resp.readEntity(new GenericType<Collection<T>>() {
         });
         assertEquals(this.getTestDataSize(), models.size());
+        assertEquals("wrong offset", String.valueOf(0), resp.getHeaders().getFirst("offset"));
+        assertEquals("wrong limit", String.valueOf(20), resp.getHeaders().getFirst("limit")); // Default page size is 20.
+        String expectedTotal = String.valueOf(this.getTestDataSize());
+        assertEquals("wrong total", expectedTotal, resp.getHeaders().getFirst("total"));
     }
 
     /**
@@ -94,11 +99,46 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         assertThat(models, hasSize(pageSize));
     }
 
+    /**
+     * Tests that response delivers default amount = 20.
+     */
+    @Test
+    public void testGetDefaultPageSize() {
+        // Default page size is 20.
+
+        // Filling test data with + 20 elements
+        for (int i = 0; i < 20; i++) {
+            Entity<T> testEntity = Entity.entity(this.getNewObject(), MediaType.APPLICATION_JSON_TYPE);
+            Response resp = target(this.getSubPath()).request(MediaType.APPLICATION_JSON).post(testEntity);
+            assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+        }
+
+        // get request without "limit" returns the default amount = 20
+        Response resp = target(this.getSubPath()).request(MediaType.APPLICATION_JSON).get();
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Collection<T> models = resp.readEntity(new GenericType<Collection<T>>() {
+        });
+        assertThat(models, hasSize(20));
+        assertEquals("wrong offset", String.valueOf(0), resp.getHeaders().getFirst("offset"));
+        assertEquals("wrong limit", String.valueOf(20), resp.getHeaders().getFirst("limit"));
+        String expectedTotal = String.valueOf(this.getTestDataSize() + 20);
+        assertEquals("wrong total", expectedTotal, resp.getHeaders().getFirst("total"));
+    }
+
+    /**
+     * Tests a simple filter.
+     */
     @Test
     public void testGetFiltering() {
+        // post must fail with invalid body, expect a 400 for bad request
+        Response resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // testing a simple equals filter. Only 1 element should be found.
         List<FilterAttribute> filterAtts = new ArrayList<FilterAttribute>();
-        filterAtts.add(this.getFilter());
-        final int pageSize = 2;
+        FilterAttribute filterAtt = this.getFilter();
+        filterAtts.add(filterAtt);
+        final int pageSize = 1;
         final int offset = 0;
         FilteredRequest reqEntity = new FilteredRequest();
         reqEntity.setOrMode(false);
@@ -106,20 +146,32 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         reqEntity.setOffset(offset);
         reqEntity.setLimit(pageSize);
 
-        Response resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
+        resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Collection<T> models = resp.readEntity(new GenericType<List<T>>() {
         });
-        assertThat(models, hasSize(1));
+        assertThat(models, hasSize(pageSize));
         assertEquals("wrong offset", String.valueOf(offset), resp.getHeaders().getFirst("offset"));
         assertEquals("wrong limit", String.valueOf(pageSize), resp.getHeaders().getFirst("limit"));
         String expectedTotal = "1";
         assertEquals("wrong total", expectedTotal, resp.getHeaders().getFirst("total"));
 
-        // post must fail with invalid body
-        resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(null);
-        // expect a 400 for bad request
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        // if filter from concrete test class is EQ (equals), tests also NE (not equals) based on it
+        // 2 elements should be found, but only 1 is returned because of pageSize = 1
+        if (filterAtt.getOperator().equals(FilterOperator.EQ)) {
+            filterAtts.clear();
+            filterAtts.add(new FilterAttribute(filterAtt.getFieldName(), FilterOperator.NE, filterAtt.getValue()));
+            reqEntity.setFilterAttributes(filterAtts);
+
+            resp = target(this.getSubPath() + "/filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(reqEntity, MediaType.APPLICATION_JSON_TYPE));
+            assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+            models = resp.readEntity(new GenericType<List<T>>() {
+            });
+            assertThat(models, hasSize(pageSize));
+            assertEquals("wrong offset", String.valueOf(offset), resp.getHeaders().getFirst("offset"));
+            assertEquals("wrong limit", String.valueOf(pageSize), resp.getHeaders().getFirst("limit"));
+            assertEquals("wrong total", String.valueOf(getTestDataSize() - 1), resp.getHeaders().getFirst("total"));
+        }
     }
 
     public abstract T getNewObject();
