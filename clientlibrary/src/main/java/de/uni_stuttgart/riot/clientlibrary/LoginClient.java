@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.clientlibrary;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -32,6 +34,9 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.Authentication
  * Rest client for authentication handling.
  */
 public class LoginClient {
+
+    /** The Constant DEFAULT_HTTPS_PORT */
+    private static final int DEFAULT_HTTPS_PORT = 443;
 
     /** The Constant NOT_AUTH. */
     private static final int NOT_AUTH = 401;
@@ -70,7 +75,7 @@ public class LoginClient {
     private final String deviceName;
 
     /** The client. */
-    private final HttpClient client = new DefaultHttpClient();
+    private final HttpClient client;
 
     /** The server url. */
     private final String serverUrl;
@@ -95,6 +100,24 @@ public class LoginClient {
         this.tokenManager = tokenManager;
         this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
+
+        URL url;
+        try {
+            url = new URL(serverUrl);
+        } catch (MalformedURLException e) {
+            // TODO: The URL should be stored as URL, not as String.
+            // The constructor should either accept URL or throw the MalformedURLException
+            throw new RuntimeException(e);
+        }
+        if ("https".equals(url.getProtocol())) {
+            int port = url.getPort();
+            if (port == -1) {
+                port = DEFAULT_HTTPS_PORT;
+            }
+            this.client = new HttpsClient(port);
+        } else {
+            this.client = new DefaultHttpClient();
+        }
     }
 
     /**
