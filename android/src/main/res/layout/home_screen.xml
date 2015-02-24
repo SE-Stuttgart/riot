@@ -4,7 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background" >
-
+    
+    <de.uni_stuttgart.riot.android.DrawCanvas  
+	android:id="@+id/canvas"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    />
+<!--  
     <GridLayout
         android:id="@+id/homeScreen_GridLayout"
         android:layout_width="fill_parent"
@@ -87,5 +93,5 @@
             android:background="@drawable/coffee" />
 
     </GridLayout>
-
+-->
 </RelativeLayout>
