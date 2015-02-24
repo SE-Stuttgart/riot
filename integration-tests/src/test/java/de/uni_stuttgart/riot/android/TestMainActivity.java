@@ -15,13 +15,12 @@ import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowListView;
 
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.Notification;
-import de.uni_stuttgart.riot.android.database.FilterDataObjects;
-import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ListView;
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.database.RIOTDatabase;
+import de.uni_stuttgart.riot.android.notification.Notification;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "../android/AndroidManifest.xml")
@@ -33,12 +32,12 @@ public class TestMainActivity {
         // Create MainActivity
         Intent intent = new Intent();
         intent.putExtra("pressedButton", "coffeeMachine");
-        MainActivity activity = Robolectric.buildActivity(MainActivity.class).withIntent(intent).setup().get();
+        HomeScreen activity = Robolectric.buildActivity(HomeScreen.class).withIntent(intent).setup().get();
 
         // Enable ERROR type in the database
-        Field filterObjectsField = MainActivity.class.getDeclaredField("filterObjects");
+        Field filterObjectsField = HomeScreen.class.getDeclaredField("filterObjects");
         filterObjectsField.setAccessible(true);
-        RIOTDatabase riotDatabase = ((FilterDataObjects) filterObjectsField.get(activity)).getDatabase();
+        RIOTDatabase riotDatabase = new RIOTDatabase(activity);
         SQLiteDatabase db = riotDatabase.getWritableDatabase();
         db.execSQL("INSERT INTO filter (id, type, is_checked) VALUES (1000, 'ERROR', 1)");
         db.close();
@@ -68,5 +67,4 @@ public class TestMainActivity {
         l.clickFirstItemContainingText("Refill water");
 
     }
-
 }
