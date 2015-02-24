@@ -419,7 +419,9 @@ public class ConfigurationClient {
     private int returnStatusCode(HttpResponse response) throws RequestException {
         if (response != null) {
             try {
-                response.getEntity().consumeContent();
+                if (response.getEntity() != null) {
+                    response.getEntity().consumeContent();
+                }
             } catch (IOException e) {
                 throw new RequestException(e);
             }

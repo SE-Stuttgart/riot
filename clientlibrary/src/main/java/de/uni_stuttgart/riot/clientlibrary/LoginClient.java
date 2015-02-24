@@ -81,7 +81,7 @@ public class LoginClient {
     private final String serverUrl;
 
     /** The loged in. */
-    private boolean logedIn;
+    private boolean loggedIn;
 
     /**
      * Constructor.
@@ -96,7 +96,7 @@ public class LoginClient {
     public LoginClient(String serverUrl, String deviceName, TokenManager tokenManager) {
         this.deviceName = deviceName;
         this.serverUrl = serverUrl;
-        this.logedIn = false;
+        this.loggedIn = false;
         this.tokenManager = tokenManager;
         this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
@@ -210,7 +210,7 @@ public class LoginClient {
                 AuthenticationResponse response = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), AuthenticationResponse.class);
                 tokenManager.setAccessToken(response.getAccessToken());
                 tokenManager.setRefreshToken(response.getRefreshToken());
-                this.logedIn = true;
+                this.loggedIn = true;
                 return response.getUser();
             }
         } catch (Exception e) {
@@ -366,8 +366,8 @@ public class LoginClient {
      *
      * @return true, if is loged in
      */
-    public boolean isLogedIn() {
-        return logedIn;
+    public boolean isLoggedIn() {
+        return loggedIn;
     }
 
     /**
