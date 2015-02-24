@@ -28,3 +28,4 @@ proguard/
 *.log
 *.classpath
 /target/
+/.apt_generated/

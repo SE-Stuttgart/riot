@@ -3,7 +3,6 @@ package de.uni_stuttgart.riot.android.location;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,13 +19,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.database.FilterDataObjects;
+import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class LocationFragment extends Fragment implements LocationListener,
 		OnClickListener {
 
-	private FilterDataObjects filterObjects;
+	private RIOTDatabase database;
 	private LocationManager locationManager;
 	private String provider;
 	private Criteria criteria;
@@ -39,8 +38,8 @@ public class LocationFragment extends Fragment implements LocationListener,
 
 	private AlertDialog.Builder alertDialog;
 
-	public LocationFragment(FilterDataObjects filterObjects) {
-		this.filterObjects = filterObjects;
+	public LocationFragment(RIOTDatabase database) {
+		this.database = database;
 	}
 
 	@Override
@@ -73,9 +72,9 @@ public class LocationFragment extends Fragment implements LocationListener,
 		MyLocation vaihingen = new MyLocation("Vaihingen",
 				"Pfaffenwaldring, 70569 Stuttgart", 48.742861, 9.098906);
 
-		filterObjects.getDatabase().updateLocation(stadtmitte);
-		filterObjects.getDatabase().updateLocation(vaihingen);
-		myLocation = filterObjects.getDatabase().getLocation();
+		database.updateLocation(stadtmitte);
+		database.updateLocation(vaihingen);
+		myLocation = database.getLocation();
 
 		btn_show_location.setOnClickListener(this);
 		btn_hide_location.setOnClickListener(this);
