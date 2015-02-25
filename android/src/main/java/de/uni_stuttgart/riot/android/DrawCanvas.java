@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -73,6 +74,11 @@ public class DrawCanvas extends View implements OnTouchListener {
         settingsButton = new HomeScreenButton("Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
         listButton.add(settingsButton);
 
+        canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
+        canvas.drawBitmap(coffeeMachineButton.getImage(), coffeeMachineButton.getButtonX(), coffeeMachineButton.getButtonY(), coffeeMachineButton.getButtonPaint());
+        canvas.drawBitmap(calendarButton.getImage(), calendarButton.getButtonX(), calendarButton.getButtonY(), calendarButton.getButtonPaint());
+        canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
+
         isInitialized = true;
     }
 
@@ -88,11 +94,6 @@ public class DrawCanvas extends View implements OnTouchListener {
         int xVal = carButton.getButtonX() + 10; // Point curScreenCoords
         int yVal = carButton.getButtonY() + carButton.getButtonY() + 5; // Point curScreenCoords
         canvas.drawText(carButton.getButtonDescription(), xVal + xOffset, yVal + yOffset, paint);
-
-        canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
-        canvas.drawBitmap(coffeeMachineButton.getImage(), coffeeMachineButton.getButtonX(), coffeeMachineButton.getButtonY(), coffeeMachineButton.getButtonPaint());
-        canvas.drawBitmap(calendarButton.getImage(), calendarButton.getButtonX(), calendarButton.getButtonY(), calendarButton.getButtonPaint());
-        canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
     }
 
     @Override
@@ -102,20 +103,40 @@ public class DrawCanvas extends View implements OnTouchListener {
             for (HomeScreenButton button : listButton) {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
+                    selectedButton.getButtonPaint().setAlpha(50);
+                    invalidate();
                 }
             }
 
-            selectedButton.getButtonPaint().setAlpha(50);
-            this.invalidate();
         }
 
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
-            newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
-            homeScreen.startActivity(newNotificationScreen);
-            selectedButton.getButtonPaint().setAlpha(100);
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (selectedButton != null) {
+                canvas.drawBitmap(houseButton.getImage(), event.getX(), event.getY(), houseButton.getButtonPaint());
+                invalidate();
+            }
         }
 
+        if (event.getAction() == MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_MOVE) {
+
+            if (selectedButton != null) {
+                Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
+                if (selectedButton.getButtonDescription().equals("Calendar")) {
+                    Intent calendarIntent = new Intent(Intent.ACTION_VIEW);
+                    calendarIntent.setData(Uri.parse("content://com.android.calendar/time"));
+                    homeScreen.startActivity(calendarIntent);
+                } else if (selectedButton.getButtonDescription().equals("Settings")) {
+                    // TODO: ADD SETTINGS STUFF
+                } else {
+                    newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
+                    homeScreen.startActivity(newNotificationScreen);
+                }
+                selectedButton.getButtonPaint().setAlpha(255);
+                invalidate();
+            }
+        }
+
+        invalidate();
         return true;
     }
 
@@ -127,7 +148,8 @@ public class DrawCanvas extends View implements OnTouchListener {
      * @return
      */
     private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
-        System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " + button.getButtonY());
+        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
+        // button.getButtonY());
         return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
     }
 }

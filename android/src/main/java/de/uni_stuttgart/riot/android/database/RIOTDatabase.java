@@ -113,13 +113,13 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FILTER + " WHERE " + FILTER_COLUMN_ID + " = ?", new String[] { String.valueOf(filter.getId()) });
 
         if (cursor.moveToFirst()) {
-            System.out.println("Filter Eintrag update");
+            // System.out.println("Filter Eintrag update");
             db.update(TABLE_FILTER, // table
                     values, // column/value
                     FILTER_COLUMN_ID + " = ?", // selections
                     new String[] { String.valueOf(filter.getId()) });
         } else {
-            System.out.println("Filter Eintrag neu anlegen");
+            // System.out.println("Filter Eintrag neu anlegen");
             db.insert(TABLE_FILTER, null, values);
         }
 
@@ -230,6 +230,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     public void updateNotificationEntries(List<Notification> notificationList) {
 
         SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor;
 
         for (Notification notification : notificationList) {
             ContentValues values = new ContentValues();
@@ -240,19 +241,22 @@ public class RIOTDatabase extends SQLiteOpenHelper {
             values.put(NOTIFICATION_COLUMN_DATE, notification.getDate());
             values.put(NOTIFICATION_COLUMN_THING, notification.getThingName());
 
-            Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + NOTIFICATION_COLUMN_ID + " = ?", new String[] { String.valueOf(notification.getId()) });
+            // TODO: Handle LogCat Errors
+            // 02-25 21:55:13.280: W/ResourceType(1149): Failure getting entry for 0x7f080032 (t=7 e=50) in package 0 (error -75)
+            // 02-25 21:55:13.300: W/Resources(1149): Converting to string: TypedValue{t=0x1/d=0x7f080032 a=-1 r=0x7f080032}
+
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + NOTIFICATION_COLUMN_ID + " = ?", new String[] { String.valueOf(notification.getId()) });
 
             if (cursor.moveToFirst()) {
-                System.out.println("Notification Eintrag update");
+                // System.out.println("Notification Eintrag update");
                 db.update(TABLE_NOTIFICATION, // table
                         values, // column/value
                         NOTIFICATION_COLUMN_ID + " = ?", // selections
                         new String[] { String.valueOf(notification.getId()) });
             } else {
-                System.out.println("Notification Eintrag neu anlegen");
+                // System.out.println("Notification Eintrag neu anlegen");
                 db.insert(TABLE_NOTIFICATION, null, values);
             }
-
             cursor.close();
         }
 
@@ -291,6 +295,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(countQuery, null);
         int i = cursor.getCount();
         cursor.close();
+        db.close();
 
         // return count
         return i;
@@ -316,6 +321,9 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         }
 
         String id = cursor.getString(0);
+
+        cursor.close();
+        db.close();
         return id;
     }
 
@@ -369,6 +377,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(countQuery, null);
         int i = cursor.getCount();
         cursor.close();
+        db.close();
 
         // return count
         return i;

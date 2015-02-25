@@ -57,8 +57,8 @@ public class NotificationScreen extends Activity {
 
         setContentView(R.layout.notification_screen);
 
-        getActionBar().setHomeButtonEnabled(true);
         getActionBar().setTitle(pressedHomeScreenButton);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (pressedHomeScreenButton.equals("Car")) {
             getActionBar().setIcon(R.drawable.car);
@@ -146,9 +146,12 @@ public class NotificationScreen extends Activity {
             return true;
         case R.id.action_refresh:
             new ServerConnection(this, database).execute();
+            return true;
+        case android.R.id.home:
+            onBackPressed();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
-
 }
