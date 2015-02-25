@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -34,6 +33,8 @@ public class DrawCanvas extends View implements OnTouchListener {
     private HomeScreenButton settingsButton;
 
     private List<HomeScreenButton> listButton = new ArrayList<HomeScreenButton>();
+
+    private HomeScreenButton selectedButton;
 
     public DrawCanvas(HomeScreen context) {
         super(context);
@@ -63,7 +64,7 @@ public class DrawCanvas extends View implements OnTouchListener {
         houseButton = new HomeScreenButton("House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
         listButton.add(houseButton);
 
-        coffeeMachineButton = new HomeScreenButton("Coffee", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
+        coffeeMachineButton = new HomeScreenButton("CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
         listButton.add(coffeeMachineButton);
 
         calendarButton = new HomeScreenButton("Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
@@ -94,44 +95,37 @@ public class DrawCanvas extends View implements OnTouchListener {
         canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
     }
 
+    @Override
     public boolean onTouch(View view, MotionEvent event) {
 
-        if (isButton(event)) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            for (HomeScreenButton button : listButton) {
+                if (isCoordsOnButton(event.getX(), event.getY(), button)) {
+                    selectedButton = button;
+                }
+            }
 
+            selectedButton.getButtonPaint().setAlpha(50);
+            this.invalidate();
         }
 
-        if (isCoordsOnButton(event.getX(), event.getY(), carButton)) {
-
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                carButton.getButtonPaint().setAlpha(50);
-                this.invalidate();
-            }
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                Intent carScreen = new Intent(homeScreen, NotificationScreen.class);
-                carScreen.putExtra("pressedButton", "car");
-                homeScreen.startActivity(carScreen);
-            }
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
+            newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
+            homeScreen.startActivity(newNotificationScreen);
+            selectedButton.getButtonPaint().setAlpha(100);
         }
 
         return true;
     }
 
-    private boolean isButton(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            for (HomeScreenButton button : listButton) {
-                if (isCoordsOnButton(x, y, button)) {
-                    Log.e("TAG", button.getButtonDescription());
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    /**
+     * 
+     * @param fingerX
+     * @param fingerY
+     * @param button
+     * @return
+     */
     private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
         System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " + button.getButtonY());
         return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));

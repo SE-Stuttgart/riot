@@ -58,13 +58,13 @@ public class NotificationScreen extends Activity {
         setContentView(R.layout.notification_screen);
 
         getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setTitle(pressedHomeScreenButton.substring(0, 1).toUpperCase() + pressedHomeScreenButton.substring(1));
+        getActionBar().setTitle(pressedHomeScreenButton);
 
-        if (pressedHomeScreenButton.equals("car")) {
+        if (pressedHomeScreenButton.equals("Car")) {
             getActionBar().setIcon(R.drawable.car);
-        } else if (pressedHomeScreenButton.equals("house")) {
+        } else if (pressedHomeScreenButton.equals("House")) {
             getActionBar().setIcon(R.drawable.house);
-        } else if (pressedHomeScreenButton.equals("coffeeMachine")) {
+        } else if (pressedHomeScreenButton.equals("CoffeeMachine")) {
             getActionBar().setIcon(R.drawable.coffee);
         }
 
