@@ -8,10 +8,13 @@ public class HomeScreenButton {
     private int buttonX;
     private int buttonY;
 
+    private String buttonDescription;
+
     private Bitmap buttonImage;
     private Paint buttonPaint;
 
-    public HomeScreenButton(int x, int y, Bitmap image) {
+    public HomeScreenButton(String desc, int x, int y, Bitmap image) {
+        buttonDescription = desc;
         buttonX = x;
         buttonY = y;
         buttonImage = image;
@@ -20,6 +23,14 @@ public class HomeScreenButton {
 
     public void startIntent() {
 
+    }
+
+    public String getButtonDescription() {
+        return buttonDescription;
+    }
+
+    public void setButtonDescription(String buttonDescription) {
+        this.buttonDescription = buttonDescription;
     }
 
     public Paint getButtonPaint() {
