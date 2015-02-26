@@ -5,7 +5,8 @@ package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
 import java.util.Collection;
 
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.type.TypeReference;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;

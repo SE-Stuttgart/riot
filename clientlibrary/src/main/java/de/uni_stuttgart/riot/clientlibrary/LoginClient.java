@@ -15,11 +15,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectMapper.DefaultTyping;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.InternalRequest;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -98,7 +99,7 @@ public class LoginClient {
         this.serverUrl = serverUrl;
         this.loggedIn = false;
         this.tokenManager = tokenManager;
-        this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
 
         URL url;

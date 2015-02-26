@@ -7,7 +7,8 @@ import java.util.Queue;
 import java.util.Stack;
 
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.type.TypeReference;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
