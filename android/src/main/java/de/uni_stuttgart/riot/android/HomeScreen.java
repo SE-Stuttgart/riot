@@ -12,17 +12,14 @@ import de.uni_stuttgart.riot.android.language.Language;
 
 public class HomeScreen extends Activity {
 
-    private DatabaseAccess dbAccess;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Database stuff
-        this.deleteDatabase("Database");
+        // this.deleteDatabase("Database");
 
-        dbAccess = new DatabaseAccess();
-        dbAccess.setDatabase(new RIOTDatabase(this));
+        DatabaseAccess.setDatabase(new RIOTDatabase(this));
 
         Language.setLanguage(this);
 

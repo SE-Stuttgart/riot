@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android;
 
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 
 public class HomeScreenButton {
 
@@ -22,6 +23,14 @@ public class HomeScreenButton {
         buttonY = y;
         buttonImage = image;
         buttonPaint = new Paint();
+
+        DatabaseAccess.getDatabase().updateHomeScreenButtonCoordinates(this);
+    }
+
+    public HomeScreenButton(int id, int x, int y) {
+        this.id = id;
+        this.buttonX = x;
+        this.buttonY = y;
     }
 
     public int getId() {

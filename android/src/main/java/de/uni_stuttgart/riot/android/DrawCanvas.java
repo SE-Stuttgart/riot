@@ -8,13 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.database.DatabaseAccess;
+import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 //http://www.milestone-blog.de/android-development/einfaches-zeichnen-canvas/
 
@@ -25,7 +25,7 @@ public class DrawCanvas extends View implements OnTouchListener {
     private Bitmap backgroundBitmap;
     private Canvas canvas;
     private boolean isInitialized;
-    private Paint paint = new Paint();
+    // private Paint paint = new Paint();
 
     private HomeScreenButton carButton;
     private HomeScreenButton houseButton;
@@ -36,34 +36,56 @@ public class DrawCanvas extends View implements OnTouchListener {
     private List<HomeScreenButton> listButton = new ArrayList<HomeScreenButton>();
 
     private HomeScreenButton selectedButton;
+    private RIOTDatabase database;
 
     public DrawCanvas(HomeScreen context) {
         super(context);
 
         homeScreen = context;
+        database = DatabaseAccess.getDatabase();
 
-        setFocusable(true);
-        setFocusableInTouchMode(true);
+        // setFocusable(true);
+        // setFocusableInTouchMode(true);
         this.setOnTouchListener(this);
 
-        paint.setColor(Color.RED);
-        paint.setAntiAlias(true);
-        paint.setStyle(Style.FILL_AND_STROKE);
+        // paint.setColor(Color.RED);
+        // paint.setAntiAlias(true);
+        // paint.setStyle(Style.FILL_AND_STROKE);
 
-        carButton = new HomeScreenButton(0, "Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
-        listButton.add(carButton);
+        List<HomeScreenButton> buttonList = database.getHomeScreenButtonCoordinates();
+        System.out.println(buttonList.size());
+        // TODO: Hässlichen Code hier einfacher aufbaun
+        if (buttonList.size() == 0) {
+            carButton = new HomeScreenButton(0, "Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
+            listButton.add(carButton);
 
-        houseButton = new HomeScreenButton(1, "House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
-        listButton.add(houseButton);
+            houseButton = new HomeScreenButton(1, "House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
+            listButton.add(houseButton);
 
-        coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
-        listButton.add(coffeeMachineButton);
+            coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
+            listButton.add(coffeeMachineButton);
 
-        calendarButton = new HomeScreenButton(3, "Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
-        listButton.add(calendarButton);
+            calendarButton = new HomeScreenButton(3, "Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
+            listButton.add(calendarButton);
 
-        settingsButton = new HomeScreenButton(4, "Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
-        listButton.add(settingsButton);
+            settingsButton = new HomeScreenButton(4, "Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
+            listButton.add(settingsButton);
+        } else {
+            carButton = new HomeScreenButton(0, "Car", buttonList.get(0).getButtonX(), buttonList.get(0).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
+            listButton.add(carButton);
+
+            houseButton = new HomeScreenButton(1, "House", buttonList.get(1).getButtonX(), buttonList.get(1).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
+            listButton.add(houseButton);
+
+            coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", buttonList.get(2).getButtonX(), buttonList.get(2).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
+            listButton.add(coffeeMachineButton);
+
+            calendarButton = new HomeScreenButton(3, "Calendar", buttonList.get(3).getButtonX(), buttonList.get(3).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
+            listButton.add(calendarButton);
+
+            settingsButton = new HomeScreenButton(4, "Settings", buttonList.get(4).getButtonX(), buttonList.get(4).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
+            listButton.add(settingsButton);
+        }
     }
 
     private void initalizeCanvas() {
@@ -81,7 +103,7 @@ public class DrawCanvas extends View implements OnTouchListener {
         if (!isInitialized)
             initalizeCanvas();
 
-        canvas.drawBitmap(backgroundBitmap, 0, 0, paint);
+        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
         canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
         canvas.drawBitmap(carButton.getImage(), carButton.getButtonX(), carButton.getButtonY(), carButton.getButtonPaint());
@@ -118,6 +140,9 @@ public class DrawCanvas extends View implements OnTouchListener {
         if (event.getAction() == MotionEvent.ACTION_UP) {
 
             if (selectedButton != null) {
+                // save Coordinates of the pressed button into the database
+                database.updateHomeScreenButtonCoordinates(selectedButton);
+
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 
                 if (selectedButton.getButtonDescription().equals("Calendar")) { // Special intent for the calendar
@@ -125,7 +150,9 @@ public class DrawCanvas extends View implements OnTouchListener {
                     calendarIntent.setData(Uri.parse("content://com.android.calendar/time"));
                     homeScreen.startActivity(calendarIntent);
                 } else if (selectedButton.getButtonDescription().equals("Settings")) { // Special intent for the settings screen
-                    // TODO: OPEN SETTINGS SCREEN
+                    Intent settingsIntent = new Intent(homeScreen, SettingScreen.class);
+                    settingsIntent.putExtra("pressedButton", homeScreen.getString(R.string.settings));
+                    homeScreen.startActivity(settingsIntent);
                 } else {
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(newNotificationScreen);

@@ -174,9 +174,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     *
+     * To show the user, which filter is already checked or not, we have to get the checked status of each filter from the database.
+     * 
      * @param type
-     * @return
+     *            The type of the Filter we want to know the checked status
+     * @return true = filter is checked, false = filter is unchecked
      */
     public boolean getFilterSettings(NotificationType type) {
 
@@ -229,8 +231,10 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     *
+     * The different Notifications have to be save into the database to apply the filter settings on them.
+     * 
      * @param notificationList
+     *            A list of Notifications that is stored in the database.
      */
 
     public void updateNotificationEntries(List<Notification> notificationList) {
@@ -270,8 +274,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     }
 
     /**
+     * This methods stores the coordinates of each home screen button into the database. If the user restarts the app, the buttons are
+     * replaced on their old positions.
      * 
      * @param button
+     *            The pressed button on the home screen that opened its notification screen
      */
     public void updateHomeScreenButtonCoordinates(HomeScreenButton button) {
 
@@ -283,8 +290,46 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         values.put(COORDINATES_COLUMN_XPOSITION, button.getButtonX());
         values.put(COORDINATES_COLUMN_YPOSITION, button.getButtonY());
 
-        // cursor.close();
+        cursor = db.rawQuery("SELECT * FROM " + TABLE_COORDINATES + " WHERE " + COORDINATES_COLUMN_ID + " = ?", new String[] { String.valueOf(button.getId()) });
+
+        if (cursor.moveToFirst()) {
+            System.out.println("Button Eintrag update");
+            db.update(TABLE_COORDINATES, // table
+                    values, // column/value
+                    COORDINATES_COLUMN_ID + " = ?", // selections
+                    new String[] { String.valueOf(button.getId()) });
+        } else {
+            System.out.println("Button Eintrag neu anlegen");
+            db.insert(TABLE_COORDINATES, null, values);
+        }
+
+        cursor.close();
         db.close();
+    }
+
+    public List<HomeScreenButton> getHomeScreenButtonCoordinates() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String getButtonsQuery = "SELECT * FROM " + TABLE_COORDINATES;
+
+        Cursor cursor = db.rawQuery(getButtonsQuery, null);
+        List<HomeScreenButton> buttonList = new ArrayList<HomeScreenButton>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_ID));
+                int xPosition = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_XPOSITION));
+                int yPosition = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_YPOSITION));
+
+                HomeScreenButton button = new HomeScreenButton(id, xPosition, yPosition);
+                buttonList.add(button);
+
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+        }
+
+        return buttonList;
     }
 
     /**
