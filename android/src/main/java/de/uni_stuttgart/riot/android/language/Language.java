@@ -2,13 +2,17 @@ package de.uni_stuttgart.riot.android.language;
 
 import java.util.Locale;
 
+import android.content.Context;
 import android.content.res.Configuration;
-import de.uni_stuttgart.riot.android.HomeScreen;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 /**
  * Supports the different languages.
+ * 
+ * <br/>
+ * en = English <br/>
+ * de = German
  *
  */
 public class Language {
@@ -17,13 +21,17 @@ public class Language {
     private static Locale locale;
     private static Configuration config;
 
+    private Language() {
+        // For checkstyle.
+    }
+
     /**
-     * Sets the language.
+     * Sets the chosen language.
      * 
      * @param context
-     *            Need the application context.
+     *            Needs the application/activity context.
      */
-    public static void setLanguage(HomeScreen homeScreen) {
+    public static void setLanguage(Context context) {
         db = DatabaseAccess.getDatabase();
 
         // If the count is 0 the default language is set to English
@@ -38,7 +46,7 @@ public class Language {
 
         config = new Configuration();
         config.locale = locale;
-        homeScreen.getResources().updateConfiguration(config, homeScreen.getResources().getDisplayMetrics());
+        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
     }
 
 }
