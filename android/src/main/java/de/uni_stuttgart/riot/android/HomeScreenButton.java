@@ -5,6 +5,8 @@ import android.graphics.Paint;
 
 public class HomeScreenButton {
 
+    private int id;
+
     private int buttonX;
     private int buttonY;
 
@@ -13,12 +15,21 @@ public class HomeScreenButton {
     private Bitmap buttonImage;
     private Paint buttonPaint;
 
-    public HomeScreenButton(String desc, int x, int y, Bitmap image) {
+    public HomeScreenButton(int id, String desc, int x, int y, Bitmap image) {
+        this.id = id;
         buttonDescription = desc;
         buttonX = x;
         buttonY = y;
         buttonImage = image;
         buttonPaint = new Paint();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void startIntent() {

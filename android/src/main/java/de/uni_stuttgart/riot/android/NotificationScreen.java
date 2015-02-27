@@ -15,8 +15,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.ServerConnection;
+import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
-import de.uni_stuttgart.riot.android.language.Language;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.notification.NotificationType;
 
@@ -27,8 +27,10 @@ import de.uni_stuttgart.riot.android.notification.NotificationType;
 public class NotificationScreen extends Activity {
 
     private ListView notificationList;
-    private RIOTDatabase database;
+
     private String pressedHomeScreenButton;
+
+    private RIOTDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +40,15 @@ public class NotificationScreen extends Activity {
         // get the value of the pressed button
         pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
-        database = new RIOTDatabase(this, pressedHomeScreenButton);
-
-        // Initialize the API client. Initialization is not allowed in the main thread.
-        // final NotificationScreen inst = this;
-        // new Thread() {
-        // @Override
-        // public void run() {
-        // RIOTApiClient.getInstance().init(inst, "androidApp"); // TODO device name
-        // }
-        // }.start();
+        database = DatabaseAccess.getDatabase();
+        database.setInvokedNotificationScreen(pressedHomeScreenButton);
+        database.setNotificationScreen(this);
 
         // Save the application context in the singleton objects
         IM.INSTANCES.setContext(getApplicationContext());
 
         // Sets the language
-        Language.setLanguage(this);
+        // Language.setLanguage(this);
 
         setContentView(R.layout.notification_screen);
 
@@ -123,7 +118,7 @@ public class NotificationScreen extends Activity {
         menu.findItem(R.id.filter_appointment).setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
 
         menu.findItem(R.id.action_refresh).setVisible(true);
-        database.filterNotifications();
+        DatabaseAccess.getDatabase().filterNotifications();
 
         return super.onPrepareOptionsMenu(menu);
     }

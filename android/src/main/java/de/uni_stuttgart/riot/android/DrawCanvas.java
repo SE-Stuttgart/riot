@@ -50,6 +50,20 @@ public class DrawCanvas extends View implements OnTouchListener {
         paint.setAntiAlias(true);
         paint.setStyle(Style.FILL_AND_STROKE);
 
+        carButton = new HomeScreenButton(0, "Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
+        listButton.add(carButton);
+
+        houseButton = new HomeScreenButton(1, "House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
+        listButton.add(houseButton);
+
+        coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
+        listButton.add(coffeeMachineButton);
+
+        calendarButton = new HomeScreenButton(3, "Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
+        listButton.add(calendarButton);
+
+        settingsButton = new HomeScreenButton(4, "Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
+        listButton.add(settingsButton);
     }
 
     private void initalizeCanvas() {
@@ -58,26 +72,6 @@ public class DrawCanvas extends View implements OnTouchListener {
         canvas = new Canvas();
         canvas.setBitmap(backgroundBitmap);
         canvas.drawColor(Color.WHITE);
-
-        carButton = new HomeScreenButton("Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
-        listButton.add(carButton);
-
-        houseButton = new HomeScreenButton("House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
-        listButton.add(houseButton);
-
-        coffeeMachineButton = new HomeScreenButton("CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
-        listButton.add(coffeeMachineButton);
-
-        calendarButton = new HomeScreenButton("Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
-        listButton.add(calendarButton);
-
-        settingsButton = new HomeScreenButton("Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
-        listButton.add(settingsButton);
-
-        canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
-        canvas.drawBitmap(coffeeMachineButton.getImage(), coffeeMachineButton.getButtonX(), coffeeMachineButton.getButtonY(), coffeeMachineButton.getButtonPaint());
-        canvas.drawBitmap(calendarButton.getImage(), calendarButton.getButtonX(), calendarButton.getButtonY(), calendarButton.getButtonPaint());
-        canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
 
         isInitialized = true;
     }
@@ -88,12 +82,17 @@ public class DrawCanvas extends View implements OnTouchListener {
             initalizeCanvas();
 
         canvas.drawBitmap(backgroundBitmap, 0, 0, paint);
+
+        canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
         canvas.drawBitmap(carButton.getImage(), carButton.getButtonX(), carButton.getButtonY(), carButton.getButtonPaint());
-        int xOffset = (int) (13.33f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
-        int yOffset = (int) (14.67f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
-        int xVal = carButton.getButtonX() + 10; // Point curScreenCoords
-        int yVal = carButton.getButtonY() + carButton.getButtonY() + 5; // Point curScreenCoords
-        canvas.drawText(carButton.getButtonDescription(), xVal + xOffset, yVal + yOffset, paint);
+        canvas.drawBitmap(coffeeMachineButton.getImage(), coffeeMachineButton.getButtonX(), coffeeMachineButton.getButtonY(), coffeeMachineButton.getButtonPaint());
+        canvas.drawBitmap(calendarButton.getImage(), calendarButton.getButtonX(), calendarButton.getButtonY(), calendarButton.getButtonPaint());
+        canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
+        // int xOffset = (int) (13.33f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
+        // int yOffset = (int) (14.67f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
+        // int xVal = carButton.getButtonX() + 10; // Point curScreenCoords
+        // int yVal = carButton.getButtonY() + carButton.getButtonY() + 5; // Point curScreenCoords
+        // canvas.drawText(carButton.getButtonDescription(), xVal + xOffset, yVal + yOffset, paint);
     }
 
     @Override
@@ -104,7 +103,6 @@ public class DrawCanvas extends View implements OnTouchListener {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
                     selectedButton.getButtonPaint().setAlpha(50);
-                    invalidate();
                 }
             }
 
@@ -112,27 +110,28 @@ public class DrawCanvas extends View implements OnTouchListener {
 
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (selectedButton != null) {
-                canvas.drawBitmap(houseButton.getImage(), event.getX(), event.getY(), houseButton.getButtonPaint());
-                invalidate();
+                selectedButton.setButtonX((int) event.getX());
+                selectedButton.setButtonY((int) event.getY());
             }
         }
 
-        if (event.getAction() == MotionEvent.ACTION_UP && event.getAction() != MotionEvent.ACTION_MOVE) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
 
             if (selectedButton != null) {
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
-                if (selectedButton.getButtonDescription().equals("Calendar")) {
+
+                if (selectedButton.getButtonDescription().equals("Calendar")) { // Special intent for the calendar
                     Intent calendarIntent = new Intent(Intent.ACTION_VIEW);
                     calendarIntent.setData(Uri.parse("content://com.android.calendar/time"));
                     homeScreen.startActivity(calendarIntent);
-                } else if (selectedButton.getButtonDescription().equals("Settings")) {
-                    // TODO: ADD SETTINGS STUFF
+                } else if (selectedButton.getButtonDescription().equals("Settings")) { // Special intent for the settings screen
+                    // TODO: OPEN SETTINGS SCREEN
                 } else {
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(newNotificationScreen);
                 }
+
                 selectedButton.getButtonPaint().setAlpha(255);
-                invalidate();
             }
         }
 

@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
-import de.uni_stuttgart.riot.android.language.Language;
 
 /**
  * Setting screen.
@@ -37,7 +37,7 @@ public class SettingScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = new RIOTDatabase(this);
+        db = DatabaseAccess.getDatabase();
         intent = getIntent();
 
         if (db.getLanguageCount() > 0) {
@@ -51,7 +51,7 @@ public class SettingScreen extends Activity {
             selectedLanguage = 0;
         }
 
-        Language.setLanguage(this);
+        // Language.setLanguage(this);
 
         setContentView(R.layout.setting_screen);
 

@@ -7,21 +7,22 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.FilterItem;
+import de.uni_stuttgart.riot.android.HomeScreen;
+import de.uni_stuttgart.riot.android.HomeScreenButton;
 import de.uni_stuttgart.riot.android.NotificationScreen;
 import de.uni_stuttgart.riot.android.location.MyLocation;
 import de.uni_stuttgart.riot.android.notification.Notification;
 import de.uni_stuttgart.riot.android.notification.NotificationAdapter;
 import de.uni_stuttgart.riot.android.notification.NotificationType;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class RIOTDatabase extends SQLiteOpenHelper {
+
     private static final int DATABASE_VERION = 1;
     private static final String DATABASE_NAME = "Database";
 
@@ -47,25 +48,20 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     private static final String LOCATION_COLUMN_LONGITUDE = "longitude";
     private static final String LOCATION_COLUMN_LATITUDE = "latitude";
 
-    private String valueFromIntent;
+    private static final String TABLE_COORDINATES = "coordinates";
+    private static final String COORDINATES_COLUMN_ID = "id";
+    private static final String COORDINATES_COLUMN_XPOSITION = "x";
+    private static final String COORDINATES_COLUMN_YPOSITION = "y";
+
+    private String invokedNotificationScreen;
     private NotificationScreen notificationScreen;
 
-    public RIOTDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERION);
-    }
-
-    public RIOTDatabase(NotificationScreen notificationScreen, String valueFromIntent) {
-        super(notificationScreen, DATABASE_NAME, null, DATABASE_VERION);
-
-        // Sets the application context
-        this.notificationScreen = notificationScreen;
-
-        // Sets the value from intent
-        this.valueFromIntent = valueFromIntent;
+    public RIOTDatabase(HomeScreen homeScreen) {
+        super(homeScreen, DATABASE_NAME, null, DATABASE_VERION);
     }
 
     /**
-     * Creating the tables.
+     * Creating the different tables.
      */
     public void onCreate(SQLiteDatabase db) {
         String CREATE_FILTER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" + FILTER_COLUMN_ID + " INTEGER PRIMARY KEY," + FILTER_COLUMN_TYPE + " TEXT," + FILTER_COLUMN_CHECKED + " INTEGER)";
@@ -76,32 +72,39 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LOCATION + "(" + LOCATION_COLUMN_ID + " TEXT PRIMARY KEY," + LOCATION_COLUMN_DESC + " TEXT," + LOCATION_COLUMN_LATITUDE + " TEXT," + LOCATION_COLUMN_LONGITUDE + " TEXT )";
 
+        String CREATE_COORDINATES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COORDINATES + "(" + COORDINATES_COLUMN_ID + " INTEGER PRIMARY KEY," + COORDINATES_COLUMN_XPOSITION + " INTEGER," + COORDINATES_COLUMN_YPOSITION + " INTEGER)";
+
         db.execSQL(CREATE_FILTER_TABLE);
         db.execSQL(CREATE_NOTIFICATION_TABLE);
         db.execSQL(CREATE_LANGUAGE_TABLE);
         db.execSQL(CREATE_LOCATION_TABLE);
+        db.execSQL(CREATE_COORDINATES_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         // Drop older version of the table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FILTER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LANGUAGE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COORDINATES);
 
         // Create table again
         onCreate(db);
     }
 
     /**
-     *
-     * @param id
-     * @param type
-     * @param isChecked
-     * @return
+     * The different filters for the notifications are stored in the database and can be updated or created in this method.
+     * 
+     * @param filter
+     *            Each filter object has three fields: id (the ID of the filter), type (name of the filter), isChecked (is the filter
+     *            checked or unchecked).
+     * 
+     * @return void
      */
-    public void updateFilterSetting(FilterItem filter) {
+    public void updateFilters(FilterItem filter) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -129,6 +132,9 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * The checked filters in the UI of the NotificationScreen are used to create a list of Notifications.
+     */
     public void filterNotifications() {
         SQLiteDatabase db = this.getWritableDatabase();
         String filteredNotifications = "SELECT * FROM " + TABLE_NOTIFICATION + " INNER JOIN " + TABLE_FILTER + " ON " + TABLE_NOTIFICATION + "." + NOTIFICATION_COLUMN_TYPE + " == " + TABLE_FILTER + "." + FILTER_COLUMN_TYPE + " AND " + TABLE_FILTER + "." + FILTER_COLUMN_CHECKED + "== 1";
@@ -150,7 +156,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
                 String thing = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_THING));
 
-                if (valueFromIntent.equals(thing)) {
+                if (invokedNotificationScreen.equals(thing)) {
                     // TODO: richtiges Datum verwenden
                     Notification notificiation = new Notification(id, title, content, NotificationType.valueOf(type), new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), thing);
                     notificationList.add(notificiation);
@@ -213,12 +219,12 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         if (filter.getItem().isChecked() == false) {
             filter.getItem().setChecked(true);
 
-            updateFilterSetting(filter);
+            updateFilters(filter);
 
         } else {
             filter.getItem().setChecked(false);
 
-            updateFilterSetting(filter);
+            updateFilters(filter);
         }
     }
 
@@ -260,6 +266,24 @@ public class RIOTDatabase extends SQLiteOpenHelper {
             cursor.close();
         }
 
+        db.close();
+    }
+
+    /**
+     * 
+     * @param button
+     */
+    public void updateHomeScreenButtonCoordinates(HomeScreenButton button) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor;
+
+        ContentValues values = new ContentValues();
+        values.put(COORDINATES_COLUMN_ID, button.getId());
+        values.put(COORDINATES_COLUMN_XPOSITION, button.getButtonX());
+        values.put(COORDINATES_COLUMN_YPOSITION, button.getButtonY());
+
+        // cursor.close();
         db.close();
     }
 
@@ -381,5 +405,13 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         // return count
         return i;
+    }
+
+    public void setInvokedNotificationScreen(String invokedNotificationScreen) {
+        this.invokedNotificationScreen = invokedNotificationScreen;
+    }
+
+    public void setNotificationScreen(NotificationScreen notificationScreen) {
+        this.notificationScreen = notificationScreen;
     }
 }
