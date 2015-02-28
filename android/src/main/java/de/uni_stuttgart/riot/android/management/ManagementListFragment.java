@@ -22,6 +22,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  */
 public abstract class ManagementListFragment extends ManagementFragment {
 
+    private static final int DUMMY_IMG_NR = 42;
+    
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_management_list;
@@ -198,7 +200,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(42); // FIXME setting the right image 
+            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(DUMMY_IMG_NR); // FIXME setting the right image 
         }
     }
 

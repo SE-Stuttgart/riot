@@ -20,6 +20,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  */
 public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
+    private static final int DUMMY_IMG_NR = 42;
+
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_user_edit;
@@ -86,7 +88,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.userOnlineState)).setImageResource(42); // FIXME Setting the right image
+            ((ImageView) view.findViewById(R.id.userOnlineState)).setImageResource(DUMMY_IMG_NR); // FIXME Setting the right image
             view.findViewById(R.id.userOnlineState).setEnabled(this.enableElements);
         }
 
