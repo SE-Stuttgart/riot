@@ -27,7 +27,7 @@ public class ThingTest extends ShiroEnabledTest {
         return new ThingClient(loginClient);
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void scenario() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClientF = this.getLoggedInThingClient();
         ThingClient thingClient = this.getLoggedInThingClient();

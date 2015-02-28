@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.commons.action.Action;
 import de.uni_stuttgart.riot.thing.commons.event.Event;
@@ -14,6 +18,7 @@ import de.uni_stuttgart.riot.thing.commons.event.Event;
  *
  */
 @SuppressWarnings("rawtypes")
+@JsonTypeInfo(use = Id.CLASS, include = As.PROPERTY, property = "class")
 public abstract class Thing extends Storable {
 
     /** The properties of this Thing. */

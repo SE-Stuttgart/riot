@@ -36,7 +36,7 @@ public class ThingClientTest extends ShiroEnabledTest {
         return new ThingClient(loginClient);
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void addThingTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         RemoteThing thing = new RemoteThing("Coffee Machine", 1);
@@ -51,7 +51,7 @@ public class ThingClientTest extends ShiroEnabledTest {
         assertEquals(1, newThing.getProperties().size());
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void lastOnlineTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         assertEquals(new Timestamp(0), thingClient.getLastOnline(5));
@@ -60,21 +60,21 @@ public class ThingClientTest extends ShiroEnabledTest {
         assertEquals(true, tm.before(thingClient.getLastOnline(1)));
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void getThingTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         RemoteThing thing = thingClient.getThing(1);
         assertEquals("Android", thing.getName());
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void getThingsTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         Collection<RemoteThing> things = thingClient.getThings();
         assertEquals(3, things.size());
     }
 
-    // @Test TODO Temporarily disabled
+    @Test
     public void removeThingTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         thingClient.deregisterThing(2);
@@ -83,7 +83,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     }
 
     @SuppressWarnings("unchecked")
-    // @Test TODO Temporarily disabled
+    @Test
     public void registerTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
 
@@ -129,7 +129,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     }
 
     @SuppressWarnings("unchecked")
-    // @Test TODO Temporarily disabled
+    @Test
     public void getActionsTest() throws ClientProtocolException, RequestException, IOException {
         ThingClient thingClient = this.getLoggedInThingClient();
         int thingId1 = 1;

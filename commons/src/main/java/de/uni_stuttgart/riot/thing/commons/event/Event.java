@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 /**
  * Representation of an Event that could be fired from a thing.
@@ -12,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @param <T>
  */
 @JsonIgnoreProperties({ "eventListeners" })
+@JsonTypeInfo(use = Id.CLASS, include = As.PROPERTY, property = "class")
 public abstract class Event<T extends EventInstance> {
 
     private Collection<EventListener<T>> eventListeners;
