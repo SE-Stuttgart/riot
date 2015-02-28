@@ -5,11 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.jws.soap.SOAPBinding.Use;
-import javax.ws.rs.core.Application;
-
 import org.apache.http.client.ClientProtocolException;
-import org.eclipse.persistence.jpa.jpql.Assert.AssertException;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
@@ -22,20 +18,9 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class UsermanagementClientTest extends ShiroEnabledTest {
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected Application configure() {
-        return new RiotApplication(true);
-    }
 
     @Test
     public void getUserTest() throws ClientProtocolException, RequestException, IOException {

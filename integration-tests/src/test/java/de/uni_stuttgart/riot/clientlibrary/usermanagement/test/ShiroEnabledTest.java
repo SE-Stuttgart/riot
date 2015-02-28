@@ -24,13 +24,10 @@ public abstract class ShiroEnabledTest extends JerseyDBTestBase {
 
     private static ThreadState subjectThreadState;
 
-    public ShiroEnabledTest() {
-    }
-
     @Override
     protected Application configure() {
         // We use the full RiotApplication including the security providers.
-        return new RiotApplication(true);
+        return new RiotApplication();
     }
 
     @BeforeClass

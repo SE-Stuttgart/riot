@@ -5,7 +5,6 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
@@ -25,7 +24,7 @@ public class RiotApplication extends ResourceConfig {
     /**
      * List of packages that contain REST services.
      */
-    public static final String[] REST_SERVICES = { "de.uni_stuttgart.riot.rest", //
+    protected static final String[] REST_SERVICES = { "de.uni_stuttgart.riot.rest", //
             "de.uni_stuttgart.riot.server.commons.rest", //
             "de.uni_stuttgart.riot.calendar", //
             "de.uni_stuttgart.riot.contacts", //
@@ -35,38 +34,55 @@ public class RiotApplication extends ResourceConfig {
     /**
      * List of packages that contain REST security providers.
      */
-    public static final String[] REST_SECUTRITY_PROVIDERS = { "de.uni_stuttgart.riot.usermanagement.security" };
+    protected static final String[] REST_SECUTRITY_PROVIDERS = { "de.uni_stuttgart.riot.usermanagement.security" };
 
     /**
      * List of packages that contain other REST providers.
      */
-    public static final String[] REST_PROVIDERS = { "de.uni_stuttgart.riot.server.commons.rest.provider" };
+    protected static final String[] REST_PROVIDERS = { "de.uni_stuttgart.riot.server.commons.rest.provider" };
 
     /**
      * Configures the application.
      */
     public RiotApplication() {
-        this(true);
+        registerProviders();
+        registerServices();
+        registerJacksonProvider();
     }
 
     /**
-     * Configures the application.
-     * 
-     * @param jsonTyping
-     *            if json serialization should add type information
+     * Registers Jersey providers.
      */
-    public RiotApplication(boolean jsonTyping) {
+    protected void registerProviders() {
         packages(REST_PROVIDERS);
         packages(REST_SECUTRITY_PROVIDERS);
-        packages(REST_SERVICES);
+    }
 
-        if (jsonTyping) {
-            JacksonJaxbJsonProvider p = new JacksonJaxbJsonProvider();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
-            p.setMapper(mapper);
-            register(p);
-        }
+    /**
+     * Registers all services.
+     */
+    protected void registerServices() {
+        packages(REST_SERVICES);
+    }
+
+    /**
+     * Registers the JSON provider.
+     */
+    protected void registerJacksonProvider() {
+        register(produceJacksonProvider());
+    }
+
+    /**
+     * Produces a JSON provider with the correct configuration. This method is public for the use by other application parts that need the
+     * same provider.
+     * 
+     * @return The Jackson provider.
+     */
+    public static JacksonJaxbJsonProvider produceJacksonProvider() {
+        JacksonJaxbJsonProvider p = new JacksonJaxbJsonProvider();
+        ObjectMapper mapper = new ObjectMapper();
+        p.setMapper(mapper);
+        return p;
     }
 
 }

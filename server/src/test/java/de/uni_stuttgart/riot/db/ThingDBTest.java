@@ -14,7 +14,6 @@ import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
 import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
 import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
 import de.uni_stuttgart.riot.thing.remote.EventDBObject;
@@ -22,11 +21,6 @@ import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
 public class ThingDBTest extends JerseyDBTestBase {
-
-    @Override
-    protected RiotApplication configure() {
-        return new RiotApplication(false);
-    }
 
     private RemoteThing getTestRemoteThing() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
         RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
