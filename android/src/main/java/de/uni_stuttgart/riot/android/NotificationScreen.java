@@ -82,6 +82,9 @@ public class NotificationScreen extends Activity {
         }
     }
 
+    /**
+     * 
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -90,6 +93,10 @@ public class NotificationScreen extends Activity {
         IM.INSTANCES.getNF().clearPreparedNotifications();
     }
 
+    /**
+     * 
+     * @return
+     */
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

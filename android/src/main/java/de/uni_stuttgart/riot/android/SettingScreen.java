@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -59,6 +60,7 @@ public class SettingScreen extends Activity {
         actionBar = getActionBar();
         actionBar.setTitle(getString(R.string.settings));
         actionBar.setIcon(R.drawable.settings);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Button opens the language dialog
         btnLanguage = (Button) findViewById(R.id.btnLanguage);
@@ -116,6 +118,21 @@ public class SettingScreen extends Activity {
     private void restartActivity() {
         finish();
         startActivity(intent);
+    }
+
+    /**
+     * Function to go back to the HomeScreen.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            onBackPressed();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
 }
