@@ -45,9 +45,9 @@ public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> 
 
                 Notification n1 = new Notification(1, "FIRE!!!", "Call 112", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "House");
                 notificationList.add(n1);
-                Notification n2 = new Notification(2, "Refill water", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "CoffeeMachine");
+                Notification n2 = new Notification(2, "Refill water", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "Coffee");
                 notificationList.add(n2);
-                Notification n3 = new Notification(3, "Refill beans", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "CoffeeMachine");
+                Notification n3 = new Notification(3, "Refill beans", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "Coffee");
                 notificationList.add(n3);
                 Notification n4 = new Notification(4, "Buy some food", "Bananas, Beer, Butter", NotificationType.WARNING, new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), "House");
                 notificationList.add(n4);

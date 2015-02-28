@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.support.v4.view.GestureDetectorCompat;
@@ -24,9 +25,6 @@ public class DrawCanvas extends View {
 
     private HomeScreen homeScreen;
 
-    private Bitmap backgroundBitmap;
-    private Canvas canvas;
-    private boolean isInitialized;
     private Paint paint = new Paint();
 
     private List<HomeScreenButton> buttonList = new ArrayList<HomeScreenButton>();
@@ -37,6 +35,9 @@ public class DrawCanvas extends View {
     private GestureDetectorCompat gestureDetector;
 
     private boolean buttonLongPressed;
+
+    private int rotationDegree = 5; // good value for emulator = 3;
+    private int refreshRate = 110;
 
     public DrawCanvas(HomeScreen context) {
         super(context);
@@ -55,7 +56,7 @@ public class DrawCanvas extends View {
 
             buttonList.add(new HomeScreenButton(this, 1, "House", 300, 100, R.drawable.house));
 
-            buttonList.add(new HomeScreenButton(this, 2, "CoffeeMachine", 100, 300, R.drawable.coffee));
+            buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
 
             buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
 
@@ -68,28 +69,42 @@ public class DrawCanvas extends View {
 
     }
 
-    private void initalizeCanvas() {
-        backgroundBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.RGB_565);
+    /**
+     * Rotate a given bitmap with a defined degree value.
+     * 
+     * @param bitmap
+     *            The bitmap that will be rotated
+     * @return The new rotated bitmap
+     */
+    private Bitmap rotateBitmap(Bitmap bitmap) {
+        Matrix matrix = new Matrix();
 
-        canvas = new Canvas();
-        canvas.setBitmap(backgroundBitmap);
-        canvas.drawColor(Color.WHITE);
-
-        isInitialized = true;
+        matrix.setRotate(rotationDegree, (float) bitmap.getWidth() / 2, (float) bitmap.getHeight() / 2);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (!isInitialized)
-            initalizeCanvas();
 
-        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        canvas.drawColor(Color.WHITE); // background color
 
-        for (HomeScreenButton button : buttonList) {
-            canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
-            // canvas.drawText(carButton.getButtonDescription(), (carButton.getButtonX() + carButton.getButtonImage().getWidth() / 2 - 20),
-            // (carButton.getButtonY() + carButton.getButtonImage().getHeight() + 30), paint);
+        if (!buttonLongPressed) {
+            for (HomeScreenButton button : buttonList) {
+                canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
+                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 35), paint);
+            }
+        } else { // Shaking animation
+            for (HomeScreenButton button : buttonList) {
+                if (button == selectedButton) { // no shaking for the selected button that is dragged
+                    canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
+                } else { // shake all other buttons
+                    canvas.drawBitmap(rotateBitmap(button.getButtonImage()), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
+                }
 
+                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 35), paint);
+            }
+            rotationDegree = -rotationDegree; // switch the rotation
+            postInvalidateDelayed(refreshRate); // control the refresh rate
         }
 
     }
@@ -114,7 +129,6 @@ public class DrawCanvas extends View {
                 if (selectedButton != null) {
                     selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
                     selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
-                    invalidate();
                 }
             }
             return true;
@@ -122,6 +136,7 @@ public class DrawCanvas extends View {
             if (selectedButton != null && buttonLongPressed) {
                 database.updateHomeScreenButtonCoordinates(selectedButton); // save Coordinates of the pressed button into the database
                 selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton = null;
                 invalidate();
             } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
@@ -159,6 +174,7 @@ public class DrawCanvas extends View {
             System.out.println("longPress");
             if (selectedButton != null) {
                 buttonLongPressed = true;
+                invalidate();
             }
         }
 
