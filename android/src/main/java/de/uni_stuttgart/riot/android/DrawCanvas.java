@@ -5,49 +5,39 @@ import java.util.List;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
-/**
- * 
- * Draws the HomeScreen of the application.
- *
- */
-public class DrawCanvas extends View implements OnTouchListener {
+//http://www.milestone-blog.de/android-development/einfaches-zeichnen-canvas/
 
-    private static final int ALPHA_DOWN = 50;
-    private static final int ALPHA_UP = 255;
-    private static final double NANO_TO_S = 1000000000.0;
-    private static final double LIMIT_TO_MOVE = 1.5; //
-
-    private double elapseTime = 0.0;
-    private long startTime = 0;
+public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapListener {
 
     private HomeScreen homeScreen;
 
     private Bitmap backgroundBitmap;
     private Canvas canvas;
     private boolean isInitialized;
-    // private Paint paint = new Paint();
+    private Paint paint = new Paint();
 
-    private HomeScreenButton carButton;
-    private HomeScreenButton houseButton;
-    private HomeScreenButton coffeeMachineButton;
-    private HomeScreenButton calendarButton;
-    private HomeScreenButton settingsButton;
-
-    private List<HomeScreenButton> listButton = new ArrayList<HomeScreenButton>();
+    private List<HomeScreenButton> buttonList = new ArrayList<HomeScreenButton>();
 
     private HomeScreenButton selectedButton;
     private RIOTDatabase database;
+
+    private GestureDetectorCompat gestureDetector;
+
+    private boolean buttonLongPressed;
 
     public DrawCanvas(HomeScreen context) {
         super(context);
@@ -55,48 +45,28 @@ public class DrawCanvas extends View implements OnTouchListener {
         homeScreen = context;
         database = DatabaseAccess.getDatabase();
 
-        // setFocusable(true);
-        // setFocusableInTouchMode(true);
-        this.setOnTouchListener(this);
+        gestureDetector = new GestureDetectorCompat(homeScreen, this);
 
-        // paint.setColor(Color.RED);
-        // paint.setAntiAlias(true);
-        // paint.setStyle(Style.FILL_AND_STROKE);
+        paint.setAntiAlias(true);
+        paint.setTextSize(30);
 
-        List<HomeScreenButton> buttonList = database.getHomeScreenButtonCoordinates();
-
-        // TODO: Hässlichen Code hier einfacher aufbaun
+        buttonList = database.getHomeScreenButtonCoordinates(this);
         if (buttonList.size() == 0) {
-            carButton = new HomeScreenButton(0, "Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
-            listButton.add(carButton);
+            buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 100, R.drawable.car));
 
-            houseButton = new HomeScreenButton(1, "House", 300, 100, BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
-            listButton.add(houseButton);
+            buttonList.add(new HomeScreenButton(this, 1, "House", 300, 100, R.drawable.house));
 
-            coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", 100, 300, BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
-            listButton.add(coffeeMachineButton);
+            buttonList.add(new HomeScreenButton(this, 2, "CoffeeMachine", 100, 300, R.drawable.coffee));
 
-            calendarButton = new HomeScreenButton(3, "Calendar", 300, 300, BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
-            listButton.add(calendarButton);
+            buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
 
-            settingsButton = new HomeScreenButton(4, "Settings", 300, 600, BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
-            listButton.add(settingsButton);
-        } else {
-            carButton = new HomeScreenButton(0, "Car", buttonList.get(0).getButtonX(), buttonList.get(0).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
-            listButton.add(carButton);
+            buttonList.add(new HomeScreenButton(this, 4, "Settings", 300, 600, R.drawable.settings));
 
-            houseButton = new HomeScreenButton(1, "House", buttonList.get(1).getButtonX(), buttonList.get(1).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.house, new BitmapFactory.Options()));
-            listButton.add(houseButton);
-
-            coffeeMachineButton = new HomeScreenButton(2, "CoffeeMachine", buttonList.get(2).getButtonX(), buttonList.get(2).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.coffee, new BitmapFactory.Options()));
-            listButton.add(coffeeMachineButton);
-
-            calendarButton = new HomeScreenButton(3, "Calendar", buttonList.get(3).getButtonX(), buttonList.get(3).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.calendar, new BitmapFactory.Options()));
-            listButton.add(calendarButton);
-
-            settingsButton = new HomeScreenButton(4, "Settings", buttonList.get(4).getButtonX(), buttonList.get(4).getButtonY(), BitmapFactory.decodeResource(getResources(), R.drawable.settings, new BitmapFactory.Options()));
-            listButton.add(settingsButton);
+            for (HomeScreenButton button : buttonList) {
+                database.updateHomeScreenButtonCoordinates(button);
+            }
         }
+
     }
 
     private void initalizeCanvas() {
@@ -111,43 +81,62 @@ public class DrawCanvas extends View implements OnTouchListener {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (!isInitialized) {
+        if (!isInitialized)
             initalizeCanvas();
-        }
 
         canvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
-        canvas.drawBitmap(houseButton.getImage(), houseButton.getButtonX(), houseButton.getButtonY(), houseButton.getButtonPaint());
-        canvas.drawBitmap(carButton.getImage(), carButton.getButtonX(), carButton.getButtonY(), carButton.getButtonPaint());
-        canvas.drawBitmap(coffeeMachineButton.getImage(), coffeeMachineButton.getButtonX(), coffeeMachineButton.getButtonY(), coffeeMachineButton.getButtonPaint());
-        canvas.drawBitmap(calendarButton.getImage(), calendarButton.getButtonX(), calendarButton.getButtonY(), calendarButton.getButtonPaint());
-        canvas.drawBitmap(settingsButton.getImage(), settingsButton.getButtonX(), settingsButton.getButtonY(), settingsButton.getButtonPaint());
-        // int xOffset = (int) (13.33f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
-        // int yOffset = (int) (14.67f * homeScreen.getResources().getDisplayMetrics().density + 0.5f);
-        // int xVal = carButton.getButtonX() + 10; // Point curScreenCoords
-        // int yVal = carButton.getButtonY() + carButton.getButtonY() + 5; // Point curScreenCoords
-        // canvas.drawText(carButton.getButtonDescription(), xVal + xOffset, yVal + yOffset, paint);
+        for (HomeScreenButton button : buttonList) {
+            canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
+        }
+
+        // canvas.drawText(carButton.getButtonDescription(), (carButton.getButtonX() + carButton.getButtonImage().getWidth() / 2 - 20),
+        // (carButton.getButtonY() + carButton.getButtonImage().getHeight() + 30), paint);
+    }
+
+    /**
+     * 
+     * @param fingerX
+     * @param fingerY
+     * @param button
+     * @return
+     */
+    private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
+        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
+        // button.getButtonY());
+        return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
+        this.gestureDetector.onTouchEvent(event);
+        int action = MotionEventCompat.getActionMasked(event);
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            startTime = System.nanoTime();
-            for (HomeScreenButton button : listButton) {
+        switch (action) {
+        case (MotionEvent.ACTION_DOWN):
+            for (HomeScreenButton button : buttonList) {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
-                    selectedButton.getButtonPaint().setAlpha(ALPHA_DOWN);
+                    selectedButton.getButtonPaint().setAlpha(50);
                 }
             }
+            return true;
+        case (MotionEvent.ACTION_MOVE):
 
-        }
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-
-            if (selectedButton != null) {
-                // save Coordinates of the pressed button into the database
-                database.updateHomeScreenButtonCoordinates(selectedButton);
+            if (buttonLongPressed) {
+                if (selectedButton != null) {
+                    selectedButton.setButtonX((int) event.getX());
+                    selectedButton.setButtonY((int) event.getY());
+                    invalidate();
+                }
+            }
+            return true;
+        case (MotionEvent.ACTION_UP):
+            if (selectedButton != null && buttonLongPressed) {
+                database.updateHomeScreenButtonCoordinates(selectedButton); // save Coordinates of the pressed button into the database
+                selectedButton.getButtonPaint().setAlpha(255);
+                invalidate();
+            } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
 
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 
@@ -164,38 +153,65 @@ public class DrawCanvas extends View implements OnTouchListener {
                     homeScreen.startActivity(newNotificationScreen);
                 }
 
-                selectedButton.getButtonPaint().setAlpha(ALPHA_UP);
+                selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton = null;
             }
-
+            return true;
+        default:
+            return super.onTouchEvent(event);
         }
-
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            elapseTime = (double) ((System.nanoTime() - startTime) / NANO_TO_S);
-            if (selectedButton != null && elapseTime > LIMIT_TO_MOVE) {
-                selectedButton.setButtonX((int) event.getX());
-                selectedButton.setButtonY((int) event.getY());
-            }
-        }
-
-        invalidate();
-        return true;
     }
 
-    /**
-     * 
-     * Proof if a button was tipped or not.
-     * 
-     * @param fingerX
-     *            Represents the x coordinate of the user input.
-     * @param fingerY
-     *            Represents the y coordinate of the user input.
-     * @param button
-     *            Button object.
-     * @return if there is a button (true) or not (false)
-     */
-    private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
-        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
-        // button.getButtonY());
-        return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
+    @Override
+    public boolean onDown(MotionEvent event) {
+        return false;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent event) {
+        if (selectedButton != null) {
+            buttonLongPressed = true;
+        }
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent event) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        buttonLongPressed = false;
+        return false;
     }
 }

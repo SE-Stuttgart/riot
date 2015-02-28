@@ -118,7 +118,7 @@ public class NotificationScreen extends Activity {
         menu.findItem(R.id.filter_appointment).setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
 
         menu.findItem(R.id.action_refresh).setVisible(true);
-        DatabaseAccess.getDatabase().filterNotifications();
+        database.filterNotifications();
 
         return super.onPrepareOptionsMenu(menu);
     }

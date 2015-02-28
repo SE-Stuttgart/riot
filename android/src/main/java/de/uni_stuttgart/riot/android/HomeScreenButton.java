@@ -1,8 +1,8 @@
 package de.uni_stuttgart.riot.android;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
-import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 
 public class HomeScreenButton {
 
@@ -14,23 +14,19 @@ public class HomeScreenButton {
     private String buttonDescription;
 
     private Bitmap buttonImage;
+    private int imageID;
+
     private Paint buttonPaint;
 
-    public HomeScreenButton(int id, String desc, int x, int y, Bitmap image) {
+    public HomeScreenButton(DrawCanvas canvas, int id, String buttonDescription, int buttonX, int buttonY, int imageID) {
         this.id = id;
-        buttonDescription = desc;
-        buttonX = x;
-        buttonY = y;
-        buttonImage = image;
+        this.buttonDescription = buttonDescription;
+        this.buttonX = buttonX;
+        this.buttonY = buttonY;
+        this.imageID = imageID;
+
+        buttonImage = BitmapFactory.decodeResource(canvas.getResources(), this.imageID, new BitmapFactory.Options());
         buttonPaint = new Paint();
-
-        DatabaseAccess.getDatabase().updateHomeScreenButtonCoordinates(this);
-    }
-
-    public HomeScreenButton(int id, int x, int y) {
-        this.id = id;
-        this.buttonX = x;
-        this.buttonY = y;
     }
 
     public int getId() {
@@ -87,6 +83,14 @@ public class HomeScreenButton {
 
     public void setButtonImage(Bitmap buttonImage) {
         this.buttonImage = buttonImage;
+    }
+
+    public int getImageID() {
+        return imageID;
+    }
+
+    public void setImageID(int imageID) {
+        this.imageID = imageID;
     }
 
 }

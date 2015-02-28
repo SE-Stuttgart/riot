@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.DrawCanvas;
 import de.uni_stuttgart.riot.android.FilterItem;
 import de.uni_stuttgart.riot.android.HomeScreen;
 import de.uni_stuttgart.riot.android.HomeScreenButton;
@@ -50,8 +51,10 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
     private static final String TABLE_COORDINATES = "coordinates";
     private static final String COORDINATES_COLUMN_ID = "id";
+    private static final String COORDINATES_BUTTON_DESCRIPTION = "description";
     private static final String COORDINATES_COLUMN_XPOSITION = "x";
     private static final String COORDINATES_COLUMN_YPOSITION = "y";
+    private static final String COORDINATES_IMAGEID = "imageid";
 
     private String invokedNotificationScreen;
     private NotificationScreen notificationScreen;
@@ -72,7 +75,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         String CREATE_LOCATION_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LOCATION + "(" + LOCATION_COLUMN_ID + " TEXT PRIMARY KEY," + LOCATION_COLUMN_DESC + " TEXT," + LOCATION_COLUMN_LATITUDE + " TEXT," + LOCATION_COLUMN_LONGITUDE + " TEXT )";
 
-        String CREATE_COORDINATES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COORDINATES + "(" + COORDINATES_COLUMN_ID + " INTEGER PRIMARY KEY," + COORDINATES_COLUMN_XPOSITION + " INTEGER," + COORDINATES_COLUMN_YPOSITION + " INTEGER)";
+        String CREATE_COORDINATES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_COORDINATES + "(" + COORDINATES_COLUMN_ID + " INTEGER PRIMARY KEY," + COORDINATES_BUTTON_DESCRIPTION + " TEXT," + COORDINATES_COLUMN_XPOSITION + " INTEGER," + COORDINATES_COLUMN_YPOSITION + " INTEGER," + COORDINATES_IMAGEID + " INTEGER )";
 
         db.execSQL(CREATE_FILTER_TABLE);
         db.execSQL(CREATE_NOTIFICATION_TABLE);
@@ -287,8 +290,10 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(COORDINATES_COLUMN_ID, button.getId());
+        values.put(COORDINATES_BUTTON_DESCRIPTION, button.getButtonDescription());
         values.put(COORDINATES_COLUMN_XPOSITION, button.getButtonX());
         values.put(COORDINATES_COLUMN_YPOSITION, button.getButtonY());
+        values.put(COORDINATES_IMAGEID, button.getImageID());
 
         cursor = db.rawQuery("SELECT * FROM " + TABLE_COORDINATES + " WHERE " + COORDINATES_COLUMN_ID + " = ?", new String[] { String.valueOf(button.getId()) });
 
@@ -307,7 +312,12 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<HomeScreenButton> getHomeScreenButtonCoordinates() {
+    /**
+     * This method gets all HomeScreen buttons stored in the database
+     * 
+     * @return A list of all buttons on the HomeScreen
+     */
+    public List<HomeScreenButton> getHomeScreenButtonCoordinates(DrawCanvas canvas) {
         SQLiteDatabase db = this.getWritableDatabase();
         String getButtonsQuery = "SELECT * FROM " + TABLE_COORDINATES;
 
@@ -317,18 +327,20 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_ID));
+                String description = cursor.getString(cursor.getColumnIndex(COORDINATES_BUTTON_DESCRIPTION));
                 int xPosition = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_XPOSITION));
                 int yPosition = cursor.getInt(cursor.getColumnIndex(COORDINATES_COLUMN_YPOSITION));
+                int imageID = cursor.getInt(cursor.getColumnIndex(COORDINATES_IMAGEID));
 
-                HomeScreenButton button = new HomeScreenButton(id, xPosition, yPosition);
+                HomeScreenButton button = new HomeScreenButton(canvas, id, description, xPosition, yPosition, imageID);
                 buttonList.add(button);
 
             } while (cursor.moveToNext());
 
             cursor.close();
-            db.close();
         }
 
+        db.close();
         return buttonList;
     }
 
@@ -459,4 +471,5 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     public void setNotificationScreen(NotificationScreen notificationScreen) {
         this.notificationScreen = notificationScreen;
     }
+
 }
