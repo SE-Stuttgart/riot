@@ -117,7 +117,7 @@ public class AndroidUser {
      * @param context the android context
      *
      */
-    boolean CreateAndroidAccount(String username, Context context) {
+    public boolean CreateAndroidAccount(String username, Context context) {
         Account account = new Account(username, context.getString(R.string.ACCOUNT_TYPE));
         boolean accountCreated = accountManager.addAccountExplicitly(account, "", new Bundle());
         if(accountCreated) {

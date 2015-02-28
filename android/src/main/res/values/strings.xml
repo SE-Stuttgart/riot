@@ -19,8 +19,7 @@
     <string name="changeColor">Change color</string>
 
     <!-- Account (all entries for account please insert here) -->
-    <string name="add_account">Add Account</string>
-    <string name="add_event">Add Event</string>
+    <string name="acc_login">Login</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
     <string name="user_role">User-Role:</string>

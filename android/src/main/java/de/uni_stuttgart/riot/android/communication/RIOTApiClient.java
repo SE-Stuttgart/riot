@@ -11,13 +11,14 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementC
 
 /**
  * Client for communicating with the RIOT API. It is not allowed to use this client in the main thread.
- * 
+ *
  * @author Niklas Schnabel
  */
 public class RIOTApiClient {
 
     /** The Constant API_URL. */
-    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot";
+    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot/api/v1/"; // TODO url, 10.0.2.2 is localhost for the
+                                                                                              // android emulator
 
     /** The instance. */
     private static RIOTApiClient instance;
