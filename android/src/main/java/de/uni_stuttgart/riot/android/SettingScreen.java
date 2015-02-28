@@ -25,7 +25,6 @@ public class SettingScreen extends Activity {
     private Button btnLanguage;
     private Button btnColorCalendar;
 
-    private String pressedHomeScreenButton;
     private Intent intent;
     private ActionBar actionBar;
 
@@ -56,15 +55,12 @@ public class SettingScreen extends Activity {
 
         setContentView(R.layout.setting_screen);
 
-        // Get the value of the pressed button
-        pressedHomeScreenButton = intent.getStringExtra("pressedButton");
-
         // Sets the title and icon of the action bar
         actionBar = getActionBar();
-        actionBar.setTitle(pressedHomeScreenButton);
+        actionBar.setTitle(getString(R.string.settings));
         actionBar.setIcon(R.drawable.settings);
 
-        //
+        // Button opens the language dialog
         btnLanguage = (Button) findViewById(R.id.btnLanguage);
         btnLanguage.setOnClickListener(new OnClickListener() {
             @Override

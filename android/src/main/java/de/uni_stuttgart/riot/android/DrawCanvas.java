@@ -16,9 +16,20 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
-//http://www.milestone-blog.de/android-development/einfaches-zeichnen-canvas/
-
+/**
+ * 
+ * Draws the HomeScreen of the application.
+ *
+ */
 public class DrawCanvas extends View implements OnTouchListener {
+
+    private static final int ALPHA_DOWN = 50;
+    private static final int ALPHA_UP = 255;
+    private static final double NANO_TO_S = 1000000000.0;
+    private static final double LIMIT_TO_MOVE = 1.5; //
+
+    private double elapseTime = 0.0;
+    private long startTime = 0;
 
     private HomeScreen homeScreen;
 
@@ -53,7 +64,7 @@ public class DrawCanvas extends View implements OnTouchListener {
         // paint.setStyle(Style.FILL_AND_STROKE);
 
         List<HomeScreenButton> buttonList = database.getHomeScreenButtonCoordinates();
-        System.out.println(buttonList.size());
+
         // TODO: Hässlichen Code hier einfacher aufbaun
         if (buttonList.size() == 0) {
             carButton = new HomeScreenButton(0, "Car", 100, 100, BitmapFactory.decodeResource(getResources(), R.drawable.car, new BitmapFactory.Options()));
@@ -100,8 +111,9 @@ public class DrawCanvas extends View implements OnTouchListener {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (!isInitialized)
+        if (!isInitialized) {
             initalizeCanvas();
+        }
 
         canvas.drawBitmap(backgroundBitmap, 0, 0, null);
 
@@ -121,20 +133,14 @@ public class DrawCanvas extends View implements OnTouchListener {
     public boolean onTouch(View view, MotionEvent event) {
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            startTime = System.nanoTime();
             for (HomeScreenButton button : listButton) {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
-                    selectedButton.getButtonPaint().setAlpha(50);
+                    selectedButton.getButtonPaint().setAlpha(ALPHA_DOWN);
                 }
             }
 
-        }
-
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (selectedButton != null) {
-                selectedButton.setButtonX((int) event.getX());
-                selectedButton.setButtonY((int) event.getY());
-            }
         }
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -158,7 +164,16 @@ public class DrawCanvas extends View implements OnTouchListener {
                     homeScreen.startActivity(newNotificationScreen);
                 }
 
-                selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton.getButtonPaint().setAlpha(ALPHA_UP);
+            }
+
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            elapseTime = (double) ((System.nanoTime() - startTime) / NANO_TO_S);
+            if (selectedButton != null && elapseTime > LIMIT_TO_MOVE) {
+                selectedButton.setButtonX((int) event.getX());
+                selectedButton.setButtonY((int) event.getY());
             }
         }
 
@@ -168,10 +183,15 @@ public class DrawCanvas extends View implements OnTouchListener {
 
     /**
      * 
+     * Proof if a button was tipped or not.
+     * 
      * @param fingerX
+     *            Represents the x coordinate of the user input.
      * @param fingerY
+     *            Represents the y coordinate of the user input.
      * @param button
-     * @return
+     *            Button object.
+     * @return if there is a button (true) or not (false)
      */
     private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
         // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
