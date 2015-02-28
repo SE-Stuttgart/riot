@@ -4,6 +4,7 @@ import org.apache.shiro.SecurityUtils;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.rest.data.contact.Contact;
 import de.uni_stuttgart.riot.commons.test.BaseResourceTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.commons.RemoteThing;
@@ -55,6 +56,11 @@ import de.uni_stuttgart.riot.usermanagement.security.AccessToken;
 //        } catch (LoginException e) {
 //            throw new RuntimeException(e);
 //        }
+    }
+
+    @Override
+    public RemoteThing getTestObject() {
+        return new RemoteThing("name", 1);
     }
 
 }

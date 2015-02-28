@@ -10,8 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -177,6 +175,7 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
     }
 
     public abstract T getNewObject();
+    public abstract T getTestObject();
 
     public abstract Class<T> getObjectClass();
 
@@ -214,8 +213,8 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
      */
     @Test
     public void testUpdateOne() {
-        Entity<T> testEntity = Entity.entity(this.getNewObject(), MediaType.APPLICATION_JSON_TYPE);
-        T testValue = this.getNewObject();
+        Entity<T> testEntity = Entity.entity(this.getTestObject(), MediaType.APPLICATION_JSON_TYPE);
+        T testValue = this.getTestObject();
         testValue.setId(Long.valueOf(this.getTestDataSize()));
 
         // updates the last element
@@ -230,5 +229,4 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         resp = target(this.getSubPath() + "/" + (this.getTestDataSize() + 1)).request(MediaType.APPLICATION_JSON).put(testEntity);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
     }
-
 }

@@ -10,6 +10,8 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.RoleService;
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class RoleRestTest extends BaseResourceTest<RoleService, Role> {
 
+    private int count = 0;
+    
     @Override
     public String getSubPath() {
         return "roles";
@@ -27,12 +29,18 @@ public class RoleRestTest extends BaseResourceTest<RoleService, Role> {
 
     @Override
     public Role getNewObject() {
-        return new Role("Test");
+        count = count + 1;
+        return new Role("Test" + count);
     }
 
     @Override
     public Class<Role> getObjectClass() {
         return Role.class;
+    }
+
+    @Override
+    public Role getTestObject() {
+        return new Role("Test");
     }
 
 }
