@@ -36,7 +36,7 @@ public abstract class ShiroEnabledBaseResourceTest<E extends BaseResource<T>, T 
     @Override
     protected Application configure() {
         // We use the full RiotApplication including the security providers.
-        return new RiotApplication(true);
+        return new RiotApplication();
     }
     
     @BeforeClass
