@@ -11,8 +11,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.view.GestureDetector.OnDoubleTapListener;
-import android.view.GestureDetector.OnGestureListener;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import de.enpro.android.riot.R;
@@ -21,7 +20,7 @@ import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
 //http://www.milestone-blog.de/android-development/einfaches-zeichnen-canvas/
 
-public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapListener {
+public class DrawCanvas extends View {
 
     private HomeScreen homeScreen;
 
@@ -45,7 +44,7 @@ public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapLi
         homeScreen = context;
         database = DatabaseAccess.getDatabase();
 
-        gestureDetector = new GestureDetectorCompat(homeScreen, this);
+        gestureDetector = new GestureDetectorCompat(homeScreen, new GestureListener());
 
         paint.setAntiAlias(true);
         paint.setTextSize(30);
@@ -88,28 +87,17 @@ public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapLi
 
         for (HomeScreenButton button : buttonList) {
             canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
+            // canvas.drawText(carButton.getButtonDescription(), (carButton.getButtonX() + carButton.getButtonImage().getWidth() / 2 - 20),
+            // (carButton.getButtonY() + carButton.getButtonImage().getHeight() + 30), paint);
+
         }
 
-        // canvas.drawText(carButton.getButtonDescription(), (carButton.getButtonX() + carButton.getButtonImage().getWidth() / 2 - 20),
-        // (carButton.getButtonY() + carButton.getButtonImage().getHeight() + 30), paint);
-    }
-
-    /**
-     * 
-     * @param fingerX
-     * @param fingerY
-     * @param button
-     * @return
-     */
-    private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
-        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
-        // button.getButtonY());
-        return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.gestureDetector.onTouchEvent(event);
+
         int action = MotionEventCompat.getActionMasked(event);
 
         switch (action) {
@@ -122,11 +110,10 @@ public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapLi
             }
             return true;
         case (MotionEvent.ACTION_MOVE):
-
             if (buttonLongPressed) {
                 if (selectedButton != null) {
-                    selectedButton.setButtonX((int) event.getX());
-                    selectedButton.setButtonY((int) event.getY());
+                    selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
+                    selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
                     invalidate();
                 }
             }
@@ -137,7 +124,6 @@ public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapLi
                 selectedButton.getButtonPaint().setAlpha(255);
                 invalidate();
             } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
-
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 
                 if (selectedButton.getButtonDescription().equals("Calendar")) { // Special intent for the calendar
@@ -157,61 +143,47 @@ public class DrawCanvas extends View implements OnGestureListener, OnDoubleTapLi
                 selectedButton = null;
             }
             return true;
-        default:
-            return super.onTouchEvent(event);
         }
+
+        return super.onTouchEvent(event);
     }
 
-    @Override
-    public boolean onDown(MotionEvent event) {
-        return false;
-    }
+    /**
+     * This class is necessary to implement only a couple of GestureListener and not all of them.
+     * 
+     */
+    class GestureListener extends SimpleOnGestureListener {
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent event) {
-        if (selectedButton != null) {
-            buttonLongPressed = true;
+        @Override
+        public void onLongPress(MotionEvent event) {
+            System.out.println("longPress");
+            if (selectedButton != null) {
+                buttonLongPressed = true;
+            }
         }
-    }
 
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-        // TODO Auto-generated method stub
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            buttonLongPressed = false;
+            return false;
+        }
 
     }
 
-    @Override
-    public boolean onSingleTapUp(MotionEvent event) {
-
-        return false;
+    /**
+     * This method detects if a finger pressed a button or not.
+     * 
+     * @param fingerX
+     *            The X-Position of the finger on the screen
+     * @param fingerY
+     *            The Y-Position of the finger on the screen
+     * @param button
+     *            The button that is checked against the finger position *
+     */
+    private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
+        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
+        // button.getButtonY());
+        return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
     }
 
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        buttonLongPressed = false;
-        return false;
-    }
 }
