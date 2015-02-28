@@ -1,10 +1,10 @@
 <div class="row" ng-controller="UsersDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>General</strong></h3>
+    <h3><strong>{{ 'user.general' | i18n }}</strong></h3>
     <form name="formUserDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formUserDetail.$valid && save()">
       <!-- userid -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="userid">User ID</label>
+        <label class="control-label col-md-2" for="userid">{{ 'user.userId' | i18n }}</label>
         <div class="col-md-8">
           <input id="userid" name="userid" type="text" placeholder="" class="form-control" ng-model="userDetail.id" disabled>
         </div>
@@ -12,7 +12,7 @@
 
       <!-- username -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="username">Username</label>
+        <label class="control-label col-md-2" for="username">{{ 'user.username' | i18n }}</label>
         <div class="col-md-8">
           <input id="username" name="username" type="text" placeholder="" class="form-control" ng-model="userDetail.username" disabled>
         </div>
@@ -20,7 +20,7 @@
 
       <!-- password1 -->
       <div class="form-group margin-top-30" ng-model="userDetail.password1" ng-class="{'has-error': formUserDetail.password1.$error.validator}">
-        <label class="control-label col-md-2" for="password1">Password</label>
+        <label class="control-label col-md-2" for="password1">{{ 'user.password' | i18n }}</label>
         <div class="col-md-8">
           <input id="password1" name="password1" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password2'" ui-validate="'$value==userDetail.password2'" ng-model="userDetail.password1">
         </div>
@@ -28,7 +28,7 @@
 
       <!-- password2 -->
       <div class="form-group" ng-class="{'has-error': formUserDetail.password2.$error.validator}">
-        <label class="control-label col-md-2" for="password2">Repeat Password</label>
+        <label class="control-label col-md-2" for="password2">{{ 'user.repeatPassword' | i18n }}</label>
         <div class="col-md-8">
           <input id="password2" name="password2" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password1'" ui-validate="'$value==userDetail.password1'" ng-model="userDetail.password2">
         </div>
@@ -36,7 +36,7 @@
 
       <!-- firstname -->
       <div class="form-group margin-top-30">
-        <label class="control-label col-md-2" for="email">E-Mail</label>
+        <label class="control-label col-md-2" for="email">{{ 'user.email' | i18n }}</label>
         <div class="col-md-8">
           <input id="email" name="email" type="email" placeholder="" class="form-control" ng-model="userDetail.email">
         </div>
@@ -44,7 +44,7 @@
 
       <!-- firstname -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="firstname">First Name</label>
+        <label class="control-label col-md-2" for="firstname">{{ 'user.firstname' | i18n }}</label>
         <div class="col-md-8">
           <input id="firstname" name="firstname" type="text" placeholder="" class="form-control" ng-model="userDetail.firstname">
         </div>
@@ -52,7 +52,7 @@
 
       <!-- lastname -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="lastname">Last Name</label>
+        <label class="control-label col-md-2" for="lastname">{{ 'user.lastname' | i18n }}</label>
         <div class="col-md-8">
           <input id="lastname" name="lastname" type="text" placeholder="" class="form-control" ng-model="userDetail.lastname">
         </div>
@@ -69,7 +69,7 @@
 
     <div class="form-horizontal">
       <!-- Roles -->
-      <h3><strong>Roles</strong></h3>
+      <h3><strong>{{ 'user.roles' | i18n }}</strong></h3>
       <div class="form-group">
         <div class="col-md-2"></div>
         <div class="col-md-8">

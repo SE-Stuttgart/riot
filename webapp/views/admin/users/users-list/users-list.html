@@ -1,7 +1,7 @@
 <div class="row" ng-controller="UsersListCtrl">
 
   <div class="col-md-12">
-    <h3><strong>Users</strong></h3>
+    <h3><strong>{{ 'user.users' | i18n }}</strong></h3>
   </div>
 
   <!-- table -->
@@ -39,11 +39,11 @@
         <table class="table table-striped table-bordered table-hover">
           <thead>
             <tr role="row">
-              <th style="width: 50px;">ID</th>
-              <th style="width: 150px;">Username</th>
-              <th style="width: 200px;">E-Mail</th>
-              <th style="width: 225px;">Firstname</th>
-              <th style="width: 225px;">Lastname</th>
+              <th style="width: 50px;">{{ 'user.userId' | i18n }}</th>
+              <th style="width: 150px;">{{ 'user.username' | i18n }}</th>
+              <th style="width: 200px;">{{ 'user.email' | i18n }}</th>
+              <th style="width: 225px;">{{ 'user.firstname' | i18n }}</th>
+              <th style="width: 225px;">{{ 'user.lastname' | i18n }}</th>
             </tr>
           </thead>
           <tbody>
