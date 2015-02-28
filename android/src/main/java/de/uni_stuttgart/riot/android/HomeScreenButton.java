@@ -18,6 +18,8 @@ public class HomeScreenButton {
 
     private Paint buttonPaint;
 
+    private float scaleFactor = 1.7f;
+
     public HomeScreenButton(DrawCanvas canvas, int id, String buttonDescription, int buttonX, int buttonY, int imageID) {
         this.id = id;
         this.buttonDescription = buttonDescription;
@@ -26,6 +28,8 @@ public class HomeScreenButton {
         this.imageID = imageID;
 
         buttonImage = BitmapFactory.decodeResource(canvas.getResources(), this.imageID, new BitmapFactory.Options());
+        buttonImage = Bitmap.createScaledBitmap(buttonImage, (int) (buttonImage.getWidth() * scaleFactor), (int) (buttonImage.getHeight() * scaleFactor), true);
+
         buttonPaint = new Paint();
     }
 

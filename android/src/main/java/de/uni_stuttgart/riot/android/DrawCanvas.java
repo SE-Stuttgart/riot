@@ -19,8 +19,6 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 
-//http://www.milestone-blog.de/android-development/einfaches-zeichnen-canvas/
-
 public class DrawCanvas extends View {
 
     private HomeScreen homeScreen;
@@ -36,8 +34,8 @@ public class DrawCanvas extends View {
 
     private boolean buttonLongPressed;
 
-    private int rotationDegree = 5; // good value for emulator = 3;
-    private int refreshRate = 110;
+    private int rotationDegree = 2; // good value for emulator = 3;
+    private int refreshRate = 20;
 
     public DrawCanvas(HomeScreen context) {
         super(context);
@@ -137,7 +135,6 @@ public class DrawCanvas extends View {
                 database.updateHomeScreenButtonCoordinates(selectedButton); // save Coordinates of the pressed button into the database
                 selectedButton.getButtonPaint().setAlpha(255);
                 selectedButton = null;
-                invalidate();
             } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 

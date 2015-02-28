@@ -298,13 +298,13 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         cursor = db.rawQuery("SELECT * FROM " + TABLE_COORDINATES + " WHERE " + COORDINATES_COLUMN_ID + " = ?", new String[] { String.valueOf(button.getId()) });
 
         if (cursor.moveToFirst()) {
-            System.out.println("Button Eintrag update");
+            // System.out.println("Button Eintrag update");
             db.update(TABLE_COORDINATES, // table
                     values, // column/value
                     COORDINATES_COLUMN_ID + " = ?", // selections
                     new String[] { String.valueOf(button.getId()) });
         } else {
-            System.out.println("Button Eintrag neu anlegen");
+            // System.out.println("Button Eintrag neu anlegen");
             db.insert(TABLE_COORDINATES, null, values);
         }
 

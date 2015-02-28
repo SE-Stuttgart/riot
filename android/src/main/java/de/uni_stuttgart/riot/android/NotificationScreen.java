@@ -59,7 +59,7 @@ public class NotificationScreen extends Activity {
             getActionBar().setIcon(R.drawable.car);
         } else if (pressedHomeScreenButton.equals("House")) {
             getActionBar().setIcon(R.drawable.house);
-        } else if (pressedHomeScreenButton.equals("CoffeeMachine")) {
+        } else if (pressedHomeScreenButton.equals("Coffee")) {
             getActionBar().setIcon(R.drawable.coffee);
         }
 
