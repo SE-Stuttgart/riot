@@ -129,6 +129,9 @@ public class DrawCanvas extends View {
                     selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
                 }
             }
+            if (!isCoordsOnButton(event.getX(), event.getY(), selectedButton)) {
+                selectedButton.getButtonPaint().setAlpha(255);
+            }
             return true;
         case (MotionEvent.ACTION_UP):
             if (selectedButton != null && buttonLongPressed) {
