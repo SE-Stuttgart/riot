@@ -222,7 +222,6 @@ public class UserLogicTest extends LogicTestBase {
     @Test
     public void testGetUserStringValid() throws Exception {
         UMUser user1 = new UMUser(1L, "Yoda", "yoda@force.org",  "yPYMjqXzWOPKaAKNJXfEw7Gu3EnckZmoWUuEhOqz/7IqGd4Ub+3/X3uANlO0mkIOqIMhxhUi/ieU1KZt2BK+eg==", "108bgacl42gihhrdlfcm8e6ls6gm2q45q00boauiv5kkduf1ainv", 200000);
-        System.out.println(user1);
         UMUser user2 = ul.getUser("Yoda");
         assertEquals(user1, user2);
     }
