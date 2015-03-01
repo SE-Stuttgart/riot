@@ -62,6 +62,7 @@ public class JerseyDBTestBase extends JerseyTest {
          * Default constructor.
          */
         public InsecureRiotApplication() {
+            packages(RiotApplication.REST_PROVIDERS);
             packages(RiotApplication.REST_SERVICES);
         }
     }

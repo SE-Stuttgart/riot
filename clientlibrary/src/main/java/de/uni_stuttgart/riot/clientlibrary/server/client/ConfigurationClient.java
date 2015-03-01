@@ -8,7 +8,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
-import org.codehaus.jackson.type.TypeReference;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -419,7 +420,9 @@ public class ConfigurationClient {
     private int returnStatusCode(HttpResponse response) throws RequestException {
         if (response != null) {
             try {
-                response.getEntity().consumeContent();
+                if (response.getEntity() != null) {
+                    response.getEntity().consumeContent();
+                }
             } catch (IOException e) {
                 throw new RequestException(e);
             }

@@ -64,7 +64,10 @@ public enum ConfigurationKey {
     test_float(Float.class),
 
     /** Double key. Used only for testing. */
-    test_double(Double.class);
+    test_double(Double.class),
+
+    /** Double key that does not exist. Used only for testing. */
+    test_nonexistingDouble(Double.class);
 
     /** The value type. */
     private final Class<?> valueType;

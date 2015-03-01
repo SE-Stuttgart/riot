@@ -3,14 +3,10 @@ package de.uni_stuttgart.riot.clientlibrary.thing.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.net.URI;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.Stack;
-
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.UriBuilder;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
@@ -20,7 +16,6 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenMan
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.commons.Property;
 import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
@@ -35,17 +30,7 @@ import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingClientTest extends ShiroEnabledTest {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected Application configure() {
-        return new RiotApplication(true);
-    }
-
-    public ThingClient getLogedInThingClient() throws ClientProtocolException, RequestException, IOException {
+    public ThingClient getLoggedInThingClient() throws ClientProtocolException, RequestException, IOException {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
         loginClient.login("Yoda", "YodaPW");
         return new ThingClient(loginClient);
@@ -53,7 +38,7 @@ public class ThingClientTest extends ShiroEnabledTest {
 
     @Test
     public void addThingTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         RemoteThing thing = new RemoteThing("Coffee Machine", 1);
         thing.addProperty(new Property<Boolean>("State", false));
         thing.addAction(new PropertySetAction<Boolean>("State"));
@@ -68,7 +53,7 @@ public class ThingClientTest extends ShiroEnabledTest {
 
     @Test
     public void lastOnlineTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         assertEquals(new Timestamp(0), thingClient.getLastOnline(5));
         thingClient.getActionInstances(1);
         Timestamp tm = new Timestamp(System.currentTimeMillis() - 1000);
@@ -77,21 +62,21 @@ public class ThingClientTest extends ShiroEnabledTest {
 
     @Test
     public void getThingTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         RemoteThing thing = thingClient.getThing(1);
         assertEquals("Android", thing.getName());
     }
 
     @Test
     public void getThingsTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         Collection<RemoteThing> things = thingClient.getThings();
         assertEquals(3, things.size());
     }
 
     @Test
     public void removeThingTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         thingClient.deregisterThing(2);
         Collection<RemoteThing> things = thingClient.getThings();
         assertEquals(2, things.size());
@@ -100,7 +85,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     @SuppressWarnings("unchecked")
     @Test
     public void registerTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
 
         PropertyChangeEvent<String> p1Event = new PropertyChangeEvent<String>("P1-Name");
         PropertyChangeEvent<String> p2Event = new PropertyChangeEvent<String>("P2-Name");
@@ -146,7 +131,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     @SuppressWarnings("unchecked")
     @Test
     public void getActionsTest() throws ClientProtocolException, RequestException, IOException {
-        ThingClient thingClient = this.getLogedInThingClient();
+        ThingClient thingClient = this.getLoggedInThingClient();
         int thingId1 = 1;
         int thingId2 = 2;
         // submitting actions

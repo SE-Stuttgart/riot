@@ -100,7 +100,11 @@ public class SqlRunner implements Closeable {
      *             When running the script fails.
      */
     public void runScript(final String resourceName) throws SQLException {
-        runScript(new InputStreamReader(SqlRunner.class.getResourceAsStream(resourceName)));
+        InputStream stream = SqlRunner.class.getResourceAsStream(resourceName);
+        if (stream == null) {
+            throw new RuntimeException("Resource not found: " + resourceName);
+        }
+        runScript(new InputStreamReader(stream));
     }
 
     /**

@@ -33,9 +33,14 @@ public class RiotApplication extends ResourceConfig {
             "de.uni_stuttgart.riot.usermanagement.service.rest" };
 
     /**
+     * List of packages that contain REST security providers.
+     */
+    public static final String[] REST_SECUTRITY_PROVIDERS = { "de.uni_stuttgart.riot.usermanagement.security" };
+
+    /**
      * List of packages that contain other REST providers.
      */
-    public static final String[] REST_PROVIDERS = { "de.uni_stuttgart.riot.usermanagement.security" };
+    public static final String[] REST_PROVIDERS = { "de.uni_stuttgart.riot.server.commons.rest.provider" };
 
     /**
      * Configures the application.
@@ -52,6 +57,7 @@ public class RiotApplication extends ResourceConfig {
      */
     public RiotApplication(boolean jsonTyping) {
         packages(REST_PROVIDERS);
+        packages(REST_SECUTRITY_PROVIDERS);
         packages(REST_SERVICES);
 
         if (jsonTyping) {
@@ -59,7 +65,7 @@ public class RiotApplication extends ResourceConfig {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
             p.setMapper(mapper);
-            this.register(p);
+            register(p);
         }
     }
 

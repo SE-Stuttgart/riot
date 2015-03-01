@@ -15,11 +15,12 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectMapper.DefaultTyping;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.InternalRequest;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -81,7 +82,7 @@ public class LoginClient {
     private final String serverUrl;
 
     /** The loged in. */
-    private boolean logedIn;
+    private boolean loggedIn;
 
     /**
      * Constructor.
@@ -96,9 +97,9 @@ public class LoginClient {
     public LoginClient(String serverUrl, String deviceName, TokenManager tokenManager) {
         this.deviceName = deviceName;
         this.serverUrl = serverUrl;
-        this.logedIn = false;
+        this.loggedIn = false;
         this.tokenManager = tokenManager;
-        this.jsonMapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
 
         URL url;
@@ -210,7 +211,7 @@ public class LoginClient {
                 AuthenticationResponse response = LoginClient.this.jsonMapper.readValue(r.getEntity().getContent(), AuthenticationResponse.class);
                 tokenManager.setAccessToken(response.getAccessToken());
                 tokenManager.setRefreshToken(response.getRefreshToken());
-                this.logedIn = true;
+                this.loggedIn = true;
                 return response.getUser();
             }
         } catch (Exception e) {
@@ -366,8 +367,8 @@ public class LoginClient {
      *
      * @return true, if is loged in
      */
-    public boolean isLogedIn() {
-        return logedIn;
+    public boolean isLoggedIn() {
+        return loggedIn;
     }
 
     /**
