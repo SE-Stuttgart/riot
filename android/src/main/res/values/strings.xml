@@ -33,6 +33,7 @@
     <string name="desc_filter_warning">Show only Warning messages if selected</string>
 
     <!-- Location (all entries for language please insert here) -->
+    <string name="location">Location</string>
     <string name="location_show">Show available Location</string>
     <string name="location_hide">Hide available Location</string>
     <string name="location_current_position">Current position</string>

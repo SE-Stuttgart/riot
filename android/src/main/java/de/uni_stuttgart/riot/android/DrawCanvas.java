@@ -18,7 +18,9 @@ import android.view.View;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
+import de.uni_stuttgart.riot.android.location.LocationScreen;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class DrawCanvas extends View {
 
     private HomeScreen homeScreen;
@@ -153,6 +155,10 @@ public class DrawCanvas extends View {
                     Intent settingsIntent = new Intent(homeScreen, SettingScreen.class);
                     settingsIntent.putExtra("pressedButton", homeScreen.getString(R.string.settings));
                     homeScreen.startActivity(settingsIntent);
+                } else if (selectedButton.getButtonDescription().equals("Location")) { // Special intent for the location screen
+                    Intent locationIntent = new Intent(homeScreen, LocationScreen.class);
+                    locationIntent.putExtra("pressedButton", homeScreen.getString(R.string.settings));
+                    homeScreen.startActivity(locationIntent);
                 } else {
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(newNotificationScreen);
