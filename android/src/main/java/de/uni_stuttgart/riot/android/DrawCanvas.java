@@ -58,7 +58,11 @@ public class DrawCanvas extends View {
 
             buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
 
-            buttonList.add(new HomeScreenButton(this, 4, "Settings", 300, 600, R.drawable.settings));
+            buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
+
+            buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
+
+            buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -89,7 +93,7 @@ public class DrawCanvas extends View {
         if (!buttonLongPressed) {
             for (HomeScreenButton button : buttonList) {
                 canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
-                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 35), paint);
+                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 10), paint);
             }
         } else { // Shaking animation
             for (HomeScreenButton button : buttonList) {

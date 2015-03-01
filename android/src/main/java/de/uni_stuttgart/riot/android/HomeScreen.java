@@ -17,7 +17,7 @@ public class HomeScreen extends Activity {
         super.onCreate(savedInstanceState);
 
         // Database stuff
-        // this.deleteDatabase("Database");
+        this.deleteDatabase("Database");
 
         DatabaseAccess.setDatabase(new RIOTDatabase(this));
         DrawCanvas canvas = new DrawCanvas(this);
