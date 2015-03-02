@@ -44,7 +44,7 @@
     <!-- footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>Showing {{(rolesList.current - 1) * rolesList.limit}} to {{(rolesList.current - 1) * rolesList.limit + roles.length}} of {{rolesList.total}} entries</div>
+        <div>{{ 'common.showing' | i18n }} {{(rolesList.current - 1) * rolesList.limit}} {{ 'common.to' | i18n }} {{(rolesList.current - 1) * rolesList.limit + roles.length}} {{ 'common.of' | i18n }} {{rolesList.total}} {{ 'common.entries' | i18n }}</div>
       </div>
       <div class="col-sm-12 text-center">
         <pagination ng-model="rolesList.current" items-per-page="rolesList.limit" total-items="rolesList.total" ng-change="getRoles()"></pagination>
@@ -95,7 +95,7 @@
     <!-- footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>Showing {{(permissionsList.current - 1) * permissionsList.limit}} to {{(permissionsList.current - 1) * permissionsList.limit + permissions.length}} of {{permissionsList.total}} entries</div>
+        <div>{{ 'common.showing' | i18n }} {{(permissionsList.current - 1) * permissionsList.limit}} {{ 'common.to' | i18n }} {{(permissionsList.current - 1) * permissionsList.limit + permissions.length}} {{ 'common.of' | i18n }} {{permissionsList.total}} {{ 'common.entries' | i18n }}</div>
       </div>
       <div class="col-sm-12 text-center">
         <pagination ng-model="permissionsList.current" items-per-page="permissionsList.limit" total-items="permissionsList.total" ng-change="getPermissions()"></pagination>

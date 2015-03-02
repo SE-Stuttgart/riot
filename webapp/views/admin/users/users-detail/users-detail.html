@@ -61,8 +61,8 @@
       <!-- Save -->
       <div class="form-group">
         <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">Save</button>
-          <button ui-sref="admin.users.list" type="button" class="btn btn-default">Cancel</button>
+          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
+          <button ui-sref="admin.users.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
         </div>
       </div>
     </form>
@@ -107,7 +107,7 @@
                 <span class="pull-right">
                   <button type="button" class="btn btn-xs btn-danger" ng-click="removeUserRole(userDetail, role)">
                     <span class="fa fa-times"></span>
-                    Remove
+                    {{ 'common.remove' | i18n }}
                   </button>
                 </span>
               </div>
