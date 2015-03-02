@@ -1,52 +1,57 @@
 package de.uni_stuttgart.riot.thing.client;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.Date;
+import java.util.Iterator;
 
 import org.apache.http.HttpResponse;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.thing.commons.RegisterRequest;
-import de.uni_stuttgart.riot.thing.commons.RemoteThing;
-import de.uni_stuttgart.riot.thing.commons.Thing;
-import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
-import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
+import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
 /**
  * Rest Client for handling {@link Thing} operations.
- *
  */
 public class ThingClient {
 
     private static final String PREFIX = "/api/v1/";
+    private static final String THINGS_PREFIX = PREFIX + "things/";
 
-    private static final String POST_ADD_THING = PREFIX + "thing";
-    private static final String POST_SUBMIT_ACTION = PREFIX + "thing/action";
-    private static final String POST_NOTIFY_EVENT = PREFIX + "thing/notify";
+    private static final String POST_ADD_THING = PREFIX + "things";
+    private static final String POST_SUBMIT_ACTION = THINGS_PREFIX + "action";
+    private static final String POST_NOTIFY_EVENT = THINGS_PREFIX + "notify";
 
-    private static final String GET_THINGS = PREFIX + "thing";
-    private static final String GET_THING = PREFIX + "thing/";
-    private static final String GET_ACTIONS = PREFIX + "thing/action/";
-    private static final String GET_EVENTS = PREFIX + "thing/event/";
+    private static final String GET_THING = THINGS_PREFIX;
+    private static final String GET_UPDATES_SUFFIX = "/updates";
+    private static final String GET_STATE_SUFFIX = "/state";
 
-    private static final String DELETE_THING = PREFIX + "thing/";
+    private static final String DELETE_THING = THINGS_PREFIX;
 
-    private static final String POST_DELETE_EVENT_REGISTRATION = PREFIX + "thing/deregister";
-    private static final String POST_EVENT_REGISTRATION = PREFIX + "thing/register";
+    private static final String POST_UNREGISTER_EVENT_SUFFIX = "/unregister";
+    private static final String POST_REGISTER_EVENT_SUFFIX = "/register";
+    private static final String POST_UNREGISTER_EVENTS_SUFFIX = "/unregisterMultiple";
+    private static final String POST_REGISTER_EVENTS_SUFFIX = "/registerMultiple";
 
-    private static final String GET_LAST_ONLINE = PREFIX + "thing/online/";
+    private static final String GET_LAST_ONLINE_SUFFIX = "/online";
 
     private static final long TEN_MIN = 1000 * 60 * 10;
     private static final long FIVE_MIN = 1000 * 60 * 5;
-
 
     /** The login client for authentication handling. */
     private final LoginClient loginClient;
@@ -62,19 +67,30 @@ public class ThingClient {
     }
 
     /**
-     * registers a {@link RemoteThing}.
+     * Registers a new {@link Thing} with the server and returns it.
      * 
-     * @param thing
-     *            the Thing to be added
-     * @return the added Thing
+     * @param name
+     *            The name of the new thing.
+     * @param thingType
+     *            The type of the new thing.
+     * @param initialState
+     *            The initial state for the thing, i.e., its property values. This may be <tt>null</tt>.
+     * @param behaviorFactory
+     *            The behavior factory that will provide the factory for the new thing.
+     * @return The newly registered thing (with its ID set, etc.).
      * @throws RequestException
-     *             if Thing could not be added.
+     *             If Thing could not be added.
      */
-    public RemoteThing registerThing(RemoteThing thing) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_THING, thing);
+    public Thing registerNewThing(String name, String thingType, ThingState initialState, ThingBehaviorFactory<?> behaviorFactory) throws RequestException {
+        RegisterThingRequest request = new RegisterThingRequest();
+        request.setName(name);
+        request.setType(thingType);
+        request.setInitialState(initialState);
+
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_ADD_THING, request);
         try {
-            RemoteThing result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), RemoteThing.class);
-            return result;
+            JsonNode node = this.loginClient.getJsonMapper().readTree(response.getEntity().getContent());
+            return readThing(node, behaviorFactory);
         } catch (Exception e) {
             throw new RequestException(e);
         }
@@ -84,48 +100,67 @@ public class ThingClient {
      * Returns the Thing with the given id.
      * 
      * @param id
-     *            user id
-     * @return the Thing
-     * @throws RequestException .
+     *            The ID of the thing.
+     * @param behaviorFactory
+     *            The behavior factory for the thing.
+     * @return The Thing
+     * @throws RequestException
+     *             When the request to the server failed.
      */
-    public RemoteThing getThing(long id) throws RequestException {
+    public Thing getExistingThing(long id, ThingBehaviorFactory<?> behaviorFactory) throws RequestException {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_THING + id);
         try {
-            RemoteThing result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), RemoteThing.class);
-            return result;
+            JsonNode node = this.loginClient.getJsonMapper().readTree(response.getEntity().getContent());
+            return readThing(node, behaviorFactory);
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
 
     /**
-     * Returns all things.
+     * Reads a thing in the JSON format created by the ThingConverter on the server and instantiates it locally using the given behavior
+     * factory.
      * 
-     * @return collection of all things.
-     * @throws RequestException .
+     * @param node
+     *            The JSON node to read from.
+     * @param behaviorFactory
+     *            The behavior factory.
+     * @throws JsonProcessingException
+     *             When parsing the JSON fails.
      */
-    public Collection<RemoteThing> getThings() throws RequestException {
-        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_THINGS);
-        try {
-            Collection<RemoteThing> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Collection<RemoteThing>>() {
-            });
-            return result;
-        } catch (Exception e) {
-            throw new RequestException(e);
+    private Thing readThing(JsonNode node, ThingBehaviorFactory<?> behaviorFactory) throws JsonProcessingException {
+        if (!node.isObject()) {
+            throw new JsonMappingException("Expected a JSON node!");
         }
+
+        // Create the thing itself.
+        Thing thing = ThingFactory.create(node.get("type").asText(), node.get("id").asLong(), node.get("name").asText(), behaviorFactory);
+
+        // Restore its state from the JSON object.
+        // TODO We should be able to remove this part and replace it by ThingState?
+        Iterator<String> fieldNames = node.fieldNames();
+        while (fieldNames.hasNext()) {
+            String propertyName = fieldNames.next();
+            Property<?> property = thing.getProperty(propertyName);
+            if (property != null) {
+                Object value = this.loginClient.getJsonMapper().treeToValue(node.get(propertyName), property.getValueType());
+                ThingState.silentSetThingProperty(property, value);
+            }
+        }
+
+        return thing;
     }
 
     /**
-     * unregisters the Thing with id thingID.
+     * Unregisters the thing with the given thingID.
      * 
      * @param thingID
-     *            id of thing to be deleted
-     * @return http code (200 OK)
-     * @throws RequestException .
+     *            ID of thing to be deleted
+     * @throws RequestException
+     *             When the request failed.
      */
-    public int deregisterThing(long thingID) throws RequestException {
+    public void unregisterThing(long thingID) throws RequestException {
         HttpResponse response = this.loginClient.delete(this.loginClient.getServerUrl() + DELETE_THING + thingID);
-        int result = response.getStatusLine().getStatusCode();
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
@@ -133,58 +168,36 @@ public class ThingClient {
         } catch (IOException e) {
             throw new RequestException(e);
         }
-        return result;
     }
 
     /**
-     * gets all action instances from server for the Thing with id thingID.
+     * Reads the state of the thing as returned by the ThingConverter.
      * 
-     * @param thingID
-     *            thing id
-     * @return queue of action instances
+     * @param id
+     *            The ID of the thing.
+     * @return The current state of the thing (according to the server, at least).
      * @throws RequestException
-     *             if it could not get the action instances.
+     *             When retrieving the state fails.
      */
-    public Queue<ActionInstance> getActionInstances(long thingID) throws RequestException {
-        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_ACTIONS + thingID);
+    public ThingState getThingState(long id) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + id + GET_STATE_SUFFIX);
         try {
-            Queue<ActionInstance> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Queue<ActionInstance>>() {
-            });
-            return result;
+            return this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), ThingState.class);
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
 
     /**
-     * gets all event instances from server for the Thing with id thingID.
-     * 
-     * @param thingID
-     *            thing id
-     * @return stack of event instances
-     * @throws RequestException
-     *             if it could not get the event instances.
-     */
-    public Stack<EventInstance> getEventInstances(long thingID) throws RequestException {
-        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_EVENTS + thingID);
-        try {
-            Stack<EventInstance> result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Stack<EventInstance>>() {
-            });
-            return result;
-        } catch (Exception e) {
-            throw new RequestException(e);
-        }
-    }
-
-    /**
-     * Submits an {@link ActionInstance} to the server.
+     * Submits an {@link ActionInstance} to the server. Hint: If you get 500 "Request failed" exceptions from this method, check if the
+     * respective subclass of {@link ActionInstance} provides a Jackson-compatible constructor!
      * 
      * @param actionInstance
      *            the action to be submitted
      * @throws RequestException
      *             if Action instance could not be submitted.
      */
-    public void submitActionInstance(ActionInstance actionInstance) throws RequestException {
+    public void submitAction(ActionInstance actionInstance) throws RequestException {
         HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_SUBMIT_ACTION, actionInstance);
         try {
             if (response.getEntity() != null) {
@@ -196,7 +209,8 @@ public class ThingClient {
     }
 
     /**
-     * Notifies the server about occurred event.
+     * Notifies the server about occurred event. Hint: If you get 500 "Request failed" exceptions from this method, check if the respective
+     * subclass of {@link EventInstance} provides a Jackson-compatible constructor!
      * 
      * @param eventInstance
      *            the eventInstance
@@ -215,15 +229,38 @@ public class ThingClient {
     }
 
     /**
-     * Registers on an event.
-     *
+     * Registers to an event.
+     * 
+     * @param observerId
+     *            The ID of the thing that wants to register to the given event.
      * @param request
      *            the register request
      * @throws RequestException
      *             the request exception
      */
-    public void registerOnEvent(RegisterRequest request) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_EVENT_REGISTRATION, request);
+    public void registerToEvent(long observerId, RegisterRequest request) throws RequestException {
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + observerId + POST_REGISTER_EVENT_SUFFIX, request);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
+
+    /**
+     * Registers to multiple events.
+     *
+     * @param observerId
+     *            The ID of the thing that wants to register to the given event.
+     * @param requests
+     *            the register requests
+     * @throws RequestException
+     *             the request exception
+     */
+    public void registerToEvents(long observerId, Collection<RegisterRequest> requests) throws RequestException {
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + observerId + POST_REGISTER_EVENTS_SUFFIX, requests);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
@@ -236,18 +273,59 @@ public class ThingClient {
     /**
      * Unregisters from an event.
      *
+     * @param observerId
+     *            The ID of the thing that wants to register to the given event.
      * @param request
      *            the request to unregister
      * @throws RequestException
      *             the request exception
      */
-    public void deRegisterFromEvent(RegisterRequest request) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_DELETE_EVENT_REGISTRATION, request);
+    public void unregisterFromEvent(long observerId, RegisterRequest request) throws RequestException {
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + observerId + POST_UNREGISTER_EVENT_SUFFIX, request);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
             }
         } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
+
+    /**
+     * Unregisters from multiple events.
+     *
+     * @param observerId
+     *            The ID of the thing that wants to register to the given event.
+     * @param requests
+     *            the requests to unregister
+     * @throws RequestException
+     *             the request exception
+     */
+    public void unregisterFromEvents(long observerId, Collection<RegisterRequest> requests) throws RequestException {
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + observerId + POST_UNREGISTER_EVENTS_SUFFIX, requests);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
+
+    /**
+     * Gets all updates from server for the Thing with id thingID.
+     * 
+     * @param thingID
+     *            thing id
+     * @return All updates that happened since the last call.
+     * @throws RequestException
+     *             if it could not get the action instances.
+     */
+    public ThingUpdatesResponse getUpdates(long thingID) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + thingID + GET_UPDATES_SUFFIX);
+        try {
+            return this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), ThingUpdatesResponse.class);
+        } catch (Exception e) {
             throw new RequestException(e);
         }
     }
@@ -261,31 +339,34 @@ public class ThingClient {
      * @throws RequestException
      *             the request exception
      */
-    public Timestamp getLastOnline(long thingID) throws RequestException {
-        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + GET_LAST_ONLINE + thingID);
+    public Date getLastOnline(long thingID) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + thingID + GET_LAST_ONLINE_SUFFIX);
         try {
-            Timestamp result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Timestamp.class);
+            Date result = this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), Date.class);
             return result;
         } catch (Exception e) {
             throw new RequestException(e);
         }
     }
-    
+
     /**
      * Returns the current online state for the given thing.
-     * @param thingID the thing id
+     * 
+     * @param thingID
+     *            the thing id
      * @return the current online state
      * @throws RequestException .
      */
     public OnlineState getOnlineState(long thingID) throws RequestException {
         long now = System.currentTimeMillis();
-        Timestamp lastOnline = this.getLastOnline(thingID);
-        if (lastOnline.before(new Timestamp(now - TEN_MIN))) {
+        Date lastOnline = this.getLastOnline(thingID);
+        if (lastOnline.before(new Date(now - TEN_MIN))) {
             return OnlineState.STATUS_OFFLINE;
-        } else if (lastOnline.before(new Timestamp(now - FIVE_MIN))) {
+        } else if (lastOnline.before(new Date(now - FIVE_MIN))) {
             return OnlineState.STATUS_AWAY;
         } else {
             return OnlineState.STATUS_ONLINE;
         }
     }
+
 }
