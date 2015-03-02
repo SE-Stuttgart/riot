@@ -1,11 +1,11 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 
@@ -35,6 +35,7 @@ public class ThingTest extends ShiroEnabledTest {
         return new ThingClient(loginClient);
     }
 
+    @Test
     public void scenarioFridge() throws ClientProtocolException, RequestException, IOException, ThingNotFoundException {
 
         Fridge.FridgeBehavior fridgeBehavior = Fridge.create(getLoggedInThingClient(), "Peter");

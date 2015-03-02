@@ -37,6 +37,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
@@ -103,6 +104,26 @@ public class ThingService {
             throw new NotFoundException();
         } else {
             return ThingState.create(thing);
+        }
+    }
+
+    /**
+     * Gets a description of a thing. See {@link ThingDescription} for details about the JSON format.
+     *
+     * @param id
+     *            The id of the thing.
+     * @return A description of the thing's structure (or 404 if the thing does not exist).
+     */
+    @GET
+    @Path("{id}/description")
+    @Produces(PRODUCED_FORMAT)
+    public ThingDescription getThingDescription(@PathParam("id") long id) {
+        assertPermitted(id, ThingPermission.READ);
+        Thing thing = logic.getThing(id);
+        if (thing == null) {
+            throw new NotFoundException();
+        } else {
+            return ThingDescription.create(thing);
         }
     }
 

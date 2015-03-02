@@ -1,11 +1,17 @@
 package de.uni_stuttgart.riot.thing.test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
@@ -16,9 +22,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.PropertySetAction;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.PropertySetAction.Instance;
 import de.uni_stuttgart.riot.thing.ThingFactory;
@@ -177,4 +185,49 @@ public class ThingFrameworkTest {
         assertThat(thing.getReadonlyString(), is(nullValue()));
 
     }
+
+    @Test
+    public void testThingDescription() throws JsonProcessingException {
+
+        // Create a TestThing that we will describe.
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+
+        // Check the main Thing description.
+        ThingDescription description = ThingDescription.create(thing);
+        assertThat(description.getType(), isClass(TestThing.class));
+
+        // Check the events.
+        assertThat(description.getEvents(), hasSize(2));
+        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
+        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getParameters().isEmpty(), is(true));
+        BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
+        assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
+        assertThat(parEventInstance.getParameters().size(), is(1));
+        assertThat(parEventInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+
+        // Check the actions.
+        assertThat(description.getActions(), hasSize(2));
+        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getInstanceType() == ActionInstance.class, is(true));
+        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getParameters().isEmpty(), is(true));
+        BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
+        assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
+        assertThat(parActionInstance.getParameters().size(), is(1));
+        assertThat(parActionInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+
+        // Check the properties.
+        assertThat(description.getProperties(), hasSize(3));
+        assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
+        assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
+        assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
+
+        // Ensure that the description is serializable by Jackson without exceptions.
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValueAsString(description);
+    }
+
+    private static Matcher<Class<?>> isClass(Class<?> clazz) {
+        return CoreMatchers.<Class<?>> sameInstance(clazz);
+    }
+
 }

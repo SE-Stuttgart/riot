@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.apache.http.client.ClientProtocolException;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,9 +20,11 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
@@ -32,14 +36,14 @@ import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingClientTest extends ShiroEnabledTest {
-    
+
     @Before
     public void clearThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field field = ThingLogic.class.getDeclaredField("instance");
         field.setAccessible(true);
         field.set(null, null);
     }
-    
+
     public ThingClient getLoggedInThingClient() throws ClientProtocolException, RequestException, IOException {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
         loginClient.login("Yoda", "YodaPW");
@@ -156,4 +160,41 @@ public class ThingClientTest extends ShiroEnabledTest {
         thingClient.unregisterThing(thing.getId());
 
     }
+
+    @Test
+    public void retrieveThingDescription() throws ClientProtocolException, RequestException, IOException {
+
+        ThingDescription description = getLoggedInThingClient().getThingDescription(1);
+        assertThat(description.getType(), isClass(TestThing.class));
+
+        // Check the events.
+        assertThat(description.getEvents(), hasSize(2));
+        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
+        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getParameters().isEmpty(), is(true));
+        BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
+        assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
+        assertThat(parEventInstance.getParameters().size(), is(1));
+        assertThat(parEventInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+
+        // Check the actions.
+        assertThat(description.getActions(), hasSize(2));
+        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getInstanceType() == ActionInstance.class, is(true));
+        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getParameters().isEmpty(), is(true));
+        BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
+        assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
+        assertThat(parActionInstance.getParameters().size(), is(1));
+        assertThat(parActionInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+
+        // Check the properties.
+        assertThat(description.getProperties(), hasSize(3));
+        assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
+        assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
+        assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
+
+    }
+
+    private static Matcher<Class<?>> isClass(Class<?> clazz) {
+        return CoreMatchers.<Class<?>> sameInstance(clazz);
+    }
+
 }
