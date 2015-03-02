@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
@@ -8,6 +9,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
  * @author Jonas Tangermann
  *
  */
+@TableName("users")
 public class UMUser extends User {
 
     /** The hashed password. */

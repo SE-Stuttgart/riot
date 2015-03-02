@@ -3,10 +3,12 @@ package de.uni_stuttgart.riot.commons.rest.data.calendar;
 import java.util.Date;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * The Class CalendarEntry.
  */
+@TableName("calendarEntries")
 public class CalendarEntry extends Storable {
 
     /** The start time. */

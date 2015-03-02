@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * {@link Role}s can be assigned to {@link UMUser}s to grand certain rights. It can also be used
@@ -11,6 +12,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * @author Jonas Tangermann
  *
  */
+@TableName("roles")
 public class Role extends Storable {
 
     private String roleName;

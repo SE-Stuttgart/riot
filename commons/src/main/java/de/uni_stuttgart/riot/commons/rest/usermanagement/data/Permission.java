@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * A {@link Permission} is the lowest level of authorization in the usermanagement. Permissions can be assigned to {@link UMUser}s over
@@ -9,6 +10,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * @author Jonas Tangermann
  *
  */
+@TableName("permissions")
 public class Permission extends Storable {
 
     /**

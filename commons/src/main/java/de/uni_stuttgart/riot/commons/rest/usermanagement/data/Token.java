@@ -3,13 +3,14 @@ package de.uni_stuttgart.riot.commons.rest.usermanagement.data;
 import java.sql.Timestamp;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * Holds the Token that is used to authenticate a user and the associated refresh token that could be used to retrieve a new token without
  * the need of submitting the (username,password) credentials again. Attention, issueTime is set by database on insert
  *
- * @author Jonas Tangermann CHECKSTYLE:OFF
  */
+@TableName("tokens")
 public class Token extends Storable {
 
     private Long userID;
@@ -118,7 +119,8 @@ public class Token extends Storable {
     public void setValid(boolean valid) {
         this.valid = valid;
     }
-
+    
+    //CHECKSTYLE:OFF
     @Override
     public int hashCode() {
         final int prime = 31;

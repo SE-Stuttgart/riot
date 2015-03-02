@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.usermanagement.data.storable;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 
@@ -11,6 +12,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
  * @author Jonas Tangermann
  *
  */
+@TableName("roles_permissions")
 public class RolePermission extends Storable {
 
     /** The permission id. */

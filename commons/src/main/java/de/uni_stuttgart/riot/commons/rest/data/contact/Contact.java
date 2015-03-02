@@ -1,10 +1,12 @@
 package de.uni_stuttgart.riot.commons.rest.data.contact;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * The Class Contact.
  */
+@TableName("contacts")
 public class Contact extends Storable {
 
     private String firstName;

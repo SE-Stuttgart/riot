@@ -1,12 +1,14 @@
 package de.uni_stuttgart.riot.commons.rest.data.config;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
  * The Class ConfigurationEntry.
  * 
  * @author Niklas Schnabel
  */
+@TableName("configuration")
 public class ConfigurationEntry extends Storable {
 
     /** The key. */
