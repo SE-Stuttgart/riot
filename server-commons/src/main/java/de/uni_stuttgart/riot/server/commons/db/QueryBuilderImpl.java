@@ -32,6 +32,11 @@ public class QueryBuilderImpl implements QueryBuilder {
     }
 
     @Override
+    public Query buildDelete(String tableName, long id, Connection connection) throws SQLException {
+        return connection.createQuery(buildDelete(tableName)).addParameter("id", id);
+    }
+
+    @Override
     public Query buildInsert(String tableName, Storable t, Connection connection) throws SQLException {
         return connection.createQuery(buildInsertStatement(t.getClass(), tableName)).bind(t);
     }

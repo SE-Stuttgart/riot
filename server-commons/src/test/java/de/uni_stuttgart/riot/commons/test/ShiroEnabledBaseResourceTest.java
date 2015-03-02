@@ -11,7 +11,6 @@ import org.apache.shiro.subject.support.SubjectThreadState;
 import org.apache.shiro.util.Factory;
 import org.apache.shiro.util.LifecycleUtils;
 import org.apache.shiro.util.ThreadState;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

@@ -38,6 +38,23 @@ public interface QueryBuilder {
     Query buildDelete(String tableName, Storable t, Connection connection) throws SQLException;
 
     /**
+     * Builds the delete query for the given id. <br>
+     * <br>
+     * Such as: <code>DELETE FROM T WHERE T.ID = [id]</code>
+     * 
+     * @param tableName
+     *            the table name in which the query will be executed
+     * @param id
+     *            ID of the object to be deleted in the datasource
+     * @param connection
+     *            represents a connection to the database
+     * @return {@link Query} for deletion of the object
+     * @throws SQLException
+     *             internal sql error
+     */
+    Query buildDelete(String tableName, long id, Connection connection) throws SQLException;
+
+    /**
      * Builds the insertion query for the given object t. <br>
      * <br>
      * Such as: <code>Insert INTO T (X,Y) VALUES (x,y)</code>

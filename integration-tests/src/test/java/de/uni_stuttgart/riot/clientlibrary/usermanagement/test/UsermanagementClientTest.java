@@ -17,6 +17,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
+import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 
 @TestData({ "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })

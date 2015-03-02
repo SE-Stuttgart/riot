@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.UnauthenticatedException;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
@@ -434,7 +435,7 @@ public class UserManagementFacade {
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         roleLogic.addPermissionToRole(roleId, permissionId);
     }
-    
+
     /**
      * Adds the new permission to user.
      *
@@ -487,6 +488,37 @@ public class UserManagementFacade {
      */
     public void requiresPermission(String permission) throws AuthorizationException {
         SecurityUtils.getSubject().checkPermission(permission);
+    }
+
+    /**
+     * Determines the currently logged-in user. This method will throw a {@link UnauthenticatedException} if the user is currently not
+     * logged in.
+     * 
+     * @return The ID of the user who is currently logged in.
+     */
+    public long getCurrentUserId() {
+        Object token = SecurityUtils.getSubject().getPrincipal();
+        if (token == null) {
+            throw new UnauthenticatedException("Not logged in!");
+        }
+
+        try {
+            return tokenLogic.getUserIdFromToken(token.toString());
+        } catch (GetUserException e) {
+            throw new UnauthenticatedException("Invalid token " + token);
+        }
+    }
+
+    /**
+     * Determines the currently logged-in user. This method will throw a {@link UnauthenticatedException} if the user is currently not
+     * logged in.
+     * 
+     * @return The user who is currently logged in.
+     * @throws GetUserException
+     *             When the user logged in does not exist anymore in the database.
+     */
+    public User getCurrentUser() throws GetUserException {
+        return getUser(getCurrentUserId());
     }
 
 }

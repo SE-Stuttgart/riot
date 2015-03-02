@@ -54,4 +54,13 @@ public class TokenSqlQueryDaoTest extends DaoTestBase {
         Collection<Token> token = dao.findAll();
         assertEquals(3, token.size());
     }
+
+    @Test
+    public void getUserIDByTokenTest() throws DatasourceInsertException, DatasourceFindException {
+        long userId = 1L;
+        Token testToken = new Token(42L, userId, "TestToken", "R", new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis() + 10000), true);
+        dao.insert(testToken);
+        assertEquals(userId, dao.getUserIdFromToken("TestToken"));
+    }
+
 }

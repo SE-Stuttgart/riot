@@ -1,17 +1,7 @@
 
-INSERT INTO Thing (name,ownerID) values('Android',1),('Haus',1),('Blah',2);
+INSERT INTO Thing (id, type, ownerID, name) VALUES
+(1, 'de.uni_stuttgart.riot.thing.test.TestThing', 0, 'My Test Thing');
 
-INSERT INTO ActionDBObject (thingid, factoryString) 
-values (1,'["de.uni_stuttgart.riot.thing.commons.action.PropertySetAction",{"propertyName":"P1-Name"}]'),
-(1,'["de.uni_stuttgart.riot.thing.commons.action.PropertySetAction",{"propertyName":"P2-Name"}]'),
-(2,'["de.uni_stuttgart.riot.thing.commons.action.PropertySetAction",{"propertyName":"P3-Name"}]');
-
-INSERT INTO EventDBObject (thingid, factoryString) 
-values (1,'["de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent",{"propertyName":"P1-Name"}]'),
-(1,'["de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent",{"propertyName":"P2-Name"}]'),
-(2,'["de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent",{"propertyName":"P3-Name"}]');
-
-INSERT INTO PropertyDBObject (name,val,valType,thingID)
-values ('P1','"Default"','java.lang.String',1),
-('P2','"Value"','java.lang.String',1),
-('PX','"ValueX"','java.lang.String',2);
+INSERT INTO PropertyValue (thingID, name, val) VALUES
+(1, 'int', '42'),
+(1, 'readonlyString', 'String from Database');

@@ -10,9 +10,9 @@ import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.server.client.ConfigurationClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
+import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 
 @TestData({ "/schema/schema_configuration.sql", "/testData/testdata_configuration2.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })

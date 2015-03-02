@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.clientlibrary.usermanagement.test;
+package de.uni_stuttgart.riot.commons.test;
 
 import javax.ws.rs.core.Application;
 
@@ -14,7 +14,6 @@ import org.apache.shiro.util.ThreadState;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
 /**
