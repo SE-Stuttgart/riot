@@ -34,7 +34,7 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
     @Test
     public void updateUserTest() throws ClientProtocolException, RequestException, IOException {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
-        usermanagementClient.updateUser(2, new UserRequest("TEST", "sTEST12345!"));
+        usermanagementClient.updateUser(2, new UserRequest("TEST", "sTEST12345!", "email@mail.com"));
         User updated = usermanagementClient.getUser(2);
         assertEquals("TEST", updated.getUsername());
     }
@@ -84,13 +84,13 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
         usermanagementClient.removePermission(2);
         Collection<Permission> permissions = usermanagementClient.getPermissions();
-        assertEquals(3, permissions.size());
+        assertEquals(5, permissions.size());
     }
 
     @Test
     public void addUserTest() throws ClientProtocolException, RequestException, IOException {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
-        usermanagementClient.addUser(new UserRequest("TEST", "sTEST12345!"));
+        usermanagementClient.addUser(new UserRequest("TEST", "sTEST12345!", "email@mail.com"));
         User newUser = usermanagementClient.getUser(4);
         assertEquals("TEST", newUser.getUsername());
     }
@@ -116,7 +116,7 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
         usermanagementClient.addPermission(new Permission("TEST"));
         Collection<Permission> permissions = usermanagementClient.getPermissions();
-        assertEquals(5, permissions.size());
+        assertEquals(7, permissions.size());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
     public void getPermissionTest() throws ClientProtocolException, RequestException, IOException {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
         Permission permission = usermanagementClient.getPermission(1);
-        assertEquals("lightsaber:*", permission.getPermissionValue());
+        assertEquals("thing:1:*", permission.getPermissionValue());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class UsermanagementClientTest extends ShiroEnabledTest {
     public void getPermissionsTest() throws ClientProtocolException, RequestException, IOException {
         UsermanagementClient usermanagementClient = this.getLogedInUserMClient();
         Collection<Permission> permissions = usermanagementClient.getPermissions();
-        assertEquals(4, permissions.size());
+        assertEquals(6, permissions.size());
     }
 
     @Test 

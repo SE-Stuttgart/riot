@@ -18,10 +18,12 @@ public class UserRequest {
      * Const.
      * @param username .
      * @param password .
+     * @param email .
      */
-    public UserRequest(String username, String password) {
+    public UserRequest(String username, String password, String email) {
         this.password = password;
         this.username = username;
+        this.email = email;
     }
     
     /**

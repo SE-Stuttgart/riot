@@ -33,7 +33,7 @@ INSERT INTO roles_permissions(permissionid, roleid)
      (2, 4);
 
 INSERT INTO users_permissions(permissionid, userid)
-    VALUES (1, 1),
+    VALUES (4, 1),
      (2, 1),
      (3, 3);
 
