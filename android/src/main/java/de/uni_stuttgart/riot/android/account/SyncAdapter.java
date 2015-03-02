@@ -24,7 +24,7 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.CalendarClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
-//CHECKSTYLE:OFF 
+//CHECKSTYLE:OFF
 /*
  class MySSLSocketFactory extends SSLSocketFactory {
  SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -95,15 +95,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Constructor
-     * 
+     *
      * @param context
      *            the android context
      */
     public SyncAdapter(Context context) {
         super(context, true);
         Log.v(TAG, "SyncAdapter created");
-        mCalendarClient = new CalendarClient(RIOTApiClient.getInstance().getLoginClient());
-        mAndroidUser = new AndroidUser(getContext());
     }
 
     /**
@@ -161,12 +159,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * This is needed cause the task is not allowd form the main thread
-     * 
+     *
      */
     public class CalendarSyncTask extends AsyncTask<ContentProviderClient, Integer, Long> {
 
         @Override
         protected Long doInBackground(ContentProviderClient... provider) {
+            mCalendarClient = new CalendarClient(RIOTApiClient.getInstance().getLoginClient());
+            mAndroidUser = new AndroidUser(getContext());
             syncCalendar(provider[0]);
             return null;
         }
@@ -174,7 +174,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see android.content.AbstractThreadedSyncAdapter#onPerformSync(android.accounts.Account, android.os.Bundle, java.lang.String,
      * android.content.ContentProviderClient, android.content.SyncResult)
      */

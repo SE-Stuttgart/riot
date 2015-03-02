@@ -92,7 +92,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      * @param username
      *            the username which is used as account name, and send back if we got called form the system account manager
      */
-    void AnswerIntent(String username) {
+    void answerIntent(String username) {
         if (AndroidUser.getAccount(this) == null) {
             boolean accountCreated = androidUser.CreateAndroidAccount(username, this.getApplicationContext());
             Bundle extras = this.getIntent().getExtras();
@@ -127,32 +127,28 @@ class DoLoginRequest extends AsyncTask<String, Integer, Long> {
     protected Long doInBackground(String[] parameter) {
         RIOTApiClient.getInstance().init(loginActivity, loginActivity.getPackageName()/*TODO set the device name*/);
         LoginClient loginClient = RIOTApiClient.getInstance().getLoginClient();
-        if (loginClient.isLoggedIn()) {
+        if (loginClient.isLogedIn()) {
             return 1L;
-        } else if(parameter.length == 2) {
+        } else if (parameter.length == 2) {
             try {
                 loginClient.login(parameter[0], parameter[1]);
             } catch (RequestException e) {
+                //CHECKSTYLE:OFF
                 e.printStackTrace();
             } catch (IOException e) {
+                //CHECKSTYLE:OFF
                 e.printStackTrace();
             }
-            if (loginClient.isLoggedIn()) {
+            if (loginClient.isLogedIn()) {
                 return 1L;
             }
         }
-        return 0L;
+        return 1L;
     }
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
         // setProgressPercent(progress[0]);
-    }
-
-    @Override
-    protected  void onPreExecute()
-    {
-//        loginActivity.mDialog.show();
     }
 
     @Override
