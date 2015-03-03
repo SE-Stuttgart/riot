@@ -9,8 +9,6 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.apache.http.client.ClientProtocolException;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,11 +18,9 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.ActionInstance;
-import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
-import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
@@ -33,7 +29,6 @@ import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
-import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingClientTest extends ShiroEnabledTest {
@@ -160,58 +155,6 @@ public class ThingClientTest extends ShiroEnabledTest {
         // Tidy up.
         thingClient.unregisterThing(thing.getId());
 
-    }
-
-    @Test
-    public void retrieveThingDescription() throws ClientProtocolException, RequestException, IOException {
-
-        ThingDescription description = getLoggedInThingClient().getThingDescription(1);
-        assertThat(description.getType(), isClass(TestThing.class));
-
-        // Check the events.
-        assertThat(description.getEvents(), hasSize(2));
-        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
-        assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getParameters().isEmpty(), is(true));
-        BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
-        assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
-        assertThat(parEventInstance.getParameters().size(), is(1));
-        assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
-
-        // Check the actions.
-        assertThat(description.getActions(), hasSize(2));
-        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getInstanceType() == ActionInstance.class, is(true));
-        assertThat(description.getActionByName("simpleAction").getInstanceDescription().getParameters().isEmpty(), is(true));
-        BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
-        assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
-        assertThat(parActionInstance.getParameters().size(), is(1));
-        assertThat(parActionInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
-
-        // Check the properties.
-        assertThat(description.getProperties(), hasSize(4));
-        assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
-        assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
-        assertThat(description.getPropertyByName("percent").getValueType(), isClass(Double.class));
-        assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
-
-        // Check the UI hints
-        assertThat(parEventInstance.getParameters().get(0).getUiHint(), instanceOf(UIHint.EditNumber.class));
-        UIHint.IntegralSlider actionParamHint = (UIHint.IntegralSlider) parActionInstance.getParameters().get(0).getUiHint();
-        assertThat(actionParamHint.min, is(0L));
-        assertThat(actionParamHint.max, is(10000L));
-
-        UIHint.IntegralSlider intPropertyHint = (UIHint.IntegralSlider) description.getPropertyByName("int").getUiHint();
-        assertThat(intPropertyHint.min, is(0L));
-        assertThat(intPropertyHint.max, is(10000L));
-
-        assertThat(description.getPropertyByName("long").getUiHint(), instanceOf(UIHint.EditNumber.class));
-        assertThat(description.getPropertyByName("percent").getUiHint(), instanceOf(UIHint.PercentageSlider.class));
-
-    }
-
-    private static Matcher<Class<?>> isClass(Class<?> clazz) {
-        return CoreMatchers.<Class<?>> sameInstance(clazz);
     }
 
 }

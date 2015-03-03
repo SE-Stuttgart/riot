@@ -19,7 +19,6 @@ import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
-import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
@@ -41,7 +40,6 @@ public class ThingClient {
     private static final String GET_THING = THINGS_PREFIX;
     private static final String GET_UPDATES_SUFFIX = "/updates";
     private static final String GET_STATE_SUFFIX = "/state";
-    private static final String GET_DESCRIPTION_SUFFIX = "/description";
 
     private static final String DELETE_THING = THINGS_PREFIX;
 
@@ -185,24 +183,6 @@ public class ThingClient {
         HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + id + GET_STATE_SUFFIX);
         try {
             return this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), ThingState.class);
-        } catch (Exception e) {
-            throw new RequestException(e);
-        }
-    }
-
-    /**
-     * Reads the description of the thing's structure.
-     * 
-     * @param id
-     *            The ID of the thing.
-     * @return The structural description of the thing.
-     * @throws RequestException
-     *             When retrieving the description fails.
-     */
-    public ThingDescription getThingDescription(long id) throws RequestException {
-        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + id + GET_DESCRIPTION_SUFFIX);
-        try {
-            return this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), ThingDescription.class);
         } catch (Exception e) {
             throw new RequestException(e);
         }
