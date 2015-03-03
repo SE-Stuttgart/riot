@@ -1,8 +1,6 @@
---<ScriptOptions statementTerminator=";"/>
+DROP TABLE IF EXISTS calendarentries;
 
-DROP TABLE IF EXISTS calendarEntries;
-
-CREATE TABLE calendarEntries (
+CREATE TABLE calendarentries (
 	id INT NOT NULL AUTO_INCREMENT,
 	startTime DATETIME NOT NULL,
 	endTime DATETIME,

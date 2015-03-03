@@ -28,7 +28,7 @@ import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
-@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
+@TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql" })
 public class ThingLogicTest extends BaseDatabaseTest {
 
     ThingLogic logic;
