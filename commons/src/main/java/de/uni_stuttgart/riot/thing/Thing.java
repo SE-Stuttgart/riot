@@ -3,6 +3,8 @@ package de.uni_stuttgart.riot.thing;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -198,6 +200,7 @@ public class Thing extends Storable {
      * 
      * @return The behavior of this thing.
      */
+    @JsonIgnore
     public ThingBehavior getBehavior() {
         return behavior;
     }

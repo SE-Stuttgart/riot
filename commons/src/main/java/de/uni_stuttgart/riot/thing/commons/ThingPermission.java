@@ -5,11 +5,14 @@ package de.uni_stuttgart.riot.thing.commons;
  */
 public enum ThingPermission {
 
-    /** The right to read, but not modify a thing. */
+    /** The right to read a thing and receive events from it, but not modify it. */
     READ("read"),
 
-    /** The right to modify a thing. */
-    UPDATE("update"),
+    /** The right to send actions to a thing. */
+    CONTROL("control"),
+
+    /** The right to send events and receive updates for a thing. */
+    EXECUTE("execute"),
 
     /** The right to delete a thing. */
     DELETE("delete"),
@@ -17,7 +20,7 @@ public enum ThingPermission {
     /** The right to share a thing with another user. */
     SHARE("share"),
 
-    /** The right to do everything with the ting. */
+    /** The right to do everything with the thing. */
     FULL("*");
 
     /** The shiro permission. */
@@ -34,17 +37,23 @@ public enum ThingPermission {
     }
 
     /**
-     * Build the permission in way so that shiro understands it. If the id is invalid (id < 0), a wildcard instead of the id is used.
+     * Build the permission in way so that shiro understands it.
      *
      * @param id
      *            the id
      * @return the shiro permission
      */
     public String buildShiroPermission(long id) {
-        if (id >= 0) {
-            return "thing:" + id + ":" + shiroPermission;
-        } else {
-            return "thing:*:" + shiroPermission;
-        }
+        return "thing:" + id + ":" + shiroPermission;
     }
+
+    /**
+     * Build the permission in a way so that shiro understands it, using a wildcard for the thing, so that it applies to all things.
+     * 
+     * @return the shiro permission
+     */
+    public String buildWildcardShiroPermission() {
+        return "thing:*:" + shiroPermission;
+    }
+
 }

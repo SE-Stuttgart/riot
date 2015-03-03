@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.shiro.SecurityUtils;
+
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
@@ -132,14 +134,34 @@ public class ThingLogic {
     }
 
     /**
-     * Returns a filtered collection of things.
+     * Gets a stream of all things that the current user can access.
+     * 
+     * @param permission
+     *            The permission that the user must have for the things to be returned. If this is <tt>null</tt>, all things will be
+     *            returned.
+     * @return The matching things.
+     */
+    private Stream<Thing> getThingStream(ThingPermission permission) {
+        if (permission == null) {
+            return things.values().stream().map(ThingBehavior::getThing);
+        } else {
+            return things.values().stream().map(ThingBehavior::getThing).filter((thing) -> {
+                return SecurityUtils.getSubject().isPermitted(permission.buildShiroPermission(thing.getId()));
+            });
+        }
+    }
+
+    /**
+     * Returns a filtered collection of those things that the current user can access.
      * 
      * @param filter
      *            The filter.
+     * @param requirePermission
+     *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The things that match the filter.
      */
-    public Collection<Thing> findThings(FilteredRequest filter) {
-        Stream<Thing> stream = things.values().stream().map(ThingBehavior::getThing);
+    public Collection<Thing> findThings(FilteredRequest filter, ThingPermission requirePermission) {
+        Stream<Thing> stream = getThingStream(requirePermission);
 
         if (!filter.getFilterAttributes().isEmpty()) {
             stream = stream.filter(thing -> {
@@ -181,23 +203,27 @@ public class ThingLogic {
      *            The offset (first index to be returned).
      * @param limit
      *            The number of things to be returned.
+     * @param requirePermission
+     *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The matching collection of things.
      */
-    public Collection<Thing> findThings(int offset, int limit) {
-        Stream<ServerThingBehavior> stream = things.values().stream().skip(offset);
+    public Collection<Thing> findThings(int offset, int limit, ThingPermission requirePermission) {
+        Stream<Thing> stream = getThingStream(requirePermission).skip(offset);
         if (limit > 0) {
             stream = stream.limit(limit);
         }
-        return stream.map(ThingBehavior::getThing).collect(Collectors.toList());
+        return stream.collect(Collectors.toList());
     }
 
     /**
      * Returns a collection of all known things.
      * 
+     * @param requirePermission
+     *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return All things.
      */
-    public Collection<Thing> getAllThings() {
-        return things.values().stream().map(ThingBehavior::getThing).collect(Collectors.toList());
+    public Collection<Thing> getAllThings(ThingPermission requirePermission) {
+        return getThingStream(requirePermission).collect(Collectors.toList());
     }
 
     /**
