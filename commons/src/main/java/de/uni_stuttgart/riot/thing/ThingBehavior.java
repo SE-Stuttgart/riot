@@ -3,6 +3,8 @@ package de.uni_stuttgart.riot.thing;
 import java.beans.PropertyChangeEvent;
 import java.util.Map;
 
+import de.uni_stuttgart.riot.thing.ui.UIHint;
+
 /**
  * A ThingBehavior instance is assigned to exactly one {@link Thing} instance and controls what needs to be done when an action or event is
  * fired, etc.
@@ -212,6 +214,138 @@ public abstract class ThingBehavior {
      *            True if the listener was the last one, i.e., if there are no listeners anymore.
      */
     protected <E extends EventInstance> void listenerRemoved(Event<E> event, EventListener<? super E> listener, boolean wasLast) {
+    }
+
+    /*
+     * -------------------------- Creational methods (Called by the Thing to set itself up)
+     */
+
+    /**
+     * Creates a new action for the thing.
+     * 
+     * @param <A>
+     *            The type of instances of the action.
+     * @param actionName
+     *            The name of the action. Should check for uniqueness.
+     * @param instanceType
+     *            The type of instances of the action.
+     * @return The newly created action.
+     */
+    protected <A extends ActionInstance> Action<A> newAction(String actionName, Class<A> instanceType) {
+        if (actionName == null || actionName.isEmpty()) {
+            throw new IllegalArgumentException("actionName must not be empty!");
+        } else if (thing.actions.containsKey(actionName)) {
+            throw new IllegalArgumentException("Duplicate action " + actionName);
+        }
+        if (instanceType == null) {
+            throw new IllegalArgumentException("instanceType must not be null!");
+        }
+
+        Action<A> action = new Action<A>(thing, actionName, instanceType);
+        thing.actions.put(actionName, action);
+        return action;
+    }
+
+    /**
+     * Creates a new event for the thing.
+     * 
+     * @param <E>
+     *            The type of instances of the event.
+     * @param eventName
+     *            The name of the event. Should check for uniqueness.
+     * @param instanceType
+     *            The type of instances of the event.
+     * @return The newly created event.
+     */
+    protected <E extends EventInstance> Event<E> newEvent(String eventName, Class<E> instanceType) {
+        if (eventName == null || eventName.isEmpty()) {
+            throw new IllegalArgumentException("eventName must not be empty!");
+        } else if (thing.events.containsKey(eventName)) {
+            throw new IllegalArgumentException("Duplicate event " + eventName);
+        }
+        if (instanceType == null) {
+            throw new IllegalArgumentException("instanceType must not be null!");
+        }
+
+        Event<E> event = new Event<E>(thing, eventName, instanceType);
+        thing.events.put(eventName, event);
+        return event;
+    }
+
+    /**
+     * Creates a new property for the thing.
+     * 
+     * @param <V>
+     *            The type of the property's values.
+     * @param propertyName
+     *            The name of the event. Should check for uniqueness.
+     * @param valueType
+     *            The type of the property's values.
+     * @param initialValue
+     *            The initial value of the property (may be null).
+     * @param uiHint
+     *            The UI hint for the property (may be null).
+     * @return The newly created property.
+     */
+    protected <V> Property<V> newProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
+        if (propertyName == null || propertyName.isEmpty()) {
+            throw new IllegalArgumentException("propertyName must not be empty!");
+        } else if (thing.properties.containsKey(propertyName)) {
+            throw new IllegalArgumentException("Duplicate property " + propertyName);
+        }
+        if (valueType == null) {
+            throw new IllegalArgumentException("valueType must not be null!");
+        }
+
+        Property<V> property = new Property<V>(thing, propertyName, valueType, initialValue, uiHint);
+
+        if (thing.events.containsKey(property.getChangeEvent().getName())) {
+            throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
+        }
+
+        thing.properties.put(propertyName, property);
+        thing.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
+        return property;
+    }
+
+    /**
+     * Creates a new writable property for the thing.
+     * 
+     * @param <V>
+     *            The type of the property's values.
+     * @param propertyName
+     *            The name of the event. Should check for uniqueness.
+     * @param valueType
+     *            The type of the property's values.
+     * @param initialValue
+     *            The initial value of the property (may be null).
+     * @param uiHint
+     *            The UI hint for the property (may be null).
+     * @return The newly created property.
+     */
+    protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
+        if (propertyName == null || propertyName.isEmpty()) {
+            throw new IllegalArgumentException("propertyName must not be empty!");
+        } else if (thing.properties.containsKey(propertyName)) {
+            throw new IllegalArgumentException("Duplicate property " + propertyName);
+        }
+        if (valueType == null) {
+            throw new IllegalArgumentException("valueType must not be null!");
+        }
+
+        WritableProperty<V> property = new WritableProperty<V>(thing, propertyName, valueType, initialValue, uiHint);
+
+        if (thing.events.containsKey(property.getChangeEvent().getName())) {
+            throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
+        }
+        if (thing.actions.containsKey(property.getSetAction().getName())) {
+            throw new IllegalArgumentException("Duplicate property set action " + property.getSetAction().getName());
+        }
+
+        thing.properties.put(propertyName, property);
+        thing.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
+        thing.actions.put(property.getSetAction().getName(), property.getSetAction());
+        return property;
     }
 
 }

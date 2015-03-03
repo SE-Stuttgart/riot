@@ -1,6 +1,9 @@
 package de.uni_stuttgart.riot.thing;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A class to describe a property.
@@ -11,6 +14,7 @@ public class PropertyDescription {
 
     private final String name;
     private final Class<?> valueType;
+    private final UIHint uiHint;
     private final boolean writable;
 
     /**
@@ -23,9 +27,11 @@ public class PropertyDescription {
      * @param writable
      *            Whether the property is writable.
      */
-    PropertyDescription(@JsonProperty("name") String name, @JsonProperty("valueType") Class<?> valueType, @JsonProperty("writable") boolean writable) {
+    @JsonCreator
+    private PropertyDescription(@JsonProperty("name") String name, @JsonProperty("valueType") Class<?> valueType, @JsonProperty("uiHint") UIHint uiHint, @JsonProperty("writable") boolean writable) {
         this.name = name;
         this.valueType = valueType;
+        this.uiHint = uiHint;
         this.writable = writable;
     }
 
@@ -48,6 +54,15 @@ public class PropertyDescription {
     }
 
     /**
+     * Gets the UI hint.
+     * 
+     * @return The UI hint for the property (may be null).
+     */
+    public UIHint getUiHint() {
+        return uiHint;
+    }
+
+    /**
      * Gets the writable value.
      * 
      * @return Whether the property is writable.
@@ -64,7 +79,7 @@ public class PropertyDescription {
      * @return The property description.
      */
     public static PropertyDescription create(Property<?> property) {
-        return new PropertyDescription(property.getName(), property.getValueType(), property instanceof WritableProperty);
+        return new PropertyDescription(property.getName(), property.getValueType(), property.getUiHint(), property instanceof WritableProperty);
     }
 
 }

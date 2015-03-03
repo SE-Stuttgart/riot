@@ -33,6 +33,7 @@ import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingClientTest extends ShiroEnabledTest {
@@ -174,7 +175,8 @@ public class ThingClientTest extends ShiroEnabledTest {
         BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
         assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
         assertThat(parEventInstance.getParameters().size(), is(1));
-        assertThat(parEventInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+        assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
+        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
 
         // Check the actions.
         assertThat(description.getActions(), hasSize(2));
@@ -183,13 +185,28 @@ public class ThingClientTest extends ShiroEnabledTest {
         BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
         assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
         assertThat(parActionInstance.getParameters().size(), is(1));
-        assertThat(parActionInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+        assertThat(parActionInstance.getParameters().get(0).getName(), is("parameter"));
+        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
 
         // Check the properties.
-        assertThat(description.getProperties(), hasSize(3));
+        assertThat(description.getProperties(), hasSize(4));
         assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
         assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
+        assertThat(description.getPropertyByName("percent").getValueType(), isClass(Double.class));
         assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
+
+        // Check the UI hints
+        assertThat(parEventInstance.getParameters().get(0).getUiHint(), instanceOf(UIHint.EditNumber.class));
+        UIHint.IntegralSlider actionParamHint = (UIHint.IntegralSlider) parActionInstance.getParameters().get(0).getUiHint();
+        assertThat(actionParamHint.min, is(0L));
+        assertThat(actionParamHint.max, is(10000L));
+
+        UIHint.IntegralSlider intPropertyHint = (UIHint.IntegralSlider) description.getPropertyByName("int").getUiHint();
+        assertThat(intPropertyHint.min, is(0L));
+        assertThat(intPropertyHint.max, is(10000L));
+
+        assertThat(description.getPropertyByName("long").getUiHint(), instanceOf(UIHint.EditNumber.class));
+        assertThat(description.getPropertyByName("percent").getUiHint(), instanceOf(UIHint.PercentageSlider.class));
 
     }
 

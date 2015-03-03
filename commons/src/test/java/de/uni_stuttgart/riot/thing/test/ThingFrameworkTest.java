@@ -30,6 +30,7 @@ import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.PropertySetAction.Instance;
 import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * Tests the Java-only part of the Thing framework.
@@ -187,7 +188,7 @@ public class ThingFrameworkTest {
     }
 
     @Test
-    public void testThingDescription() throws JsonProcessingException {
+    public void testThingDescription() throws IOException {
 
         // Create a TestThing that we will describe.
         TestThingBehavior behavior = new TestThingBehavior();
@@ -197,6 +198,10 @@ public class ThingFrameworkTest {
         ThingDescription description = ThingDescription.create(thing);
         assertThat(description.getType(), isClass(TestThing.class));
 
+        // Ensure that the description is serializable by Jackson without exceptions.
+        ObjectMapper mapper = new ObjectMapper();
+        description = mapper.readValue(mapper.writeValueAsString(description), ThingDescription.class);
+
         // Check the events.
         assertThat(description.getEvents(), hasSize(2));
         assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
@@ -204,7 +209,8 @@ public class ThingFrameworkTest {
         BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
         assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
         assertThat(parEventInstance.getParameters().size(), is(1));
-        assertThat(parEventInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+        assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
+        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
 
         // Check the actions.
         assertThat(description.getActions(), hasSize(2));
@@ -213,17 +219,29 @@ public class ThingFrameworkTest {
         BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
         assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
         assertThat(parActionInstance.getParameters().size(), is(1));
-        assertThat(parActionInstance.getParameters().get("parameter"), isClass(Integer.TYPE));
+        assertThat(parActionInstance.getParameters().get(0).getName(), is("parameter"));
+        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
 
         // Check the properties.
-        assertThat(description.getProperties(), hasSize(3));
+        assertThat(description.getProperties(), hasSize(4));
         assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
         assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
+        assertThat(description.getPropertyByName("percent").getValueType(), isClass(Double.class));
         assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
 
-        // Ensure that the description is serializable by Jackson without exceptions.
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValueAsString(description);
+        // Check the UI hints
+        assertThat(parEventInstance.getParameters().get(0).getUiHint(), instanceOf(UIHint.EditNumber.class));
+        UIHint.IntegralSlider actionParamHint = (UIHint.IntegralSlider) parActionInstance.getParameters().get(0).getUiHint();
+        assertThat(actionParamHint.min, is(0L));
+        assertThat(actionParamHint.max, is(10000L));
+
+        UIHint.IntegralSlider intPropertyHint = (UIHint.IntegralSlider) description.getPropertyByName("int").getUiHint();
+        assertThat(intPropertyHint.min, is(0L));
+        assertThat(intPropertyHint.max, is(10000L));
+
+        assertThat(description.getPropertyByName("long").getUiHint(), instanceOf(UIHint.EditNumber.class));
+        assertThat(description.getPropertyByName("percent").getUiHint(), instanceOf(UIHint.PercentageSlider.class));
+
     }
 
     private static Matcher<Class<?>> isClass(Class<?> clazz) {

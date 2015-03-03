@@ -6,6 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s.
@@ -45,18 +46,7 @@ public class Thing extends Storable {
      * @return The newly created action.
      */
     protected <A extends ActionInstance> Action<A> newAction(String actionName, Class<A> instanceType) {
-        if (actionName == null || actionName.isEmpty()) {
-            throw new IllegalArgumentException("actionName must not be empty!");
-        } else if (this.actions.containsKey(actionName)) {
-            throw new IllegalArgumentException("Duplicate action " + actionName);
-        }
-        if (instanceType == null) {
-            throw new IllegalArgumentException("instanceType must not be null!");
-        }
-
-        Action<A> action = new Action<A>(this, actionName, instanceType);
-        this.actions.put(actionName, action);
-        return action;
+        return getBehavior().newAction(actionName, instanceType);
     }
 
     /**
@@ -71,18 +61,7 @@ public class Thing extends Storable {
      * @return The newly created event.
      */
     protected <E extends EventInstance> Event<E> newEvent(String eventName, Class<E> instanceType) {
-        if (eventName == null || eventName.isEmpty()) {
-            throw new IllegalArgumentException("eventName must not be empty!");
-        } else if (this.events.containsKey(eventName)) {
-            throw new IllegalArgumentException("Duplicate event " + eventName);
-        }
-        if (instanceType == null) {
-            throw new IllegalArgumentException("instanceType must not be null!");
-        }
-
-        Event<E> event = new Event<E>(this, eventName, instanceType);
-        this.events.put(eventName, event);
-        return event;
+        return getBehavior().newEvent(eventName, instanceType);
     }
 
     /**
@@ -99,24 +78,26 @@ public class Thing extends Storable {
      * @return The newly created property.
      */
     protected <V> Property<V> newProperty(String propertyName, Class<V> valueType, V initialValue) {
-        if (propertyName == null || propertyName.isEmpty()) {
-            throw new IllegalArgumentException("propertyName must not be empty!");
-        } else if (this.properties.containsKey(propertyName)) {
-            throw new IllegalArgumentException("Duplicate property " + propertyName);
-        }
-        if (valueType == null) {
-            throw new IllegalArgumentException("valueType must not be null!");
-        }
+        return getBehavior().newProperty(propertyName, valueType, initialValue, null);
+    }
 
-        Property<V> property = new Property<V>(this, propertyName, valueType, initialValue);
-
-        if (this.events.containsKey(property.getChangeEvent().getName())) {
-            throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
-        }
-
-        this.properties.put(propertyName, property);
-        this.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
-        return property;
+    /**
+     * Creates a new property for the thing.
+     * 
+     * @param <V>
+     *            The type of the property's values.
+     * @param propertyName
+     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     * @param valueType
+     *            The type of the property's values.
+     * @param initialValue
+     *            The initial value of the property.
+     * @param uiHint
+     *            The UI hint for the property. See {@link UIHint} for static factory methods.
+     * @return The newly created property.
+     */
+    protected <V> Property<V> newProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
+        return getBehavior().newProperty(propertyName, valueType, initialValue, uiHint);
     }
 
     /**
@@ -133,28 +114,26 @@ public class Thing extends Storable {
      * @return The newly created property.
      */
     protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue) {
-        if (propertyName == null || propertyName.isEmpty()) {
-            throw new IllegalArgumentException("propertyName must not be empty!");
-        } else if (this.properties.containsKey(propertyName)) {
-            throw new IllegalArgumentException("Duplicate property " + propertyName);
-        }
-        if (valueType == null) {
-            throw new IllegalArgumentException("valueType must not be null!");
-        }
+        return getBehavior().newWritableProperty(propertyName, valueType, initialValue, null);
+    }
 
-        WritableProperty<V> property = new WritableProperty<V>(this, propertyName, valueType, initialValue);
-
-        if (this.events.containsKey(property.getChangeEvent().getName())) {
-            throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
-        }
-        if (this.actions.containsKey(property.getSetAction().getName())) {
-            throw new IllegalArgumentException("Duplicate property set action " + property.getSetAction().getName());
-        }
-
-        this.properties.put(propertyName, property);
-        this.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
-        this.actions.put(property.getSetAction().getName(), property.getSetAction());
-        return property;
+    /**
+     * Creates a new writable property for the thing.
+     * 
+     * @param <V>
+     *            The type of the property's values.
+     * @param propertyName
+     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     * @param valueType
+     *            The type of the property's values.
+     * @param initialValue
+     *            The initial value of the property.
+     * @param uiHint
+     *            The UI hint for the property. See {@link UIHint} for static factory methods.
+     * @return The newly created property.
+     */
+    protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
+        return getBehavior().newWritableProperty(propertyName, valueType, initialValue, uiHint);
     }
 
     /**

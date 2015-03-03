@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import de.uni_stuttgart.riot.thing.ui.UIHint;
+
 /**
  * This class represents a writable property belonging to a {@link Thing}. Writable means that there is a {@link PropertySetAction} assigned
  * to this property that allows the user to change the value of the property.
@@ -23,9 +25,11 @@ public class WritableProperty<V> extends Property<V> {
      *            The type of the property's values.
      * @param value
      *            The initial property value.
+     * @param uiHint
+     *            The UI hint for the property.
      */
-    WritableProperty(Thing thing, String name, Class<V> valueType, V value) {
-        super(thing, name, valueType, value);
+    WritableProperty(Thing thing, String name, Class<V> valueType, V value, UIHint uiHint) {
+        super(thing, name, valueType, value, uiHint);
         this.setAction = new PropertySetAction<V>(this);
     }
 

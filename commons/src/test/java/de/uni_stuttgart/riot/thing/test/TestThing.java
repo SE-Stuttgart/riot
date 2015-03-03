@@ -8,6 +8,7 @@ import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A thing type with a couple of actions/events/properties for testing purposes.
@@ -16,9 +17,10 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
  */
 public class TestThing extends Thing {
 
-    private final WritableProperty<Integer> intProperty = newWritableProperty("int", Integer.class, 42);
-    private final WritableProperty<Long> longProperty = newWritableProperty("long", Long.class, 4242L);
-    private final Property<String> readonlyStringProperty = newProperty("readonlyString", String.class, "InitialString");
+    private final WritableProperty<Integer> intProperty = newWritableProperty("int", Integer.class, 42, UIHint.integralSlider(0, 10000));
+    private final WritableProperty<Long> longProperty = newWritableProperty("long", Long.class, 4242L, UIHint.editNumber());
+    private final WritableProperty<Double> percentProperty = newWritableProperty("percent", Double.class, 0.5, UIHint.percentageSlider());
+    private final Property<String> readonlyStringProperty = newProperty("readonlyString", String.class, "InitialString", UIHint.editText());
 
     private final Event<EventInstance> simpleEvent = newEvent("simpleEvent", EventInstance.class);
     private final Event<TestEventInstance> parameterizedEvent = newEvent("parameterizedEvent", TestEventInstance.class);
@@ -46,6 +48,14 @@ public class TestThing extends Thing {
         longProperty.set(newValue);
     }
 
+    public double getPercent() {
+        return percentProperty.getValue();
+    }
+
+    public void setPercent(double newValue) {
+        percentProperty.set(newValue);
+    }
+
     public String getReadonlyString() {
         return readonlyStringProperty.getValue();
     }
@@ -56,6 +66,10 @@ public class TestThing extends Thing {
 
     public WritableProperty<Long> getLongProperty() {
         return longProperty;
+    }
+
+    public WritableProperty<Double> getPercentProperty() {
+        return percentProperty;
     }
 
     public Property<String> getReadonlyStringProperty() {

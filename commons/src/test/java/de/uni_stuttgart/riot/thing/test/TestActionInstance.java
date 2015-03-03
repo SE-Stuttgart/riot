@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.InstanceParameter;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * An action instance type for testing that contains a parameter.
@@ -13,6 +15,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
  */
 public class TestActionInstance extends ActionInstance {
 
+    @InstanceParameter(ui = UIHint.IntegralSlider.class, min = 0, max = 10000)
     private final int parameter;
 
     public TestActionInstance(Action<? extends ActionInstance> action, int parameter) {
