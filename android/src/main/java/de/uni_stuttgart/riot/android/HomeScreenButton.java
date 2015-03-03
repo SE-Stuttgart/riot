@@ -18,7 +18,7 @@ public class HomeScreenButton {
 
     private Paint buttonPaint;
 
-    private float scaleFactor = 1.7f;
+    private float scaleFactor = 1.5f;
 
     public HomeScreenButton(DrawCanvas canvas, int id, String buttonDescription, int buttonX, int buttonY, int imageID) {
         this.id = id;

@@ -35,7 +35,11 @@ public class DrawCanvas extends View {
     private boolean buttonLongPressed;
 
     private int rotationDegree = 2; // good value for emulator = 3;
-    private int refreshRate = 20;
+    private int refreshRate = 20; // to control the FPS
+
+    private int textOffset = 20;
+
+    private List<HomeScreenButton> buttonList2 = new ArrayList<HomeScreenButton>();
 
     public DrawCanvas(HomeScreen context) {
         super(context);
@@ -50,19 +54,19 @@ public class DrawCanvas extends View {
 
         buttonList = database.getHomeScreenButtonCoordinates(this);
         if (buttonList.size() == 0) {
-            buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 100, R.drawable.car));
+            buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 300, R.drawable.car));
 
             buttonList.add(new HomeScreenButton(this, 1, "House", 300, 100, R.drawable.house));
 
-            buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
-
-            buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
-
-            buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
-
-            buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
-
-            buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
+            // buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
+            //
+            // buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
+            //
+            // buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
+            //
+            // buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
+            //
+            // buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -93,7 +97,7 @@ public class DrawCanvas extends View {
         if (!buttonLongPressed) {
             for (HomeScreenButton button : buttonList) {
                 canvas.drawBitmap(button.getImage(), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
-                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 10), paint);
+                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + textOffset), paint);
             }
         } else { // Shaking animation
             for (HomeScreenButton button : buttonList) {
@@ -103,11 +107,38 @@ public class DrawCanvas extends View {
                     canvas.drawBitmap(rotateBitmap(button.getButtonImage()), button.getButtonX(), button.getButtonY(), button.getButtonPaint());
                 }
 
-                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + 35), paint);
+                canvas.drawText(button.getButtonDescription(), (button.getButtonX() + button.getButtonImage().getWidth() / 2 - (button.getButtonDescription().length() / 2) * 20), (button.getButtonY() + button.getButtonImage().getHeight() + textOffset), paint);
             }
             rotationDegree = -rotationDegree; // switch the rotation
             postInvalidateDelayed(refreshRate); // control the refresh rate
         }
+
+    }
+
+    /**
+     * 
+     * @param fingerX
+     * @param fingerY
+     * @return
+     */
+    public boolean checkForBounds(int fingerX, int fingerY) {
+        return (fingerX > selectedButton.getButtonImage().getWidth() / 2 && fingerX < this.getWidth() - selectedButton.getButtonImage().getWidth() / 2 && fingerY > selectedButton.getButtonImage().getHeight() / 2 && fingerY < this.getHeight() - selectedButton.getButtonImage().getHeight() / 2 - textOffset);
+    }
+
+    public boolean checkForCollision(HomeScreenButton button) {
+        // System.out.println("DraggedbuttonX: " + selectedButton.getButtonX() + " DraggedbuttonY: " + selectedButton.getButtonY() + " ");
+        // return !(selectedButton.getButtonX() + selectedButton.getButtonImage().getWidth() < button.getButtonX() ||
+        // selectedButton.getButtonX() > button.getButtonX() + button.getButtonImage().getWidth());
+        // Rect rec1 = new Rect(selectedButton.getButtonX(), selectedButton.getButtonX(), selectedButton.getButtonImage().getWidth(),
+        // selectedButton.getButtonImage().getHeight());
+        // Rect rec2 = new Rect(button.getButtonX(), button.getButtonX(), button.getButtonImage().getWidth(),
+        // button.getButtonImage().getHeight());
+        // if (rec1.intersect(rec2)) {
+        // return false;
+        // } else {
+        // return true;
+        // }
+        return (((selectedButton.getButtonY() + selectedButton.getButtonImage().getHeight()) < (button.getButtonY())) || (selectedButton.getButtonY() > (button.getButtonY() + button.getButtonImage().getHeight())) || ((selectedButton.getButtonX() + selectedButton.getButtonImage().getWidth()) < button.getButtonX()) || (selectedButton.getButtonX() > (button.getButtonX() + button.getButtonImage().getWidth())));
 
     }
 
@@ -123,14 +154,40 @@ public class DrawCanvas extends View {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
                     selectedButton.getButtonPaint().setAlpha(50);
+                    buttonList2.addAll(buttonList);
+                    buttonList2.remove(selectedButton);
                 }
             }
             return true;
         case (MotionEvent.ACTION_MOVE):
             if (buttonLongPressed) {
                 if (selectedButton != null) {
-                    selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
-                    selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
+                    for (HomeScreenButton button : buttonList2) {
+                        // System.out.println(selectedButton.getButtonDescription() + " " + button.getButtonDescription() + " " +
+                        // checkForCollision(button));
+                        if (checkForCollision(button) && checkForBounds((int) event.getX(), (int) event.getY())) {
+                            selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
+                            selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
+                        } else {
+                            float dx = button.getButtonX() - selectedButton.getButtonX();
+                            float dy = button.getButtonY() - selectedButton.getButtonY();
+
+                            float angle = (float) Math.atan2(dy, dx);
+
+                            float tempRadius = 2.0f;
+
+                            float targetX = (float) (selectedButton.getButtonX() + Math.cos(angle)) * tempRadius;
+                            float targetY = (float) (selectedButton.getButtonY() + Math.sin(angle)) * tempRadius;
+
+                            float ax = targetX - button.getButtonX();
+                            float ay = targetY - button.getButtonY();
+
+                            selectedButton.setButtonX((int) (selectedButton.getButtonX() - ax));
+                            selectedButton.setButtonY((int) (selectedButton.getButtonY() - ay));
+                            System.out.println(selectedButton.getButtonX() + " " + selectedButton.getButtonY());
+                        }
+                    }
+
                 }
             }
             if (selectedButton != null && !isCoordsOnButton(event.getX(), event.getY(), selectedButton)) {
@@ -142,6 +199,7 @@ public class DrawCanvas extends View {
                 database.updateHomeScreenButtonCoordinates(selectedButton); // save Coordinates of the pressed button into the database
                 selectedButton.getButtonPaint().setAlpha(255);
                 selectedButton = null;
+                buttonList2 = new ArrayList<HomeScreenButton>();
             } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 
