@@ -33,6 +33,7 @@
     <string name="desc_filter_warning">Zeigt alle Warnungen an</string>
 
     <!-- Location (all entries for language please insert here) -->
+    <string name="location">Standort</string>
     <string name="location_show">Verfügbare Standorte anzeigen</string>
     <string name="location_hide">Verfügbare Standorte ausblenden</string>
     <string name="location_current_position">Aktueller Standort</string>
