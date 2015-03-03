@@ -39,4 +39,4 @@ Install the following plugins from the Eclipse Marketplace if not installed alre
   - add properties "user:riot", "password:yourpassword", "databaseName:riot" and save
 - go back to jdbc and create a resource with the jndi name "jdbc/riot" and reference the connection pool
 - the jndi name can now be used to access the pool in the jee containers
-- Run the scripts "createschema.sql" from UserManagement and "createCalendarEntries.sql" from the Server project.
+- Set up the schema and test data as described in ../README.md in the section "Testdata Creation".

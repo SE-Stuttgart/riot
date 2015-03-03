@@ -59,6 +59,20 @@ mvn generate-test-resources -Pmysql
 You can also do this along with your regular build when you fetched a new version from Git and want to compile and test it:
 mvn clean install -Pmysql
 
+## Using the Belgrad SQL certificate in local GlassFish
+- Download the file /opt/glassfish4/glassfish/domains/riot/config/keystore.jks from belgrad.
+- Shutdown GlassFish if running.
+- Your local GlassFish master password is probably set to the empty password (which is the default) or "adminadmin" or "changeit".
+- Test which one it is by using KeyStore Explorer on your local keystore.jks file.
+  - http://keystore-explorer.sourceforge.net/downloads.php
+- Use KeyStore Explorer to change the password of the downloaded keystore.jks file to the one of your local GlassFish.
+  - It is essential that you change the password of the container as well as of both entries inside the container (so 3 password changes in total). Remember to save the changed jks file afterwards.
+- Make a backup of your local keystore.jks and replace it with the one from Belgrad (with the changed password).
+- Restart GlassFish.
+- To allow the clients to accept "localhost" or some other local IP of yours as belgrad, you will need to replace STRICT_HOSTNAME_VERIFIER with ALLOW_ALL_HOSTNAME_VERIFIER in HttpsClient.
+  - Never commit this change!
+- Obviously, you will need to replace the host name in the code to have the clients connect to your local server.
+
 ## Localization
 All localized strings should be kept in "commons/src/main/resources/languages". The files created there should be named "xxx_yy.properties", where xxx is module/application domain that the strings inside belong to and yy is the locale code. When using Eclipse, it is important to use UTF-8-Encoding and a normal text editor (not the Eclipse visual GUI for properties files).
 
