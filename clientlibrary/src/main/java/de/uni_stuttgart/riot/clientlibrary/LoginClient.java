@@ -354,6 +354,7 @@ public class LoginClient {
                 error.throwIT();
             }
             if (status == NOT_AUTH) {
+                response.getEntity().consumeContent();
                 this.refresh();
                 return response;
             } else {
