@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
@@ -21,6 +22,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  */
 public abstract class ManagementListFragment extends ManagementFragment {
 
+    private static final int DUMMY_IMG_NR = 42;
+    
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_management_list;
@@ -197,7 +200,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(defaultOnlineState.getR());
+            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(DUMMY_IMG_NR); // FIXME setting the right image 
         }
     }
 

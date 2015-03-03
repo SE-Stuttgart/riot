@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
 
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.InternalRequest;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -100,7 +99,6 @@ public class LoginClient {
         this.loggedIn = false;
         this.tokenManager = tokenManager;
         this.jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.jsonMapper.enableDefaultTyping(DefaultTyping.NON_FINAL);
 
         URL url;
         try {

@@ -1,71 +1,141 @@
 package de.uni_stuttgart.riot.db;
 
-import java.sql.SQLException;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
-import javax.naming.NamingException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
+import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.db.thing.ActionDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.EventDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.db.thing.ThingDAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
-import de.uni_stuttgart.riot.thing.commons.RemoteThing;
-import de.uni_stuttgart.riot.thing.remote.ActionDBObject;
-import de.uni_stuttgart.riot.thing.remote.EventDBObject;
-import de.uni_stuttgart.riot.thing.remote.PropertyDBObject;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.remote.ServerThingBehavior;
+import de.uni_stuttgart.riot.thing.test.TestThing;
+import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 
 @TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
-public class ThingDBTest extends JerseyDBTestBase {
+public class ThingDBTest extends BaseDatabaseTest {
 
-    @Override
-    protected RiotApplication configure() {
-        return new RiotApplication(false);
-    }
+    /**
+     * We need a stub for the behavior factory.
+     */
+    ThingBehaviorFactory<ServerThingBehavior> behaviorFactory = new ThingBehaviorFactory<ServerThingBehavior>() {
+        @Override
+        public void onThingCreated(Thing thing, ServerThingBehavior behavior) {
+        }
 
-    private RemoteThing getTestRemoteThing() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
-        return daoT.findBy(1);
+        @Override
+        public ServerThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+            return new ServerThingBehavior(); // Could also use a Mock here.
+        }
+    };
+
+    /**
+     * The SUT is the DAO.
+     */
+    ThingDAO dao = new ThingDAO(behaviorFactory);
+
+    @Test
+    public void shouldInsertThing() throws DatasourceInsertException, DatasourceFindException {
+
+        // Insert a new thing.
+        TestThing thing = ThingFactory.create(TestThing.class, 11, "Inserted Thing", new ServerThingBehavior());
+        dao.insert(thing);
+
+        // When there was an ID already, it must be reused.
+        assertThat(thing.getId(), is(11L));
+
+        // Check if it was stored correctly by reloading it.
+        TestThing restoredThing = (TestThing) dao.findBy(thing.getId());
+        assertThat(restoredThing, equalTo(thing));
+
+        // Insert another thing without ID. The ID must be created.
+        TestThing thing2 = ThingFactory.create(TestThing.class, 0, "Inserted Thing 2", new ServerThingBehavior());
+        dao.insert(thing2);
+        assertThat(thing2.getId(), notNullValue());
+        assertThat(thing2.getId(), not(0));
     }
 
     @Test
-    public void insertRemoteThingTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        RemoteThingSqlQueryDAO dao = new RemoteThingSqlQueryDAO();
-        dao.insert(new RemoteThing("Tes2t", 1));
-        RemoteThing thing = dao.findBy(4);
+    public void shouldLoadExistingThing() throws DatasourceFindException {
+        TestThing thing = (TestThing) dao.findBy(1);
+        assertThat(thing.getInt(), is(42));
+        assertThat(thing.getReadonlyString(), is("String from Database"));
     }
 
     @Test
-    public void insertPropertyTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        PropertyDBObjectSqlQueryDAO dao = new PropertyDBObjectSqlQueryDAO();
-        RemoteThing thing = this.getTestRemoteThing();
-        dao.insert(new PropertyDBObject("name", "v", "vt", thing.getId()));
-        PropertyDBObject p = dao.findBy(4);
+    public void shouldDeleteThing() throws DatasourceFindException, DatasourceDeleteException {
+        dao.delete(dao.findBy(1));
+        try {
+            dao.findBy(1); // Should fail
+            fail();
+        } catch (DatasourceFindException e) {
+            // Expected
+        }
     }
 
     @Test
-    public void insertActionTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject(1, "FactoryString"));
-        ActionDBObject a = dao.findBy(4);
+    public void shouldDeleteThingById() throws DatasourceFindException, DatasourceDeleteException {
+        dao.findBy(1); // Should work
+        dao.delete(1);
+        try {
+            dao.findBy(1); // Should fail
+            fail();
+        } catch (DatasourceFindException e) {
+            // Expected
+        }
     }
 
     @Test
-    public void insertEventTest() throws SQLException, NamingException, DatasourceInsertException, DatasourceFindException {
-        EventDBObjectSqlQueryDAO dao = new EventDBObjectSqlQueryDAO();
-        dao.insert(new EventDBObject(1, "Test"));
-        EventDBObject a = dao.findBy(4);
+    public void shouldUpdateThingProperties() throws DatasourceFindException, DatasourceUpdateException {
+        TestThing thing = (TestThing) dao.findBy(1);
+        assertThat(thing.getName(), is("My Test Thing"));
+        assertThat(thing.getInt(), is(42));
+
+        thing.setName("Another name");
+        ThingState.silentSetThingProperty(thing.getIntProperty(), 43);
+        dao.update(thing);
+
+        TestThing restoredThing = (TestThing) dao.findBy(1);
+        assertThat(restoredThing.getName(), is("Another name"));
+        assertThat(restoredThing.getInt(), is(43));
     }
 
-    public ActionDBObject getTestAction() throws DatasourceFindException, DatasourceInsertException, SQLException, NamingException {
-        ActionDBObjectSqlQueryDAO dao = new ActionDBObjectSqlQueryDAO();
-        dao.insert(new ActionDBObject(1, "FactoryString"));
-        return dao.findBy(1);
+    @Test
+    public void shouldFindByName() throws DatasourceInsertException, DatasourceFindException, DatasourceDeleteException {
+
+        TestThing thing1 = ThingFactory.create(TestThing.class, 11, "TestThing1", new TestThingBehavior());
+        TestThing thing2 = ThingFactory.create(TestThing.class, 12, "TestThing2", new TestThingBehavior());
+        TestThing thing3 = ThingFactory.create(TestThing.class, 13, "TestThing3", new TestThingBehavior());
+        dao.insert(thing1);
+        dao.insert(thing2);
+        dao.insert(thing3);
+
+        assertThat(dao.findByUniqueField(new SearchParameter(SearchFields.NAME, "TestThing2")), equalTo(thing2));
+
+        Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+        searchParams.add(new SearchParameter(SearchFields.NAME, "TestThing1"));
+        searchParams.add(new SearchParameter(SearchFields.TABLEPK, 13));
+        Collection<Thing> restoredThings = dao.findBy(searchParams, true);
+        assertThat(restoredThings, containsInAnyOrder(thing1, thing3));
+
+        // Delete the initial one, so that only our three remain
+        dao.delete(1);
+        restoredThings = dao.findAll();
+        assertThat(restoredThings, containsInAnyOrder(thing1, thing2, thing3));
     }
 
 }

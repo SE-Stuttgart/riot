@@ -1,18 +1,19 @@
 package de.uni_stuttgart.riot.usermanagement.logic;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
-import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 
 /**
  * Logic class for tokens.
  */
 public class TokenLogic {
 
-    private DAO<Token> dao = new TokenSqlQueryDAO();
+    private TokenSqlQueryDAO dao = new TokenSqlQueryDAO();
 
     /**
      * Retrieves a token by its string representation.
@@ -31,4 +32,20 @@ public class TokenLogic {
         }
     }
 
+    /**
+     * Retrieves the ID of the user that the given token belongs to.
+     * 
+     * @param token
+     *            The String representation of the token.
+     * @return The user ID.
+     * @throws GetUserException
+     *             When the token could not be found.
+     */
+    public long getUserIdFromToken(String token) throws GetUserException {
+        try {
+            return dao.getUserIdFromToken(token);
+        } catch (DatasourceFindException e) {
+            throw new GetUserException(e);
+        }
+    }
 }

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS
 roles_permissions,
 tokens_roles,
 users_roles,
+users_permissions,
 roles,
 permissions,
 tokens,
@@ -11,6 +12,7 @@ CREATE TABLE users
 (
 id SERIAL NOT NULL,
 username varchar(50) unique NOT NULL,
+email varchar(50) NOT NULL,
 hashedPassword varchar(256) NOT NULL,
 passwordSalt varchar(256) NOT NULL,
 hashIterations int NOT NULL,
@@ -34,14 +36,14 @@ FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
 CREATE TABLE permissions
 (
 id SERIAL,
-permissionValue varchar(50) NOT NULL,
+permissionValue varchar(50) unique NOT NULL,
 PRIMARY KEY (id)
 );
 
 CREATE TABLE roles 
 (
 id SERIAL,
-roleName varchar(50) NOT NULL,
+roleName varchar(50) unique NOT NULL,
 PRIMARY KEY (id)
 );
 
@@ -54,6 +56,17 @@ FOREIGN KEY (roleID) REFERENCES roles(id) ON DELETE CASCADE,
 FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE,
 PRIMARY KEY (id),
 UNIQUE(userID, roleID)
+);
+
+CREATE TABLE users_permissions 
+(
+id SERIAL,
+userID bigint unsigned NOT NULL,
+permissionID bigint unsigned NOT NULL,
+FOREIGN KEY (permissionID) REFERENCES permissions(id) ON DELETE CASCADE,
+FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE,
+PRIMARY KEY (id),
+UNIQUE(userID, permissionID)
 );
 
 CREATE TABLE tokens_roles 

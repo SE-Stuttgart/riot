@@ -1,114 +1,170 @@
 package de.uni_stuttgart.riot.logic.thing;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.net.URI;
-import java.sql.Timestamp;
-import java.util.Queue;
-import java.util.Stack;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.UriBuilder;
-
+import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.commons.test.JerseyDBTestBase;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
-import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
-import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
-import de.uni_stuttgart.riot.thing.commons.Property;
-import de.uni_stuttgart.riot.thing.commons.RemoteThing;
-import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
-import de.uni_stuttgart.riot.thing.commons.action.PropertySetAction;
-import de.uni_stuttgart.riot.thing.commons.action.PropertySetActionInstance;
-import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
-import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEvent;
-import de.uni_stuttgart.riot.thing.commons.event.PropertyChangeEventInstance;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.Event;
+import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
+import de.uni_stuttgart.riot.thing.test.TestEventInstance;
+import de.uni_stuttgart.riot.thing.test.TestThing;
 
-@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
-public class ThingLogicTest extends JerseyDBTestBase {
+@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql" })
+public class ThingLogicTest extends BaseDatabaseTest {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#configure()
-     */
-    @Override
-    protected Application configure() {
-        return new RiotApplication(false);
-    }
+    ThingLogic logic;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.glassfish.jersey.test.JerseyTest#getBaseUri()
-     */
-    @Override
-    protected URI getBaseUri() {
-        return UriBuilder.fromUri(super.getBaseUri()).path("api/v1/").build();
+    @Before
+    public void initializeThingLogic() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+        // We don't use the static instance because we need a fresh one every time.
+        Constructor<ThingLogic> constructor = ThingLogic.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        logic = constructor.newInstance();
     }
 
     @Test
-    public void competionTest() throws DatasourceFindException {
-        RemoteThingSqlQueryDAO daoT = new RemoteThingSqlQueryDAO();
-        RemoteThing thing = daoT.findBy(1);
-        ThingLogic logic = ThingLogic.getThingLogic();
-        logic.completeRemoteThing(thing);
-        assertEquals(2, thing.getActions().size());
-        assertEquals(2, thing.getEvents().size());
-        assertEquals(2, thing.getProperties().size());
+    public void shouldLoadExistingThingFromDatabase() {
+        assertThat(logic.getAllThings(), hasSize(1));
+        TestThing thing = (TestThing) logic.getThing(1);
+        assertThat(thing.getInt(), is(42));
+        assertThat(thing.getReadonlyString(), is("String from Database"));
+        assertThat(thing.getAction("simpleAction"), notNullValue());
+        assertThat(thing.getEvent("simpleEvent"), notNullValue());
     }
 
     @Test
-    public void lastOnlinetest() throws DatasourceFindException {
-        ThingLogic logic = ThingLogic.getThingLogic();
-        Timestamp l1 = logic.lastConnection(1);
-        assertEquals(l1, new Timestamp(0));
-        logic.getCurrentActionInstances(1);
-        Timestamp l2 = logic.lastConnection(1);
-        assertEquals(true, l2.after(new Timestamp(System.currentTimeMillis() - 1000)));
+    public void shouldRegisterAndUnregister() throws DatasourceInsertException, DatasourceDeleteException {
+        TestThing thing1 = (TestThing) logic.getThing(1);
+        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        assertThat(thing2.getId(), notNullValue());
+        assertThat(thing2.getId(), not(0));
+
+        Collection<Thing> things = logic.getAllThings();
+        assertThat(things, containsInAnyOrder(thing1, thing2));
+
+        logic.unregisterThing(thing2.getId());
+        things = logic.getAllThings();
+        assertThat(things, containsInAnyOrder(thing1));
     }
 
     @Test
-    public void submitAndGetActionTest() throws DatasourceFindException {
-        ThingLogic logic = ThingLogic.getThingLogic();
-        Queue<ActionInstance> actions = logic.getCurrentActionInstances(1);
-        assertEquals(0, actions.size());
-        PropertySetAction<String> action = new PropertySetAction<String>("Test");
-        PropertySetActionInstance<String> actionInstrance = action.createInstance("value", 1);
-        logic.submitAction(actionInstrance);
-        actions = logic.getCurrentActionInstances(1);
-        assertEquals(1, actions.size());
-        assertEquals(actionInstrance, actions.peek());
-        actions = logic.getCurrentActionInstances(1);
-        assertEquals(0, actions.size());
+    public void shouldFilterCorrectly() throws DatasourceInsertException {
+        TestThing thing1 = (TestThing) logic.getThing(1);
+        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Third Test Thing", 0);
+        TestThing thing4 = (TestThing) logic.registerThing(TestThing.class.getName(), "Fourth Test Thing", 0);
+
+        // Note: ThingLogic internally sorts by ID.
+        assertThat(logic.getAllThings(), contains(thing1, thing2, thing3, thing4));
+        assertThat(logic.findThings(0, 10), contains(thing1, thing2, thing3, thing4));
+        assertThat(logic.findThings(0, 2), contains(thing1, thing2));
+        assertThat(logic.findThings(2, 2), contains(thing3, thing4));
+
+        // id > thing1 (OR id == thing3)
+        FilteredRequest request = new FilteredRequest();
+        request.setOrMode(true);
+        List<FilterAttribute> filterAttributes = new ArrayList<>();
+        filterAttributes.add(new FilterAttribute("id", FilterOperator.GT, thing1.getId()));
+        filterAttributes.add(new FilterAttribute("thingID", FilterOperator.EQ, thing3.getId()));
+        request.setFilterAttributes(filterAttributes);
+        assertThat(logic.findThings(request), contains(thing2, thing3, thing4));
+
+        // id == thing3 (AND id > thing1)
+        request.setOrMode(false);
+        assertThat(logic.findThings(request), contains(thing3));
+
+        // id == thing3 (AND id > thing1 AND type == TestThing)
+        filterAttributes.add(new FilterAttribute("type", FilterOperator.EQ, TestThing.class.getName()));
+        assertThat(logic.findThings(request), contains(thing3));
+
+        // type = TestThing (OR id == thing3 OR id > thing1)
+        request.setOrMode(true);
+        assertThat(logic.findThings(request), contains(thing1, thing2, thing3, thing4));
+
+        // Select all, but paginated
+        request.setLimit(2);
+        assertThat(logic.findThings(request), contains(thing1, thing2));
+        request.setOffset(2);
+        assertThat(logic.findThings(request), contains(thing3, thing4));
     }
 
     @Test
-    public void eventTest() throws DatasourceFindException {
-        ThingLogic logic = ThingLogic.getThingLogic();
-        // Register for event
-        logic.registerOnEvent(42, 1, new PropertyChangeEvent());
-        Stack<EventInstance> eventI = logic.getRegisteredEvents(42);
-        // There should be no eventinstances
-        assertEquals(0, eventI.size());
-        PropertyChangeEventInstance<String> eventInstance = new PropertyChangeEventInstance<String>(new Property<String>("", ""), 1, new Timestamp(0));
-        eventInstance.setThingId(1);
-        // submitting a instance
-        logic.submitEvent(eventInstance);
-        eventI = logic.getRegisteredEvents(42);
-        // now there should be one instance
-        eventI = logic.getRegisteredEvents(42);
-        assertEquals(0, eventI.size());
-        // deristiger
-        logic.deRegisterOnEvent(42, 1, new PropertyChangeEvent());
-        PropertyChangeEventInstance<String> eventInstance2 = new PropertyChangeEventInstance<String>(new Property<String>("", ""), 1, new Timestamp(0));
-        eventInstance2.setThingId(1);
-        logic.submitEvent(eventInstance2);
-        eventI = logic.getRegisteredEvents(42);
-        assertEquals(0, eventI.size());
+    public void shouldPropagateEvents() throws DatasourceInsertException, DatasourceFindException {
+
+        // thing1 registers to the parameterizedEvent of thing2
+        TestThing thing1 = (TestThing) logic.getThing(1);
+        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        logic.registerToEvent(thing1.getId(), thing2.getId(), "parameterizedEvent");
+
+        // So far, there should be no instances
+        assertThat(logic.getThingUpdates(thing1.getId()).getOccuredEvents(), is(empty()));
+
+        // Now thing2 fires the event twice (with different parameters)
+        Event<?> event = thing2.getEvent("parameterizedEvent");
+        TestEventInstance instance1 = new TestEventInstance(event, 23);
+        TestEventInstance instance2 = new TestEventInstance(event, 24);
+        logic.fireEvent(instance1);
+        logic.fireEvent(instance2);
+
+        // We should receive both of these.
+        assertThat(logic.getThingUpdates(thing1.getId()).getOccuredEvents(), contains(instance1, instance2));
+
+        // Calling again, they should be gone.
+        assertThat(logic.getThingUpdates(thing1.getId()).getOccuredEvents(), is(empty()));
+
+        // Unregister and try again - nothing should happen.
+        logic.unregisterFromEvent(thing1.getId(), thing2.getId(), "parameterizedEvent");
+        logic.fireEvent(new TestEventInstance(event, 25));
+        assertThat(logic.getThingUpdates(thing1.getId()).getOccuredEvents(), is(empty()));
+    }
+
+    @Test
+    public void shouldPropagateActions() throws DatasourceFindException {
+
+        // The thing is freshly initialized, there should be nothing to get for it.
+        TestThing thing1 = (TestThing) logic.getThing(1);
+        assertThat(logic.getThingUpdates(thing1.getId()).getOutstandingActions(), is(empty()));
+
+        // Now submit the action.
+        ActionInstance instance = new ActionInstance(thing1.getSimpleAction());
+        logic.submitAction(instance);
+
+        // We should receive the event.
+        assertThat(logic.getThingUpdates(thing1.getId()).getOutstandingActions(), contains(instance));
+
+        // Calling again, it should be gone.
+        assertThat(logic.getThingUpdates(thing1.getId()).getOutstandingActions(), is(empty()));
+    }
+
+    @Test
+    public void shouldReportLastConnectionTime() throws DatasourceFindException {
+        Date l1 = logic.getLastConnection(1);
+        assertThat(l1, is(nullValue()));
+
+        long timeBefore = System.currentTimeMillis();
+        logic.getThingUpdates(1);
+        Date l2 = logic.getLastConnection(1);
+        assertThat(l2, notNullValue());
+        assertThat(l2.getTime(), greaterThanOrEqualTo(timeBefore));
     }
 
 }

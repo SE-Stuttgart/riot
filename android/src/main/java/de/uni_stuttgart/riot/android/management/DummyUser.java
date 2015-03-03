@@ -4,6 +4,7 @@ package de.uni_stuttgart.riot.android.management;
 import java.util.LinkedHashSet;
 
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
@@ -22,7 +23,7 @@ public class DummyUser extends User {
      * @param userName .
      */
     public DummyUser(long id, String userName) {
-        super(id, userName);
+        super(id, "dummy@mail.de", userName);
     }
 
     /**

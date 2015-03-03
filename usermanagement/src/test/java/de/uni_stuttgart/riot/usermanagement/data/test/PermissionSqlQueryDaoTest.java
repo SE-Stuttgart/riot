@@ -63,7 +63,7 @@ public class PermissionSqlQueryDaoTest extends DaoTestBase {
     @Test
     public void findAllTest() throws DatasourceException, SQLException {
         Collection<Permission> permission = dao.findAll();
-        assertEquals(4, permission.size());
+        assertEquals(6, permission.size());
     }
 
 }

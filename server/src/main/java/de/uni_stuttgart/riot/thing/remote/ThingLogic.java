@@ -1,344 +1,365 @@
 package de.uni_stuttgart.riot.thing.remote;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import de.uni_stuttgart.riot.db.thing.ActionDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.EventDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.PropertyDBObjectSqlQueryDAO;
-import de.uni_stuttgart.riot.db.thing.RemoteThingSqlQueryDAO;
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.db.thing.ThingDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.thing.commons.Property;
-import de.uni_stuttgart.riot.thing.commons.RemoteThing;
-import de.uni_stuttgart.riot.thing.commons.Thing;
-import de.uni_stuttgart.riot.thing.commons.action.Action;
-import de.uni_stuttgart.riot.thing.commons.action.ActionInstance;
-import de.uni_stuttgart.riot.thing.commons.event.Event;
-import de.uni_stuttgart.riot.thing.commons.event.EventInstance;
-import de.uni_stuttgart.riot.thing.commons.event.EventListener;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.Event;
+import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.ThingBehavior;
+import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
- * Contains all logic regarding to {@link Thing} handling.
- *
+ * This is the main interface for {@link Thing} handling on the server.
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ThingLogic {
 
+    /**
+     * Instance of the singleton pattern.
+     */
     private static ThingLogic instance;
-    
-    private RemoteThingSqlQueryDAO remoteThingSqlQueryDAO;
-    private PropertyDBObjectSqlQueryDAO propertySqlQueryDAO;
-    private ActionDBObjectSqlQueryDAO actionDBObjectSqlQueryDAO;
-    private EventDBObjectSqlQueryDAO eventDBObjectSqlQueryDAO;
 
-    private HashMap<Long, Queue<ActionInstance>> actionInstances;
-    private HashMap<Long, LinkedList<Event>> events;
-    private HashMap<Long, Stack<EventInstance>> eventInstances;
-    private HashMap<Long, Timestamp> lastConnection;
+    /**
+     * Contains all known things. These need to be held in memory to allow for links like event listeners, etc. It is important to use a Map
+     * implementation that ensures a consistent order on the entries because paginated requests are done directly on this Map.
+     */
+    private final Map<Long, ServerThingBehavior> things = new TreeMap<>();
 
+    /**
+     * This behavior factory will create thing behaviors for the server (that will work along with this ThingLogic implementation) and it
+     * will add every new thing to {@link #things}.
+     */
+    private final ThingBehaviorFactory<ServerThingBehavior> behaviorFactory = new ThingBehaviorFactory<ServerThingBehavior>() {
+        public ServerThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+            return new ServerThingBehavior();
+        }
+
+        public void onThingCreated(Thing thing, ServerThingBehavior behavior) {
+            if (thing.getId() != null && thing.getId() != 0) {
+                things.put(thing.getId(), behavior);
+            }
+        }
+    };
+
+    /**
+     * The Thing DAO.
+     */
+    private final ThingDAO thingDAO = new ThingDAO(behaviorFactory);
+
+    /**
+     * Creates a new ThingLogic instance.
+     * 
+     * @throws DatasourceFindException
+     *             If the things could not be loaded.
+     */
     private ThingLogic() throws DatasourceFindException {
-        this.remoteThingSqlQueryDAO = new RemoteThingSqlQueryDAO();
-        this.propertySqlQueryDAO = new PropertyDBObjectSqlQueryDAO();
-        this.actionDBObjectSqlQueryDAO = new ActionDBObjectSqlQueryDAO();
-        this.eventDBObjectSqlQueryDAO = new EventDBObjectSqlQueryDAO();
-        this.actionInstances = new HashMap<Long, Queue<ActionInstance>>();
-        this.eventInstances = new HashMap<Long, Stack<EventInstance>>();
-        this.events = new HashMap<Long, LinkedList<Event>>();
-        this.lastConnection = new HashMap<Long, Timestamp>();
         this.initStoredThings();
     }
-    
+
     /**
      * Getter for {@link ThingLogic}.
-     * @return
-     *      Instance of {@link ThingLogic}
+     * 
+     * @return Instance of {@link ThingLogic}
      * @throws DatasourceFindException
-     *      Exception on initialization of Thing due to datasource exception.
+     *             Exception on initialization of Thing due to datasource exception.
      */
-    public static ThingLogic getThingLogic() throws DatasourceFindException {
+    public static ThingLogic getThingLogic() {
         if (instance == null) {
-            instance = new ThingLogic();
+            try {
+                instance = new ThingLogic();
+            } catch (DatasourceFindException e) {
+                throw new RuntimeException(e);
+            }
         }
         return instance;
     }
 
-    private void initStoredThings() throws DatasourceFindException {
-        Collection<RemoteThing> things = this.remoteThingSqlQueryDAO.findAll();
-        for (RemoteThing remoteThing : things) {
-            this.completeRemoteThing(remoteThing);
-            this.internalRegister(remoteThing);
-        }
-    }
-
     /**
-     * Resolves the thing id by from a given thing name.
-     * @param thingName
-     *      name of a thing
-     * @return
-     *      unique thing id
+     * Reads all stored things from the database.
+     * 
      * @throws DatasourceFindException
-     *      if there is no thing with name thingname
      */
-    public long resolveID(String thingName) throws DatasourceFindException {
-        return this.remoteThingSqlQueryDAO.findByUniqueField(new SearchParameter(SearchFields.NAME, thingName)).getId();
+    private void initStoredThings() throws DatasourceFindException {
+        // Note that because of the behaviorFactory above, this will fill the things List.
+        thingDAO.findAll();
     }
 
     /**
-     * Registers a thing in the thing logic. Includes storing the thing in the datasource.
-     * This operation must be called once for every thing to be used in any way regarding server operations.
-     * @param thing
-     *      Thing to be registered.
-     * @throws DatasourceInsertException
-     *      Exception during insertion of the thing into the datasource
+     * Returns a Thing by its ID.
+     * 
+     * @param id
+     *            The ID of the thing.
+     * @return The thing or <tt>null</tt> if it could not be found.
      */
-    public synchronized void registerThing(final RemoteThing thing) throws DatasourceInsertException {
+    public Thing getThing(long id) {
+        ThingBehavior behavior = things.get(id);
+        return behavior == null ? null : behavior.getThing();
+    }
+
+    /**
+     * Retrieves the behavior of a thing. Fails if it does not exist.
+     * 
+     * @param id
+     *            The ID of the thing.
+     * @return The thing's behavior.
+     * @throws DatasourceFindException
+     *             If the thing could not be found.
+     */
+    protected ServerThingBehavior getBehavior(long id) throws DatasourceFindException {
+        ServerThingBehavior behavior = things.get(id);
+        if (behavior == null) {
+            throw new DatasourceFindException("A thing with the ID " + id + " does not exist");
+        }
+        return behavior;
+    }
+
+    /**
+     * Returns a filtered collection of things.
+     * 
+     * @param filter
+     *            The filter.
+     * @return The things that match the filter.
+     */
+    public Collection<Thing> findThings(FilteredRequest filter) {
+        Stream<Thing> stream = things.values().stream().map(ThingBehavior::getThing);
+
+        if (!filter.getFilterAttributes().isEmpty()) {
+            stream = stream.filter(thing -> {
+                Predicate<? super FilterAttribute> predicate = (attribute) -> {
+                    switch (attribute.getFieldName()) {
+                    case "id":
+                    case "thingID":
+                        return attribute.evaluate(thing.getId());
+                    case "name":
+                        return attribute.evaluate(thing.getName());
+                    case "type":
+                        return attribute.evaluate(thing.getClass().getName()) || attribute.evaluate(thing.getClass().getSimpleName());
+                    default:
+                        return false;
+                    }
+                };
+
+                if (filter.isOrMode()) {
+                    return filter.getFilterAttributes().stream().anyMatch(predicate);
+                } else {
+                    return filter.getFilterAttributes().stream().allMatch(predicate);
+                }
+            });
+
+        }
+
+        stream = stream.skip(filter.getOffset());
+        if (filter.getLimit() > 0) {
+            stream = stream.limit(filter.getLimit());
+        }
+
+        return stream.collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a paginated collection of things.
+     * 
+     * @param offset
+     *            The offset (first index to be returned).
+     * @param limit
+     *            The number of things to be returned.
+     * @return The matching collection of things.
+     */
+    public Collection<Thing> findThings(int offset, int limit) {
+        Stream<ServerThingBehavior> stream = things.values().stream().skip(offset);
+        if (limit > 0) {
+            stream = stream.limit(limit);
+        }
+        return stream.map(ThingBehavior::getThing).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a collection of all known things.
+     * 
+     * @return All things.
+     */
+    public Collection<Thing> getAllThings() {
+        return things.values().stream().map(ThingBehavior::getThing).collect(Collectors.toList());
+    }
+
+    /**
+     * Registers a thing in the thing logic. Includes storing the thing in the datasource. This operation must be called once for every
+     * thing to be used in any way regarding server operations.
+     * 
+     * @param thingType
+     *            The type of the thing to be registered.
+     * @param thingName
+     *            The name of the thing to be registerd.
+     * @param ownerId
+     *            The User ID of the user who owns the thing.
+     * @return The newly registered Thing.
+     * @throws DatasourceInsertException
+     *             Exception during creation of the thing or during insertion of the thing into the datasource
+     */
+    public synchronized Thing registerThing(String thingType, String thingName, long ownerId) throws DatasourceInsertException {
         try {
-            this.remoteThingSqlQueryDAO.insert(thing);
-            for (Action action : thing.getActions()) {
-                String actionString = JsonUtil.getJsonUtil().toJson(action);
-                ActionDBObject actionDBObject = new ActionDBObject(thing.getId(), actionString);
-                this.actionDBObjectSqlQueryDAO.insert(actionDBObject);
-            }
-            for (Event event : thing.getEvents()) {
-                String eventString = JsonUtil.getJsonUtil().toJson(event);
-                EventDBObject eventDBObject = new EventDBObject(thing.getId(), eventString);
-                this.eventDBObjectSqlQueryDAO.insert(eventDBObject);
-            }
-            for (Property property : thing.getProperties().values()) {
-                String propertyValueString = JsonUtil.getJsonUtil().toJson(property.getValue());
-                PropertyDBObject propertyDBObject = new PropertyDBObject(property.getName(), propertyValueString, property.getValue().getClass().getCanonicalName(), thing.getId());
-                this.propertySqlQueryDAO.insert(propertyDBObject);
-            }
-            internalRegister(thing);
-            this.lastConnection(thing.getId());
+            // Note that the thing will be added to the things list by the behaviorFactory.
+            Thing thing = ThingFactory.create(thingType, 0, thingName, behaviorFactory);
+            ServerThingBehavior behavior = (ServerThingBehavior) thing.getBehavior();
+            thing.setOwnerId(ownerId);
+            thingDAO.insert(thing);
+            things.put(thing.getId(), behavior);
+            behavior.markLastConnection();
+            return thing;
         } catch (Exception e) {
             throw new DatasourceInsertException(e);
         }
     }
 
-    private void internalRegister(final RemoteThing thing) throws DatasourceFindException {
-        this.events.put(thing.getId(), new LinkedList<Event>());
-        this.actionInstances.put(thing.getId(), new LinkedList<ActionInstance>());
-        LinkedList<Event> thingEvents = this.getEvents(thing.getId());
-        thingEvents.addAll(thing.getEvents());
-    }
-
     /**
      * Unregisters a thing. Includes removal of the thing from the datasource.
+     * 
      * @param id
-     *      thing id of the thing to be unregistered.
+     *            thing id of the thing to be unregistered.
      * @throws DatasourceDeleteException
-     *      Exception during removal form datasource, e.g. no thing with given id exists in the datasource
+     *             Exception during removal form datasource, e.g. no thing with given id exists in the datasource
      */
     public synchronized void unregisterThing(long id) throws DatasourceDeleteException {
-        this.events.put(id, null);
-        this.actionInstances.put(id, null);
-        this.remoteThingSqlQueryDAO.delete(id);
-    }
-
-    /**
-     * Returns all {@link ActionInstance}s that had been submitted for the thing with id thingid (since last call).
-     * @param thingId
-     *      id of thing
-     * @return
-     *      actionInstacnes that had been submitted
-     * @throws DatasourceFindException
-     *      If thing with given id is not registered.
-     *      
-     */
-    public synchronized Queue<ActionInstance> getCurrentActionInstances(long thingId) throws DatasourceFindException {
-        Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
-        Queue<ActionInstance> result = new LinkedList<ActionInstance>();
-        while (!queue.isEmpty()) {
-            result.offer(queue.poll());
+        ServerThingBehavior behavior = things.get(id);
+        if (behavior == null) {
+            throw new DatasourceDeleteException("Thing with id " + id + " does not exist!");
         }
-        this.updateLastConnection(thingId);
-        return result;
-    }
-
-    private void updateLastConnection(long thingId) {
-        this.lastConnection.put(thingId, new Timestamp(System.currentTimeMillis()));
+        thingDAO.delete(id);
+        things.remove(id);
     }
 
     /**
-     * Submits the given {@link ActionInstance} to the thing with id  {@link ActionInstance#getThingId()}.
-     * So that the result of calling {@link ThingLogic#getCurrentActionInstances()} with {@link ActionInstance#getThingId()}
-     * would include the given a actionInstance.
-     * @param actionInstance
-     *      {@link ActionInstance} that should be submitted
+     * Registers the given thing (<tt>observerThingID</tt>) on the event <tt>targetEventName</tt> of thing with id <tt>targetThingID</tt>.
+     * 
+     * @param observerThingID
+     *            The Thing that wants to register
+     * @param targetThingID
+     *            The Thing that is being observed, i.e., the thing that owns the event.
+     * @param targetEventName
+     *            The name of the event to register to.
      * @throws DatasourceFindException
-     *      if there is no thing with {@link ActionInstance#getThingId()} registered
+     *             If one of the things cannot be found or if the event does not exist.
+     */
+    public synchronized void registerToEvent(long observerThingID, final long targetThingID, String targetEventName) throws DatasourceFindException {
+        ServerThingBehavior observerBehavior = getBehavior(observerThingID);
+        ServerThingBehavior targetBehavior = getBehavior(targetThingID);
+        Event<?> event = targetBehavior.getThing().getEvent(targetEventName);
+        if (event == null) {
+            throw new DatasourceFindException("The thing with ID " + targetThingID + " of type " + targetBehavior.getThing().getClass() + " does not have the event " + targetEventName);
+        }
+
+        observerBehavior.registerToEvent(event);
+    }
+
+    /**
+     * Unregisters the given thing (<tt>observerThingID</tt>) from the event <tt>targetEventName</tt> of thing with id
+     * <tt>targetThingID</tt>.
+     * 
+     * @param observerThingID
+     *            The Thing that wants to unregister
+     * @param targetThingID
+     *            The Thing that is being observed, i.e., the thing that owns the event.
+     * @param targetEventName
+     *            The name of the event to unregister from.
+     * @throws DatasourceFindException
+     *             If one of the things cannot be found or if the event does not exist.
+     */
+    public synchronized void unregisterFromEvent(long observerThingID, final long targetThingID, String targetEventName) throws DatasourceFindException {
+        ServerThingBehavior observerBehavior = getBehavior(observerThingID);
+        ServerThingBehavior targetBehavior = getBehavior(targetThingID);
+        Event<?> event = targetBehavior.getThing().getEvent(targetEventName);
+        if (event == null) {
+            throw new DatasourceFindException("The thing with ID " + targetThingID + " of type " + targetBehavior.getThing().getClass() + " does not have the event " + targetEventName);
+        }
+
+        observerBehavior.unregisterFromEvent(event);
+    }
+
+    /**
+     * Returns the last time the given thing has called the server. Returns 1.1.1970 if the thing has never called the server.
+     * 
+     * @param id
+     *            thing id
+     * @return last server call time
+     * @throws DatasourceFindException
+     *             If the thing was not found.
+     */
+    public Date getLastConnection(long id) throws DatasourceFindException {
+        return getBehavior(id).getLastConnection();
+    }
+
+    /**
+     * Fires an {@link EventInstance} on the server so that every thing that was registered on it will receive the instance.
+     * 
+     * @param eventInstance
+     *            {@link EventInstance} to be fired.
+     * @throws DatasourceFindException
+     *             If there is no thing with {@link EventInstance#getThingId()} registered
+     */
+    public void fireEvent(EventInstance eventInstance) throws DatasourceFindException {
+        getBehavior(eventInstance.getThingId()).fireEvent(eventInstance);
+    }
+
+    /**
+     * Submits the given {@link ActionInstance} to the thing with id {@link ActionInstance#getThingId()}. So that the result of calling
+     * {@link ThingLogic#getThingUpdates(long)} with {@link ActionInstance#getThingId()} would include the given a actionInstance.
+     * 
+     * @param actionInstance
+     *            {@link ActionInstance} that should be submitted
+     * @throws DatasourceFindException
+     *             if there is no thing with {@link ActionInstance#getThingId()} registered
      */
     public synchronized void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
-        //FIXME Racecondition ?
-        long thingId = actionInstance.getThingId();
-        Queue<ActionInstance> queue = this.getActionInstancesQueue(thingId);
-        queue.offer(actionInstance);
-        this.updateLastConnection(thingId);
-    }
-
-    private synchronized Queue<ActionInstance> getActionInstancesQueue(long thingId) throws DatasourceFindException {
-        Queue<ActionInstance> queue = this.actionInstances.get(thingId);
-        if (queue == null) {
-            throw new DatasourceFindException("Thing with id :" + thingId + "could not be found");
-        }
-        return queue;
-    }
-
-    private synchronized Stack<EventInstance> getEventInstancesStack(long thingId) throws DatasourceFindException {
-        Stack<EventInstance> stack = this.eventInstances.get(thingId);
-        if (stack == null) {
-            this.eventInstances.put(thingId, new Stack<EventInstance>());
-        }
-        return this.eventInstances.get(thingId);
+        getBehavior(actionInstance.getThingId()).userFiredAction(actionInstance);
     }
 
     /**
-     * Submits a {@link EventInstance} to the server so that every thing that was registered on that (event,thing) 
-     * will receive the instance by calling {@link ThingLogic#getRegisteredEvents(long)}.
-     * @param eventInstance
-     *      {@link EventInstance} to be submitted.
-     * @throws DatasourceFindException
-     *      if there is no thing with {@link EventInstance#getThingId()} registered
-     */
-    public synchronized void submitEvent(EventInstance eventInstance) throws DatasourceFindException {
-        LinkedList<Event> eventL = this.getEvents(eventInstance.getThingId());
-        for (Event event : eventL) {
-            if (event.isTypeOf(eventInstance)) {
-                event.fire(eventInstance);
-                break;
-            }
-        }
-    }
-
-    private synchronized LinkedList<Event> getEvents(long thingId) throws DatasourceFindException {
-        LinkedList<Event> queue = this.events.get(thingId);
-        if (queue == null) {
-            throw new DatasourceFindException("Thing with id :" + thingId + "could not be found");
-        }
-        return queue;
-    }
-
-    /**
-     * Fills the object {@link RemoteThing} with its properties and actions.
+     * Retrieves all updates for the thing since the last call of this method.
      * 
-     * @param remoteThing
-     *            to be filled.
-     * @return the filled object.
-     * @throws DatasourceFindException .
-     */
-    public RemoteThing completeRemoteThing(RemoteThing remoteThing) throws DatasourceFindException {
-        try {
-            ArrayList<SearchParameter> searchParams = new ArrayList<SearchParameter>();
-            searchParams.add(new SearchParameter(SearchFields.THINGID, remoteThing.getId()));
-            Collection<PropertyDBObject> properties = this.propertySqlQueryDAO.findBy(searchParams, false);
-            for (PropertyDBObject property : properties) {
-                Class clazz = Class.forName(property.getValType());
-                Property p = new Property(property.getName(), JsonUtil.getJsonUtil().toObject(property.getVal(), clazz));
-                remoteThing.addProperty(p);
-            }
-            Collection<ActionDBObject> actions = this.actionDBObjectSqlQueryDAO.findBy(searchParams, false);
-            for (ActionDBObject action : actions) {
-                Action a = JsonUtil.getJsonUtil().toObject(action.getFactoryString(), Action.class);
-                remoteThing.addAction(a);
-            }
-            Collection<EventDBObject> eventL = this.eventDBObjectSqlQueryDAO.findBy(searchParams, false);
-            for (EventDBObject event : eventL) {
-                Event e = JsonUtil.getJsonUtil().toObject(event.getFactoryString(), Event.class);
-                remoteThing.addEvent(e);
-            }
-            return remoteThing;
-        } catch (Exception e) {
-            throw new DatasourceFindException(e);
-        }
-    }
-
-    /**
-     * Deregisters the given thing (thingID) from the event (event) of thing (registerOnthingId).
-     * @param thingId
-     *      thing that wants to deregister.
-     * @param registerOnthingId
-     *     thing
-     * @param event
-     *     event
-     * @throws DatasourceFindException
-     *      if there is no thing with thingId or registerOnthingId registered
-     *      
-     */
-    public synchronized void deRegisterOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
-        for (Event e : this.getEvents(registerOnthingId)) {
-            if (e.equals(event)) {
-                e.unregister(thingId);
-            }
-        }
-    }
-
-    /**
-     * Registers the given thing (thingid) on the event of thing with id registerOnthingId.
-     * @param thingId
-     *      thing that wants to register
-     * @param registerOnthingId
-     *      registerOnthingId
-     * @param event
-     *          event
-     * @throws DatasourceFindException
-     *      if there is no thing with thingId or registerOnthingId registered
-     */
-    public synchronized void registerOnEvent(long thingId, final long registerOnthingId, Event event) throws DatasourceFindException {
-        final Stack<EventInstance> eIStack = this.getEventInstancesStack(thingId);
-        for (Event e : this.getEvents(registerOnthingId)) {
-            if (e.equals(event)) {
-                e.register(new EventListener<EventInstance>(thingId) {
-                    @Override
-                    public void onFired(EventInstance event) {
-                        eIStack.push(event);
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * Returns all eventinstances that had been submitted and were thing with id is registered on 
-     * since the last call.
      * @param id
-     *      id of the thing that wants to retrive his eventinstances.
-     * @return
-     *      the eventInstances
+     *            The ID of the thing.
+     * @return The updates since the last call.
      * @throws DatasourceFindException
-     *      if there is no thing with thingId or registerOnthingId registered
+     *             If the thing was not found.
      */
-    public synchronized Stack<EventInstance> getRegisteredEvents(long id) throws DatasourceFindException {
-        Stack<EventInstance> currentEventInstances = this.getEventInstancesStack(id);
-        Stack<EventInstance> result = new Stack<EventInstance>();
-        result.addAll(currentEventInstances);
-        currentEventInstances.clear();
-        return result;
+    public ThingUpdatesResponse getThingUpdates(long id) throws DatasourceFindException {
+        return getBehavior(id).getUpdates();
     }
 
     /**
-     * Returns the last time the given thing has called the server.
-     * Returns 1.1.1970 if the thing has never called the server.
-     * @param id
-     *      thing id
-     * @return
-     *      last server call time
+     * Share a thing with a user.
+     *
+     * @param thingId
+     *            the thing id
+     * @param userId
+     *            the user id
+     * @param permission
+     *            the right
+     * @throws GetPermissionException
+     *             the get permission exception
+     * @throws DatasourceInsertException
+     *             the datasource insert exception
      */
-    public synchronized Timestamp lastConnection(long id) {
-        Timestamp result = this.lastConnection.get(id);
-        if (result == null) {
-            return new Timestamp(0);
-        }
-        return result;
+    public void share(long thingId, long userId, ThingPermission permission) throws GetPermissionException, DatasourceInsertException {
+        UserManagementFacade.getInstance().addNewPermissionToUser(userId, new Permission(permission.buildShiroPermission(thingId)));
     }
 
 }

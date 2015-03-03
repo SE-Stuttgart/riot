@@ -5,11 +5,13 @@ import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.UnauthenticatedException;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
@@ -124,14 +126,16 @@ public class UserManagementFacade {
      * 
      * @param username
      *            The user name of the user,
+     * @param email
+     *            The email of the user,
      * @param clearTextPassword
      *            The password of the user as clear text,
      * @return The added user,
      * @throws AddUserException
      *             Thrown if any errors occur
      */
-    public User addUser(String username, String clearTextPassword) throws AddUserException {
-        return (User) userLogic.addUser(username, clearTextPassword);
+    public User addUser(String username, String email, String clearTextPassword) throws AddUserException {
+        return (User) userLogic.addUser(username, email, clearTextPassword);
     }
 
     /**
@@ -175,6 +179,19 @@ public class UserManagementFacade {
      */
     public User getUser(Long id) throws GetUserException {
         return (User) userLogic.getUser(id);
+    }
+
+    /**
+     * Get a single user.
+     *
+     * @param username
+     *            the username
+     * @return User with the given id.
+     * @throws GetUserException
+     *             Thrown if any errors occur
+     */
+    public User getUser(String username) throws GetUserException {
+        return (User) userLogic.getUser(username);
     }
 
     /**
@@ -420,6 +437,22 @@ public class UserManagementFacade {
     }
 
     /**
+     * Adds the new permission to user.
+     *
+     * @param userId
+     *            the user id
+     * @param permission
+     *            the permission
+     * @throws GetPermissionException
+     *             the get permission exception
+     * @throws DatasourceInsertException
+     *             the datasource insert exception
+     */
+    public void addNewPermissionToUser(Long userId, Permission permission) throws GetPermissionException, DatasourceInsertException {
+        userLogic.addNewPermissionToUser(userId, permission);
+    }
+
+    /**
      * Remove a permission from a role.
      * 
      * @param roleId
@@ -455,6 +488,37 @@ public class UserManagementFacade {
      */
     public void requiresPermission(String permission) throws AuthorizationException {
         SecurityUtils.getSubject().checkPermission(permission);
+    }
+
+    /**
+     * Determines the currently logged-in user. This method will throw a {@link UnauthenticatedException} if the user is currently not
+     * logged in.
+     * 
+     * @return The ID of the user who is currently logged in.
+     */
+    public long getCurrentUserId() {
+        Object token = SecurityUtils.getSubject().getPrincipal();
+        if (token == null) {
+            throw new UnauthenticatedException("Not logged in!");
+        }
+
+        try {
+            return tokenLogic.getUserIdFromToken(token.toString());
+        } catch (GetUserException e) {
+            throw new UnauthenticatedException("Invalid token " + token);
+        }
+    }
+
+    /**
+     * Determines the currently logged-in user. This method will throw a {@link UnauthenticatedException} if the user is currently not
+     * logged in.
+     * 
+     * @return The user who is currently logged in.
+     * @throws GetUserException
+     *             When the user logged in does not exist anymore in the database.
+     */
+    public User getCurrentUser() throws GetUserException {
+        return getUser(getCurrentUserId());
     }
 
 }

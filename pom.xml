@@ -74,7 +74,10 @@
 				<scope>provided</scope>
 			</dependency>
 
-			<!-- Server-Logging -->
+			<!-- Logging -->
+			<!-- Hint: Use slf4j-api if you want to use loggers in your code -->
+			<!-- Use either jcl-over-slf4j or logback-classic or slf4j-log4j12 in 
+				an executable maven module -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
@@ -91,6 +94,11 @@
 				<artifactId>logback-classic</artifactId>
 				<version>1.1.2</version>
 				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
 			</dependency>
 
 			<!-- Database -->
@@ -230,10 +238,10 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>mysql</id>

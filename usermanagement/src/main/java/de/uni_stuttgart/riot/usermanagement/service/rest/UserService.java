@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
@@ -73,7 +74,7 @@ public class UserService extends BaseResource<UMUser> {
         String accessToken = (String) SecurityUtils.getSubject().getPrincipal();
         Token token = facade.getToken(accessToken);
         User u = facade.getUser(token);
-        return new User(u.getUsername(), this.getUserRoles(u));
+        return new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
     }
 
     /**
@@ -89,8 +90,8 @@ public class UserService extends BaseResource<UMUser> {
     @POST
     @Path("sec")
     public User addUser(UserRequest userRequest) throws UserManagementException {
-        User user = facade.addUser(userRequest.getUsername(), userRequest.getPassword());
-        return new User(user.getUsername(), this.getUserRoles(user));
+        User user = facade.addUser(userRequest.getUsername(), userRequest.getEmail(), userRequest.getPassword());
+        return new User(user.getUsername(), user.getEmail(), this.getUserRoles(user));
     }
 
     /**
@@ -117,7 +118,7 @@ public class UserService extends BaseResource<UMUser> {
         facade.updateUser(user, userRequest.getPassword());
 
         // the user contains after it is updated all the information it is updated with
-        return new User(user.getUsername(), this.getUserRoles(user));
+        return new User(user.getUsername(), user.getEmail(), this.getUserRoles(user));
     }
 
     /**
@@ -198,6 +199,25 @@ public class UserService extends BaseResource<UMUser> {
     public Collection<TokenResponse> getUserTokens(@PathParam("userID") Long userID) throws UserManagementException {
         // TODO limit returned tokens
         return facade.getActiveTokensFromUser(userID).stream().map(TokenResponse::new).collect(Collectors.toList());
+    }
+    
+    /**
+     * Returns the current user online state (online or offline).
+     * @param userID 
+     * @return online if the user currently is logged in, offline otherwise.
+     * @throws UserManagementException   
+     *              Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     *             {@link UserManagementExceptionMapper} class.
+     */
+    @GET
+    @Path("/{userID}/state")
+    public int getUserOnlineState(@PathParam("userID") Long userID) throws UserManagementException {
+        Collection<Token> tokens = facade.getActiveTokensFromUser(userID);
+        if (tokens.isEmpty()) {
+            return OnlineState.STATUS_OFFLINE.ordinal();
+        } else {
+            return OnlineState.STATUS_ONLINE.ordinal();
+        }
     }
 
     private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {

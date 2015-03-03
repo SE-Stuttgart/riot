@@ -32,13 +32,15 @@ public class AccessTokenRealm extends AuthorizingRealm {
     protected DataSource dataSource;
     private String authenticationQuery;
     private String rolesQuery;
-    private String permissionsQuery;
+    private String permissionsRoleQuery;
+    private String permissionsUserQuery;
 
     /**
      * Create a access token realm for authentication and authorization using shiro.
      */
     public AccessTokenRealm() {
         setAuthenticationTokenClass(AccessToken.class);
+        setPermissionResolver(new CustomWildcardPermissionResolver());
     }
 
     @Override
@@ -86,18 +88,19 @@ public class AccessTokenRealm extends AuthorizingRealm {
         String token = (String) getAvailablePrincipal(principals);
 
         Set<String> roleNames = null;
-        Set<String> permissions = null;
+        Set<String> permissions = new LinkedHashSet<String>();
 
         try (Connection connection = dataSource.getConnection()) {
             roleNames = getRoles(connection, token);
-            permissions = getPermissions(connection, roleNames);
+            permissions.addAll(getPermissionsFromRoles(connection, roleNames));
+            permissions.addAll(getPermissionsFromUser(connection, token));
         } catch (SQLException e) {
             throw new AuthorizationException("There was a SQL error while authorizing the user", e);
         }
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roleNames);
         info.setStringPermissions(permissions);
-
+        
         return info;
     }
 
@@ -142,9 +145,9 @@ public class AccessTokenRealm extends AuthorizingRealm {
      * @throws SQLException
      *             When an SQL error occurs.
      */
-    protected Set<String> getPermissions(Connection connection, Collection<String> roles) throws SQLException {
+    protected Set<String> getPermissionsFromRoles(Connection connection, Collection<String> roles) throws SQLException {
         Set<String> permissions = new LinkedHashSet<String>();
-        try (PreparedStatement ps = connection.prepareStatement(permissionsQuery)) {
+        try (PreparedStatement ps = connection.prepareStatement(permissionsRoleQuery)) {
             for (String role : roles) {
                 ps.setString(1, role);
 
@@ -154,6 +157,33 @@ public class AccessTokenRealm extends AuthorizingRealm {
                         String permission = rs.getString(1);
                         permissions.add(permission);
                     }
+                }
+            }
+        }
+        return permissions;
+    }
+
+    /**
+     * Get all permissions from a token directly of a user.
+     *
+     * @param connection
+     *            An open database connection.
+     * @param token
+     *            the token
+     * @return Returns a list of permission associated with the roles.
+     * @throws SQLException
+     *             When an SQL error occurs.
+     */
+    protected Set<String> getPermissionsFromUser(Connection connection, String token) throws SQLException {
+        Set<String> permissions = new LinkedHashSet<String>();
+        try (PreparedStatement ps = connection.prepareStatement(permissionsUserQuery)) {
+            ps.setString(1, token);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                // loop over results and add each returned permission to a set
+                while (rs.next()) {
+                    String permission = rs.getString(1);
+                    permissions.add(permission);
                 }
             }
         }
@@ -172,8 +202,12 @@ public class AccessTokenRealm extends AuthorizingRealm {
         this.rolesQuery = rolesQuery;
     }
 
-    public void setPermissionsQuery(String permissionsQuery) {
-        this.permissionsQuery = permissionsQuery;
+    public void setPermissionsRoleQuery(String permissionsQuery) {
+        this.permissionsRoleQuery = permissionsQuery;
+    }
+
+    public void setPermissionsUserQuery(String permissionsQuery) {
+        this.permissionsUserQuery = permissionsQuery;
     }
 
 }

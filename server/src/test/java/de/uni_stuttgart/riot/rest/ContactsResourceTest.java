@@ -55,12 +55,16 @@ public class ContactsResourceTest extends BaseResourceTest<ContactsResource, Con
 
     @Override
     public Contact getNewObject() {
-        // TODO Auto-generated method stub
         return new Contact(1, "first name", "last name", "0000");
     }
 
     @Override
     public Class<Contact> getObjectClass() {
         return Contact.class;
+    }
+
+    @Override
+    public Contact getTestObject() {
+        return new Contact(1, "first name", "last name", "0000");
     }
 }

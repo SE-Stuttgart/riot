@@ -295,6 +295,9 @@ public class SqlRunner implements Closeable {
             if (!this.autoCommit) {
                 conn.commit();
             }
+            if (command != null && !command.toString().trim().isEmpty()) {
+                throw new RuntimeException("Remaining commands that could not be executed due to missing semicolon: " + command.toString());
+            }
         } catch (final SQLException e) {
             e.fillInStackTrace();
             err.println("Error on command: " + command);

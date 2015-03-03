@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.UriBuilder;
 
-import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -51,19 +51,22 @@ public class JerseyDBTestBase extends JerseyTest {
         return new InsecureRiotApplication();
     }
 
+    @Override
+    protected void configureClient(ClientConfig config) {
+        config.register(RiotApplication.produceJacksonProvider());
+    }
+
     /**
      * A special kind of the {@link RiotApplication} that only contains the actual REST services (not the security providers) so that we can
      * test our classes without security restrictions.
      * 
      * @author Philipp Keck
      */
-    private static class InsecureRiotApplication extends ResourceConfig {
-        /**
-         * Default constructor.
-         */
-        public InsecureRiotApplication() {
-            packages(RiotApplication.REST_PROVIDERS);
-            packages(RiotApplication.REST_SERVICES);
+    private static class InsecureRiotApplication extends RiotApplication {
+        @Override
+        protected void registerProviders() {
+            packages(REST_PROVIDERS);
+            // Note that we do not register the security providers here!
         }
     }
 

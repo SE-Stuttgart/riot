@@ -10,6 +10,8 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.PermissionService;
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class PermissionRestTest extends BaseResourceTest<PermissionService, Permission> {
 
+    private int count = 0;
+    
     @Override
     public String getSubPath() {
         return "permissions";
@@ -17,7 +19,7 @@ public class PermissionRestTest extends BaseResourceTest<PermissionService, Perm
 
     @Override
     public int getTestDataSize() {
-        return 4;
+        return 6;
     }
 
     @Override
@@ -27,11 +29,17 @@ public class PermissionRestTest extends BaseResourceTest<PermissionService, Perm
 
     @Override
     public Permission getNewObject() {
-        return new Permission("Blah");
+        count = count + 1;
+        return new Permission("Blah" + count);
     }
 
     @Override
     public Class<Permission> getObjectClass() {
         return Permission.class;
+    }
+
+    @Override
+    public Permission getTestObject() {
+        return new Permission("Blah");
     }
 }

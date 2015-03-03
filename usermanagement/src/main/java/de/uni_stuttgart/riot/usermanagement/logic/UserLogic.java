@@ -8,18 +8,24 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserPermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
+import de.uni_stuttgart.riot.usermanagement.data.storable.UserPermission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.DeleteUserException;
@@ -49,20 +55,22 @@ public class UserLogic {
      *            The new user.
      * @param clearTextPassword
      *            The password of the user as clear text.
+    * @param email
+     *            The mail of the user
      * @return The added user.
      * @throws AddUserException
      *             When adding the user failed.
      * 
      * 
      */
-    public UMUser addUser(String username, String clearTextPassword) throws AddUserException {
+    public UMUser addUser(String username, String email, String clearTextPassword) throws AddUserException {
         try {
             Validate.notEmpty(username, "username must not be empty");
             Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
 
             PasswordValidator pv = new PasswordValidator();
             if (pv.validate(clearTextPassword)) {
-                UMUser user = new UMUser(username);
+                UMUser user = new UMUser(username, email);
                 hashPassword(user, clearTextPassword);
 
                 dao.insert(user);
@@ -306,6 +314,32 @@ public class UserLogic {
         } catch (Exception e) {
             throw new GetActiveTokenException(e);
         }
+    }
+
+    /**
+     * Create a new permission if it is not already created and add it to the user.
+     *
+     * @param userId
+     *            the user id
+     * @param permission
+     *            the permission
+     * @throws DatasourceInsertException 
+     * @throws GetPermissionException 
+     * @throws AddPermissionException 
+     */
+    public void addNewPermissionToUser(Long userId, Permission permission) throws DatasourceInsertException, GetPermissionException {
+       PermissionLogic pl = new PermissionLogic();
+       try {
+            pl.addPermission(permission);
+        } catch (AddPermissionException e) {
+            //permission is already created. 
+            if (permission.getId() < 0) {
+                permission.setId(pl.getPermission(permission.getPermissionValue()).getId());
+            }
+        }
+       
+        DAO<UserPermission> upDao = new UserPermissionSqlQueryDAO();
+        upDao.insert(new UserPermission(userId, permission.getId()));
     }
 
     /**

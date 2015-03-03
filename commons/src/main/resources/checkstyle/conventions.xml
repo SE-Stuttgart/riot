@@ -163,12 +163,6 @@
       <property name="format" value="^[a-z]+(\.[a-z][a-z0-9_]*)*$"/>
     </module>
     <module name="RegexpSinglelineJava">
-      <metadata name="net.sf.eclipsecs.core.comment" value="Logger instanciation check"/>
-      <property name="id" value="loggerInst"/>
-      <property name="format" value="LoggerFactory.getLogger\(.*.class\);"/>
-      <property name="message" value="Logger must be instanciated with class name, use getCanonicalName()."/>
-    </module>
-    <module name="RegexpSinglelineJava">
       <property name="format" value="StringBuffer"/>
       <property name="message" value="Do not use StringBuffer, use StringBuilder instead."/>
       <property name="ignoreComments" value="true"/>

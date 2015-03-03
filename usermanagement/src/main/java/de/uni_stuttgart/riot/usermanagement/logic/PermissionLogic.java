@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
@@ -83,6 +85,23 @@ public class PermissionLogic {
     public Permission getPermission(Long id) throws GetPermissionException {
         try {
             return dao.findBy(id);
+        } catch (Exception e) {
+            throw new GetPermissionException(e);
+        }
+    }
+
+    /**
+     * Get a specific permission.
+     *
+     * @param permissionValue
+     *            the permission value
+     * @return The retrieved permission
+     * @throws GetPermissionException
+     *             When the permission could not be retrieved.
+     */
+    public Permission getPermission(String permissionValue) throws GetPermissionException {
+        try {
+            return dao.findByUniqueField(new SearchParameter(SearchFields.PERMISSIONVALUE, permissionValue));
         } catch (Exception e) {
             throw new GetPermissionException(e);
         }

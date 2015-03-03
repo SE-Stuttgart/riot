@@ -85,4 +85,9 @@ public class CalendarResourceTest extends BaseResourceTest<CalendarResource, Cal
         return CalendarEntry.class;
     }
 
+    @Override
+    public CalendarEntry getTestObject() {
+        return new CalendarEntry(getTestDataSize(), "new appointment", "Standup Meeting x");
+    }
+
 }

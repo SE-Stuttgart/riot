@@ -30,7 +30,7 @@ public class PermissionLogicTest extends LogicTestBase {
     public void testAddPermission() throws UserManagementException {
         Permission permission = new Permission("JUnitTestPermission");
         pl.addPermission(permission);
-        Permission permissionRead = pl.getPermission(5L);
+        Permission permissionRead = pl.getPermission("JUnitTestPermission");
         assertEquals(permission, permissionRead);
     }
 
@@ -57,8 +57,8 @@ public class PermissionLogicTest extends LogicTestBase {
 
     @Test(expected = GetPermissionException.class)
     public void shouldFailOnGettingDeletedPermission() throws UserManagementException {
+        pl.deletePermission(1L);
         pl.getPermission(1L);
-        pl.getPermission(null);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class PermissionLogicTest extends LogicTestBase {
     public void testGetAllPermissions() throws UserManagementException {
         Collection<Permission> allPermissions = pl.getAllPermissions();
 
-        assertEquals(4, allPermissions.size());
+        assertEquals(6, allPermissions.size());
 
         Permission p1 = pl.getPermission(1L);
         assertEquals(allPermissions.iterator().next(), p1);
@@ -134,7 +134,7 @@ public class PermissionLogicTest extends LogicTestBase {
         }
 
         Collection<Permission> allPermissions3 = pl.getAllPermissions();
-        assertEquals(4, allPermissions3.size());
+        assertEquals(6, allPermissions3.size());
 
     }
 
