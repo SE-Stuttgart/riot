@@ -11,27 +11,32 @@
         android:padding="@dimen/fragment_main_margin">
 
         <TextView
+            android:id="@+id/thing_id_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/thing_id"
-            android:id="@+id/thingIdText" />
+            android:text="@string/thing_id" />
 
         <EditText
+            android:id="@+id/thing_id_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/thingIdEdit"
             android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
         <TextView
+            android:id="@+id/thing_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+<<<<<<< HEAD
             android:text="@string/lbl_thing_name"
             android:id="@+id/thingNameText" />
+=======
+            android:text="@string/thing_name" />
+>>>>>>> RIOT-87:Android:All changes of the last commits
 
         <EditText
+            android:id="@+id/thing_name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/thingNameEdit"
             android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
 
         <include layout="@layout/fragment_edit_buttons" />

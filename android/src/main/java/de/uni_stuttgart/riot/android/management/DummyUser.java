@@ -32,7 +32,7 @@ public class DummyUser extends User {
      * @return .
      */
     public OnlineState getOnlineState() {
-        final int number = 5;
+        final int number = 3;
         return OnlineState.getEnumById(this.getId() % number);
     }
 

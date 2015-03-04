@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="fragment_main_margin">50px</dimen>
-    <dimen name="fragment_margin_between_elements">60px</dimen>
+    <dimen name="fragment_margin_between_elements">30px</dimen>
 
     <dimen name="list_item_margin_left">5dp</dimen>
     <dimen name="list_item_margin_top">5dp</dimen>
@@ -14,4 +14,5 @@
     <dimen name="list_item_image_size">75px</dimen>
     <dimen name="list_item_online_status_size">40px</dimen>
     <dimen name="list_item_details_size">50px</dimen>
+    <dimen name="group_padding">10px</dimen>
 </resources>

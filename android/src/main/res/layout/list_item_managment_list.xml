@@ -8,13 +8,13 @@
     android:layout_marginTop="@dimen/list_item_margin_top">
 
     <ImageView
-        android:id="@+id/listItemManagementPicture"
+        android:id="@+id/list_item_management_picture"
         android:layout_width="@dimen/list_item_image_size"
         android:layout_height="@dimen/list_item_image_size"
         android:layout_gravity="center" />
 
     <ImageView
-        android:id="@+id/listItemManagementOnlineState"
+        android:id="@+id/list_item_management_online_state"
         android:layout_width="@dimen/list_item_online_status_size"
         android:layout_height="@dimen/list_item_online_status_size"
         android:layout_gravity="center" />
@@ -30,21 +30,21 @@
         android:layout_marginRight="@dimen/list_item_margin_left">
 
         <TextView
-            android:id="@+id/listItemManagementSubject"
+            android:id="@+id/list_item_management_subject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="@dimen/list_item_subject_size" />
 
         <TextView
-            android:id="@+id/listItemManagementDescription"
+            android:id="@+id/list_item_management_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/list_item_description_size" />
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/listItemManagementDetails"
+        android:id="@+id/list_item_management_details"
         android:layout_width="@dimen/list_item_details_size"
         android:layout_height="@dimen/list_item_details_size"
         android:layout_gravity="center"

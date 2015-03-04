@@ -2,7 +2,6 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -66,30 +65,30 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
         // Set the id value
         if (defaultId != null && defaultId != 0) {
-            ((EditText) view.findViewById(R.id.userIdEdit)).setText(defaultId.toString());
-            view.findViewById(R.id.userIdEdit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.user_id_edit)).setText(defaultId.toString());
+            view.findViewById(R.id.user_id_edit).setEnabled(this.enableElements);
         }
 
         // Set the username value
         if (defaultUsername != null && !defaultUsername.isEmpty()) {
-            ((EditText) view.findViewById(R.id.userNameEdit)).setText(defaultUsername);
-            view.findViewById(R.id.userNameEdit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.user_name_edit)).setText(defaultUsername);
+            view.findViewById(R.id.user_name_edit).setEnabled(this.enableElements);
         }
 
         // Set the image value
         if (defaultImageId != 0) {
-            ((ImageView) view.findViewById(R.id.userImage)).setImageResource(defaultImageId);
-            view.findViewById(R.id.userImage).setEnabled(this.enableElements);
+            ((ImageView) view.findViewById(R.id.user_image)).setImageResource(defaultImageId);
+            view.findViewById(R.id.user_image).setEnabled(this.enableElements);
         } else if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
-            ((ImageView) view.findViewById(R.id.userImage)).setImageURI(Uri.parse(defaultImageUri));
-            view.findViewById(R.id.userImage).setEnabled(this.enableElements);
+            ((ImageView) view.findViewById(R.id.user_image)).setImageURI(Uri.parse(defaultImageUri));
+            view.findViewById(R.id.user_image).setEnabled(this.enableElements);
             // ToDo maybe load asynchronous??
         }
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.userOnlineState)).setImageResource(DUMMY_IMG_NR); // FIXME Setting the right image
-            view.findViewById(R.id.userOnlineState).setEnabled(this.enableElements);
+            ((ImageView) view.findViewById(R.id.user_online_state)).setImageResource(getOnlineStateResourceId(defaultOnlineState));
+            view.findViewById(R.id.user_online_state).setEnabled(this.enableElements);
         }
 
         // Set all role names
@@ -100,45 +99,26 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected Storable getData() {
-        return getUser(this.itemId);
+    protected void setOnBackClick() {
+        callOtherFragment(new ManagementUserListFragment());
     }
 
     @Override
-    protected void setOnAbortClick(View view) {
-        if (this.enableElements) {
-            Bundle args = new Bundle();
-            args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
-            callOtherFragment(new ManagementUserDetailFragment(), args);
-        } else {
-            callOtherFragment(new ManagementUserListFragment());
-        }
+    protected void saveChanges() {
+        // TODO
     }
 
     @Override
-    protected void setOnEditClick(View view) {
+    protected void callThisFragment(boolean edit) {
         Bundle args = new Bundle();
         args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-
-        if (this.enableElements) {
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
-            callOtherFragment(new ManagementUserDetailFragment(), args);
-        } else {
-            // ToDo save changed object
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, true);
-            callOtherFragment(new ManagementUserDetailFragment(), args);
-        }
+        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, edit);
+        callOtherFragment(new ManagementUserDetailFragment(), args);
     }
 
     @Override
-    protected int getAbortText() {
-        return this.enableElements ? R.string.user_abort : R.string.user_back;
-    }
-
-    @Override
-    protected int getEditText() {
-        return this.enableElements ? R.string.user_save : R.string.user_edit;
+    protected Storable getData() {
+        return getUser(this.itemId);
     }
 
     /**
@@ -294,7 +274,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     private void doSetPermissions(LinkedHashSet<String> permissionNames, LinkedHashSet<String> allPermissionNames) {
 
         if (allPermissionNames != null && !allPermissionNames.isEmpty()) {
-            MultiSelectionSpinner roleSpinner = (MultiSelectionSpinner) view.findViewById(R.id.userPermissionSpinner);
+            MultiSelectionSpinner roleSpinner = (MultiSelectionSpinner) view.findViewById(R.id.user_permission_spinner);
             roleSpinner.setItems(allPermissionNames);
 
             // Select already detected permissions

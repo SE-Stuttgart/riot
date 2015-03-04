@@ -91,6 +91,6 @@ public class ManagementDeviceListFragment extends ManagementListFragment {
 
     @Override
     protected OnlineState getOnlineState(Storable item) {
-        return null; // ((DummyDevice) item).getOnlineState(); // ToDo
+        return ((DummyDevice) item).getOnlineState(); // ToDo
     }
 }

@@ -1,26 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="de.uni_stuttgart.riot.android.MainActivity" >
+    tools:context="de.uni_stuttgart.riot.android.MainActivity">
 
     <item
         android:id="@+id/filter_error"
         android:checkable="true"
         android:orderInCategory="100"
-        android:title="@string/filter_error"/>
+        android:title="@string/filter_error" />
     <item
         android:id="@+id/filter_appointment"
         android:checkable="true"
         android:orderInCategory="100"
-        android:title="@string/filter_appointment"/>
+        android:title="@string/filter_appointment" />
     <item
         android:id="@+id/filter_warning"
         android:checkable="true"
         android:orderInCategory="100"
-        android:title="@string/filter_warning"/>
+        android:title="@string/filter_warning" />
     <item
         android:id="@+id/action_refresh"
-        android:icon="@drawable/ic_action_refresh"
+        android:icon="@android:drawable/stat_notify_sync"
         android:showAsAction="ifRoom"
-        android:title="@string/refresh"/>
-
+        android:title="@string/refresh" />
 </menu>

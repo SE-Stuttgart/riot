@@ -23,7 +23,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 public abstract class ManagementListFragment extends ManagementFragment {
 
     private static final int DUMMY_IMG_NR = 42;
-    
+
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_management_list;
@@ -48,7 +48,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
         }
 
         ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), getActivity(), R.layout.list_item_managment_list, data);
-        ListView listView = (ListView) this.view.findViewById(R.id.managementListView);
+        ListView listView = (ListView) this.view.findViewById(R.id.management_list_view);
         listView.setAdapter(managementListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -182,25 +182,25 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
         // Set the subject value
         if (defaultSubject != null && !defaultSubject.isEmpty()) {
-            ((TextView) view.findViewById(R.id.listItemManagementSubject)).setText(defaultSubject);
+            ((TextView) view.findViewById(R.id.list_item_management_subject)).setText(defaultSubject);
         }
 
         // Set the description value
         if (defaultDescription != null && !defaultDescription.isEmpty()) {
-            ((TextView) view.findViewById(R.id.listItemManagementDescription)).setText(defaultDescription);
+            ((TextView) view.findViewById(R.id.list_item_management_description)).setText(defaultDescription);
         }
 
         // Set the image value
         if (defaultImageId != 0) {
-            ((ImageView) view.findViewById(R.id.listItemManagementPicture)).setImageResource(defaultImageId);
+            ((ImageView) view.findViewById(R.id.list_item_management_picture)).setImageResource(defaultImageId);
         } else if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
-            ((ImageView) view.findViewById(R.id.listItemManagementPicture)).setImageURI(Uri.parse(defaultImageUri));
+            ((ImageView) view.findViewById(R.id.list_item_management_picture)).setImageURI(Uri.parse(defaultImageUri));
             // ToDo maybe load asynchronous??
         }
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.listItemManagementOnlineState)).setImageResource(DUMMY_IMG_NR); // FIXME setting the right image 
+            ((ImageView) view.findViewById(R.id.list_item_management_online_state)).setImageResource(getOnlineStateResourceId(defaultOnlineState));
         }
     }
 

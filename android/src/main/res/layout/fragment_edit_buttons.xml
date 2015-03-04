@@ -2,21 +2,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:gravity="right"
+    android:layout_marginBottom="@dimen/fragment_margin_between_elements">
 
-    <Button
-        android:id="@+id/detailEditButton"
+
+    <ImageButton
+        android:id="@+id/detail_edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="118dp"
-        android:text="@string/user_save"
-        android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
+        android:contentDescription="@string/edit"
+        android:src="@android:drawable/ic_menu_edit"
+        android:layout_marginRight="@dimen/fragment_margin_between_elements"
+        android:visibility="gone" />
 
-    <Button
-        android:id="@+id/detailAbortButton"
+    <ImageButton
+        android:id="@+id/detail_back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="118dp"
-        android:text="@string/user_abort"
-        android:layout_marginBottom="@dimen/fragment_margin_between_elements" />
+        android:contentDescription="@string/back"
+        android:src="@android:drawable/ic_menu_revert"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/detail_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/save"
+        android:src="@android:drawable/ic_menu_save"
+        android:layout_marginRight="@dimen/fragment_margin_between_elements"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/detail_abort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/abort"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:visibility="gone" />
 </LinearLayout>

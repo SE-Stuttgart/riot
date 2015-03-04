@@ -47,7 +47,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getSubject(Storable item) {
-        return ((DummyThing) item).getThingName();
+        return ((DummyThing) item).getName();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDescription(Storable item) {
-//        Long id = ((DummyThing) item).getId();
+//        Long id = ((Thing) item).getId();
 //        if (id != null && id != 0) {
 //            return id.toString();
 //        }
@@ -71,7 +71,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getImageUri(Storable item) {
-        return null; // ((DummyThing) item).getImageUri(); // ToDo
+        return null; // ((Thing) item).getImageUri(); // ToDo
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected int getImageId(Storable item) {
-        return 0; // ((DummyThing) item).getImageId(); // ToDo
+        return 0; // ((Thing) item).getImageId(); // ToDo
     }
 
     @Override
@@ -91,6 +91,6 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected OnlineState getOnlineState(Storable item) {
-        return null; // ((DummyThing) item).getOnlineState(); // ToDo
+        return ((DummyThing) item).getOnlineState(); // ToDo
     }
 }

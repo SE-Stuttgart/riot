@@ -9,9 +9,15 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
+>>>>>>> RIOT-87:Android:All changes of the last commits
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
@@ -41,6 +47,8 @@ public abstract class ManagementFragment extends Fragment {
 
         // Display data
         displayData();
+
+        setHasOptionsMenu(true);
 
         return this.view;
     }
@@ -115,10 +123,64 @@ public abstract class ManagementFragment extends Fragment {
      * @return .
      */
     public static ArrayList<DummyThing> getThings() {
-        final int number = 20;
+        final int number = 5;
+        final int tTMPtemp = 5;
+        final int tTMPfill = 80;
+
+        /** TODO info
+        Thing myThing;
+        ThingDescription myThingDescription = ThingDescription.create(myThing);
+        List<PropertyDescription> myProperties = myThingDescription.getProperties();
+        for(PropertyDescription myPropertyDescription : myProperties) {
+            myPropertyDescription.getName();
+            myPropertyDescription.getValueType();
+        }
+
+        ThingClient myThingClient = new ThingClient(RIOTApiClient.getInstance().getLoginClient());
+        MirroringThingBehavior myMirroring = new MirroringThingBehavior(myThingClient);
+        // myMirroring.fetch();
+         **/
+
+        ArrayList<String> dropDownItems = new ArrayList<String>();
+        dropDownItems.add("Selection 1");
+        dropDownItems.add("Selection 2");
+        dropDownItems.add("Selection 3");
+        dropDownItems.add("Selection 4");
+        HashMap<String, Object> dropDownValues = new HashMap<String, Object>();
+        dropDownValues.put("items", dropDownItems);
+        dropDownValues.put("selectedId", 3);
+
         ArrayList<DummyThing> things = new ArrayList<DummyThing>();
+        ArrayList<DummyProperty> properties = new ArrayList<DummyProperty>();
         for (long i = 1; i < number; i++) {
+            properties.clear();
+            properties.add(new DummyProperty("Drop the List", PropertyType.DROP_DOWN, dropDownValues));
+
+            properties.add(new DummyProperty("Temperature", PropertyType.SCALE_VALUE, tTMPtemp));
+            properties.add(new DummyProperty("Filling", PropertyType.SCALE_PERCENT, tTMPfill));
+            properties.add(new DummyProperty("Filling with wrong start", PropertyType.SCALE_PERCENT, false)); // Test with wrong value
+            properties.add(new DummyProperty("Alarm", PropertyType.TOGGLE_BUTTON, true));
+            properties.add(new DummyProperty("Power", PropertyType.TOGGLE_BUTTON, false));
+
+            ArrayList<DummyProperty> subList = new ArrayList<DummyProperty>();
+            subList.add(new DummyProperty("Kitchen", PropertyType.TOGGLE_BUTTON, true));
+            subList.add(new DummyProperty("Living Room", PropertyType.TOGGLE_BUTTON, false));
+            subList.add(new DummyProperty("Floor", PropertyType.TOGGLE_BUTTON, false));
+            subList.add(new DummyProperty("Outdoor", PropertyType.TOGGLE_BUTTON, true));
+            properties.add(new DummyProperty("Light", PropertyType.PROPERTY_GROUP, subList));
+
+            properties.add(new DummyProperty("Text Edit Field", PropertyType.EDIT_TEXT, "Sample Text"));
+            properties.add(new DummyProperty("Number Edit Field", PropertyType.EDIT_NUMBER, "123456789"));
+
+            ArrayList<DummyProperty> combinedList = new ArrayList<DummyProperty>();
+            combinedList.add(new DummyProperty("Scale Value", PropertyType.SCALE_VALUE, 0));
+            combinedList.add(new DummyProperty("Button 1", PropertyType.TOGGLE_BUTTON, true));
+            combinedList.add(new DummyProperty("Edit this text:", PropertyType.EDIT_TEXT, "..."));
+            combinedList.add(new DummyProperty("Button 2", PropertyType.TOGGLE_BUTTON, false));
+            properties.add(new DummyProperty("Combined Group", PropertyType.PROPERTY_GROUP, combinedList));
+
             DummyThing thing = new DummyThing(i, "Thing_" + String.valueOf(i));
+            thing.setProperties(properties);
             things.add(thing);
         }
         return things;
@@ -322,5 +384,23 @@ public abstract class ManagementFragment extends Fragment {
             }
         }
         return names;
+    }
+
+    /**
+     * Returns the android resource id of the specific online state.
+     *
+     * @param onlineState that needs the resource id
+     * @return the id of the online state resource
+     */
+    protected int getOnlineStateResourceId(OnlineState onlineState) {
+        if (onlineState.equals(OnlineState.STATUS_ONLINE)) {
+            return android.R.drawable.presence_online;
+        } else if (onlineState.equals(OnlineState.STATUS_OFFLINE)) {
+            return android.R.drawable.presence_offline;
+        } else if (onlineState.equals(OnlineState.STATUS_AWAY)) {
+            return android.R.drawable.presence_away;
+        } else {
+            return android.R.drawable.presence_busy;
+        }
     }
 }

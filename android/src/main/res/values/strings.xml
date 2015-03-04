@@ -92,7 +92,9 @@
     <string name="lbl_thing_name">Thing Name</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
+<<<<<<< HEAD
 
+<<<<<<< HEAD
     <!-- Rules -->
     <string name="rules_emptytext">You don\'t have any rules yet. Tap here to add one:</string>
     <string name="rules_btnAddRule">Add new rule</string>
@@ -101,3 +103,24 @@
     <string name="rules_errorMissingParameter">Please specify the parameter </string>
 
 </resources>
+=======
+=======
+<<<<<<< HEAD
+>>>>>>> RIOT-87:Android:All changes of the last commits
+</resources>
+=======
+    <string name="thing_temperature">Temperatur</string>
+    <string name="thing_filling">Füllstand</string>
+    <string name="percent">&#37;</string>
+    <string name="thing_fridge">Fridge</string>
+    <string name="degreeCelsius">\u2103</string>
+    <string name="degreeFahrenheit">\u2109</string>
+    <string name="off">AUS</string>
+    <string name="on">AN</string>
+    <string name="edit">Edit</string>
+    <string name="abort">Abort</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+</resources>
+>>>>>>> RIOT-87:Android:All changes of the last commits
+>>>>>>> RIOT-87:Android:All changes of the last commits

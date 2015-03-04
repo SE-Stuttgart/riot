@@ -27,6 +27,8 @@ import java.util.Set;
  */
 public class MultiSelectionSpinner extends Spinner implements
         OnMultiChoiceClickListener {
+    // TODO evtl. besser: http://stackoverflow.com/questions/2682582/spinner-with-checkbox-items-is-it-possible
+    // 
     String[] items = null;
     boolean[] mSelection = null;
 

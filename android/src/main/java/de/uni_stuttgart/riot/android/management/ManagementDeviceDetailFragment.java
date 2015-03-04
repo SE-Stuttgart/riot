@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 
 import de.uni_stuttgart.riot.android.R;
@@ -58,57 +57,38 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
 
         // Set the id value
         if (defaultId != null && defaultId != 0) {
-            ((EditText) view.findViewById(R.id.deviceIdEdit)).setText(defaultId.toString());
-            view.findViewById(R.id.deviceIdEdit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.device_id_edit)).setText(defaultId.toString());
+            view.findViewById(R.id.device_id_edit).setEnabled(this.enableElements);
         }
 
         // Set the device name value
         if (defaultDeviceName != null && !defaultDeviceName.isEmpty()) {
-            ((EditText) view.findViewById(R.id.deviceNameEdit)).setText(defaultDeviceName);
-            view.findViewById(R.id.deviceNameEdit).setEnabled(this.enableElements);
+            ((EditText) view.findViewById(R.id.device_name_edit)).setText(defaultDeviceName);
+            view.findViewById(R.id.device_name_edit).setEnabled(this.enableElements);
         }
+    }
+
+    @Override
+    protected void setOnBackClick() {
+        callOtherFragment(new ManagementDeviceListFragment());
+    }
+
+    @Override
+    protected void saveChanges() {
+
+    }
+
+    @Override
+    protected void callThisFragment(boolean edit) {
+        Bundle args = new Bundle();
+        args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
+        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, edit);
+        callOtherFragment(new ManagementDeviceDetailFragment(), args);
     }
 
     @Override
     protected Storable getData() {
         return getDevice(this.itemId);
-    }
-
-    @Override
-    protected void setOnAbortClick(View view) {
-        if (this.enableElements) {
-            Bundle args = new Bundle();
-            args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
-            callOtherFragment(new ManagementDeviceDetailFragment(), args);
-        } else {
-            callOtherFragment(new ManagementDeviceListFragment());
-        }
-    }
-
-    @Override
-    protected void setOnEditClick(View view) {
-        Bundle args = new Bundle();
-        args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-
-        if (this.enableElements) {
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, false);
-            callOtherFragment(new ManagementDeviceDetailFragment(), args);
-        } else {
-            // ToDo save changed object
-            args.putBoolean(BUNDLE_ENABLE_ELEMENTS, true);
-            callOtherFragment(new ManagementDeviceDetailFragment(), args);
-        }
-    }
-
-    @Override
-    protected int getAbortText() {
-        return this.enableElements ? R.string.user_abort : R.string.user_back;
-    }
-
-    @Override
-    protected int getEditText() {
-        return this.enableElements ? R.string.user_save : R.string.user_edit;
     }
 
     /**

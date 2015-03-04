@@ -77,6 +77,7 @@
     <string name="thing_id">Id</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
+<<<<<<< HEAD
     
     <!-- Rules -->
     <string name="rules_emptytext">Sie haben noch keine Regeln angelegt. Tippen Sie hier um eine neue Regel hinzuzufügen:</string>
@@ -85,4 +86,22 @@
     <string name="rules_errorMissingName">Bitte den Namen angeben!</string>
     <string name="rules_errorMissingParameter">Bitte den Parameter angeben:</string>
     
+=======
+<<<<<<< HEAD
+>>>>>>> RIOT-87:Android:All changes of the last commits
 </resources>
+=======
+    <string name="thing_temperature">Temperatur</string>
+    <string name="thing_filling">Füllstand</string>
+    <string name="percent">&#37;</string>
+    <string name="thing_fridge">Fridge</string>
+    <string name="degreeCelsius">\u2103</string>
+    <string name="degreeFahrenheit">\u2109</string>
+    <string name="off">AUS</string>
+    <string name="on">AN</string>
+    <string name="edit">Edit</string>
+    <string name="abort">Abort</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+</resources>
+>>>>>>> RIOT-87:Android:All changes of the last commits

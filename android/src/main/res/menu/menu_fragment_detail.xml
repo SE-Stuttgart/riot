@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/main_button_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edit" />
+    <item
+        android:id="@+id/main_button_abort"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="@string/abort" />
+    <item
+        android:id="@+id/main_button_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/save" />
+</menu>
