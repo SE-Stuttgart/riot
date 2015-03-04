@@ -76,6 +76,7 @@
 			<version>${shiro.version}</version>
 		</dependency>
 
+
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -93,18 +94,25 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Server-Logging -->
+		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

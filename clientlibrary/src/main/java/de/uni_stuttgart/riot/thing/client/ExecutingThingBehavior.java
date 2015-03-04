@@ -135,8 +135,16 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
      *             When the unregistering fails.
      */
     public void unregisterAndShutdown() throws RequestException {
+        Exception exception = null;
+        try {
+            shutdown();
+        } catch (Exception e) {
+            exception = e;
+        }
         getClient().unregisterThing(getThing().getId());
-        shutdown();
+        if (exception != null) {
+            throw new RuntimeException("Rethrown from shutdown", exception);
+        }
     }
 
     /**

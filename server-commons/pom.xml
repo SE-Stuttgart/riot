@@ -21,7 +21,7 @@
 	</properties>
 
 	<dependencies>
-		
+
 		<!-- Shiro -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
@@ -38,7 +38,7 @@
 			<artifactId>shiro-spring</artifactId>
 			<version>${shiro.version}</version>
 		</dependency>
-		
+
 		<!-- Commons -->
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
@@ -89,6 +89,16 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

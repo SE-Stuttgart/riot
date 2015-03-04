@@ -340,14 +340,18 @@ public class LoginClient {
                 }
             }
             if (status >= ERROR_THRESHOLD || status == BAD_REQUEST) {
+                RequestExceptionWrapper error;
                 if (mediatype.equals(APPLICATION_JSON)) {
-                    RequestExceptionWrapper error = LoginClient.this.jsonMapper.readValue(response.getEntity().getContent(), RequestExceptionWrapper.class);
-                    error.throwIT();
+                    String responseContent = EntityUtils.toString(response.getEntity());
+                    try {
+                        error = LoginClient.this.jsonMapper.readValue(responseContent, RequestExceptionWrapper.class);
+                    } catch (Throwable t) {
+                        error = new RequestExceptionWrapper(status, responseContent);
+                    }
                 } else {
-                    String result = EntityUtils.toString(response.getEntity());
-                    RequestExceptionWrapper error = new RequestExceptionWrapper(status, result);
-                    error.throwIT();
+                    error = new RequestExceptionWrapper(status, EntityUtils.toString(response.getEntity()));
                 }
+                error.throwIT();
             }
             if (status == NOT_AUTH) {
                 this.refresh();
