@@ -8,5 +8,5 @@ angular.module('riot').config(function($stateProvider, $urlRouterProvider) {
 });
 
 angular.module('riot').controller('ThingsUserCtrl',function($scope){
-	console.log("things user");
+
 });

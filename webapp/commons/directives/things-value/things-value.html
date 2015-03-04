@@ -1,0 +1,74 @@
+<div class="things-value" ng-switch on="description.uiHint.type">
+  <!-- IntegralSlider -->
+  <div ng-switch-when="IntegralSlider">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+      </div>
+    </div>
+  </div>
+  <!-- IntegralSlider -->
+  <div ng-switch-when="FractionalSlider">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+      </div>
+    </div>
+  </div>
+  <!-- IntegralSlider -->
+  <div ng-switch-when="PercentageSlider">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+      </div>
+    </div>
+  </div>
+  <!-- ToggleButton -->
+  <div ng-switch-when="ToggleButton">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <span ng-model="value" toggle-switch></span>
+      </div>
+    </div>
+  </div>
+  <!-- EditText -->
+  <div ng-switch-when="EditText">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="value">
+      </div>
+    </div>
+  </div>
+  <!-- EditNumber -->
+  <div ng-switch-when="EditNumber">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <input id="type" name="type" type="number" placeholder="" class="form-control" ng-model="value">
+      </div>
+    </div>
+  </div>
+  <!-- DropDown -->
+  <div ng-switch-when="DropDown">
+    <div class="form-group">
+      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <div class="col-md-8">
+        <div class="dropdown">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+            {{value}} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="key in description.uiHint.possibleValues"><a href="">{{key}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- unknown -->
+  <div ng-switch-default>can't display <strong>{{description.name}}</strong>: unknown UI type <strong>{{description.uiHint.type}}</strong></div>
+</div>

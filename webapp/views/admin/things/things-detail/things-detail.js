@@ -13,9 +13,9 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
   };
 
   $scope.getThing = function() {
-    $scope.loading = true;
     Thing.one($stateParams.thingid).get().then(function(thing) {
       $scope.thingDetail = thing;
+      $scope.thingDetail.description = $scope.thingDetail.getDescription().$object;
     });
   };
 

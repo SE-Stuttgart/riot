@@ -13,7 +13,6 @@ angular.module('riot').controller('ThingsUserDetailCtrl', function($scope, $stat
   };
 
   $scope.getThing = function() {
-    $scope.loading = true;
     Thing.one($stateParams.thingid).get().then(function(thing) {
       $scope.thingDetail = thing;
     });

@@ -5,11 +5,13 @@ angular.module('riot', ['ngLocalize',
                         'ui.utils', 
                         'ui.router', 
                         'ui.calendar', 
+                        'ui.bootstrap-slider', 
                         'ngAnimate', 
                         'restangular', 
                         'LocalStorageModule',
                         'frapontillo.bootstrap-switch',
-                        'ngAnimate'])
+                        'ngAnimate',
+                        'toggle-switch'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
