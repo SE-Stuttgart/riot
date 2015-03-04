@@ -80,9 +80,18 @@ public class RiotApplication extends ResourceConfig {
      */
     public static JacksonJaxbJsonProvider produceJacksonProvider() {
         JacksonJaxbJsonProvider p = new JacksonJaxbJsonProvider();
-        ObjectMapper mapper = new ObjectMapper();
-        p.setMapper(mapper);
+        p.setMapper(produceObjectMapper());
         return p;
+    }
+
+    /**
+     * Produces a Jackson ObjectMapper with the correct configuration. This method is public for the use by other application parts that
+     * need the same mapper.
+     * 
+     * @return The Jackson ObjectMapper.
+     */
+    public static ObjectMapper produceObjectMapper() {
+        return new ObjectMapper(); // Currently there is no configuration necessary.
     }
 
 }

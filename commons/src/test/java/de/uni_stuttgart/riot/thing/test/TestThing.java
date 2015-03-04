@@ -22,10 +22,10 @@ public class TestThing extends Thing {
     private final WritableProperty<Double> percentProperty = newWritableProperty("percent", Double.class, 0.5, UIHint.percentageSlider());
     private final Property<String> readonlyStringProperty = newProperty("readonlyString", String.class, "InitialString", UIHint.editText());
 
-    private final Event<EventInstance> simpleEvent = newEvent("simpleEvent", EventInstance.class);
+    private final Event<EventInstance> simpleEvent = newEvent("simpleEvent");
     private final Event<TestEventInstance> parameterizedEvent = newEvent("parameterizedEvent", TestEventInstance.class);
 
-    private final Action<ActionInstance> simpleAction = newAction("simpleAction", ActionInstance.class);
+    private final Action<ActionInstance> simpleAction = newAction("simpleAction");
     private final Action<TestActionInstance> parameterizedAction = newAction("parameterizedAction", TestActionInstance.class);
 
     public TestThing(String name, ThingBehavior behavior) {

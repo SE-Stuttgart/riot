@@ -174,7 +174,6 @@ public class ThingDAO implements DAO<Thing> {
                 stmt.addToBatch();
             }
             stmt.executeBatch();
-            connection.commit();
         }
     }
 

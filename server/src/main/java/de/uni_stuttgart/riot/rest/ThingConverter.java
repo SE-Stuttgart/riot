@@ -19,6 +19,7 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
+import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingState;
 
@@ -32,7 +33,7 @@ import de.uni_stuttgart.riot.thing.ThingState;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ThingConverter implements MessageBodyWriter<Thing>, MessageBodyReader<Thing> {
 
-    private static final JsonFactory JSON_FACTORY = new JsonFactory();
+    private static final JsonFactory JSON_FACTORY = RiotApplication.produceObjectMapper().getFactory();
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

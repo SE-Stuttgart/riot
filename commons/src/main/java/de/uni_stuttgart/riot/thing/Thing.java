@@ -50,6 +50,17 @@ public class Thing extends Storable {
     }
 
     /**
+     * Creates a new action without parameters for the thing.
+     * 
+     * @param actionName
+     *            The name of the action. Must be unique, i.e., this method can only be called once for each name.
+     * @return The newly created action.
+     */
+    protected Action<ActionInstance> newAction(String actionName) {
+        return getBehavior().newAction(actionName, ActionInstance.class);
+    }
+
+    /**
      * Creates a new event for the thing.
      * 
      * @param <E>
@@ -62,6 +73,17 @@ public class Thing extends Storable {
      */
     protected <E extends EventInstance> Event<E> newEvent(String eventName, Class<E> instanceType) {
         return getBehavior().newEvent(eventName, instanceType);
+    }
+
+    /**
+     * Creates a new event without parameters for the thing.
+     * 
+     * @param eventName
+     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     * @return The newly created event.
+     */
+    protected Event<EventInstance> newEvent(String eventName) {
+        return getBehavior().newEvent(eventName, EventInstance.class);
     }
 
     /**
