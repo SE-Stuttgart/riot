@@ -55,7 +55,7 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
 
     @Override
     protected <V> void userModifiedProperty(WritableProperty<V> property, V newValue) {
-        // We simply do this, because the property is hosted on this computer.
+        // We simply perform this change, because the property is hosted on this computer.
         // No need to fire a PropertySetAction.
         changePropertyValue(property, newValue);
     }

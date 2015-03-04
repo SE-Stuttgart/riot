@@ -61,7 +61,27 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      *             When querying the server failed.
      */
     protected void fetchUpdates() throws RequestException {
-        ThingUpdatesResponse updates = getClient().getUpdates(getThing().getId());
+        applyUpdates(downloadUpdates());
+    }
+
+    /**
+     * Downloads the updates from the server.
+     * 
+     * @return The updates.
+     * @throws RequestException
+     *             When querying the server fails.
+     */
+    protected ThingUpdatesResponse downloadUpdates() throws RequestException {
+        return getClient().getUpdates(getThing().getId());
+    }
+
+    /**
+     * Executes the updates locally.
+     * 
+     * @param updates
+     *            The updates.
+     */
+    protected void applyUpdates(ThingUpdatesResponse updates) {
         for (EventInstance eventInstance : updates.getOccuredEvents()) {
             MirroredThingBehavior behavior = knownOtherThings.get(eventInstance.getThingId());
             if (behavior != null) {

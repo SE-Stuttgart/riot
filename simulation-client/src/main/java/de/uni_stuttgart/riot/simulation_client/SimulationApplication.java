@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Properties;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +31,15 @@ import javafx.util.Pair;
  */
 public class SimulationApplication extends Application {
 
+    private static final int THREAD_POOL_SIZE = 5;
+
+    private static final long POLLING_INTERVAL = 100;
+
     private final Logger logger = LoggerFactory.getLogger(SimulationApplication.class);
 
     private final Properties settings = new Properties();
+
+    private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(THREAD_POOL_SIZE);
 
     /**
      * Launches the JavaFX application.
@@ -39,11 +48,10 @@ public class SimulationApplication extends Application {
      *            Command line arguments.
      */
     public static void main(String[] args) {
-        BasicConfigurator.configure();
+        PropertyConfigurator.configure(SimulationApplication.class.getResourceAsStream("log4j.properties"));
         launch(args);
     }
 
-    @Override
     public void start(Stage primaryStage) throws Exception { // NOCS (Ignore path complexity, it is irrelevant here)
 
         // Check and load the settings.
@@ -150,7 +158,7 @@ public class SimulationApplication extends Application {
 
             @Override
             public void onThingCreated(Thing thing, SimulatedThingBehavior behavior) {
-                // This is when the thing has successfully been created. We ignore it.
+                // This is called when the thing has successfully been created. We ignore it.
             }
         };
 
@@ -163,6 +171,7 @@ public class SimulationApplication extends Application {
             } else {
                 behavior = ExecutingThingBehavior.launchNewThing(thingType, thingClient, thingName, simulatedBehaviorFactory);
                 settings.setProperty("thingId", behavior.getThing().getId().toString());
+                settings.store(new FileOutputStream(configurationFile), null);
             }
         } catch (RequestException e) {
             logger.error("Error when launching the thing", e);
@@ -170,10 +179,64 @@ public class SimulationApplication extends Application {
             return;
         }
 
-        // Launch the UI
-        Thing thing = behavior.getThing();
+        // Check if the created thing has the right type.
+        if (!thingType.isInstance(behavior.getThing())) {
+            logger.error("Expected thing of type {} but got {}", thingType, behavior.getThing());
+            System.exit(1);
+            return;
+        }
+        logger.info("Thing ID is {}", behavior.getThing().getId());
 
-        logger.info("HIER {} {}", thing, behavior);
+        // Initialize simulator, if specified.
+        Simulator<?> simulator = null;
+        if (settings.containsKey("simulator")) {
+            String simulatorClassName = settings.getProperty("simulator");
+            Class<? extends Simulator<?>> simulatorType;
+            try {
+                Class<?> simulatorClass = Class.forName(simulatorClassName);
+                if (!Simulator.class.isAssignableFrom(simulatorClass)) {
+                    throw new IllegalArgumentException("The simulator class " + simulatorClassName + " is not a subclass of Simulator!");
+                }
+
+                // Now that we checked it above, we can safely cast.
+                @SuppressWarnings("unchecked")
+                Class<? extends Simulator<?>> casted = (Class<? extends Simulator<?>>) simulatorClass;
+                simulatorType = casted;
+            } catch (IllegalArgumentException | ClassNotFoundException e) {
+                logger.error("Invalid simulator type {}", simulatorClassName, e);
+                System.exit(1);
+                return;
+            }
+
+            try {
+                Constructor<? extends Simulator<?>> constructor = simulatorType.getConstructor(thingType, ScheduledThreadPoolExecutor.class);
+                simulator = constructor.newInstance(thingType.cast(behavior.getThing()), scheduler);
+            } catch (NoSuchMethodException e) {
+                logger.error("{} must have a constructor with argument types {} and ScheduledThreadPoolExecutor", simulatorType, thingType, e);
+                System.exit(1);
+                return;
+            }
+        }
+
+        // Launch the UI
+        // Start the simulation, if present.
+        if (simulator != null) {
+            final Simulator<?> fsimulator = simulator;
+            fsimulator.startSimulation();
+            window.setOnHidden((event) -> {
+                fsimulator.shutdown();
+                scheduler.shutdown();
+            });
+        }
+
+        // Start regular polling for events.
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                behavior.fetchUpdates();
+            } catch (Exception e) {
+                logger.error("Error during polling", e);
+            }
+        }, 0, POLLING_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
 }
