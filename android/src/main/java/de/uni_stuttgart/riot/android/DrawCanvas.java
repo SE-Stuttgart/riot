@@ -21,6 +21,12 @@ import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
+/**
+ * This class draws the different buttons in the home screen menu and handles all touch events.
+ * 
+ * @author Florian
+ *
+ */
 public class DrawCanvas extends View {
 
     private HomeScreen homeScreen;
@@ -41,8 +47,19 @@ public class DrawCanvas extends View {
 
     private int textOffset = 20;
 
-    private List<HomeScreenButton> buttonList2 = new ArrayList<HomeScreenButton>();
+    private int fontSize = 30;
 
+    private int alphaTouched = 50;
+    private int alphaNormal = 255;
+
+    // private List<HomeScreenButton> buttonList2 = new ArrayList<HomeScreenButton>();
+
+    /**
+     * Constructor that sets the buttons the first time or gets them from the database.
+     * 
+     * @param context
+     *            The main context of the App.
+     */
     public DrawCanvas(HomeScreen context) {
         super(context);
 
@@ -52,23 +69,23 @@ public class DrawCanvas extends View {
         gestureDetector = new GestureDetectorCompat(homeScreen, new GestureListener());
 
         paint.setAntiAlias(true);
-        paint.setTextSize(30);
+        paint.setTextSize(fontSize);
 
         buttonList = database.getHomeScreenButtonCoordinates(this);
         if (buttonList.size() == 0) {
-            buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 300, R.drawable.car));
+            buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 100, R.drawable.car));
 
             buttonList.add(new HomeScreenButton(this, 1, "House", 300, 100, R.drawable.house));
 
-            // buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
-            //
-            // buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
-            //
-            // buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
-            //
-            // buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
-            //
-            // buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
+            buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
+
+            buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
+
+            buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
+
+            buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
+
+            buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -118,15 +135,25 @@ public class DrawCanvas extends View {
     }
 
     /**
+     * Buttons can't be dragged outside of the canvas.
      * 
      * @param fingerX
+     *            X-Coordinate of the finger.
      * @param fingerY
-     * @return
+     *            Y-Coordinate of the finger.
+     * @return Boolean if the user is still inside of the bounds of the canvas.
      */
     public boolean checkForBounds(int fingerX, int fingerY) {
         return (fingerX > selectedButton.getButtonImage().getWidth() / 2 && fingerX < this.getWidth() - selectedButton.getButtonImage().getWidth() / 2 && fingerY > selectedButton.getButtonImage().getHeight() / 2 && fingerY < this.getHeight() - selectedButton.getButtonImage().getHeight() / 2 - textOffset);
     }
 
+    /**
+     * Method that checks if a button collides with another button while dragging. Prevents the stacking of buttons.
+     * 
+     * @param button
+     *            A button from the buttonList which is checked against the selected button for collisions.
+     * @return A collision was detected or not.
+     */
     public boolean checkForCollision(HomeScreenButton button) {
         // System.out.println("DraggedbuttonX: " + selectedButton.getButtonX() + " DraggedbuttonY: " + selectedButton.getButtonY() + " ");
         // return !(selectedButton.getButtonX() + selectedButton.getButtonImage().getWidth() < button.getButtonX() ||
@@ -155,53 +182,54 @@ public class DrawCanvas extends View {
             for (HomeScreenButton button : buttonList) {
                 if (isCoordsOnButton(event.getX(), event.getY(), button)) {
                     selectedButton = button;
-                    selectedButton.getButtonPaint().setAlpha(50);
-                    buttonList2.addAll(buttonList);
-                    buttonList2.remove(selectedButton);
+                    selectedButton.getButtonPaint().setAlpha(alphaTouched);
+                    // buttonList2.addAll(buttonList);
+                    // buttonList2.remove(selectedButton);
                 }
             }
             return true;
         case (MotionEvent.ACTION_MOVE):
             if (buttonLongPressed) {
                 if (selectedButton != null) {
-                    for (HomeScreenButton button : buttonList2) {
-                        // System.out.println(selectedButton.getButtonDescription() + " " + button.getButtonDescription() + " " +
-                        // checkForCollision(button));
-                        if (checkForCollision(button) && checkForBounds((int) event.getX(), (int) event.getY())) {
-                            selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
-                            selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
-                        } else {
-                            float dx = button.getButtonX() - selectedButton.getButtonX();
-                            float dy = button.getButtonY() - selectedButton.getButtonY();
-
-                            float angle = (float) Math.atan2(dy, dx);
-
-                            float tempRadius = 2.0f;
-
-                            float targetX = (float) (selectedButton.getButtonX() + Math.cos(angle)) * tempRadius;
-                            float targetY = (float) (selectedButton.getButtonY() + Math.sin(angle)) * tempRadius;
-
-                            float ax = targetX - button.getButtonX();
-                            float ay = targetY - button.getButtonY();
-
-                            selectedButton.setButtonX((int) (selectedButton.getButtonX() - ax));
-                            selectedButton.setButtonY((int) (selectedButton.getButtonY() - ay));
-                            System.out.println(selectedButton.getButtonX() + " " + selectedButton.getButtonY());
-                        }
+                    // for (HomeScreenButton button : buttonList) {
+                    // System.out.println(selectedButton.getButtonDescription() + " " + button.getButtonDescription() + " " +
+                    // checkForCollision(button));
+                    if (/* checkForCollision(button) && */checkForBounds((int) event.getX(), (int) event.getY())) {
+                        selectedButton.setButtonX((int) event.getX() - selectedButton.getButtonImage().getWidth() / 2);
+                        selectedButton.setButtonY((int) event.getY() - selectedButton.getButtonImage().getHeight() / 2);
+                    } else {
+                        /*
+                         * float dx = selectedButton.getButtonX() - button.getButtonX(); float dy = selectedButton.getButtonY() -
+                         * button.getButtonY();
+                         * 
+                         * float angle = (float) Math.atan2(dy, dx);
+                         * 
+                         * float tempRadius = 1.5f;
+                         * 
+                         * float targetX = (float) (selectedButton.getButtonX() + Math.cos(angle)) * tempRadius; float targetY = (float)
+                         * (selectedButton.getButtonY() + Math.sin(angle)) * tempRadius;
+                         * 
+                         * float ax = targetX - button.getButtonX(); float ay = targetY - button.getButtonY();
+                         * 
+                         * selectedButton.setButtonX((int) (selectedButton.getButtonX() - ax)); selectedButton.setButtonY((int)
+                         * (selectedButton.getButtonY() - ay)); System.out.println(selectedButton.getButtonX() + " " +
+                         * selectedButton.getButtonY());
+                         */
+                        // }
                     }
 
                 }
             }
             if (selectedButton != null && !isCoordsOnButton(event.getX(), event.getY(), selectedButton)) {
-                selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton.getButtonPaint().setAlpha(alphaNormal);
             }
             return true;
         case (MotionEvent.ACTION_UP):
             if (selectedButton != null && buttonLongPressed) {
                 database.updateHomeScreenButtonCoordinates(selectedButton); // save Coordinates of the pressed button into the database
-                selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton.getButtonPaint().setAlpha(alphaNormal);
                 selectedButton = null;
-                buttonList2 = new ArrayList<HomeScreenButton>();
+                // buttonList2 = new ArrayList<HomeScreenButton>();
             } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
                 Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
 
@@ -222,13 +250,14 @@ public class DrawCanvas extends View {
                     homeScreen.startActivity(newNotificationScreen);
                 }
 
-                selectedButton.getButtonPaint().setAlpha(255);
+                selectedButton.getButtonPaint().setAlpha(alphaNormal);
                 selectedButton = null;
             }
             return true;
+        default:
+            return super.onTouchEvent(event);
         }
 
-        return super.onTouchEvent(event);
     }
 
     /**
@@ -239,7 +268,7 @@ public class DrawCanvas extends View {
 
         @Override
         public void onLongPress(MotionEvent event) {
-            System.out.println("longPress");
+            // System.out.println("longPress");
             if (selectedButton != null) {
                 buttonLongPressed = true;
                 invalidate();

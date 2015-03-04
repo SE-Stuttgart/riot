@@ -4,6 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
+/**
+ * Class for a single button viewed on the HomeScreen.
+ *
+ */
 public class HomeScreenButton {
 
     private int id;
@@ -20,6 +25,16 @@ public class HomeScreenButton {
 
     private float scaleFactor = 1.5f;
 
+    /**
+     * Constructor of the HomeScreenButton.
+     * 
+     * @param canvas
+     * @param id
+     * @param buttonDescription
+     * @param buttonX
+     * @param buttonY
+     * @param imageID
+     */
     public HomeScreenButton(DrawCanvas canvas, int id, String buttonDescription, int buttonX, int buttonY, int imageID) {
         this.id = id;
         this.buttonDescription = buttonDescription;

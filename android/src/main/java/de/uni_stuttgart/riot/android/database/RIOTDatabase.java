@@ -22,6 +22,7 @@ import de.uni_stuttgart.riot.android.notification.Notification;
 import de.uni_stuttgart.riot.android.notification.NotificationAdapter;
 import de.uni_stuttgart.riot.android.notification.NotificationType;
 
+//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class RIOTDatabase extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERION = 1;
@@ -65,6 +66,9 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
     /**
      * Creating the different tables.
+     * 
+     * @param db
+     *            The database that is used to create the tables.
      */
     public void onCreate(SQLiteDatabase db) {
         String CREATE_FILTER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" + FILTER_COLUMN_ID + " INTEGER PRIMARY KEY," + FILTER_COLUMN_TYPE + " TEXT," + FILTER_COLUMN_CHECKED + " INTEGER)";
@@ -105,7 +109,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
      *            Each filter object has three fields: id (the ID of the filter), type (name of the filter), isChecked (is the filter
      *            checked or unchecked).
      * 
-     * @return void
      */
     public void updateFilters(FilterItem filter) {
 
@@ -155,7 +158,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
                 String type = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_TYPE));
 
-                String date = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_DATE));
+                // String date = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_DATE));
 
                 String thing = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_THING));
 
@@ -218,10 +221,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
      * We set the filter settings into the database.
      *
      * @param filter
+     *            The filter that was checked or unchecked by the user
      */
     public void setFilter(FilterItem filter) {
 
-        if (filter.getItem().isChecked() == false) {
+        if (!filter.getItem().isChecked()) {
             filter.getItem().setChecked(true);
 
             updateFilters(filter);
@@ -313,7 +317,10 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * This method gets all HomeScreen buttons stored in the database
+     * This method gets all HomeScreen buttons stored in the database.
+     * 
+     * @param canvas
+     *            The canvas that is associated with every HomeScreenButton.
      * 
      * @return A list of all buttons on the HomeScreen
      */
@@ -349,8 +356,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
      *
      * @param id
      *            String like "en" or "de"
-     * @param description
-     *            set the description
      */
     public void setLanguage(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -408,6 +413,12 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         return id;
     }
 
+    /**
+     * Update the current location into the database.
+     * 
+     * @param location
+     *            The current location of the user.
+     */
     public void updateLocation(MyLocation location) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -432,6 +443,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * Gets the last known location from the database.
+     * 
+     * @return A list with all locations.
+     */
     public List<MyLocation> getLocation() {
         SQLiteDatabase db = this.getReadableDatabase();
         List<MyLocation> myLocation = new LinkedList<MyLocation>();
@@ -452,6 +468,11 @@ public class RIOTDatabase extends SQLiteOpenHelper {
         return myLocation;
     }
 
+    /**
+     * UNKNOWN.
+     * 
+     * @return UNKNOWN
+     */
     public int getLocationCount() {
         String countQuery = "SELECT  * FROM " + TABLE_LOCATION;
         SQLiteDatabase db = this.getReadableDatabase();
