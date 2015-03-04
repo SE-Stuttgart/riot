@@ -219,6 +219,9 @@ public class SimulationApplication extends Application {
         }
 
         // Launch the UI
+        SimulationWindow window = new SimulationWindow(behavior);
+        window.show();
+
         // Start the simulation, if present.
         if (simulator != null) {
             final Simulator<?> fsimulator = simulator;
