@@ -12,10 +12,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.ListView;
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.DrawCanvas;
 import de.uni_stuttgart.riot.android.FilterItem;
 import de.uni_stuttgart.riot.android.HomeScreen;
 import de.uni_stuttgart.riot.android.HomeScreenButton;
+import de.uni_stuttgart.riot.android.HomeScreenCanvas;
 import de.uni_stuttgart.riot.android.NotificationScreen;
 import de.uni_stuttgart.riot.android.location.MyLocation;
 import de.uni_stuttgart.riot.android.notification.Notification;
@@ -324,7 +324,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
      * 
      * @return A list of all buttons on the HomeScreen
      */
-    public List<HomeScreenButton> getHomeScreenButtonCoordinates(DrawCanvas canvas) {
+    public List<HomeScreenButton> getHomeScreenButtonCoordinates(HomeScreenCanvas canvas) {
         SQLiteDatabase db = this.getWritableDatabase();
         String getButtonsQuery = "SELECT * FROM " + TABLE_COORDINATES;
 

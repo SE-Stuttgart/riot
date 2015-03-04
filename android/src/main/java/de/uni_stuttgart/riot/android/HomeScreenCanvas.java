@@ -19,6 +19,7 @@ import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
+import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
@@ -27,7 +28,7 @@ import de.uni_stuttgart.riot.android.location.LocationScreen;
  * @author Florian
  *
  */
-public class DrawCanvas extends View {
+public class HomeScreenCanvas extends View {
 
     private HomeScreen homeScreen;
 
@@ -43,7 +44,7 @@ public class DrawCanvas extends View {
     private boolean buttonLongPressed;
 
     private int rotationDegree = 2; // good value for emulator = 3;
-    private int refreshRate = 20; // to control the FPS
+    private int refreshRate = 30; // to control the FPS
 
     private int textOffset = 20;
 
@@ -60,7 +61,7 @@ public class DrawCanvas extends View {
      * @param context
      *            The main context of the App.
      */
-    public DrawCanvas(HomeScreen context) {
+    public HomeScreenCanvas(HomeScreen context) {
         super(context);
 
         homeScreen = context;
@@ -180,7 +181,7 @@ public class DrawCanvas extends View {
         switch (action) {
         case (MotionEvent.ACTION_DOWN):
             for (HomeScreenButton button : buttonList) {
-                if (isCoordsOnButton(event.getX(), event.getY(), button)) {
+                if (button.isCoordsOnButton(event.getX(), event.getY())) {
                     selectedButton = button;
                     selectedButton.getButtonPaint().setAlpha(alphaTouched);
                     // buttonList2.addAll(buttonList);
@@ -220,7 +221,7 @@ public class DrawCanvas extends View {
 
                 }
             }
-            if (selectedButton != null && !isCoordsOnButton(event.getX(), event.getY(), selectedButton)) {
+            if (selectedButton != null && !selectedButton.isCoordsOnButton(event.getX(), event.getY())) {
                 selectedButton.getButtonPaint().setAlpha(alphaNormal);
             }
             return true;
@@ -230,9 +231,7 @@ public class DrawCanvas extends View {
                 selectedButton.getButtonPaint().setAlpha(alphaNormal);
                 selectedButton = null;
                 // buttonList2 = new ArrayList<HomeScreenButton>();
-            } else if (selectedButton != null && isCoordsOnButton(event.getX(), event.getY(), selectedButton) && !buttonLongPressed) {
-                Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
-
+            } else if (selectedButton != null && selectedButton.isCoordsOnButton(event.getX(), event.getY()) && !buttonLongPressed) {
                 if (selectedButton.getButtonDescription().equals("Calendar")) { // Special intent for the calendar
                     Intent calendarIntent = new Intent(Intent.ACTION_VIEW);
                     calendarIntent.setData(Uri.parse("content://com.android.calendar/time"));
@@ -243,9 +242,14 @@ public class DrawCanvas extends View {
                     homeScreen.startActivity(settingsIntent);
                 } else if (selectedButton.getButtonDescription().equals("Location")) { // Special intent for the location screen
                     Intent locationIntent = new Intent(homeScreen, LocationScreen.class);
-                    locationIntent.putExtra("pressedButton", homeScreen.getString(R.string.settings));
+                    locationIntent.putExtra("pressedButton", homeScreen.getString(R.string.location));
                     homeScreen.startActivity(locationIntent);
+                } else if (selectedButton.getButtonDescription().equals("Coffee")) { // Special intent for the coffee machine
+                    Intent coffeeIntent = new Intent(homeScreen, CoffeeMachine.class);
+                    coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
+                    homeScreen.startActivity(coffeeIntent);
                 } else {
+                    Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(newNotificationScreen);
                 }
@@ -281,22 +285,6 @@ public class DrawCanvas extends View {
             return false;
         }
 
-    }
-
-    /**
-     * This method detects if a finger pressed a button or not.
-     * 
-     * @param fingerX
-     *            The X-Position of the finger on the screen
-     * @param fingerY
-     *            The Y-Position of the finger on the screen
-     * @param button
-     *            The button that is checked against the finger position *
-     */
-    private static boolean isCoordsOnButton(float fingerX, float fingerY, HomeScreenButton button) {
-        // System.out.println("FingerX: " + fingerX + " FingerY: " + fingerY + " ButtonX " + button.getButtonX() + " ButtonY " +
-        // button.getButtonY());
-        return (fingerX >= button.getButtonX() && fingerX <= (button.getButtonX() + button.getButtonImage().getWidth()) && fingerY >= button.getButtonY() && fingerY <= (button.getButtonY() + button.getButtonImage().getHeight()));
     }
 
 }

@@ -20,7 +20,7 @@ public class HomeScreen extends Activity {
         // this.deleteDatabase("Database");
 
         DatabaseAccess.setDatabase(new RIOTDatabase(this));
-        DrawCanvas canvas = new DrawCanvas(this);
+        HomeScreenCanvas canvas = new HomeScreenCanvas(this);
 
         Language.setLanguage(this);
 
