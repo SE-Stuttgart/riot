@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import de.uni_stuttgart.riot.thing.ui.UIHint;
+
 /**
  * This class represents a property belonging to a {@link Thing}. Note that only instances of {@link WritableProperty} allow for setting the
  * value of the property externally.
@@ -12,6 +14,7 @@ public class Property<V> {
     private final transient Thing thing;
     private final String name;
     private final Class<V> valueType;
+    private final transient UIHint uiHint;
     private final transient PropertyChangeEvent<V> changeEvent;
     private V value;
 
@@ -27,13 +30,16 @@ public class Property<V> {
      *            The type of the property's values.
      * @param value
      *            The initial property value.
+     * @param uiHint
+     *            The UI hint (optional).
      */
-    Property(Thing thing, String name, Class<V> valueType, V value) {
+    Property(Thing thing, String name, Class<V> valueType, V value, UIHint uiHint) {
         this.thing = thing;
         this.name = name;
         this.valueType = valueType;
         this.value = value;
         this.changeEvent = new PropertyChangeEvent<V>(this);
+        this.uiHint = uiHint;
     }
 
     /**
@@ -89,6 +95,15 @@ public class Property<V> {
      */
     public PropertyChangeEvent<V> getChangeEvent() {
         return changeEvent;
+    }
+
+    /**
+     * Gets the UIHint.
+     * 
+     * @return The UI hint for this property.
+     */
+    public UIHint getUiHint() {
+        return uiHint;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -20,6 +21,7 @@ public class ActionDescription {
      * @param instanceDescription
      *            A description of the expected instances.
      */
+    @JsonCreator
     private ActionDescription(@JsonProperty("name") String name, @JsonProperty("instanceDescription") BaseInstanceDescription instanceDescription) {
         this.name = name;
         this.instanceDescription = instanceDescription;

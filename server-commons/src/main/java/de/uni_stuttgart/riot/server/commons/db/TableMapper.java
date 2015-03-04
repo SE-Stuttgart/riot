@@ -32,7 +32,7 @@ public class TableMapper {
         } else if (className.equals("UserRole")) {
             return "users_roles";
         } else if (className.equals("CalendarEntry")) {
-            return "calendarEntries";
+            return "calendarentries";
         } else if (className.equals("Contact")) {
             return "contacts";
         } else if (className.equals("ConfigurationEntry")) {

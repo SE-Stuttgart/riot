@@ -39,7 +39,7 @@ import de.uni_stuttgart.riot.thing.remote.ServerThingBehavior;
  */
 public class ThingDAO implements DAO<Thing> {
 
-    private static final String TABLE_NAME = "Thing";
+    private static final String TABLE_NAME = "things";
 
     private final QueryBuilder queryBuilder = new QueryBuilderImpl();
     private final ThingBehaviorFactory<ServerThingBehavior> behaviorFactory;
@@ -92,9 +92,9 @@ public class ThingDAO implements DAO<Thing> {
             boolean hasId = t.getId() != null && t.getId() != 0;
             String query;
             if (hasId) {
-                query = "INSERT INTO Thing (id, type, ownerID, name) VALUES (:id, :type, :ownerID, :name)";
+                query = "INSERT INTO things (id, type, ownerID, name) VALUES (:id, :type, :ownerID, :name)";
             } else {
-                query = "INSERT INTO Thing (type, ownerID, name) VALUES (:type, :ownerID, :name)";
+                query = "INSERT INTO things (type, ownerID, name) VALUES (:type, :ownerID, :name)";
             }
             try (Query stmt = connection.createQuery(query)) {
                 if (hasId) {
@@ -132,7 +132,7 @@ public class ThingDAO implements DAO<Thing> {
 
         try (Connection connection = getConnection()) {
 
-            String query = "UPDATE Thing SET name = :name, ownerID = :ownerID WHERE id = :id";
+            String query = "UPDATE things SET name = :name, ownerID = :ownerID WHERE id = :id";
             try (Query stmt = connection.createQuery(query)) {
                 stmt.addParameter("id", t.getId());
                 stmt.addParameter("name", t.getName());
@@ -165,7 +165,7 @@ public class ThingDAO implements DAO<Thing> {
             return;
         }
 
-        String propertyQuery = "INSERT INTO PropertyValue (thingID, name, val) VALUES (:thingID, :name, :val) ON DUPLICATE KEY UPDATE val = :val";
+        String propertyQuery = "INSERT INTO propertyvalues (thingID, name, val) VALUES (:thingID, :name, :val) ON DUPLICATE KEY UPDATE val = :val";
         try (Query stmt = connection.createQuery(propertyQuery)) {
             for (Map.Entry<String, Object> propertyValue : state.getPropertyValues().entrySet()) {
                 stmt.addParameter("thingID", thingID);
@@ -174,7 +174,6 @@ public class ThingDAO implements DAO<Thing> {
                 stmt.addToBatch();
             }
             stmt.executeBatch();
-            connection.commit();
         }
     }
 
@@ -328,7 +327,7 @@ public class ThingDAO implements DAO<Thing> {
             List<UnresolvedEntry> values;
 
             try (Connection connection = getConnection()) {
-                String query = "SELECT name, val FROM PropertyValue WHERE thingID = :thingID";
+                String query = "SELECT name, val FROM propertyvalues WHERE thingID = :thingID";
                 try (Query stmt = connection.createQuery(query)) {
                     stmt.addParameter("thingID", thingID);
                     values = stmt.executeAndFetch(UnresolvedEntry.class);

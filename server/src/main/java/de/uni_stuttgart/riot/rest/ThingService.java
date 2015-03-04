@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -146,20 +147,12 @@ public class ThingService {
             throw new BadRequestException("please provide valid parameter values");
         }
 
-        // Check if the user is permitted to read any thing at all.
-        assertPermitted(-1L, ThingPermission.READ);
-
         // Fetch the results
-        Collection<Thing> result;
         if (limit == 0) {
-            result = logic.findThings(offset, DEFAULT_PAGE_SIZE);
+            return logic.findThings(offset, DEFAULT_PAGE_SIZE, ThingPermission.READ);
         } else {
-            result = logic.findThings(offset, limit);
+            return logic.findThings(offset, limit, ThingPermission.READ);
         }
-
-        // TODO Filter out results? This does not make sense, we need to get the things filtered by the ones that the user can read and THEN
-        // paginate.
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -179,9 +172,7 @@ public class ThingService {
         if (request == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
-        // TODO Apply filtering for things that the user can read
-        throw new UnsupportedOperationException();
-        // return logic.findThings(request);
+        return logic.findThings(request, ThingPermission.READ);
     }
 
     /**
@@ -196,6 +187,7 @@ public class ThingService {
     @POST
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
+    @RequiresPermissions("thing:create")
     public Response registerNewThing(RegisterThingRequest request) throws DatasourceInsertException {
         if (request == null) {
             throw new BadRequestException("Please provide an entity in the request body.");
@@ -285,7 +277,7 @@ public class ThingService {
     @POST
     @Path("{id}/register")
     public Response registerToEvent(@PathParam("id") long observerId, RegisterRequest request) throws DatasourceFindException {
-        assertPermitted(observerId, ThingPermission.UPDATE); // TODO This should be the EXECUTE permission?
+        assertPermitted(observerId, ThingPermission.EXECUTE);
         assertPermitted(request.getTargetThingID(), ThingPermission.READ);
         this.logic.registerToEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
         return Response.noContent().build();
@@ -305,9 +297,8 @@ public class ThingService {
     @POST
     @Path("{id}/registerMultiple")
     public Response registerToEvents(@PathParam("id") long observerId, Collection<RegisterRequest> requests) throws DatasourceFindException {
-        // TODO Refactor observerThingID into request parameter?
         for (RegisterRequest request : requests) {
-            assertPermitted(observerId, ThingPermission.UPDATE); // TODO This should be the EXECUTE permission?
+            assertPermitted(observerId, ThingPermission.EXECUTE);
             assertPermitted(request.getTargetThingID(), ThingPermission.READ);
             this.logic.registerToEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
         }
@@ -328,8 +319,7 @@ public class ThingService {
     @POST
     @Path("{id}/unregister")
     public Response unregisterFromEvent(@PathParam("id") long observerId, RegisterRequest request) throws DatasourceFindException {
-        assertPermitted(observerId, ThingPermission.UPDATE); // TODO This should be the EXECUTE permission?
-        // TODO Is it correct to leave out the READ permission check for the target thing here?
+        assertPermitted(observerId, ThingPermission.EXECUTE);
         this.logic.unregisterFromEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
         return Response.noContent().build();
     }
@@ -349,8 +339,7 @@ public class ThingService {
     @Path("{id}/unregisterMultiple")
     public Response unregisterFromEvents(@PathParam("id") long observerId, Collection<RegisterRequest> requests) throws DatasourceFindException {
         for (RegisterRequest request : requests) {
-            assertPermitted(observerId, ThingPermission.UPDATE); // TODO This should be the EXECUTE permission?
-            // TODO Is it correct to leave out the READ permission check for the target thing here?
+            assertPermitted(observerId, ThingPermission.EXECUTE);
             this.logic.unregisterFromEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
         }
         return Response.noContent().build();
@@ -393,7 +382,7 @@ public class ThingService {
     @POST
     @Path("notify")
     public Response notifyEvent(EventInstance eventInstance) throws DatasourceFindException {
-        assertPermitted(eventInstance.getThingId(), ThingPermission.UPDATE); // TODO This should be the EXECUTE permission.
+        assertPermitted(eventInstance.getThingId(), ThingPermission.EXECUTE);
         this.logic.fireEvent(eventInstance);
         return Response.noContent().build();
     }
@@ -410,7 +399,7 @@ public class ThingService {
     @POST
     @Path("action")
     public void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
-        assertPermitted(actionInstance.getThingId(), ThingPermission.UPDATE); // TODO This should be the CONTROL permission.
+        assertPermitted(actionInstance.getThingId(), ThingPermission.CONTROL);
         this.logic.submitAction(actionInstance);
     }
 
@@ -426,7 +415,7 @@ public class ThingService {
     @GET
     @Path("{id}/updates")
     public ThingUpdatesResponse getUpdates(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.UPDATE); // TODO This should be the EXECUTE permission.
+        assertPermitted(id, ThingPermission.EXECUTE);
         return this.logic.getThingUpdates(id);
     }
 

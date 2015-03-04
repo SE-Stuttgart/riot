@@ -1,10 +1,10 @@
 <div class="row" ng-controller="CalendarDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>Calendar Entry</strong></h3>
+    <h3><strong>{{ 'calendar.calendarEntry' | i18n }}</strong></h3>
     <form name="formUserDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formUserDetail.$valid && save()">
       <!-- title -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="title">Title</label>
+        <label class="control-label col-md-2" for="title">{{ 'calendar.title' | i18n }}</label>
         <div class="col-md-8">
           <input id="title" name="title" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.title">
         </div>
@@ -12,7 +12,7 @@
 
       <!-- location -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="location">Location</label>
+        <label class="control-label col-md-2" for="location">{{ 'calendar.location' | i18n }}</label>
         <div class="col-md-8">
           <input id="location" name="location" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.location">
         </div>
@@ -20,7 +20,7 @@
 
       <!-- startTime -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="startTime">Start Date</label>
+        <label class="control-label col-md-2" for="startTime">{{ 'calendar.startDate' | i18n }}</label>
         <div class="col-md-8">
           <div class="input-group col-md-6">
             <input id="startTime" name="startTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.startTime" is-open="datepickerStart" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
@@ -34,7 +34,7 @@
 
       <!-- endTime -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="endTime">End Date</label>
+        <label class="control-label col-md-2" for="endTime">{{ 'calendar.endDate' | i18n }}</label>
         <div class="col-md-8">
           <div class="input-group col-md-6">
             <input id="endTime" name="endTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.endTime" is-open="datepickerEnd" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
@@ -48,7 +48,7 @@
 
       <!-- description -->
       <div class="form-group">
-        <label class="control-label col-md-2" for="description">Description</label>
+        <label class="control-label col-md-2" for="description">{{ 'calendar.description' | i18n }}</label>
         <div class="col-md-8">
           <textarea id="description" name="description" rows="3" class="form-control" ng-model="calendarEntryDetail.description"></textarea>
         </div>
@@ -57,8 +57,8 @@
       <!-- Save -->
       <div class="form-group">
         <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">Save</button>
-          <button ui-sref="app.calendar.list" type="button" class="btn btn-default">Cancel</button>
+          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
+          <button ui-sref="app.calendar.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
         </div>
       </div>
     </form>

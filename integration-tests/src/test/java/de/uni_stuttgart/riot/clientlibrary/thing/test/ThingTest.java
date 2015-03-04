@@ -26,7 +26,7 @@ import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
-@TestData({ "/schema/schema_things.sql", "/data/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
+@TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
 public class ThingTest extends ShiroEnabledTest {
 
     private ThingClient getLoggedInThingClient() throws ClientProtocolException, RequestException, IOException {
