@@ -229,6 +229,7 @@ public class SimulationApplication extends Application {
             window.setOnHidden((event) -> {
                 fsimulator.shutdown();
                 scheduler.shutdown();
+                behavior.shutdown();
             });
         }
 

@@ -13,5 +13,6 @@
     <suppress checks="MagicNumber" files="[\\/]src[\\/]test[\\/]"/>
     <suppress checks="FileTabCharacter" files=".sql"/>
     <suppress checks="FileTabCharacter" files=".xml"/>
+    <suppress checks="FileTabCharacter" files=".css"/>
     <suppress checks="." files="[\\/]gen[\\/]"/>
 </suppressions> 

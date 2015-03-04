@@ -1,0 +1,42 @@
+/* NumberSpinner */
+.number-spinner {
+	-fx-skin: "de.uni_stuttgart.riot.javafx.NumberSpinnerSkin";
+	-fx-padding: 0 0 0 0;
+	-fx-alignment: center;
+}
+
+.number-spinner:focused {
+	-fx-background-color: -fx-focus-color, -fx-control-inner-background,
+		-fx-faint-focus-color,
+		linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background
+		, -9%), -fx-control-inner-background);
+	-fx-background-insets: -0.2, 1, -1.4, 3;
+	-fx-background-radius: 3, 2, 4, 0;
+}
+
+.number-spinner .text-field {
+	-fx-background-radius: 3 0 0 3, 2 0 0 2, 2 0 0 2;
+	-fx-background-insets: 1, 1;
+}
+
+.number-spinner .btn-increment {
+	-fx-cursor: default;
+	-fx-background-insets: 0 1 0 0, 0 1 0 0, 1 2 1 1, 2 3 2 2;
+	-fx-background-radius: 0 2 0 0, 0 2 0 0, 0 1 0 0, 0 0 0 0;
+}
+
+.number-spinner .btn-decrement {
+	-fx-cursor: default;
+	-fx-background-insets: 0 1 1 0, 0 1 1 0, 1 2 2 1, 2 3 3 2;
+	-fx-background-radius: 0 0 2 0, 0 0 2 0, 0 0 1 0, 0 0 0 0;
+}
+
+.number-spinner .arrow-up, .number-spinner .arrow-down {
+	-fx-padding: 3 3.5 3 3.5;
+	-fx-shape: "M 100 100 L 300 100 L 200 300 z";
+	-fx-background-color: #000000;
+}
+
+.number-spinner .arrow-up {
+	-fx-rotate: 180;
+}

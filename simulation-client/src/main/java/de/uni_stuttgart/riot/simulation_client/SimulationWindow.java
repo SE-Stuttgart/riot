@@ -1,17 +1,18 @@
 package de.uni_stuttgart.riot.simulation_client;
 
-import java.util.Objects;
-
+import de.uni_stuttgart.riot.javafx.UIProducer;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
-import javafx.application.Platform;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -45,6 +46,7 @@ public class SimulationWindow extends Stage {
         this.behavior = behavior;
         this.thing = behavior.getThing();
         setScene(new Scene(produceContent()));
+        getScene().getStylesheets().add("styles.css");
         setTitle(thing.getName() + " - Simulation");
     }
 
@@ -69,19 +71,17 @@ public class SimulationWindow extends Stage {
      */
     private Node produceStatePane() {
         GridPane container = new GridPane();
+        container.setHgap(INNER_SPACING);
+        container.setVgap(INNER_SPACING);
         int i = 0;
         for (Property<?> property : behavior.getProperties().values()) {
             Label label = new Label(property.getName());
-            Label valueDisplay = new Label(Objects.toString(property.getValue()));
-            property.getChangeEvent().register((event, changeEvent) -> {
-                Platform.runLater(() -> {
-                    valueDisplay.setText(Objects.toString(changeEvent.getNewValue()));
-                });
-            });
-            container.addRow(i, label, valueDisplay);
+            Control valueControl = UIProducer.produceInternalControl(property, behavior);
+            container.addRow(i, label, valueControl);
+            GridPane.setHalignment(label, HPos.RIGHT);
+            GridPane.setHgrow(valueControl, Priority.ALWAYS);
             i++;
         }
         return container;
     }
-
 }
