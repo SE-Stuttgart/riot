@@ -1,7 +1,24 @@
 <div class="row" ng-controller="RoleDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>{{ 'user.general' | i18n }}</strong></h3>
-    <form name="formRoleDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formRoleDetail.$valid && save()">
+    <!-- Administration -->
+    <div ng-if="roleDetail.id !== undefined">
+      <h3><strong>Administration</strong></h3>
+      <form class="form-horizontal">
+        <!-- delete role -->
+        <div class="form-group">
+          <label class="control-label col-md-2">Delete Role</label>
+          <div class="col-md-8">
+            <button type="button" class="btn btn-danger" ng-click="removeRole()">
+              <span class="fa fa-times"></span>
+              Remove
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <h3><strong>Role Data</strong></h3>
+    <form name="formRoleDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formRoleDetail.$valid">
       <!-- roleid -->
       <div class="form-group">
         <label class="control-label col-md-2" for="roleid">{{ 'user.roleId' | i18n }}</label>
@@ -35,7 +52,7 @@
       </div>
     </form>
 
-    <div class="form-horizontal">
+    <div class="form-horizontal" ng-if="roleDetail.id !== undefined">
       <!-- Permissions -->
       <h3><strong>{{ 'user.permissions' | i18n }}</strong></h3>
       <div class="form-group">
@@ -46,9 +63,7 @@
             <button type="button" class="btn btn-default dropdown-toggle dropdown-width" data-toggle="dropdown">
               &nbsp;
               <span ng-bind="selectedPermission.permissionValue"></span>
-              <span class="pull-right">
-                <span class="caret"></span>
-              </span>
+              <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-full-width" role="menu">
               <li ng-click="$event.stopPropagation();">
@@ -65,7 +80,7 @@
                 <a href="" ng-click="$parent.selectedPermission=permission">{{permission.permissionValue}}</a>
               </li>
             </ul>
-            <button type="button" class="btn btn-success" submit="addRolePermission(roleDetail, selectedPermission)" loading-button="addRolePermission">
+            <button type="button" class="btn btn-success" submit="addRolePermission(roleDetail, selectedPermission); selectedPermission=null" loading-button="addRolePermission">
               <span class="fa fa-plus"></span>
             </button>
           </div>

@@ -1,7 +1,22 @@
 <div class="row" ng-controller="PermissionDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>{{ 'user.general' | i18n }}</strong></h3>
-    <form name="formPermissionDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formPermissionDetail.$valid && save()">
+    <!-- Administration -->
+    <h3><strong>Administration</strong></h3>
+    <form class="form-horizontal">
+      <!-- delete permission -->
+      <div class="form-group">
+        <label class="control-label col-md-2">Delete Permission</label>
+        <div class="col-md-8">
+          <button type="button" class="btn btn-danger" ng-click="removePermission()">
+            <span class="fa fa-times"></span>
+            Remove
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <h3><strong>Permission Data</strong></h3>
+    <form name="formPermissionDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formPermissionDetail.$valid">
       <!-- permissionid -->
       <div class="form-group">
         <label class="control-label col-md-2" for="permissionid">{{ 'user.permissionId' | i18n }}</label>

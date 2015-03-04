@@ -1,7 +1,26 @@
 <div class="row" ng-controller="UsersDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>{{ 'user.general' | i18n }}</strong></h3>
-    <form name="formUserDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formUserDetail.$valid && save()">
+
+    <!-- Administration -->
+    <div ng-if="userDetail.id !== undefined">
+      <h3><strong>Administration</strong></h3>
+      <form class="form-horizontal">
+        <!-- delete user -->
+        <div class="form-group">
+          <label class="control-label col-md-2">Delete User</label>
+          <div class="col-md-8">
+            <button type="button" class="btn btn-danger" ng-click="removeUser()">
+              <span class="fa fa-times"></span>
+              Remove
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- User Data -->
+    <h3><strong>User Data</strong></h3>
+    <form name="formUserData" class="form-horizontal margin-top-30" novalidate ng-submit="formUserData.$valid">
       <!-- userid -->
       <div class="form-group">
         <label class="control-label col-md-2" for="userid">{{ 'user.userId' | i18n }}</label>
@@ -14,12 +33,12 @@
       <div class="form-group">
         <label class="control-label col-md-2" for="username">{{ 'user.username' | i18n }}</label>
         <div class="col-md-8">
-          <input id="username" name="username" type="text" placeholder="" class="form-control" ng-model="userDetail.username" disabled>
+          <input id="username" name="username" type="text" placeholder="" class="form-control" ng-model="userDetail.username">
         </div>
       </div>
 
       <!-- password1 -->
-      <div class="form-group margin-top-30" ng-model="userDetail.password1" ng-class="{'has-error': formUserDetail.password1.$error.validator}">
+      <div class="form-group margin-top-30" ng-model="userDetail.password1" ng-class="{'has-error': formUserData.password1.$error.validator}">
         <label class="control-label col-md-2" for="password1">{{ 'user.password' | i18n }}</label>
         <div class="col-md-8">
           <input id="password1" name="password1" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password2'" ui-validate="'$value==userDetail.password2'" ng-model="userDetail.password1">
@@ -27,7 +46,7 @@
       </div>
 
       <!-- password2 -->
-      <div class="form-group" ng-class="{'has-error': formUserDetail.password2.$error.validator}">
+      <div class="form-group" ng-class="{'has-error': formUserData.password2.$error.validator}">
         <label class="control-label col-md-2" for="password2">{{ 'user.repeatPassword' | i18n }}</label>
         <div class="col-md-8">
           <input id="password2" name="password2" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password1'" ui-validate="'$value==userDetail.password1'" ng-model="userDetail.password2">
@@ -67,7 +86,7 @@
       </div>
     </form>
 
-    <div class="form-horizontal">
+    <div class="form-horizontal" ng-if="userDetail.id !== undefined">
       <!-- Roles -->
       <h3><strong>{{ 'user.roles' | i18n }}</strong></h3>
       <div class="form-group">
@@ -78,9 +97,7 @@
             <button type="button" class="btn btn-default dropdown-toggle dropdown-width" data-toggle="dropdown">
               &nbsp;
               <span ng-bind="selectedRole.roleName"></span>
-              <span class="pull-right">
-                <span class="caret"></span>
-              </span>
+              <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-full-width" role="menu">
               <li ng-click="$event.stopPropagation();">
@@ -95,7 +112,7 @@
               </li>
               <li ng-repeat="role in roles | filter:{roleName: rolesFilter} | duplicateFilter:userDetail.roles"><a href="" ng-click="$parent.selectedRole=role">{{role.roleName}}</a></li>
             </ul>
-            <button type="button" class="btn btn-success" ng-click="addUserRole(userDetail, selectedRole)">
+            <button type="button" class="btn btn-success" ng-click="addUserRole(userDetail, selectedRole); selectedRole=null;">
               <span class="fa fa-plus"></span>
             </button>
           </div>

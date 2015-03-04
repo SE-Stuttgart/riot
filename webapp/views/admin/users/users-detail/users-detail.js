@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('UsersDetailCtrl', function($scope, $stateParams, User, Role){
+angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $stateParams, User, Role){
   var alertId = null;
 
   var init = function() {
@@ -20,7 +20,12 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
   };
 
   $scope.getUser = function() {
-    $scope.loading = true;
+    if ($stateParams.userid === '') {
+      $scope.userDetail = {};
+
+      return;
+    }
+
     User.one($stateParams.userid).get().then(function(user) {
       user.password1 = '';
       user.password2 = '';
@@ -34,12 +39,10 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
           $scope.alerts.close(alertId);
           alertId = $scope.alerts.showSuccess('Successfully updated user');
           $scope.getUser();
-          $scope.selectedRole = null;
-        }, function(reason) {
+        }, function(response) {
           $scope.alerts.close(alertId);
-          alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+          alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
           $scope.getUser();
-          $scope.selectedRole = null;
         });
     }
   };
@@ -49,14 +52,14 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
         $scope.alerts.close(alertId);
         alertId = $scope.alerts.showSuccess('Successfully updated user');
         $scope.getUser();
-      }, function(reason) {
+      }, function(response) {
         $scope.alerts.close(alertId);
-        alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
         $scope.getUser();
       });
   };
 
-  $scope.save = function() {
+  $scope.updateUser = function() {
     if ($scope.userDetail.password1 === $scope.userDetail.password2 && $scope.userDetail.password1 !== '') {
       $scope.userDetail.password = $scope.userDetail.password1;
     }
@@ -65,11 +68,48 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $statePara
         $scope.alerts.close(alertId);
         alertId = $scope.alerts.showSuccess('Successfully updated user');
         $scope.getUser();
-      }, function(reason) {
+      }, function(response) {
         $scope.alerts.close(alertId);
-        alertId = $scope.alerts.showError('Couldn\'t update user: ' + reason);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
         $scope.getUser();
       });
+  };
+
+  $scope.createUser = function() {
+    $scope.userDetail.password = $scope.userDetail.password || '';
+    if ($scope.userDetail.password1 === $scope.userDetail.password2 && $scope.userDetail.password1 !== '') {
+      $scope.userDetail.password = $scope.userDetail.password1;
+      delete $scope.userDetail.password1;
+      delete $scope.userDetail.password2;
+    }
+
+    return User.post($scope.userDetail).then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated user');
+        $scope.getUser();
+      }, function(response) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
+        $scope.getUser();
+      });
+  };
+
+  $scope.removeUser = function() {
+    return $scope.userDetail.remove().then(function() {
+        $state.go('admin.users.list');
+      }, function(response) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t remove user: ' + response.data);
+      });
+  };
+
+  $scope.save = function() {
+    if ($scope.userDetail.id === undefined) {
+      return $scope.createUser();
+    }
+    else {
+      return $scope.updateUser();
+    }
   };
 
   init();

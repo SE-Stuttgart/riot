@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('PermissionDetailCtrl', function($scope, $stateParams, Permission){
+angular.module('riot').controller('PermissionDetailCtrl', function($scope, $state, $stateParams, Permission){
   var alertId = null;
 
   var init = function() {
@@ -13,22 +13,57 @@ angular.module('riot').controller('PermissionDetailCtrl', function($scope, $stat
   };
 
   $scope.getPermission = function() {
+    if ($stateParams.permissionid === '') {
+      $scope.permissionDetail = {};
+
+      return;
+    }
+
     Permission.one($stateParams.permissionid).get().then(function(permission) {
       $scope.permissionDetail = permission;
     });
   };
 
-  $scope.save = function() {
+  $scope.updatePermission = function() {
     return $scope.permissionDetail.put().then(function() {
         $scope.alerts.close(alertId);
         alertId = $scope.alerts.showSuccess('Successfully updated permission');
         $scope.getPermission();
-      }, function(reason) {
+      }, function(response) {
         $scope.alerts.close(alertId);
-        alertId = $scope.alerts.showError('Couldn\'t update permission: ' + reason);
+        alertId = $scope.alerts.showError('Couldn\'t update permission: ' + response.data);
         $scope.getPermission();
       });
   };
 
+  $scope.createPermission = function() {
+    return Permission.post($scope.permissionDetail).then(function(permission) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully created permission');
+        $state.go('admin.authorization.permission', {permissionid: permission.id});
+      }, function(response) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update permission: ' + response.data);
+        $scope.getPermission();
+      });
+  };
+
+  $scope.removePermission = function() {
+    return $scope.permissionDetail.remove().then(function() {
+        $state.go('admin.authorization.list');
+      }, function(response) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t remove permission: ' + response.data);
+      });
+  };
+
+  $scope.save = function() {
+    if ($scope.permissionDetail.id === undefined) {
+      return $scope.createPermission();
+    }
+    else {
+      return $scope.updatePermission();
+    }
+  };
   init();
 });
