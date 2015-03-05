@@ -2,11 +2,19 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.messages.IM;
+>>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
  * Fragment that displays all users in a list.
@@ -21,8 +29,22 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected List<Storable> getData() {
-        return (List<Storable>) (List<?>) getUsers();
+    protected boolean isInstanceOf(Object item) {
+        return (item instanceof User);
+    }
+
+    @Override
+    protected List<Object> getData() {
+        try {
+            Collection<User> users = RIOTApiClient.getInstance().getUserManagementClient().getUsers();
+            return new ArrayList<Object>(users);
+        } catch (Exception e) {
+            // FIXME output message!!
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+        }
+
+        // Load dummy objects if the above method was not successful
+        return (List<Object>) (List<?>) getUsers();
     }
 
     @Override
@@ -36,8 +58,8 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected boolean isInstanceOf(Storable item) {
-        return (item instanceof DummyUser);
+    protected long getId(Object item) {
+        return ((User) item).getId();
     }
 
     @Override
@@ -46,8 +68,8 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getSubject(Storable item) {
-        return ((DummyUser) item).getUsername();
+    protected String getSubject(Object item) {
+        return ((User) item).getUsername();
     }
 
     @Override
@@ -56,12 +78,8 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getDescription(Storable item) {
-        Long id = ((DummyUser) item).getId();
-        if (id != null && id != 0) {
-            return id.toString();
-        }
-        return null;
+    protected String getDescription(Object item) {
+        return ((User) item).getEmail();
     }
 
     @Override
@@ -70,8 +88,8 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getImageUri(Storable item) {
-        return ((DummyUser) item).getImageUri();
+    protected String getImageUri(Object item) {
+        return null;
     }
 
     @Override
@@ -80,8 +98,8 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected int getImageId(Storable item) {
-        return ((DummyUser) item).getImageId();
+    protected int getImageId(Object item) {
+        return 0; // TODO
     }
 
     @Override
@@ -90,7 +108,7 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected OnlineState getOnlineState(Storable item) {
-        return ((DummyUser) item).getOnlineState();
+    protected OnlineState getOnlineState(Object item) {
+        return null; // TODO
     }
 }

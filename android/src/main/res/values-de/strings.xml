@@ -104,4 +104,10 @@
     <string name="save">Save</string>
     <string name="back">Back</string>
     <string name="default_item_title">Item without a title</string>
+<<<<<<< HEAD
 </resources>>>>>>>> RIOT-87:Android:All changes of the last commits
+=======
+    <string name="loading">Loading</string>
+    <string name="prepareData">Data are preparing</string>
+</resources>
+>>>>>>> RIOT-87:Android:Get things from the server

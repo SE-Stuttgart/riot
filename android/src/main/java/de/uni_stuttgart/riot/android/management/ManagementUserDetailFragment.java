@@ -5,11 +5,19 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.messages.IM;
+>>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
  * Fragment that displays all details of an user.
@@ -18,8 +26,6 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  * @author Benny
  */
 public class ManagementUserDetailFragment extends ManagementDetailFragment {
-
-    private static final int DUMMY_IMG_NR = 42;
 
     @Override
     protected int getLayoutResource() {
@@ -32,8 +38,8 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected boolean isInstanceOf(Storable item) {
-        return (item instanceof DummyUser);
+    protected boolean isInstanceOf(Object item) {
+        return (item instanceof User);
     }
 
     @Override
@@ -44,14 +50,14 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
         int defaultImageId = getDefaultImageId();
         String defaultImageUri = getDefaultImageUri();
         OnlineState defaultOnlineState = getDefaultOnlineState();
-        LinkedHashSet<String> roleNames = null;
+        Collection<Role> roles = null;
         LinkedHashSet<String> allRoleNames = ManagementFragment.getAllRoleNames();
-        LinkedHashSet<String> permissionNames = null;
+        LinkedHashSet<String> permissions = null;
         LinkedHashSet<String> allPermissionNames = ManagementFragment.getAllPermissionNames();
 
         // Get values of the item when the item is an instance of the expected class
         if (isInstanceOf(data)) {
-            DummyUser item = (DummyUser) data;
+            User item = (User) data;
 
             defaultId = doGetId(item, defaultId);
             defaultUsername = doGetUsername(item, defaultUsername);
@@ -59,8 +65,9 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
             defaultImageUri = doGetImageUri(item, defaultImageUri);
             defaultOnlineState = doGetOnlineState(item, defaultOnlineState);
 
-            roleNames = item.getRoleNames();
-            permissionNames = item.getPermissionNames();
+            // TODO!!
+//            roles = item.getRoles();
+//            permissions = getPermissions(roles);
         }
 
         // Set the id value
@@ -91,11 +98,12 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
             view.findViewById(R.id.user_online_state).setEnabled(this.enableElements);
         }
 
-        // Set all role names
-        doSetRoles(roleNames, allRoleNames);
-
-        // Set all permission names
-        doSetPermissions(permissionNames, allPermissionNames);
+        // TODO
+//        // Set all role names
+//        doSetRoles(roles, allRoleNames);
+//
+//        // Set all permission names
+//        doSetPermissions(permissions, allPermissionNames);
     }
 
     @Override
@@ -117,7 +125,15 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected Storable getData() {
+    protected Object getData() {
+        try {
+            return RIOTApiClient.getInstance().getUserManagementClient().getUser(this.itemId);
+        } catch (Exception e) {
+            // FIXME output message!!
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+        }
+
+        // Load dummy objects if the above method was not successful
         return getUser(this.itemId);
     }
 
@@ -174,7 +190,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
      * @param defaultId is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private Long doGetId(DummyUser item, Long defaultId) {
+    private Long doGetId(User item, Long defaultId) {
         Long id = item.getId();
         if (id != null && id != 0) {
             return id;
@@ -189,7 +205,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
      * @param defaultUserName is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private String doGetUsername(DummyUser item, String defaultUserName) {
+    private String doGetUsername(User item, String defaultUserName) {
         String username = item.getUsername();
         if (username != null && !username.isEmpty()) {
             return username;
@@ -204,11 +220,11 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
      * @param defaultImageId is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private int doGetImageId(DummyUser item, int defaultImageId) {
-        int imageId = item.getImageId();
-        if (imageId != 0) {
-            return imageId;
-        }
+    private int doGetImageId(User item, int defaultImageId) {
+//        int imageId = item.getImageId();
+//        if (imageId != 0) {
+//            return imageId;
+//        }
         return defaultImageId;
     }
 
@@ -219,11 +235,11 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
      * @param defaultImageUri is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private String doGetImageUri(DummyUser item, String defaultImageUri) {
-        String imageUri = item.getImageUri();
-        if (imageUri != null && !imageUri.isEmpty()) {
-            return imageUri;
-        }
+    private String doGetImageUri(User item, String defaultImageUri) {
+//        String imageUri = item.getImageUri();
+//        if (imageUri != null && !imageUri.isEmpty()) {
+//            return imageUri;
+//        }
         return defaultImageUri;
     }
 
@@ -234,11 +250,11 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
      * @param defaultOnlineState is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private OnlineState doGetOnlineState(DummyUser item, OnlineState defaultOnlineState) {
-        OnlineState onlineState = item.getOnlineState();
-        if (onlineState != null) {
-            return onlineState;
-        }
+    private OnlineState doGetOnlineState(User item, OnlineState defaultOnlineState) {
+//        OnlineState onlineState = item.getOnlineState();
+//        if (onlineState != null) {
+//            return onlineState;
+//        }
         return defaultOnlineState;
     }
 

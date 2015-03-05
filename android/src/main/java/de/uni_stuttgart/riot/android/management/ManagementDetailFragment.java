@@ -7,8 +7,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+=======
+import de.enpro.android.riot.R;
+>>>>>>> RIOT-87:Android:Get things from the server
 
 /**
  * This is an abstract fragment for displaying more information about a list item from the ManagementListFragment.
@@ -21,7 +25,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
 
     protected Long itemId;
     protected boolean enableElements;
-    protected Storable data;
+    protected Object data;
 
     @Override
     protected void handleArguments(Bundle args) {
@@ -102,29 +106,6 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
 
     @Override
     protected void displayData() {
-
-
-/* TODO DEL
-        // Set values and on click event off the buttons
-        Button buttonAbort = (Button) view.findViewById(R.id.detail_abort_button);
-        buttonAbort.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setOnAbortClick(view);
-            }
-        });
-        buttonAbort.setText(getAbortText());
-
-        Button buttonEdit = (Button) view.findViewById(R.id.detail_edit_button);
-        buttonEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setOnEditClick(view);
-            }
-        });
-        buttonEdit.setText(getEditText());
-*/
-
         prepareMenuButtons();
 
         // Set values of the data objects
@@ -142,7 +123,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
      *
      * @return the list of the specified data type
      */
-    protected abstract Storable getData();
+    protected abstract Object getData();
 
     /**
      * Set values to the view elements.

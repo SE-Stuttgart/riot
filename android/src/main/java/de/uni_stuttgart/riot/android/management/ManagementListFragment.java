@@ -11,18 +11,20 @@ import android.widget.TextView;
 
 import java.util.List;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.messages.IM;
+>>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**
- * Abstract fragment that provides a list to show all elements of a storable item typ.
+ * Abstract fragment that provides a list to show all elements of a Object item typ.
  *
  * @author Benny
  */
 public abstract class ManagementListFragment extends ManagementFragment {
-
-    private static final int DUMMY_IMG_NR = 42;
 
     @Override
     protected int getLayoutResource() {
@@ -30,20 +32,11 @@ public abstract class ManagementListFragment extends ManagementFragment {
     }
 
     @Override
-    protected void handleArguments(Bundle args) {
-    }
-
-    @Override
     protected void displayData() {
-
-        // UsermanagementClient usermanagementClient = RIOTApiClient.getInstance().getUserManagementClient();
-
-        // Collection<User> userCollection = androidUser.getUmClient().getUsers(); // TODO server-connection
-        // ArrayList<User> userList = new ArrayList<User>(userCollection);
-
-        List<Storable> data = getData();
+        List<Object> data = getData();
         if (data == null) {
-            // ToDo message or notice on screen that there are no data..
+            // Show a message that no data is available (ToDo log?)
+            IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
             return;
         }
 
@@ -60,12 +53,16 @@ public abstract class ManagementListFragment extends ManagementFragment {
         // managementListAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void handleArguments(Bundle args) {
+    }
+
     /**
      * Returns a list of all data that will be displayed.
      *
      * @return the list of the specified data type
      */
-    protected abstract List<Storable> getData();
+    protected abstract List<Object> getData();
 
     /**
      * Returns the current frame.
@@ -82,6 +79,14 @@ public abstract class ManagementListFragment extends ManagementFragment {
     protected abstract Fragment getOnItemClickFragment();
 
     /**
+     * Returns the id of the list item.
+     *
+     * @param item the item
+     * @return the id of the list item
+     */
+    protected abstract long getId(Object item);
+
+    /**
      * Returns the default subject for the list item.
      *
      * @return is null if the element should not be displayed
@@ -94,7 +99,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param item the item
      * @return the subject for the list item
      */
-    protected abstract String getSubject(Storable item);
+    protected abstract String getSubject(Object item);
 
     /**
      * Returns the default description of the list item.
@@ -109,7 +114,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param item the item
      * @return the description of the list item
      */
-    protected abstract String getDescription(Storable item);
+    protected abstract String getDescription(Object item);
 
     /**
      * Returns the default image uri of the list item.
@@ -124,7 +129,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param item the item
      * @return the image uri of the list item
      */
-    protected abstract String getImageUri(Storable item);
+    protected abstract String getImageUri(Object item);
 
     /**
      * Returns the default image resource id of the list item.
@@ -139,7 +144,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param item the item
      * @return the image resource id of the list item
      */
-    protected abstract int getImageId(Storable item);
+    protected abstract int getImageId(Object item);
 
     /**
      * Returns the default online state of the list item.
@@ -154,8 +159,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param item the item
      * @return the online state of the list item
      */
-    protected abstract OnlineState getOnlineState(Storable item);
-
+    protected abstract OnlineState getOnlineState(Object item);
+    // TODO updateOnlineState - asynchronous
 
     /**
      * Set values of the given item to the view elements.
@@ -163,7 +168,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param view includes the elements of the current view
      * @param item includes the data
      */
-    public void doGetView(View view, Storable item) {
+    public void doGetView(View view, Object item) {
         // Save the default values
         String defaultSubject = getDefaultSubject();
         String defaultDescription = getDefaultDescription();
@@ -211,7 +216,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param defaultSubject is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private String doGetSubject(Storable item, String defaultSubject) {
+    private String doGetSubject(Object item, String defaultSubject) {
         // Get subject from item
         String subject = getSubject(item);
 
@@ -229,7 +234,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param defaultDescription is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private String doGetDescription(Storable item, String defaultDescription) {
+    private String doGetDescription(Object item, String defaultDescription) {
         // Get description from item
         String description = getDescription(item);
 
@@ -247,7 +252,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param defaultImageId is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private int doGetImageId(Storable item, int defaultImageId) {
+    private int doGetImageId(Object item, int defaultImageId) {
         // Get subject from image id
         int imageId = getImageId(item);
 
@@ -265,7 +270,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param defaultImageUri is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private String doGetImageUri(Storable item, String defaultImageUri) {
+    private String doGetImageUri(Object item, String defaultImageUri) {
         // Get image uri from item
         String imageUri = getImageUri(item);
 
@@ -283,7 +288,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param defaultOnlineState is the default value if the item does not have the wanted value
      * @return the value from the item or the default value
      */
-    private OnlineState doGetOnlineState(Storable item, OnlineState defaultOnlineState) {
+    private OnlineState doGetOnlineState(Object item, OnlineState defaultOnlineState) {
         // Get online state from item
         OnlineState onlineState = getOnlineState(item);
 
@@ -304,11 +309,11 @@ public abstract class ManagementListFragment extends ManagementFragment {
      */
     private void doOnItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (getOnItemClickFragment() != null) {
-            Storable item = (Storable) parent.getItemAtPosition(position);
+            Object item = parent.getItemAtPosition(position);
 
             // Save information for the calling fragment
             Bundle args = new Bundle();
-            args.putLong(BUNDLE_OBJECT_ID, item.getId());
+            args.putLong(BUNDLE_OBJECT_ID, getId(item));
             callOtherFragment(getOnItemClickFragment(), args);
         }
     }

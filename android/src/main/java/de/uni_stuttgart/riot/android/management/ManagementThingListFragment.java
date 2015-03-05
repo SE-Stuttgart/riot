@@ -2,11 +2,19 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.messages.IM;
+>>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 
 /**
  * Fragment that displays all things in a list.
@@ -21,10 +29,41 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected List<Storable> getData() {
+    protected List<Object> getData() {
+        try {
+            // Get all thing descriptions and return them
+            Collection<ThingDescription> thingDescriptions = RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions();
+            return new ArrayList<Object>(thingDescriptions);
 
+//            // Get all descriptions of the available things
+//            for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
+//                // Get the id and the name of the thing
+//                long thingId = thingDescription.getThingId();
+//                Thing thing = RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription(thingDescription);
+//                // ToDo noch erweitern!! deviceBehavior.getThingById(thingId);
+//                String thingName = thing.getName();
+//                // TODO or use this: String thingName = thingDescription.getThingName();
+//
+//                // thingDescription.getType(); // ToDo check if thing is a device or a thing..
+//
+//                // Get the current online state of the thing
+//                // TODO dynamisch laden? OnlineState onlineState = RIOTApiClient.getInstance().getThingClient().getOnlineState(thingDescription.getThingId());
+//
+//                // Get all properties of the thing
+//                List<PropertyDescription> propertyDescriptions = thingDescription.getProperties();
+//                for (PropertyDescription propertyDescription : propertyDescriptions) {
+//                    String propertyName = propertyDescription.getName();
+//                    Class<?> propertyValueType = propertyDescription.getValueType();
+//                    UIHint propertyUIHint = propertyDescription.getUiHint();
+//                }
+//            }
+        } catch (Exception e) {
+            // FIXME output message!!
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+        }
 
-        return (List<Storable>) (List<?>) getThings();
+        // Load dummy objects if the above method was not successful
+        return (List<Object>) (List<?>) getThings();
     }
 
     @Override
@@ -38,8 +77,13 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected boolean isInstanceOf(Storable item) {
-        return (item instanceof DummyThing);
+    protected boolean isInstanceOf(Object item) {
+        return (item instanceof ThingDescription);
+    }
+
+    @Override
+    protected long getId(Object item) {
+        return ((ThingDescription) item).getThingId();
     }
 
     @Override
@@ -48,8 +92,17 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getSubject(Storable item) {
-        return ((DummyThing) item).getName();
+    protected String getSubject(Object item) {
+        try {
+            // Get the name of the thing
+            return RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription((ThingDescription) item).getName();
+            // ToDo maybe extend that!! deviceBehavior.getThingById(getId(item));
+            // TODO or use this: String thingName = thingDescription.getThingName();
+        } catch (Exception e) {
+            // FIXME output message!!
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by displaying data: " + e.getMessage());
+        }
+        return null;
     }
 
     @Override
@@ -58,12 +111,9 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getDescription(Storable item) {
-//        Long id = ((Thing) item).getId();
-//        if (id != null && id != 0) {
-//            return id.toString();
-//        }
-        return null;
+    protected String getDescription(Object item) {
+        // Get the description of the thing
+        return "This is the description: " + String.valueOf(getId(item));
     }
 
     @Override
@@ -72,7 +122,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected String getImageUri(Storable item) {
+    protected String getImageUri(Object item) {
         return null; // ((Thing) item).getImageUri(); // ToDo
     }
 
@@ -82,7 +132,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected int getImageId(Storable item) {
+    protected int getImageId(Object item) {
         return 0; // ((Thing) item).getImageId(); // ToDo
     }
 
@@ -92,7 +142,13 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected OnlineState getOnlineState(Storable item) {
-        return ((DummyThing) item).getOnlineState(); // ToDo
+    protected OnlineState getOnlineState(Object item) {
+//        try {
+//            return RIOTApiClient.getInstance().getThingClient().getOnlineState(getId(item));
+//        } catch (Exception e) {
+//            // FIXME output message!!
+//            IM.INSTANCES.getMH().writeErrorMessage("Problems by displaying data: " + e.getMessage());
+//        }
+        return null;
     }
 }

@@ -3,8 +3,12 @@ package de.uni_stuttgart.riot.android.management;
 import android.os.Bundle;
 import android.widget.EditText;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+=======
+import de.enpro.android.riot.R;
+>>>>>>> RIOT-87:Android:Get things from the server
 
 /**
  * Fragment that displays all details of a device.
@@ -25,7 +29,7 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected boolean isInstanceOf(Storable item) {
+    protected boolean isInstanceOf(Object item) {
         return (item instanceof DummyDevice);
     }
 
@@ -87,7 +91,7 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected Storable getData() {
+    protected Object getData() {
         return getDevice(this.itemId);
     }
 

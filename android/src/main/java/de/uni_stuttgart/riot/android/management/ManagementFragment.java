@@ -1,8 +1,8 @@
 package de.uni_stuttgart.riot.android.management;
 
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 <<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
@@ -19,18 +18,14 @@ import de.uni_stuttgart.riot.android.R;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.messages.IM;
-import de.uni_stuttgart.riot.clientlibrary.LoginClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
+<<<<<<< HEAD
 >>>>>>> RIOT-87:Android:All changes of the last commits
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+=======
+>>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.thing.PropertyDescription;
-import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.ThingDescription;
-import de.uni_stuttgart.riot.thing.client.AndroidThing;
-import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -57,13 +52,52 @@ public abstract class ManagementFragment extends Fragment {
         // Handle arguments
         handleArguments(getArguments());
 
-        // Display data
-        displayData();
+        // Login and prepare the device behavior
+        new Thread() {
+
+            @Override
+            public void run() {
+                // Prepare and show a progress dialog
+//                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                progressDialog.setTitle(view.getResources().getString(R.string.loading));
+//                progressDialog.setMessage(view.getResources().getString(R.string.prepareData));
+//                progressDialog.show();
+
+                // TODO use a timeout
+
+                try {
+//                    RIOTApiClient.getInstance().init("Yoda", "YodaPW");
+
+                    // Get all known things (like a refresh action)
+                    // ToDo use that on app start and with a refresh button
+                    RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
+
+                    Activity activity = (Activity) view.getContext();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Display data
+                            displayData();
+
+                            // Update title if necessary
+                            updateTitle();
+                        }
+                    });
+                } catch (Exception e) {
+                    // FIXME output message!!
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
+                }
+
+                // Dismiss the progress dialog
+//                progressDialog.dismiss();
+            }
+        }.start();
 
         // Set the title of the frame
-        getActivity().setTitle(getTitle());
+        updateTitle();
 
-        setHasOptionsMenu(true);
+        // Helps to update the menu
+        // TODO setHasOptionsMenu(true);
 
         return this.view;
     }
@@ -95,12 +129,19 @@ public abstract class ManagementFragment extends Fragment {
      * @param item the item that will be checked
      * @return true if the item is an instance of the class
      */
-    protected abstract boolean isInstanceOf(Storable item);
+    protected abstract boolean isInstanceOf(Object item);
 
     /**
-     * Set values to the view elements.
+     * Build the elements that will be displayed.
      */
     protected abstract void displayData();
+
+    /**
+     * Update the fragment title.
+     */
+    protected void updateTitle() {
+        getActivity().setTitle(getTitle());
+    }
 
     /**
      * Calls an other fragment and sends some data.
@@ -129,6 +170,7 @@ public abstract class ManagementFragment extends Fragment {
      * Dummy classes *
      *****************
      *****************/
+    // TODO TODO TODO TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!! anstelle von Dummy richtig verwenden!!
 
 
     // ToDo ToDO -> Undo "static" -- dummy methods for testing reason
@@ -141,55 +183,33 @@ public abstract class ManagementFragment extends Fragment {
     public static ArrayList<DummyThing> getThings() {
         if (myThings.isEmpty()) {
 
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        //                        RIOTApiClient.getInstance().init();
-                        LoginClient login = new LoginClient("https://belgrad.informatik.uni-stuttgart.de:8181/riot", "TEST", new DefaultTokenManager());
-                        login.login("Yoda", "YodaPW");
-                        ThingClient thingClient = new ThingClient(login);
-                        AndroidThing.DeviceBehavior deviceBehavior = AndroidThing.create(Build.MODEL, thingClient); // ToDo is build.model equal to device name?
-
-                       // AndroidThing.DeviceBehavior deviceBehavior = RIOTApiClient.getInstance().getDeviceBehavior();
-
-                        // Get all known things (like a refresh action)
-                        // ToDo use that on app start and with a refresh button
-                        deviceBehavior.updateThings();
-
-                        // Get all descriptions of the available things
-                        Collection<ThingDescription> thingDescriptions = deviceBehavior.getDescriptions();
-
-                        // Run through all thing descriptions
-                        for (ThingDescription thingDescription : thingDescriptions) {
-                            // Get the id and the name of the thing
-                            long thingId = thingDescription.getThingId();
-                            Thing thing = deviceBehavior.getThingByDiscription(thingDescription);
-                            // ToDo noch erweitern!! deviceBehavior.getThingById(thingId);
-                            String thingName = thing.getName();
-
-
-                            // thingDescription.getType(); // ToDo check if thing is a device or a thing..
-
-                            // TODO or use this: String thingName = thingDescription.getThingName();
-
-                            // Get the current online state of the thing
-                            OnlineState onlineState = RIOTApiClient.getInstance().getThingClient().getOnlineState(thingDescription.getThingId());
-
-                            // Get all properties of the thing
-                            List<PropertyDescription> propertyDescriptions = thingDescription.getProperties();
-                            for (PropertyDescription propertyDescription : propertyDescriptions) {
-                                String propertyName = propertyDescription.getName();
-                                Class<?> propertyValueType = propertyDescription.getValueType();
-                                UIHint propertyUIHint = propertyDescription.getUiHint();
-                            }
-                        }
-                    } catch (Exception e) {
-                        // FIXME output message!!
-                        IM.INSTANCES.getMH().writeErrorMessage("Problems by getting things: " + e.getMessage());
-                    }
-                }
-            }.start();// TODO TODO .start();
+//            try {
+//                // Get all descriptions of the available things
+//                for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
+//                    // Get the id and the name of the thing
+//                    long thingId = thingDescription.getThingId();
+//                    Thing thing = RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription(thingDescription);
+//                    // ToDo noch erweitern!! deviceBehavior.getThingById(thingId);
+//                    String thingName = thing.getName();
+//                    // TODO or use this: String thingName = thingDescription.getThingName();
+//
+//                    // thingDescription.getType(); // ToDo check if thing is a device or a thing..
+//
+//                    // Get the current online state of the thing
+//                    // TODO dynamisch laden? OnlineState onlineState = RIOTApiClient.getInstance().getThingClient().getOnlineState(thingDescription.getThingId());
+//
+//                    // Get all properties of the thing
+//                    List<PropertyDescription> propertyDescriptions = thingDescription.getProperties();
+//                    for (PropertyDescription propertyDescription : propertyDescriptions) {
+//                        String propertyName = propertyDescription.getName();
+//                        Class<?> propertyValueType = propertyDescription.getValueType();
+//                        UIHint propertyUIHint = propertyDescription.getUiHint();
+//                    }
+//                }
+//            } catch (Exception e) {
+//                // FIXME output message!!
+//                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting things: " + e.getMessage());
+//            }
 
 
             final int number = 5;
