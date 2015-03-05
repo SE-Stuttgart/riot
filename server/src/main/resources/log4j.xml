@@ -13,11 +13,11 @@
 	</appender>
 
 	<appender name="appender" class="org.apache.log4j.RollingFileAppender">
-		<param name="MaxFileSize" value="1000" />
-		<param name="MaxBackupIndex" value="1" />
-		<param name="file" value="riot.log" />
+		<param name="MaxFileSize" value="2MB" />
+		<param name="MaxBackupIndex" value="5" />
+		<param name="file" value="${com.sun.aas.instanceRoot}/logs/riot.log" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} - %m%n" />
 		</layout>
 	</appender>
 
