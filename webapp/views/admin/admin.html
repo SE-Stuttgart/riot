@@ -5,7 +5,7 @@
 
     <!-- alert notification -->
     <div class="alertContainer">
-      <alert id="alert" type="alert.type" close="alerts.close(alert.id)" ng-repeat="alert in alerts.list">{{alert.msg}}</alert>
+      <alert id="alert" type="{{alert.type}}" close="alerts.close(alert.id)" ng-repeat="alert in alerts.list">{{alert.msg}}</alert>
     </div>
 
     <!-- view -->

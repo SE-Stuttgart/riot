@@ -45,7 +45,7 @@
     <div class="form-horizontal">
       <!-- Properties -->
       <h3><strong>Properties</strong></h3>
-      <div ng-repeat="property in thingDetail.description.properties" value="thingDetail[property.name]" description="property" things-value></div>
+      <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingDetail[property.name]" description="property" things-value></div>
     </div>
 
     <div class="form-horizontal">
@@ -63,9 +63,13 @@
       <!-- Actions -->
       <h3><strong>Actions</strong></h3>
       <div class="form-group">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-        ...
+        <div class="col-md-10">
+          <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
+            <h4 class="list-group-item-heading">{{action.name}}</h4>
+            <div class="list-group-item-text">
+              <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

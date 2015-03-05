@@ -60,7 +60,7 @@
     <!-- table footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>Showing {{(current - 1) * limit}} to {{(current - 1) * limit + things.length}} of {{total}} entries</div>
+        <div>Showing {{(current - 1) * limit + 1}} to {{(current - 1) * limit + things.length}} of {{total}} entries</div>
       </div>
       <div class="col-sm-12 text-center">
         <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getThings()"></pagination>

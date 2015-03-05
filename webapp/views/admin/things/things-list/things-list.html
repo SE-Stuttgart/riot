@@ -41,8 +41,7 @@
             <tr role="row">
               <th style="width: 50px;">ID</th>
               <th style="width: 150px;">Name</th>
-              <th style="width: 200px;">Type</th>
-              <th style="width: 225px;">Owner</th>
+              <th style="width: 600px;">Type</th>
             </tr>
           </thead>
           <tbody>
@@ -50,7 +49,6 @@
               <td>{{thing.id}}</td>
               <td>{{thing.name}}</td>
               <td>{{thing.type}}</td>
-              <td>{{thing.ownerID}}</td>
             </tr>
           </tbody>
         </table>
@@ -60,7 +58,7 @@
     <!-- table footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>Showing {{(current - 1) * limit}} to {{(current - 1) * limit + things.length}} of {{total}} entries</div>
+        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + things.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
       </div>
       <div class="col-sm-12 text-center">
         <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getThings()"></pagination>

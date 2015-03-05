@@ -2,64 +2,64 @@
   <!-- IntegralSlider -->
   <div ng-switch-when="IntegralSlider">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+        <span ng-model="value" min="0" step="1" max="100" value="value" ng-disabled="disabled" slider></span>
       </div>
     </div>
   </div>
   <!-- IntegralSlider -->
   <div ng-switch-when="FractionalSlider">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+        <span ng-model="value" min="0" step="1" max="100" value="value" ng-disabled="disabled" slider></span>
       </div>
     </div>
   </div>
   <!-- IntegralSlider -->
   <div ng-switch-when="PercentageSlider">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <span ng-model="value" min="0" step="1" max="100" value="value" slider></span>
+        <span ng-model="value" min="0" step="1" max="100" value="value" ng-disabled="disabled" slider></span>
       </div>
     </div>
   </div>
   <!-- ToggleButton -->
   <div ng-switch-when="ToggleButton">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <span ng-model="value" toggle-switch></span>
+        <span ng-model="value" ng-disabled="disabled" toggle-switch></span>
       </div>
     </div>
   </div>
   <!-- EditText -->
   <div ng-switch-when="EditText">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="value">
+        <input type="text" placeholder="" class="form-control" ng-model="value" ng-disabled="disabled">
       </div>
     </div>
   </div>
   <!-- EditNumber -->
   <div ng-switch-when="EditNumber">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
-        <input id="type" name="type" type="number" placeholder="" class="form-control" ng-model="value">
+        <input type="number" placeholder="" class="form-control" ng-model="value" ng-disabled="disabled">
       </div>
     </div>
   </div>
   <!-- DropDown -->
   <div ng-switch-when="DropDown">
     <div class="form-group">
-      <label class="control-label col-md-2" for="type">{{description.name}}</label>
+      <label class="control-label col-md-2">{{description.name}}</label>
       <div class="col-md-8">
         <div class="dropdown">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="true" ng-disabled="disabled">
             {{value}} <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
