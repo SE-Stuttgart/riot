@@ -8,10 +8,12 @@ import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.apache.http.client.ClientProtocolException;
 import org.eclipse.persistence.jpa.jpql.Assert.AssertException;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -29,6 +31,7 @@ import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
 import de.uni_stuttgart.riot.thing.client.AndroidThing.DeviceBehavior;
+import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
@@ -38,6 +41,14 @@ public class ThingTest extends ShiroEnabledTest {
         LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
         loginClient.login("Yoda", "YodaPW");
         return new ThingClient(loginClient);
+    }
+    
+
+    @Before
+    public void clearThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field field = ThingLogic.class.getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(null, null);
     }
 
     @Test
