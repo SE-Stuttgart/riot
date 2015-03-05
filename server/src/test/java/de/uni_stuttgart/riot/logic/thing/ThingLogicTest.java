@@ -43,7 +43,7 @@ public class ThingLogicTest extends BaseDatabaseTest {
 
     @Test
     public void shouldLoadExistingThingFromDatabase() {
-        assertThat(logic.getAllThings(null), hasSize(1));
+        assertThat(logic.getAllThings(null), hasSize(2));
         TestThing thing = (TestThing) logic.getThing(1);
         assertThat(thing.getInt(), is(42));
         assertThat(thing.getReadonlyString(), is("String from Database"));
@@ -54,28 +54,31 @@ public class ThingLogicTest extends BaseDatabaseTest {
     @Test
     public void shouldRegisterAndUnregister() throws DatasourceInsertException, DatasourceDeleteException {
         TestThing thing1 = (TestThing) logic.getThing(1);
-        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
-        assertThat(thing2.getId(), notNullValue());
-        assertThat(thing2.getId(), not(0));
+        TestThing thing2 = (TestThing) logic.getThing(2);
+
+        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        assertThat(thing3.getId(), notNullValue());
+        assertThat(thing3.getId(), not(0));
 
         Collection<Thing> things = logic.getAllThings(null);
-        assertThat(things, containsInAnyOrder(thing1, thing2));
+        assertThat(things, containsInAnyOrder(thing1, thing2, thing3));
 
-        logic.unregisterThing(thing2.getId());
+        logic.unregisterThing(thing3.getId());
         things = logic.getAllThings(null);
-        assertThat(things, containsInAnyOrder(thing1));
+        assertThat(things, containsInAnyOrder(thing1, thing2));
     }
 
     @Test
     public void shouldFilterCorrectly() throws DatasourceInsertException {
         TestThing thing1 = (TestThing) logic.getThing(1);
-        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
-        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Third Test Thing", 0);
-        TestThing thing4 = (TestThing) logic.registerThing(TestThing.class.getName(), "Fourth Test Thing", 0);
+        TestThing thing2 = (TestThing) logic.getThing(2);
+        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        TestThing thing4 = (TestThing) logic.registerThing(TestThing.class.getName(), "Third Test Thing", 0);
+        TestThing thing5 = (TestThing) logic.registerThing(TestThing.class.getName(), "Fourth Test Thing", 0);
 
         // Note: ThingLogic internally sorts by ID.
-        assertThat(logic.getAllThings(null), contains(thing1, thing2, thing3, thing4));
-        assertThat(logic.findThings(0, 10, null), contains(thing1, thing2, thing3, thing4));
+        assertThat(logic.getAllThings(null), contains(thing1, thing2, thing3, thing4, thing5));
+        assertThat(logic.findThings(0, 10, null), contains(thing1, thing2, thing3, thing4, thing5));
         assertThat(logic.findThings(0, 2, null), contains(thing1, thing2));
         assertThat(logic.findThings(2, 2, null), contains(thing3, thing4));
 
@@ -84,21 +87,21 @@ public class ThingLogicTest extends BaseDatabaseTest {
         request.setOrMode(true);
         List<FilterAttribute> filterAttributes = new ArrayList<>();
         filterAttributes.add(new FilterAttribute("id", FilterOperator.GT, thing1.getId()));
-        filterAttributes.add(new FilterAttribute("thingID", FilterOperator.EQ, thing3.getId()));
+        filterAttributes.add(new FilterAttribute("thingID", FilterOperator.EQ, thing4.getId()));
         request.setFilterAttributes(filterAttributes);
-        assertThat(logic.findThings(request, null), contains(thing2, thing3, thing4));
+        assertThat(logic.findThings(request, null), contains(thing2, thing3, thing4, thing5));
 
         // id == thing3 (AND id > thing1)
         request.setOrMode(false);
-        assertThat(logic.findThings(request, null), contains(thing3));
+        assertThat(logic.findThings(request, null), contains(thing4));
 
         // id == thing3 (AND id > thing1 AND type == TestThing)
         filterAttributes.add(new FilterAttribute("type", FilterOperator.EQ, TestThing.class.getName()));
-        assertThat(logic.findThings(request, null), contains(thing3));
+        assertThat(logic.findThings(request, null), contains(thing4));
 
         // type = TestThing (OR id == thing3 OR id > thing1)
         request.setOrMode(true);
-        assertThat(logic.findThings(request, null), contains(thing1, thing2, thing3, thing4));
+        assertThat(logic.findThings(request, null), contains(thing1, thing2, thing3, thing4, thing5));
 
         // Select all, but paginated
         request.setLimit(2);

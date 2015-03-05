@@ -27,9 +27,8 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingState;
 
 /**
- * Converts {@link Thing}s on the REST interface.
+ * Converts {@link Thing} collectinos on the REST interface. //FIXME is partly clone to ThingConverter
  * 
- * @author Philipp Keck
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

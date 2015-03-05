@@ -1,7 +1,13 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -13,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
-import de.uni_stuttgart.riot.clientlibrary.thing.test.AndroidThing.DeviceBehavior;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
@@ -22,11 +27,8 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
-import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
-import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
-import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
@@ -159,39 +161,6 @@ public class ThingClientTest extends ShiroEnabledTest {
         // Tidy up.
         thingClient.unregisterThing(thing.getId());
 
-    }
-    
-    // Beispiel!
-    @Test
-    public void getAssignedThingsTest() throws ClientProtocolException, RequestException, IOException, ThingNotFoundException {
-        // Getting a LoginCLient
-        ThingClient thingClient = this.getLoggedInThingClient();
-       
-        // Creating (includes registration on server) of the android device
-        DeviceBehavior andriod = AndroidThing.create("My Mobile", thingClient);
-        
-        // Getting all assinged Things (Their descriptions)
-        andriod.updateThings();
-        Collection<ThingDescription> descriptions = andriod.getDescriptions();
-       
-        ThingDescription testDesc = null;
-        for (ThingDescription thingDescription : descriptions) {
-            if (thingDescription.getThingId() == 1) {
-                testDesc = thingDescription;
-            }
-        }
-        
-        // Launing on of those listet things to do some manipulation 
-        TestExecutingThingBehavior realThingb = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
-        TestThing realThing = (TestThing) realThingb.getThing();
-        // Changing some property
-        realThing.setInt(1337);
-        
-        // Checking if the mirror in our andriod is able to see the change
-        int pre = (int) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
-        andriod.updateThingState(andriod.getThingByDiscription(testDesc));
-        int post = (int) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
-        System.out.println(pre + " -- " + post);
     }
     
 }

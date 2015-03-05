@@ -117,7 +117,7 @@ public class PermissionLogicTest extends LogicTestBase {
     public void testGetAllPermissions() throws UserManagementException {
         Collection<Permission> allPermissions = pl.getAllPermissions();
 
-        assertEquals(6, allPermissions.size());
+        assertEquals(7, allPermissions.size());
 
         Permission p1 = pl.getPermission(1L);
         assertEquals(allPermissions.iterator().next(), p1);
@@ -134,7 +134,7 @@ public class PermissionLogicTest extends LogicTestBase {
         }
 
         Collection<Permission> allPermissions3 = pl.getAllPermissions();
-        assertEquals(6, allPermissions3.size());
+        assertEquals(7, allPermissions3.size());
 
     }
 

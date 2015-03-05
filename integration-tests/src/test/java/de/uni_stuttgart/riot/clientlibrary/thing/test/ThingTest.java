@@ -8,8 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.http.client.ClientProtocolException;
+import org.eclipse.persistence.jpa.jpql.Assert.AssertException;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -21,9 +23,12 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.EventListener;
+import de.uni_stuttgart.riot.thing.ThingDescription;
+import de.uni_stuttgart.riot.thing.client.AndroidThing;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
+import de.uni_stuttgart.riot.thing.client.AndroidThing.DeviceBehavior;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
@@ -103,6 +108,39 @@ public class ThingTest extends ShiroEnabledTest {
         ThingClient thingClient = getLoggedInThingClient();
         TestExecutingThingBehavior behavior = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
         behavior.unregisterAndShutdown();
+    }
+    
+    @Test
+    public void getAssignedThingsTest() throws ClientProtocolException, RequestException, IOException, ThingNotFoundException {
+        // Getting a LoginCLient
+        ThingClient thingClient = this.getLoggedInThingClient();
+       
+        // Creating (includes registration on server) of the android device
+        DeviceBehavior andriod = AndroidThing.create("My Mobile", thingClient);
+        
+        // Getting all assinged Things (Their descriptions)
+        andriod.updateThings();
+        Collection<ThingDescription> descriptions = andriod.getDescriptions();
+       
+        ThingDescription testDesc = null;
+        for (ThingDescription thingDescription : descriptions) {
+            if (thingDescription.getThingId() == 1) {
+                testDesc = thingDescription;
+            }
+        }
+        
+        // Launing on of those listet things to do some manipulation 
+        TestExecutingThingBehavior realThingb = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
+        TestThing realThing = (TestThing) realThingb.getThing();
+        // Changing some property
+        realThing.setInt(43);
+        
+        // Checking if the mirror in our andriod is able to see the change
+        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        andriod.updateThingState(andriod.getThingByDiscription(testDesc));
+        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        assertThat(pre, is(42));
+        assertThat(post, is(43)) ;
     }
 
 }

@@ -124,7 +124,7 @@ public class ThingDBTest extends BaseDatabaseTest {
         dao.insert(thing2);
         dao.insert(thing3);
 
-        assertThat(dao.findByUniqueField(new SearchParameter(SearchFields.NAME, "TestThing2")), equalTo(thing2));
+        assertThat(dao.findByUniqueField(new SearchParameter(SearchFields.NAME, "TestThing3")), equalTo(thing3));
 
         Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
         searchParams.add(new SearchParameter(SearchFields.NAME, "TestThing1"));
@@ -134,6 +134,7 @@ public class ThingDBTest extends BaseDatabaseTest {
 
         // Delete the initial one, so that only our three remain
         dao.delete(1);
+        dao.delete(2);
         restoredThings = dao.findAll();
         assertThat(restoredThings, containsInAnyOrder(thing1, thing2, thing3));
     }
