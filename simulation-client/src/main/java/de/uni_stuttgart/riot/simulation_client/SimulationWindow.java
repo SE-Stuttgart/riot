@@ -8,8 +8,10 @@ import de.uni_stuttgart.riot.javafx.UIProducer;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.BaseInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
 import de.uni_stuttgart.riot.thing.Thing;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -17,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -25,6 +28,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -70,15 +74,20 @@ public class SimulationWindow extends Stage {
     private Parent produceContent() {
         TitledPane statePane = new TitledPane("Current state", produceStatePane());
         TitledPane actionsHistoryPane = new TitledPane("Actions History", produceActionsHistoryPane());
+        TitledPane fireEventsPane = new TitledPane("Fire events", produceFireEventsPane());
         statePane.setCollapsible(false);
 
-        HBox container = new HBox(INNER_SPACING, statePane, actionsHistoryPane);
+        HBox container = new HBox(INNER_SPACING, statePane, actionsHistoryPane, fireEventsPane);
         container.setPadding(new Insets(OUTER_PADDING));
-        HBox.setHgrow(statePane, Priority.SOMETIMES);
-        HBox.setHgrow(actionsHistoryPane, Priority.SOMETIMES);
+        HBox.setHgrow(statePane, Priority.ALWAYS);
+        HBox.setHgrow(actionsHistoryPane, Priority.ALWAYS);
+        HBox.setHgrow(fireEventsPane, Priority.SOMETIMES);
         statePane.setMaxWidth(Double.MAX_VALUE);
         actionsHistoryPane.setMaxWidth(Double.MAX_VALUE);
         actionsHistoryPane.setMaxHeight(Double.MAX_VALUE);
+        fireEventsPane.setMaxHeight(Double.MAX_VALUE);
+        actionsHistoryPane.setPrefHeight(0);
+        fireEventsPane.setPrefHeight(0);
         return container;
     }
 
@@ -136,6 +145,32 @@ public class SimulationWindow extends Stage {
             }
         });
         return actionList;
+    }
+
+    /**
+     * Creates a pane that contains a button for each action that the thing has. When the button is clicked, the action is fired, possibly
+     * asking the user to enter the parameters first.
+     * 
+     * @return The fire events pane.
+     */
+    private Node produceFireEventsPane() {
+        VBox container = new VBox(INNER_SPACING);
+        for (Event<?> event : behavior.getEvents().values()) {
+            if (event instanceof PropertyChangeEvent) {
+                continue;
+            }
+
+            Button button = new Button();
+            button.setText(event.getName());
+            button.setOnAction((actionEvent) -> {
+                EventInstance eventInstance = BaseInstanceWindow.enterNewInstance(event.getInstanceType(), thing.getId(), event.getName(), behavior.getClient().getJsonMapper());
+                if (eventInstance != null) {
+                    behavior.executeEvent(eventInstance);
+                }
+            });
+            container.getChildren().add(button);
+        }
+        return container;
     }
 
     /**

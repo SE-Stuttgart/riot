@@ -1,8 +1,16 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -11,6 +19,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -58,6 +67,19 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
      * {@link #parameterProperties}.
      */
     private final boolean mayCreateNewWritableProperties;
+
+    /**
+     * Creates a new window from the given description. The window allows the user to create a new instance.
+     * 
+     * @param description
+     *            The instance description.
+     */
+    private BaseInstanceWindow(BaseInstanceDescription description) {
+        this.description = description;
+        this.mayCreateNewWritableProperties = true;
+        setScene(new Scene(produceContent()));
+        getScene().getStylesheets().add("styles.css");
+    }
 
     /**
      * Creates a new window from the given description. The window allows the user to view an existing instance (readonly).
@@ -132,7 +154,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
             if (parameterProperties.containsKey(parameter.getName())) {
                 valueControl = produceControlForExistingObservable(parameter.getName(), parameter.getValueType(), parameter.getUiHint());
             } else if (mayCreateNewWritableProperties) {
-                valueControl = produceControlWithProperty(parameter.getValueType(), parameter.getUiHint());
+                valueControl = produceControlWithProperty(parameter.getName(), parameter.getValueType(), parameter.getUiHint());
             } else {
                 throw new IllegalStateException("The description contains a parameter that is not present in the given parameter properties values!");
             }
@@ -140,10 +162,11 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
             container.addRow(i, label, valueControl);
             GridPane.setHalignment(label, HPos.RIGHT);
             GridPane.setHgrow(valueControl, Priority.ALWAYS);
+            valueControl.setMaxWidth(Double.MAX_VALUE);
             i++;
         }
 
-        VBox vbox = new VBox(container, buttonContainer);
+        VBox vbox = new VBox(OUTER_PADDING, container, buttonContainer);
         vbox.setPadding(new Insets(OUTER_PADDING));
         return vbox;
     }
@@ -151,14 +174,17 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
     /**
      * Produces a property to hold the current value of a parameter and constructs a UI for the parameter with respect to the given UI hint.
      * 
+     * @param propertyName
+     *            The name of the property.
      * @param valueType
      *            The type of the parameter value.
      * @param uiHint
      *            The UI hint for the parameter.
      * @return The control for the parameter.
      */
-    private <T> Control produceControlWithProperty(Class<T> valueType, UIHint uiHint) {
+    private <T> Control produceControlWithProperty(String propertyName, Class<T> valueType, UIHint uiHint) {
         Property<T> property = new SimpleObjectProperty<T>();
+        parameterProperties.put(propertyName, property);
         return UIProducer.produceControl(property, uiHint, valueType);
     }
 
@@ -217,6 +243,87 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
         // Show the window.
         window.showAndWait();
         return window;
+    }
+
+    /**
+     * Shows an editable window with empty initial values for the user to create a new instance. No window is shown if the specified type
+     * does not have any parameters, in which case a new instance will be returned immediately.
+     * 
+     * @param <I>
+     *            The instance type to be created.
+     * @param instanceType
+     *            The instance type to be created.
+     * @param thingId
+     *            The id of the thing to create this instance for.
+     * @param name
+     *            The name of the event/action to create this instance for.
+     * @param objectMapper
+     *            The JSON object mapper to be used (this is needed internally for creating the instance dynamically).
+     * @return The created instance or <tt>null</tt>, if the user aborted.
+     */
+    public static <I extends BaseInstance> I enterNewInstance(Class<I> instanceType, long thingId, String name, ObjectMapper objectMapper) {
+        if (Modifier.isAbstract(instanceType.getModifiers())) {
+            throw new IllegalArgumentException("Cannot create new instances of abstract type " + instanceType);
+        }
+
+        // We construct a JSON node because this is the most reliable method to instantiate a generic instance.
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("thingId", thingId);
+        node.put("name", name);
+
+        // Only show the window if there are any parameters.
+        BaseInstanceDescription description = BaseInstanceDescription.create(instanceType);
+        if (!description.getParameters().isEmpty()) {
+
+            // Prepare the window.
+            BaseInstanceWindow<I> window = new BaseInstanceWindow<>(description);
+            window.setTitle(name + " - New" + description.getInstanceType().getSimpleName());
+
+            AtomicBoolean result = new AtomicBoolean(false);
+            Button okButton = new Button("OK");
+            okButton.setOnAction((actionEvent) -> {
+                for (ObservableValue<?> value : window.parameterProperties.values()) {
+                    if (value.getValue() == null) {
+                        return; // User must first fill in all fields.
+                    }
+                }
+
+                result.set(true);
+                window.close();
+            });
+            Button cancelButton = new Button("Cancel");
+            cancelButton.setOnAction((actionEvent) -> {
+                window.close();
+            });
+            okButton.setMaxWidth(Double.MAX_VALUE);
+            cancelButton.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(okButton, Priority.ALWAYS);
+            HBox.setHgrow(cancelButton, Priority.ALWAYS);
+            window.buttonContainer.getChildren().addAll(okButton, cancelButton);
+
+            // Show the window.
+            window.showAndWait();
+            if (!result.get()) {
+                return null;
+            }
+
+            // Write the results to the JSON node.
+            for (Map.Entry<String, ObservableValue<?>> parameterValue : window.parameterProperties.entrySet()) {
+                Object value = parameterValue.getValue().getValue();
+                node.put(parameterValue.getKey(), (JsonNode) objectMapper.valueToTree(value));
+            }
+        }
+
+        // Call the instance constructor with the JSON node.
+        try {
+            Constructor<I> constructor = instanceType.getConstructor(JsonNode.class);
+            node.put("time", System.currentTimeMillis());
+            return constructor.newInstance(node);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(instanceType + " must specify a single-argument constructor that accepts a JsonNode!");
+        } catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

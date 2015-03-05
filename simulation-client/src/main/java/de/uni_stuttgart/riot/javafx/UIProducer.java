@@ -156,7 +156,9 @@ public abstract class UIProducer {
         slider.setSnapToTicks(true);
         slider.setMin(min);
         slider.setMax(max);
-        slider.setValue(property.getValue().doubleValue());
+        if (property.getValue() != null) {
+            slider.setValue(property.getValue().doubleValue());
+        }
         slider.valueProperty().bindBidirectional(property);
         return slider;
     }
@@ -176,7 +178,9 @@ public abstract class UIProducer {
         Slider slider = new Slider();
         slider.setMin(min);
         slider.setMax(max);
-        slider.setValue(property.getValue().doubleValue());
+        if (property.getValue() != null) {
+            slider.setValue(property.getValue().doubleValue());
+        }
         slider.valueProperty().bindBidirectional(property);
         return slider;
     }
@@ -208,7 +212,9 @@ public abstract class UIProducer {
      */
     private static CheckBox produceCheckBox(ObservableValue<Boolean> property) {
         CheckBox checkBox = new CheckBox();
-        checkBox.setSelected(property.getValue());
+        if (property.getValue() != null) {
+            checkBox.setSelected(property.getValue());
+        }
         if (property instanceof Property) {
             checkBox.selectedProperty().bindBidirectional((Property<Boolean>) property);
         } else {
@@ -226,7 +232,10 @@ public abstract class UIProducer {
      * @return The text field.
      */
     private static TextField produceTextField(ObservableValue<String> property) {
-        TextField textField = new TextField(property.getValue().toString());
+        TextField textField = new TextField();
+        if (property.getValue() != null) {
+            textField.setText(property.getValue());
+        }
         if (property instanceof Property) {
             textField.textProperty().bindBidirectional((Property<String>) property);
         } else {
@@ -245,7 +254,9 @@ public abstract class UIProducer {
      */
     private static NumberSpinner produceNumberSpinner(ObservableValue<Number> property) {
         NumberSpinner spinner = new NumberSpinner();
-        spinner.setValue(property.getValue());
+        if (property.getValue() != null) {
+            spinner.setValue(property.getValue());
+        }
         if (property instanceof Property) {
             spinner.valueProperty().bindBidirectional((Property<Number>) property);
         } else {
@@ -265,7 +276,9 @@ public abstract class UIProducer {
     private static <E extends Enum<E>> ChoiceBox<E> produceChoiceBox(ObservableValue<E> property, Class<E> valueType) {
         List<E> items = Arrays.asList(valueType.getEnumConstants());
         ChoiceBox<E> choiceBox = new ChoiceBox<E>(FXCollections.observableList(items));
-        choiceBox.setValue(property.getValue());
+        if (property.getValue() != null) {
+            choiceBox.setValue(property.getValue());
+        }
         if (property instanceof Property) {
             choiceBox.valueProperty().bindBidirectional((Property<E>) property);
         } else {

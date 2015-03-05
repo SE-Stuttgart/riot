@@ -11,6 +11,7 @@ import org.apache.http.HttpResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
@@ -425,4 +426,14 @@ public class ThingClient {
             throw new RequestException(e);
         }
     }
+
+    /**
+     * Gets the JSON mapper.
+     * 
+     * @return The Jackson ObjectMapper.
+     */
+    public ObjectMapper getJsonMapper() {
+        return loginClient.getJsonMapper();
+    }
+
 }

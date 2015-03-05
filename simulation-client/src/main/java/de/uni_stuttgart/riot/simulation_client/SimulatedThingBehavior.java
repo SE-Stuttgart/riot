@@ -8,6 +8,7 @@ import java.util.function.Function;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
@@ -97,6 +98,11 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
     }
 
     @Override
+    protected Map<String, Event<?>> getEvents() {
+        return super.getEvents();
+    }
+
+    @Override
     protected <V> void changePropertyValue(Property<V> property, V newValue) {
         super.changePropertyValue(property, newValue);
     }
@@ -109,6 +115,11 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
     @Override
     protected void fetchUpdates() throws RequestException {
         super.fetchUpdates();
+    }
+
+    @Override
+    protected ThingClient getClient() {
+        return super.getClient();
     }
 
 }
