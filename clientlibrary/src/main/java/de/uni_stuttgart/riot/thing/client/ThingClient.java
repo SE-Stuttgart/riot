@@ -22,6 +22,8 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.commons.ShareRequest;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
@@ -50,6 +52,8 @@ public class ThingClient {
     private static final String POST_REGISTER_EVENTS_SUFFIX = "/registerMultiple";
 
     private static final String GET_LAST_ONLINE_SUFFIX = "/online";
+
+    private static final String SHARE_THING = THINGS_PREFIX + "share";
 
     private static final long TEN_MIN = 1000 * 60 * 10;
     private static final long FIVE_MIN = 1000 * 60 * 5;
@@ -398,4 +402,27 @@ public class ThingClient {
         }
     }
 
+    /**
+     * Share a thing with another user.
+     *
+     * @param thingID
+     *            the id of the thing to be shared
+     * @param userID
+     *            the id of the user to share with
+     * @param permission
+     *            the permission
+     * @throws RequestException
+     *             the request exception
+     */
+    public void share(long thingID, long userID, ThingPermission permission) throws RequestException {
+        ShareRequest sr = new ShareRequest(userID, thingID, permission);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + SHARE_THING, sr);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
 }

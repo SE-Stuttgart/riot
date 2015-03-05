@@ -1,13 +1,7 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -29,6 +23,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
@@ -162,5 +157,27 @@ public class ThingClientTest extends ShiroEnabledTest {
         thingClient.unregisterThing(thing.getId());
 
     }
-    
+
+    @Test
+    public void shareTest() throws Exception {
+        ThingClient thingClientYoda = this.getLoggedInThingClient();
+
+        LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
+        loginClient.login("R2D2", "R2D2PW");
+        ThingClient thingClientR2D2 = new ThingClient(loginClient);
+
+        // try to read the thing with the id 1, should fail
+        try {
+            thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
+            fail();
+        } catch (RequestException e) {
+            // exception expected, because R2D2 has not the right to read thing/1
+        }
+
+        // allow R2D2 to read the thing with the id 1
+        thingClientYoda.share(1, 2, ThingPermission.READ);
+        Thing thing = thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
+        assertThat(thing.getName(), is("My Test Thing"));
+    }
+
 }

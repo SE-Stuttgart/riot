@@ -29,15 +29,13 @@ INSERT INTO permissions(id, permissionvalue)
 
 INSERT INTO roles_permissions(permissionid, roleid)
     VALUES (1, 1),
-     (4, 2),
+     (5, 2),
      (3, 3),
      (2, 4);
 
 INSERT INTO users_permissions(permissionid, userid)
     VALUES (4, 1),
      (2, 1),
-     (2, 2),
-     (2, 3),
      (3, 3),
      (7, 1);
 
