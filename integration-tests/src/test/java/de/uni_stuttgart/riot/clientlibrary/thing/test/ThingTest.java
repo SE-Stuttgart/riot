@@ -1,18 +1,17 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.apache.http.client.ClientProtocolException;
-import org.eclipse.persistence.jpa.jpql.Assert.AssertException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,11 +25,10 @@ import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ThingDescription;
-import de.uni_stuttgart.riot.thing.client.AndroidThing;
+import de.uni_stuttgart.riot.thing.client.DeviceBehavior;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
-import de.uni_stuttgart.riot.thing.client.AndroidThing.DeviceBehavior;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
@@ -127,7 +125,7 @@ public class ThingTest extends ShiroEnabledTest {
         ThingClient thingClient = this.getLoggedInThingClient();
        
         // Creating (includes registration on server) of the android device
-        DeviceBehavior andriod = AndroidThing.create("My Mobile", thingClient);
+        DeviceBehavior andriod = de.uni_stuttgart.riot.thing.client.DeviceBehavior.create("My Mobile", thingClient);
         
         // Getting all assinged Things (Their descriptions)
         andriod.updateThings();
