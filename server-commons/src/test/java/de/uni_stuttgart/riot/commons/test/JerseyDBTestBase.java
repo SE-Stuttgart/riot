@@ -8,9 +8,11 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import de.uni_stuttgart.riot.server.commons.rest.RiotApplication;
 
@@ -39,6 +41,13 @@ public class JerseyDBTestBase extends JerseyTest {
      */
     protected static DataSource getDataSource() {
         return database.getDataSource();
+    }
+
+    @BeforeClass
+    public static void redirectLogging() {
+        // Jersey uses java.util.logging internally, we redirect it to slf4j
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
     }
 
     @Override

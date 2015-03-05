@@ -10,9 +10,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.Factory;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.LoggerContext;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.test.TestData;
@@ -34,10 +32,6 @@ public class AuthenticationLogicTest extends LogicTestBase {
 
     @Before
     public void setUp() throws Exception {
-        // disable logging of shiro
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        lc.stop();
-
         // load shiro configuration
         Factory<SecurityManager> factory = new IniSecurityManagerFactory();
         SecurityManager securityManager = factory.getInstance();
