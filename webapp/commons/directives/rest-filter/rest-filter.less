@@ -1,0 +1,38 @@
+.rest-filter {
+  position: relative;
+  .dropdown-menu {
+    width: auto !important;
+  }
+  .popup {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    right: 0;
+    width: 500px;
+    padding: 10px;
+    z-index: 1000;
+    .header {
+      font-size: 1.2em;
+      font-weight: bold;
+      border-bottom: 1px solid #cccccc;
+      margin-bottom: 5px;
+    }
+    .borderless td {
+      border: none;
+    }
+    td:last-of-type {
+      padding: 5px !important;
+    }
+    td:first-of-type {
+      padding-left: 0px !important;
+    }
+    td:last-of-type {
+      padding-right: 0px !important;
+    }
+  }
+}

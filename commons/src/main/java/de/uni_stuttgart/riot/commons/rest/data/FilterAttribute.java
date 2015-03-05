@@ -39,7 +39,7 @@ public class FilterAttribute {
 
     private String fieldName;
     private FilterOperator operator;
-    private String value;
+    private Object value;
 
     /**
      * Necessary Constructor for JSON serialization.
@@ -58,7 +58,7 @@ public class FilterAttribute {
      * @param value
      *            the value
      */
-    public FilterAttribute(String fieldName, FilterOperator operator, String value) {
+    public FilterAttribute(String fieldName, FilterOperator operator, Object value) {
         this.fieldName = fieldName;
         this.operator = operator;
         this.value = value;
@@ -80,11 +80,11 @@ public class FilterAttribute {
         this.operator = operator;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 

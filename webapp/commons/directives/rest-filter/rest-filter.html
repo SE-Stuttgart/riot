@@ -1,39 +1,36 @@
-<div class="rest-filter dropdown">
-  <button type="button" class="btn btn-default" data-toggle="dropdown" aria-expanded="true">
+<div class="rest-filter">
+  <button type="button" class="btn btn-default">
     <span class="fa fa-filter"></span> Filter
     <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
-    <li>
-      <table class="filter table table-condensed" ng-if="filters.length">
-        <tbody>
-          <tr ng-repeat="filter in filters">
-            <td>
-              <select class="form-control property" ng-model="filter.property" ng-options="property.key as property.name for property in properties">
-              </select>
-            </td>
-            <td>
-              <select class="form-control operator" ng-model="filter.operator" ng-options="operator.key as operator.name for operator in operators">
-              </select>
-            </td>
-            <td width="100%">
-              <input type="text" placeholder="Value" class="value form-control" ng-model="filter.value">
-            </td>
-            <td>
-              <button type="button" class="btn btn-danger" ng-click="removeFilter($index)">
-                <span class="fa fa-lg fa-times"></span>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary" submit="save()">Apply</button>
-        <button type="button" class="btn btn-default">Reset</button>
-        <button type="button" class="btn btn-success" ng-click="addFilter()">
-          <span class="fa fa-plus"></span>
-        </button>
-      </div>
-    </li>
-  </ul>
+  <div class="popup">
+    <div class="header">Filter</div>
+    <table class="filter table borderless table-condensed" ng-if="filters.length">
+      <tbody>
+        <tr ng-repeat="filter in filters">
+          <td>
+            <select class="selectpicker property" data-width="160px" ng-model="filter.property" ng-options="property.key as property.name for property in properties"></select>
+          </td>
+          <td>
+            <select class="selectpicker operator" data-width="80px" ng-model="filter.operator" ng-options="operator.key as operator.name for operator in operators"></select>
+          </td>
+          <td width="100%">
+            <input type="text" placeholder="Value" class="value form-control" ng-model="filter.value">
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger" ng-click="removeFilter($index)">
+              <span class="fa fa-times"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="form-group">
+      <button id="applyButton" type="submit" class="btn btn-primary" ng-click="applyFilter()">Apply</button>
+      <button id="resetButton" type="button" class="btn btn-default" ng-click="resetFilter()">Reset</button>
+      <button type="button" class="btn btn-success pull-right" ng-click="addFilter()">
+        <span class="fa fa-plus"></span>
+      </button>
+    </div>
+  </div>
 </div>
