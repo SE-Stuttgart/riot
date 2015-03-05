@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="col-sm-6 form-group">
-        <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="filter">
+        <div class="pull-right" rest-filter="filters" properties="filterProperties"></div>
       </div>
     </div>
 
@@ -62,7 +62,7 @@
     <!-- table footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit}} {{ 'common.to' | i18n }} {{(current - 1) * limit + users.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
+        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + users.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
       </div>
       <div class="col-sm-12 text-center">
         <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getUsers()"></pagination>

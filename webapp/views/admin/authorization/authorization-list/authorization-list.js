@@ -25,12 +25,16 @@ angular.module('riot').controller('AuthorizationListCtrl',function($scope, Role,
 
   $scope.getRoles = function() {
     Role.getList({limit: $scope.rolesList.limit, offset: ($scope.rolesList.current - 1) * $scope.rolesList.limit}).then(function(roles) {
+      $scope.rolesList.limit = roles.pagination.limit;
+      $scope.rolesList.total = roles.pagination.total;
       $scope.roles = roles;
     });
   };
 
   $scope.getPermissions = function() {
     Permission.getList({limit: $scope.permissionsList.limit, offset: ($scope.permissionsList.current - 1) * $scope.permissionsList.limit}).then(function(permissions) {
+      $scope.permissionsList.limit = permissions.pagination.limit;
+      $scope.permissionsList.total = permissions.pagination.total;
       $scope.permissions = permissions;
     });
   };
