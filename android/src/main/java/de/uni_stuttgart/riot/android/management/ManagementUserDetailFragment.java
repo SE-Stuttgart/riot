@@ -27,8 +27,8 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected int getTitleId() {
-        return R.string.user_detail;
+    protected String getTitle() {
+        return getResources().getString(R.string.user_detail);
     }
 
     @Override

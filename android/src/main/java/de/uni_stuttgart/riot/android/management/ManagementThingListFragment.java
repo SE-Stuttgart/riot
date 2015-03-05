@@ -16,8 +16,8 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
-    protected int getTitleId() {
-        return R.string.thing_list;
+    protected String getTitle() {
+        return getResources().getString(R.string.thing_list);
     }
 
     @Override

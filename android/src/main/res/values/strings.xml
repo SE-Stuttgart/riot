@@ -121,6 +121,11 @@
     <string name="abort">Abort</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
+<<<<<<< HEAD
 </resources>
 >>>>>>> RIOT-87:Android:All changes of the last commits
 >>>>>>> RIOT-87:Android:All changes of the last commits
+=======
+    <string name="default_item_title">Item without a title</string>
+</resources>>>>>>>> RIOT-87:Android:All changes of the last commits
+>>>>>>> RIOT-87:Android:Use UIHint for Things-Views

@@ -20,8 +20,8 @@ public class ManagementDeviceDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected int getTitleId() {
-        return R.string.device_detail;
+    protected String getTitle() {
+        return getResources().getString(R.string.device_detail);
     }
 
     @Override

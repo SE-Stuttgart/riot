@@ -9,36 +9,41 @@ public enum PropertyType {
     /**
      * .
      */
-    SCALE_VALUE,
+    IntegralSlider,
 
     /**
      * .
      */
-    SCALE_PERCENT,
+    FractionalSlider,
 
 
     /**
      * .
      */
-    DROP_DOWN,
+    PercentageSlider,
 
     /**
      * .
      */
-    TOGGLE_BUTTON,
+    ToggleButton,
 
     /**
      * .
      */
-    PROPERTY_GROUP,
+    EditText,
 
     /**
      * .
      */
-    EDIT_TEXT,
+    EditNumber,
 
     /**
      * .
      */
-    EDIT_NUMBER;
+    DropDown,
+
+    /**
+     * .
+     */
+    GROUP;
 }

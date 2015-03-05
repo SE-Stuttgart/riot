@@ -19,7 +19,7 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
 
     protected static final String BUNDLE_ENABLE_ELEMENTS = "bundle_enable_elements";
 
-    protected long itemId;
+    protected Long itemId;
     protected boolean enableElements;
     protected Storable data;
 
