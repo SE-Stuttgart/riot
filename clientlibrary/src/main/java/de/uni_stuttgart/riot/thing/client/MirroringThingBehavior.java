@@ -22,15 +22,10 @@ import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 public abstract class MirroringThingBehavior extends ClientThingBehavior {
 
     /**
-     * The list of known things, i.e. the ones that are "cached" and used locally.
-     */
-    private final Map<Long, MirroredThingBehavior> knownOtherThings = new HashMap<Long, MirroredThingBehavior>();
-
-    /**
      * This behavior factory will create instances of {@link MirroredThingBehavior} that are attached to this {@link MirroringThingBehavior}
      * and add them to the list of {@link #knownOtherThings}.
      */
-    private final ThingBehaviorFactory<MirroredThingBehavior> behaviorFactory = new ThingBehaviorFactory<MirroredThingBehavior>() {
+    protected final ThingBehaviorFactory<MirroredThingBehavior> behaviorFactory = new ThingBehaviorFactory<MirroredThingBehavior>() {
 
         @Override
         public MirroredThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
@@ -43,6 +38,11 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
         }
 
     };
+
+    /**
+     * The list of known things, i.e. the ones that are "cached" and used locally.
+     */
+    private final Map<Long, MirroredThingBehavior> knownOtherThings = new HashMap<Long, MirroredThingBehavior>();
 
     /**
      * Creates a new behavior instance.

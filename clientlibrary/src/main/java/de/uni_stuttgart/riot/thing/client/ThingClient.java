@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.thing.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -115,6 +116,34 @@ public class ThingClient {
         } catch (Exception e) {
             throw new RequestException(e);
         }
+    }
+
+    /**
+     * Returns all Things that are assigned to the logged in user.
+     * 
+     * @param behaviorFactory
+     *            The behavior factory for the thing.
+     * @return The Thing
+     * @throws RequestException
+     *             When the request to the server failed.
+     */
+    public Collection<Thing> getThings(ThingBehaviorFactory<?> behaviorFactory) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX);
+        try {
+            JsonNode node = this.loginClient.getJsonMapper().readTree(response.getEntity().getContent());
+            return readThings(node, behaviorFactory);
+        } catch (Exception e) {
+            throw new RequestException(e);
+        }
+    }
+
+    private Collection<Thing> readThings(JsonNode node, ThingBehaviorFactory<?> behaviorFactory) throws JsonProcessingException {
+        ArrayList<Thing> result = new ArrayList<Thing>();
+        Iterator<JsonNode> i = node.elements();
+        while (i.hasNext()) {
+            result.add(this.readThing(i.next(), behaviorFactory));
+        }
+        return result;
     }
 
     /**

@@ -14,7 +14,7 @@ import de.uni_stuttgart.riot.thing.ThingBehavior;
  */
 public abstract class ClientThingBehavior extends ThingBehavior {
 
-    private final ThingClient thingClient;
+    protected final ThingClient thingClient;
 
     /**
      * Creates a new behavior instance.

@@ -24,7 +24,8 @@ INSERT INTO permissions(id, permissionvalue)
      (3, 'thing:3:read'),
      (4, 'thing:*'),
      (5, 'x'),
-     (6, 'y');
+     (6, 'y'),
+     (7, 'thing:2:*');
 
 INSERT INTO roles_permissions(permissionid, roleid)
     VALUES (1, 1),
@@ -37,7 +38,8 @@ INSERT INTO users_permissions(permissionid, userid)
      (2, 1),
      (2, 2),
      (2, 3),
-     (3, 3);
+     (3, 3),
+     (7, 1);
 
 INSERT INTO tokens_roles(tokenid, roleid)
     VALUES (1, 1),

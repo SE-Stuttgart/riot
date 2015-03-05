@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ThingDescription {
 
+    private final long thingId;
+    private final String thingName;
     private final Class<? extends Thing> type;
     private final List<EventDescription> events;
     private final List<ActionDescription> actions;
@@ -31,11 +33,13 @@ public class ThingDescription {
      *            The property descriptions for the thing.
      */
     @JsonCreator
-    private ThingDescription(@JsonProperty("type") Class<? extends Thing> type, @JsonProperty("events") List<EventDescription> events, @JsonProperty("actions") List<ActionDescription> actions, @JsonProperty("properties") List<PropertyDescription> properties) {
+    private ThingDescription(@JsonProperty("thingId") long thingId, @JsonProperty("name") String name, @JsonProperty("type") Class<? extends Thing> type, @JsonProperty("events") List<EventDescription> events, @JsonProperty("actions") List<ActionDescription> actions, @JsonProperty("properties") List<PropertyDescription> properties) {
         this.type = type;
         this.events = events;
         this.actions = actions;
         this.properties = properties;
+        this.thingName = name;
+        this.thingId = thingId;
     }
 
     /**
@@ -165,6 +169,18 @@ public class ThingDescription {
             properties.add(PropertyDescription.create(property));
         }
 
-        return new ThingDescription(thing.getClass(), events, actions, properties);
+        return new ThingDescription(thing.getId(), thing.getName(), thing.getClass(), events, actions, properties);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "ThingDescription [name=" + thingName + ", type=" + type + ", events=" + events + ", actions=" + actions + ", properties=" + properties + "]";
+    }
+
+    public long getThingId() {
+        return thingId;
     }
 }
