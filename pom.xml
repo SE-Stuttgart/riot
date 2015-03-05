@@ -14,6 +14,10 @@
 		<jersey.version>2.14</jersey.version>
 		<jackson.version>2.3.2</jackson.version>
 		<riot.root>${basedir}</riot.root>
+		<mysql.host>localhost</mysql.host>
+		<mysql.port>3306</mysql.port>
+		<mysql.user></mysql.user>
+		<mysql.password></mysql.password>
 	</properties>
 
 	<modules>
@@ -253,8 +257,10 @@
 						</dependencies>
 						<configuration>
 							<driver>com.mysql.jdbc.Driver</driver>
-							<url>jdbc:mysql://localhost:3306/riot</url>
+							<url>jdbc:mysql://${mysql.host}:${mysql.port}/riot</url>
 							<settingsKey>riotMySQL</settingsKey>
+							<username>${mysql.user}</username>
+							<password>${mysql.password}</password>
 						</configuration>
 						<executions>
 							<execution>
