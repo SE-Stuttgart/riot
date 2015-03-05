@@ -391,4 +391,5 @@ public class LoginClient {
     public ObjectMapper getJsonMapper() {
         return jsonMapper;
     }
+
 }

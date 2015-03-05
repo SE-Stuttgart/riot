@@ -31,38 +31,12 @@ public class ThingPropertyBinding<T> extends SimpleObjectProperty<T> {
     /**
      * Reacts to changes in the JavaFX Property.
      */
-    private final ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
-        synchronized (ThingPropertyBinding.this) {
-            if (updating) {
-                return;
-            }
-            updating = true;
-            try {
-                thingProperty.set(newValue);
-            } finally {
-                updating = false;
-            }
-        }
-    };
+    private final ChangeListener<T> changeListener;
 
     /**
      * Reacts to changes in the Thing property.
      */
-    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener = (event, eventInstance) -> {
-        Platform.runLater(() -> {
-            synchronized (ThingPropertyBinding.this) {
-                if (updating) {
-                    return;
-                }
-                updating = true;
-                try {
-                    ThingPropertyBinding.super.set(eventInstance.getNewValue());
-                } finally {
-                    updating = false;
-                }
-            }
-        });
-    };
+    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener;
 
     /**
      * Creates a new binding.
@@ -73,6 +47,37 @@ public class ThingPropertyBinding<T> extends SimpleObjectProperty<T> {
     public ThingPropertyBinding(WritableProperty<T> thingProperty) {
         super(thingProperty.getValue());
         this.thingProperty = thingProperty;
+
+        this.changeListener = (observable, oldValue, newValue) -> {
+            synchronized (ThingPropertyBinding.this) {
+                if (updating) {
+                    return;
+                }
+                updating = true;
+                try {
+                    thingProperty.set(newValue);
+                } finally {
+                    updating = false;
+                }
+            }
+        };
+
+        this.thingListener = (event, eventInstance) -> {
+            Platform.runLater(() -> {
+                synchronized (ThingPropertyBinding.this) {
+                    if (updating) {
+                        return;
+                    }
+                    updating = true;
+                    try {
+                        ThingPropertyBinding.super.set(eventInstance.getNewValue());
+                    } finally {
+                        updating = false;
+                    }
+                }
+            });
+        };
+
         thingProperty.getChangeEvent().register(thingListener);
         super.addListener(changeListener);
     }

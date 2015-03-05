@@ -25,9 +25,7 @@ public class ThingPropertyObservable<T> extends ObservableValueBase<T> {
     /**
      * Reacts to changes in the Thing property.
      */
-    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener = (event, eventInstance) -> {
-        Platform.runLater(ThingPropertyObservable.this::fireValueChangedEvent);
-    };
+    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener;
 
     /**
      * Creates a new binding.
@@ -37,6 +35,11 @@ public class ThingPropertyObservable<T> extends ObservableValueBase<T> {
      */
     public ThingPropertyObservable(Property<T> thingProperty) {
         this.thingProperty = thingProperty;
+
+        this.thingListener = (event, eventInstance) -> {
+            Platform.runLater(ThingPropertyObservable.this::fireValueChangedEvent);
+        };
+
         thingProperty.getChangeEvent().register(thingListener);
     }
 

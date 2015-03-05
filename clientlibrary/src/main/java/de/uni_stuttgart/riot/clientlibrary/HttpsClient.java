@@ -11,7 +11,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
 /**
  * Uses the keystore.bks file to secure server connections with a pinned HTTPS certificate.
@@ -59,7 +59,7 @@ public class HttpsClient extends DefaultHttpClient {
     protected ClientConnectionManager createClientConnectionManager() {
         SchemeRegistry registry = new SchemeRegistry();
         registry.register(new Scheme("https", newSslSocketFactory(), port));
-        return new SingleClientConnManager(getParams(), registry);
+        return new ThreadSafeClientConnManager(getParams(), registry);
     }
 
     private SSLSocketFactory newSslSocketFactory() {
