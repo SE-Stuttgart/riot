@@ -160,7 +160,7 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
   return service;
 });
 
-angular.module('riot').run(function($rootScope, Auth) {
+angular.module('riot').run(function($rootScope, $state, Auth) {
   //check authorization on state change
   $rootScope.$on('$stateChangeStart', function(e, state) {
     state.data = state.data || {};
