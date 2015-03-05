@@ -77,7 +77,7 @@ public abstract class UIProducer {
         if (hint instanceof IntegralSlider) {
             IntegralSlider uiHint = (IntegralSlider) hint;
             if (valueType != Integer.class && valueType != Long.class) {
-                throw new IllegalArgumentException("IntegralSlider can only be used with Integer or Long!");
+                throw new IllegalArgumentException("IntegralSlider can only be used with Integer or Long, not " + valueType);
             } else if (property instanceof Property) {
                 return produceIntegralSlider((Property<Number>) property, uiHint.min, uiHint.max);
             } else {
@@ -87,7 +87,7 @@ public abstract class UIProducer {
         } else if (hint instanceof FractionalSlider) {
             FractionalSlider uiHint = (FractionalSlider) hint;
             if (valueType != Float.class && valueType != Double.class) {
-                throw new IllegalArgumentException("FractionalSlider can only be used with Float or Double!");
+                throw new IllegalArgumentException("FractionalSlider can only be used with Float or Double, not " + valueType);
             } else if (property instanceof Property) {
                 return produceFractionalSlider((Property<Number>) property, uiHint.min, uiHint.max);
             } else {
@@ -96,7 +96,7 @@ public abstract class UIProducer {
 
         } else if (hint instanceof PercentageSlider) {
             if (valueType != Float.class && valueType != Double.class) {
-                throw new IllegalArgumentException("PercentageSlider can only be used with Float or Double!");
+                throw new IllegalArgumentException("PercentageSlider can only be used with Float or Double, not " + valueType);
             } else if (property instanceof Property) {
                 return produceFractionalSlider((Property<Number>) property, 0.0, 1.0);
             } else {

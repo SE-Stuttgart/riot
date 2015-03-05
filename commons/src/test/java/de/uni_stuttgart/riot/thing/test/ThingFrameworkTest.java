@@ -210,7 +210,7 @@ public class ThingFrameworkTest {
         assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
         assertThat(parEventInstance.getParameters().size(), is(1));
         assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
+        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.class));
 
         // Check the actions.
         assertThat(description.getActions(), hasSize(2));
@@ -220,7 +220,7 @@ public class ThingFrameworkTest {
         assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
         assertThat(parActionInstance.getParameters().size(), is(1));
         assertThat(parActionInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.TYPE));
+        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.class));
 
         // Check the properties.
         assertThat(description.getProperties(), hasSize(4));

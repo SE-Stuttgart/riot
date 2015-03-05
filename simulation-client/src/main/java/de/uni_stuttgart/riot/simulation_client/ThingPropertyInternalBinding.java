@@ -29,45 +29,14 @@ public class ThingPropertyInternalBinding<T> extends SimpleObjectProperty<T> {
     private final Property<T> thingProperty;
 
     /**
-     * The thing's behavior.
-     */
-    private final SimulatedThingBehavior behavior;
-
-    /**
      * Reacts to changes in the JavaFX Property.
      */
-    private final ChangeListener<T> changeListener = (observable, oldValue, newValue) -> {
-        synchronized (ThingPropertyInternalBinding.this) {
-            if (updating) {
-                return;
-            }
-            updating = true;
-            try {
-                behavior.changePropertyValue(thingProperty, newValue);
-            } finally {
-                updating = false;
-            }
-        }
-    };
+    private final ChangeListener<T> changeListener;
 
     /**
      * Reacts to changes in the Thing property.
      */
-    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener = (event, eventInstance) -> {
-        Platform.runLater(() -> {
-            synchronized (ThingPropertyInternalBinding.this) {
-                if (updating) {
-                    return;
-                }
-                updating = true;
-                try {
-                    ThingPropertyInternalBinding.super.set(eventInstance.getNewValue());
-                } finally {
-                    updating = false;
-                }
-            }
-        });
-    };
+    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener;
 
     /**
      * Creates a new binding.
@@ -80,9 +49,79 @@ public class ThingPropertyInternalBinding<T> extends SimpleObjectProperty<T> {
     public ThingPropertyInternalBinding(Property<T> thingProperty, SimulatedThingBehavior behavior) {
         super(thingProperty.getValue());
         this.thingProperty = thingProperty;
-        this.behavior = behavior;
+
+        this.changeListener = (observable, oldValue, newValue) -> {
+            synchronized (ThingPropertyInternalBinding.this) {
+                if (updating) {
+                    return;
+                }
+                updating = true;
+                try {
+                    behavior.changePropertyValue(thingProperty, convertToExactType(newValue));
+                } finally {
+                    updating = false;
+                }
+            }
+        };
+
+        this.thingListener = (event, eventInstance) -> {
+            Platform.runLater(() -> {
+                synchronized (ThingPropertyInternalBinding.this) {
+                    if (updating) {
+                        return;
+                    }
+                    updating = true;
+                    try {
+                        ThingPropertyInternalBinding.super.set(eventInstance.getNewValue());
+                    } finally {
+                        updating = false;
+                    }
+                }
+            });
+        };
+
         thingProperty.getChangeEvent().register(thingListener);
         super.addListener(changeListener);
+    }
+
+    /**
+     * Converts the given <tt>value</tt> to the type <tt>T</tt>. This particularly means that if <tt>value</tt> is of a subtype of
+     * <tt>T</tt>, it will be converted to a direct instance of <tt>T</tt>. This transformation is only performed for numbers, all other
+     * instances will not be changed.
+     * 
+     * @param value
+     *            The value to convert.
+     * @return The converted value, if it was a number of a wrong type, or simply the given value.
+     */
+    @SuppressWarnings("unchecked")
+    private T convertToExactType(T value) {
+        Class<T> targetType = thingProperty.getValueType();
+        if (value == null || targetType.isInstance(value)) {
+            return value;
+        } else if (value instanceof Number && Number.class.isAssignableFrom(targetType)) {
+            if (targetType == Number.class) {
+                return value;
+            }
+
+            Number number = (Number) value;
+            if (targetType == Integer.class) {
+                return (T) (Integer) number.intValue();
+            } else if (targetType == Long.class) {
+                return (T) (Long) number.longValue();
+            } else if (targetType == Short.class) {
+                return (T) (Short) number.shortValue();
+            } else if (targetType == Float.class) {
+                return (T) (Float) number.floatValue();
+            } else if (targetType == Double.class) {
+                return (T) (Double) number.doubleValue();
+            } else if (targetType == Byte.class) {
+                return (T) (Byte) number.byteValue();
+            } else {
+                throw new IllegalArgumentException("Cannot convert the value " + value + " from the UI to the unsupported number type " + targetType + " of the target property " + thingProperty);
+            }
+        } else {
+            return value;
+        }
     }
 
     /**

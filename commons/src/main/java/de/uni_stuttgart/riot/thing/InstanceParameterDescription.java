@@ -72,10 +72,43 @@ public class InstanceParameterDescription {
      */
     public static InstanceParameterDescription create(Field field) {
         UIHint uiHint = null;
+        Class<?> fieldType = getBoxedType(field.getType());
         if (field.isAnnotationPresent(InstanceParameter.class)) {
-            uiHint = UIHint.fromAnnotation(field.getAnnotation(InstanceParameter.class), field.getType());
+            uiHint = UIHint.fromAnnotation(field.getAnnotation(InstanceParameter.class), fieldType);
         }
-        return new InstanceParameterDescription(field.getName(), field.getType(), uiHint);
+        return new InstanceParameterDescription(field.getName(), fieldType, uiHint);
+    }
+
+    /**
+     * For primitive types (like <tt>int</tt>), this method returns the corresponding boxing type (like <tt>java.lang.Integer</tt>), all
+     * other types remain unchanged.
+     * 
+     * @param type
+     *            The (possibly primitive) type.
+     * @return The certainly non-primitive type.
+     */
+    public static Class<?> getBoxedType(Class<?> type) {
+        if (!type.isPrimitive()) {
+            return type;
+        } else if (type == Integer.TYPE) {
+            return Integer.class;
+        } else if (type == Long.TYPE) {
+            return Long.class;
+        } else if (type == Float.TYPE) {
+            return Float.class;
+        } else if (type == Double.TYPE) {
+            return Double.class;
+        } else if (type == Boolean.TYPE) {
+            return Boolean.class;
+        } else if (type == Byte.TYPE) {
+            return Byte.class;
+        } else if (type == Character.TYPE) {
+            return Character.class;
+        } else if (type == Short.TYPE) {
+            return Short.class;
+        } else {
+            return type;
+        }
     }
 
 }

@@ -1,6 +1,9 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.thing.Action;
@@ -17,6 +20,11 @@ import de.uni_stuttgart.riot.thing.client.ThingClient;
  * @author Philipp Keck
  */
 public class SimulatedThingBehavior extends ExecutingThingBehavior {
+
+    /**
+     * Each of these interceptors will be called and can cancel the action by returning false.
+     */
+    final List<Function<ActionInstance, Boolean>> actionInterceptors = new ArrayList<>();
 
     /**
      * The simulator that currently simulates the behavior of the thing. Note that this may be null, in which case the thing does not react
@@ -36,6 +44,11 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
 
     @Override
     protected <A extends ActionInstance> void executeAction(Action<A> action, A actionInstance) {
+        for (Function<ActionInstance, Boolean> actionInterceptor : actionInterceptors) {
+            if (!actionInterceptor.apply(actionInstance)) {
+                return;
+            }
+        }
         if (simulator != null) {
             simulator.executeAction(action, actionInstance);
         }
@@ -69,6 +82,7 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
 
     @Override
     public void shutdown() {
+        actionInterceptors.clear();
         super.shutdown();
         if (simulator != null) {
             stopSimulation(simulator);

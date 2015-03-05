@@ -1,8 +1,17 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Map;
+
 import de.uni_stuttgart.riot.javafx.UIProducer;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.BaseInstance;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -10,10 +19,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -25,6 +36,7 @@ public class SimulationWindow extends Stage {
 
     private static final int OUTER_PADDING = 10;
     private static final int INNER_SPACING = 5;
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * The behavior of the thing.
@@ -57,10 +69,16 @@ public class SimulationWindow extends Stage {
      */
     private Parent produceContent() {
         TitledPane statePane = new TitledPane("Current state", produceStatePane());
+        TitledPane actionsHistoryPane = new TitledPane("Actions History", produceActionsHistoryPane());
         statePane.setCollapsible(false);
 
-        VBox container = new VBox(INNER_SPACING, statePane);
+        HBox container = new HBox(INNER_SPACING, statePane, actionsHistoryPane);
         container.setPadding(new Insets(OUTER_PADDING));
+        HBox.setHgrow(statePane, Priority.SOMETIMES);
+        HBox.setHgrow(actionsHistoryPane, Priority.SOMETIMES);
+        statePane.setMaxWidth(Double.MAX_VALUE);
+        actionsHistoryPane.setMaxWidth(Double.MAX_VALUE);
+        actionsHistoryPane.setMaxHeight(Double.MAX_VALUE);
         return container;
     }
 
@@ -84,4 +102,74 @@ public class SimulationWindow extends Stage {
         }
         return container;
     }
+
+    /**
+     * Creates a pane that contains all raised actions, from new to old.
+     * 
+     * @return The actions history pane.
+     */
+    private Node produceActionsHistoryPane() {
+        ListView<ActionInstance> actionList = new ListView<>();
+        behavior.actionInterceptors.add((actionInstance) -> {
+            Platform.runLater(() -> {
+                actionList.getItems().add(0, actionInstance);
+            });
+            return true;
+        });
+        actionList.setCellFactory((listView) -> {
+            return new ListCell<ActionInstance>() {
+                @Override
+                protected void updateItem(ActionInstance item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item != null) {
+                        setText(instanceToString(item));
+                    }
+                }
+            };
+        });
+        actionList.setOnMouseClicked((event) -> {
+            if (event.getClickCount() == 2) {
+                ActionInstance instance = actionList.getSelectionModel().getSelectedItem();
+                if (instance != null) {
+                    BaseInstanceWindow.displayInstance(instance);
+                }
+            }
+        });
+        return actionList;
+    }
+
+    /**
+     * Creates a String for displaying the instance. It consists of the time at which the action/event occurred, the name of the
+     * action/instance and, if applicable, a list of all the parameter values. On the other hand, the type of the instance and the names of
+     * the parameters are missing to save space.
+     * 
+     * @param instance
+     *            The instance to be printed.
+     * @return A String representation of the instance and its contents.
+     */
+    private static String instanceToString(BaseInstance instance) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(DATE_FORMAT.format(instance.getTime()));
+        builder.append(" - ");
+        builder.append(instance.getName());
+
+        if (instance.getClass() != ActionInstance.class && instance.getClass() != EventInstance.class) {
+            Map<String, Object> parameters = BaseInstanceDescription.getParameterValues(instance);
+            if (!parameters.isEmpty()) {
+                builder.append(" (");
+                boolean isFirst = true;
+                for (Object parameterValue : parameters.values()) {
+                    if (isFirst) {
+                        isFirst = false;
+                    } else {
+                        builder.append(", ");
+                    }
+                    builder.append(parameterValue);
+                }
+                builder.append(")");
+            }
+        }
+        return builder.toString();
+    }
+
 }
