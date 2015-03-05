@@ -127,7 +127,7 @@ class DoLoginRequest extends AsyncTask<String, Integer, Long> {
     protected Long doInBackground(String[] parameter) {
         RIOTApiClient.getInstance().init(loginActivity, loginActivity.getPackageName()/*TODO set the device name*/);
         LoginClient loginClient = RIOTApiClient.getInstance().getLoginClient();
-        if (loginClient.isLogedIn()) {
+        if (loginClient.isLoggedIn()) {
             return 1L;
         } else if (parameter.length == 2) {
             try {
@@ -139,11 +139,11 @@ class DoLoginRequest extends AsyncTask<String, Integer, Long> {
                 //CHECKSTYLE:OFF
                 e.printStackTrace();
             }
-            if (loginClient.isLogedIn()) {
+            if (loginClient.isLoggedIn()) {
                 return 1L;
             }
         }
-        return 1L;
+        return 0L;
     }
 
     @Override
@@ -156,9 +156,9 @@ class DoLoginRequest extends AsyncTask<String, Integer, Long> {
         loginActivity.mDialog.dismiss();
         if (result == 1) {
             Toast.makeText(loginActivity, "Your login was correct.", Toast.LENGTH_LONG).show();
-            //Intent mainScreen = new Intent(loginActivity, HomeScreen.class);
+            Intent mainScreen = new Intent(loginActivity, HomeScreen.class);
             //TODO needed some parameters? mainScreen.putExtra("pressedButton", "house");
-            //loginActivity.startActivity(mainScreen);
+            loginActivity.startActivity(mainScreen);
         } else {
             Toast.makeText(loginActivity, "Your login was NOT correct.", Toast.LENGTH_LONG).show();
         }
