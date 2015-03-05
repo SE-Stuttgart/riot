@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.management;
 
 
 import android.app.Fragment;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,16 +11,26 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 <<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
 =======
 import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.messages.IM;
+import de.uni_stuttgart.riot.clientlibrary.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 >>>>>>> RIOT-87:Android:All changes of the last commits
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.thing.PropertyDescription;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.ThingDescription;
+import de.uni_stuttgart.riot.thing.client.AndroidThing;
+import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -130,38 +141,61 @@ public abstract class ManagementFragment extends Fragment {
     public static ArrayList<DummyThing> getThings() {
         if (myThings.isEmpty()) {
 
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        //                        RIOTApiClient.getInstance().init();
+                        LoginClient login = new LoginClient("https://belgrad.informatik.uni-stuttgart.de:8181/riot", "TEST", new DefaultTokenManager());
+                        login.login("Yoda", "YodaPW");
+                        ThingClient thingClient = new ThingClient(login);
+                        AndroidThing.DeviceBehavior deviceBehavior = AndroidThing.create(Build.MODEL, thingClient); // ToDo is build.model equal to device name?
+
+                       // AndroidThing.DeviceBehavior deviceBehavior = RIOTApiClient.getInstance().getDeviceBehavior();
+
+                        // Get all known things (like a refresh action)
+                        // ToDo use that on app start and with a refresh button
+                        deviceBehavior.updateThings();
+
+                        // Get all descriptions of the available things
+                        Collection<ThingDescription> thingDescriptions = deviceBehavior.getDescriptions();
+
+                        // Run through all thing descriptions
+                        for (ThingDescription thingDescription : thingDescriptions) {
+                            // Get the id and the name of the thing
+                            long thingId = thingDescription.getThingId();
+                            Thing thing = deviceBehavior.getThingByDiscription(thingDescription);
+                            // ToDo noch erweitern!! deviceBehavior.getThingById(thingId);
+                            String thingName = thing.getName();
+
+
+                            // thingDescription.getType(); // ToDo check if thing is a device or a thing..
+
+                            // TODO or use this: String thingName = thingDescription.getThingName();
+
+                            // Get the current online state of the thing
+                            OnlineState onlineState = RIOTApiClient.getInstance().getThingClient().getOnlineState(thingDescription.getThingId());
+
+                            // Get all properties of the thing
+                            List<PropertyDescription> propertyDescriptions = thingDescription.getProperties();
+                            for (PropertyDescription propertyDescription : propertyDescriptions) {
+                                String propertyName = propertyDescription.getName();
+                                Class<?> propertyValueType = propertyDescription.getValueType();
+                                UIHint propertyUIHint = propertyDescription.getUiHint();
+                            }
+                        }
+                    } catch (Exception e) {
+                        // FIXME output message!!
+                        IM.INSTANCES.getMH().writeErrorMessage("Problems by getting things: " + e.getMessage());
+                    }
+                }
+            }.start();// TODO TODO .start();
+
+
             final int number = 5;
 //            final int tTMPtemp = 5;
 //            final int tTMPfill = 80;
 
-            /** TODO info
-             Thing myThing = new Thing();
-             ThingDescription myThingDescription = ThingDescription.create(myThing);
-             Collection<PropertyDescription> myProperties = myThingDescription.getProperties();
-             for(PropertyDescription myPropertyDescription : myProperties) {
-             myPropertyDescription.getName(); // name der property
-             myPropertyDescription.getUiHint(); // hilft beim aufbau des layout items
-             myPropertyDescription.getValueType(); // Wert der spaeter vom property kommt
-             // myPropertyDescription.isWritable()
-             }
-
-             ThingClient myThingClient = new ThingClient(RIOTApiClient.getInstance().getLoginClient());
-             MirroringThingBehavior myMirroring = new MirroringThingBehavior(myThingClient);
-             // myMirroring.fetch();
-             **/
-
-
-/**
- UIHint myHint = myPropertyDescription.getUiHint();
- if(myHint instanceof UIHint.IntegralSlider) {
- } else if(myHint instanceof UIHint.FractionalSlider) {
- } else if(myHint instanceof UIHint.PercentageSlider) {
- } else if(myHint instanceof UIHint.ToggleButton) {
- } else if(myHint instanceof UIHint.EditText) {
- } else if(myHint instanceof UIHint.EditNumber) {
- } else if(myHint instanceof UIHint.DropDown) {
- }
- **/
 
 //        ArrayList<String> dropDownItems = new ArrayList<String>();
 //        dropDownItems.add("Selection 1");
@@ -178,7 +212,7 @@ public abstract class ManagementFragment extends Fragment {
             final long integralMax = 20;
             final long integralMin = -20;
             final long integralValue = 0;
-            final double fractionalMax = 0.987;
+            final double fractionalMax = 15.987;
             final double fractionalMin = -0.1;
             final double fractionalValue = 0.23;
             final int percentageValue = 20;

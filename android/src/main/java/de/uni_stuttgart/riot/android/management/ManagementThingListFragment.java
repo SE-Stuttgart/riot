@@ -22,6 +22,8 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected List<Storable> getData() {
+
+
         return (List<Storable>) (List<?>) getThings();
     }
 
