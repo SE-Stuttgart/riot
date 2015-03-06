@@ -177,9 +177,10 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
 
     @Override
     public Collection<T> findAll(FilteredRequest filter) throws DatasourceFindException {
-        if (filter == null || filter.getFilterAttributes() == null || filter.getFilterAttributes().isEmpty()) {
-            throw new DatasourceFindException("Filter is null or has no filter attributes.");
-        }
+        // if (filter == null || filter.getFilterAttributes() == null ||
+        // filter.getFilterAttributes().isEmpty()) {
+        // throw new DatasourceFindException("Filter is null or has no filter attributes.");
+        // }
 
         try (Connection connection = getConnection()) {
             Query stmt = queryBuilder.buildFindWithFiltering(getTableName(), connection, filter, getMyClazz());

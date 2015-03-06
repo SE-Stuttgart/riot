@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.commons.rest.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class FilteredRequest {
 
     private boolean orMode;
-    private List<FilterAttribute> filterAttributes;
+    private List<FilterAttribute> filterAttributes = new ArrayList<FilterAttribute>();
     private int offset = 0;
     private int limit = 0;
 

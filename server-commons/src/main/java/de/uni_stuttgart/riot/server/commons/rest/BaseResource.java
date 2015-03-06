@@ -138,8 +138,12 @@ public abstract class BaseResource<E extends Storable> {
     /**
      * Creates a new model with data from the request body.
      *
-     * @param request
-     *            object specifying the filter attributes (pagination also possible)
+     * @param info
+     *            the info
+     * @param offset
+     *            the offset
+     * @param limit
+     *            the limit
      * @return collection containing elements that applied to filter
      * @throws DatasourceFindException
      *             when retrieving the data fails
