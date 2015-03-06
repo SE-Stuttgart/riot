@@ -25,12 +25,12 @@
     "angular-bootstrap-switch": "~0.3.0",
     "angular-bootstrap-slider": "~0.1.1",
     "angular-toggle-switch": "~1.2.1",
+    "angular-bootstrap-select": "~0.0.5",
     "moment": "~2.5",
     "less.js": "~1.6",
     "font-awesome": "~4.0",
     "restangular": "~1.4.0",
-    "ladda-bootstrap": "~0.1.0",
-    "bootstrap-select": "~1.6.4"
+    "ladda-bootstrap": "~0.1.0"
   },
   "resolutions": {
     "angular": "~1.2",

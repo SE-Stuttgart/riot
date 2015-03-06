@@ -11,7 +11,8 @@ angular.module('riot', ['ngLocalize',
                         'LocalStorageModule',
                         'frapontillo.bootstrap-switch',
                         'ngAnimate',
-                        'toggle-switch'])
+                        'toggle-switch',
+                        'angular-bootstrap-select'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix
