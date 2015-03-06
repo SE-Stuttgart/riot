@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,48 +56,55 @@ public abstract class ManagementFragment extends Fragment {
         // Handle arguments
         handleArguments(getArguments());
 
-        if (!isDummyThing) {
-            // Login and prepare the device behavior
-            new Thread() {
+        // Login and prepare the device behavior
+        if (!isDummyThing) new Thread() {
 
-                @Override
-                public void run() {
-                    // Prepare and show a progress dialog
+            @Override
+            public void run() {
+                // Prepare and show a progress dialog
 //                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 //                progressDialog.setTitle(view.getResources().getString(R.string.loading));
 //                progressDialog.setMessage(view.getResources().getString(R.string.prepareData));
 //                progressDialog.show();
 
-                    // TODO use a timeout
+                // TODO use a timeout
 
-                    try {
-                        RIOTApiClient.getInstance().init("Yoda", "YodaPW");
+                try {
+                    SharedPreferences settings = view.getContext().getSharedPreferences("MANAGEMENT", 0);
+                    int deviceNumber = settings.getInt("DEVICE_NUMBER", 20);
+                    deviceNumber = deviceNumber + 1;
 
-                        // Get all known things (like a refresh action)
-                        // ToDo use that on app start and with a refresh button
-                        RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putInt("DEVICE_NUMBER", deviceNumber);
+                    editor.commit();
 
-                        Activity activity = (Activity) view.getContext();
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Display data
-                                displayData();
+                    RIOTApiClient.getInstance().init("Yoda", "YodaPW", deviceNumber);
 
-                                // Update title if necessary
-                                updateTitle();
-                            }
-                        });
-                    } catch (Exception e) {
-                        // FIXME output message!!
-                        IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
-                    }
+                    // Get all known things (like a refresh action)
+                    // ToDo use that on app start and with a refresh button
+                    RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
 
-                    // Dismiss the progress dialog
-//                progressDialog.dismiss();
+                    Activity activity = (Activity) view.getContext();
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Display data
+                            displayData();
+
+                            // Update title if necessary
+                            updateTitle();
+                        }
+                    });
+                } catch (Exception e) {
+                    // FIXME output message!!
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
                 }
-            }.start();
-        } else {
+
+                // Dismiss the progress dialog
+//                progressDialog.dismiss();
+            }
+        }.start();
+        else {
             // Display data
             displayData();
         }
