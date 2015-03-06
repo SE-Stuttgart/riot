@@ -30,10 +30,11 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected List<Object> getData() {
-        try {
-            // Get all thing descriptions and return them
-            Collection<ThingDescription> thingDescriptions = RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions();
-            return new ArrayList<Object>(thingDescriptions);
+        if (!isDummyThing) {
+            try {
+                // Get all thing descriptions and return them
+                Collection<ThingDescription> thingDescriptions = RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions();
+                return new ArrayList<Object>(thingDescriptions);
 
 //            // Get all descriptions of the available things
 //            for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
@@ -57,9 +58,10 @@ public class ManagementThingListFragment extends ManagementListFragment {
 //                    UIHint propertyUIHint = propertyDescription.getUiHint();
 //                }
 //            }
-        } catch (Exception e) {
-            // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+            } catch (Exception e) {
+                // FIXME output message!!
+                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+            }
         }
 
         // Load dummy objects if the above method was not successful
@@ -78,11 +80,18 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected boolean isInstanceOf(Object item) {
-        return (item instanceof ThingDescription);
+        if (item instanceof DummyThing) {
+            isDummyThing = true;
+        }
+        return (isDummyThing || item instanceof ThingDescription);
+//        return (item instanceof ThingDescription);
     }
 
     @Override
     protected long getId(Object item) {
+        if (isDummyThing) {
+            return ((DummyThing) item).getId();
+        }
         return ((ThingDescription) item).getThingId();
     }
 
@@ -93,6 +102,10 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getSubject(Object item) {
+        if (isDummyThing) {
+            return ((DummyThing) item).getName();
+        }
+
         try {
             // Get the name of the thing
             return RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription((ThingDescription) item).getName();
@@ -112,6 +125,10 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDescription(Object item) {
+        if (isDummyThing) {
+            return "This is the description: " + ((DummyThing) item).getId();
+        }
+
         // Get the description of the thing
         return "This is the description: " + String.valueOf(getId(item));
     }
@@ -143,6 +160,10 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected OnlineState getOnlineState(Object item) {
+        if (isDummyThing) {
+            return ((DummyThing) item).getOnlineState();
+        }
+
 //        try {
 //            return RIOTApiClient.getInstance().getThingClient().getOnlineState(getId(item));
 //        } catch (Exception e) {

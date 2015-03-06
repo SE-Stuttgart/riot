@@ -35,6 +35,9 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public abstract class ManagementFragment extends Fragment {
 
+    // TODO is just for testing reasons
+    protected boolean isDummyThing = true;
+
     protected static final String BUNDLE_OBJECT_ID = "bundle_object_id";
 
     // ToDo just for testing reasons
@@ -52,46 +55,51 @@ public abstract class ManagementFragment extends Fragment {
         // Handle arguments
         handleArguments(getArguments());
 
-        // Login and prepare the device behavior
-        new Thread() {
+        if (!isDummyThing) {
+            // Login and prepare the device behavior
+            new Thread() {
 
-            @Override
-            public void run() {
-                // Prepare and show a progress dialog
+                @Override
+                public void run() {
+                    // Prepare and show a progress dialog
 //                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
 //                progressDialog.setTitle(view.getResources().getString(R.string.loading));
 //                progressDialog.setMessage(view.getResources().getString(R.string.prepareData));
 //                progressDialog.show();
 
-                // TODO use a timeout
+                    // TODO use a timeout
 
-                try {
-//                    RIOTApiClient.getInstance().init("Yoda", "YodaPW");
+                    try {
+                        RIOTApiClient.getInstance().init("Yoda", "YodaPW");
 
-                    // Get all known things (like a refresh action)
-                    // ToDo use that on app start and with a refresh button
-                    RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
+                        // Get all known things (like a refresh action)
+                        // ToDo use that on app start and with a refresh button
+                        RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
 
-                    Activity activity = (Activity) view.getContext();
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Display data
-                            displayData();
+                        Activity activity = (Activity) view.getContext();
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Display data
+                                displayData();
 
-                            // Update title if necessary
-                            updateTitle();
-                        }
-                    });
-                } catch (Exception e) {
-                    // FIXME output message!!
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
-                }
+                                // Update title if necessary
+                                updateTitle();
+                            }
+                        });
+                    } catch (Exception e) {
+                        // FIXME output message!!
+                        IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
+                    }
 
-                // Dismiss the progress dialog
+                    // Dismiss the progress dialog
 //                progressDialog.dismiss();
-            }
-        }.start();
+                }
+            }.start();
+        } else {
+            // Display data
+            displayData();
+        }
 
         // Set the title of the frame
         updateTitle();
@@ -183,48 +191,7 @@ public abstract class ManagementFragment extends Fragment {
     public static ArrayList<DummyThing> getThings() {
         if (myThings.isEmpty()) {
 
-//            try {
-//                // Get all descriptions of the available things
-//                for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
-//                    // Get the id and the name of the thing
-//                    long thingId = thingDescription.getThingId();
-//                    Thing thing = RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription(thingDescription);
-//                    // ToDo noch erweitern!! deviceBehavior.getThingById(thingId);
-//                    String thingName = thing.getName();
-//                    // TODO or use this: String thingName = thingDescription.getThingName();
-//
-//                    // thingDescription.getType(); // ToDo check if thing is a device or a thing..
-//
-//                    // Get the current online state of the thing
-//                    // TODO dynamisch laden? OnlineState onlineState = RIOTApiClient.getInstance().getThingClient().getOnlineState(thingDescription.getThingId());
-//
-//                    // Get all properties of the thing
-//                    List<PropertyDescription> propertyDescriptions = thingDescription.getProperties();
-//                    for (PropertyDescription propertyDescription : propertyDescriptions) {
-//                        String propertyName = propertyDescription.getName();
-//                        Class<?> propertyValueType = propertyDescription.getValueType();
-//                        UIHint propertyUIHint = propertyDescription.getUiHint();
-//                    }
-//                }
-//            } catch (Exception e) {
-//                // FIXME output message!!
-//                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting things: " + e.getMessage());
-//            }
-
-
             final int number = 5;
-//            final int tTMPtemp = 5;
-//            final int tTMPfill = 80;
-
-
-//        ArrayList<String> dropDownItems = new ArrayList<String>();
-//        dropDownItems.add("Selection 1");
-//        dropDownItems.add("Selection 2");
-//        dropDownItems.add("Selection 3");
-//        dropDownItems.add("Selection 4");
-//        HashMap<String, Object> dropDownValues = new HashMap<String, Object>();
-//        dropDownValues.put("items", dropDownItems);
-//        dropDownValues.put("selectedId", 3);
 
             ArrayList<DummyThing> things = new ArrayList<DummyThing>();
             DummyThing thing;
@@ -272,39 +239,6 @@ public abstract class ManagementFragment extends Fragment {
 
                 // TODO INFO GROUP:
                 // In DB werden die benoetigten Elemente angelegt und die jeweiligen IDs zum GruppenElement als value hinzugefuegt?
-
-//            properties.add(new DummyProperty("Drop the List", PropertyType.DROP_DOWN, dropDownValues));
-//
-//            properties.add(new DummyProperty("Temperature", PropertyType.SCALE_VALUE, tTMPtemp));
-//            properties.add(new DummyProperty("Filling", PropertyType.SCALE_PERCENT, tTMPfill));
-//            properties.add(new DummyProperty("Filling with wrong start", PropertyType.SCALE_PERCENT, false)); // Test with wrong value
-//            properties.add(new DummyProperty("Alarm", PropertyType.TOGGLE_BUTTON, true));
-//            properties.add(new DummyProperty("Power", PropertyType.TOGGLE_BUTTON, false));
-//
-//            ArrayList<DummyProperty> subList = new ArrayList<DummyProperty>();
-//            subList.add(new DummyProperty("Kitchen", PropertyType.TOGGLE_BUTTON, true));
-//            subList.add(new DummyProperty("Living Room", PropertyType.TOGGLE_BUTTON, false));
-//            subList.add(new DummyProperty("Floor", PropertyType.TOGGLE_BUTTON, false));
-//            subList.add(new DummyProperty("Outdoor", PropertyType.TOGGLE_BUTTON, true));
-//            properties.add(new DummyProperty("Light", PropertyType.PROPERTY_GROUP, subList));
-//
-//            properties.add(new DummyProperty("Text Edit Field", PropertyType.EDIT_TEXT, "Sample Text"));
-//            properties.add(new DummyProperty("Number Edit Field", PropertyType.EDIT_NUMBER, "123456789"));
-//
-//            ArrayList<DummyProperty> combinedList = new ArrayList<DummyProperty>();
-//            combinedList.add(new DummyProperty("Scale Value", PropertyType.SCALE_VALUE, 0));
-//            combinedList.add(new DummyProperty("Button 1", PropertyType.TOGGLE_BUTTON, true));
-//            combinedList.add(new DummyProperty("Button 2", PropertyType.TOGGLE_BUTTON, false));
-//            combinedList.add(new DummyProperty("Button 3", PropertyType.TOGGLE_BUTTON, false));
-//            combinedList.add(new DummyProperty("Button 4", PropertyType.TOGGLE_BUTTON, false));
-//            combinedList.add(new DummyProperty("Edit this text:", PropertyType.EDIT_TEXT, "..."));
-//            combinedList.add(new DummyProperty("Text Edit Field", PropertyType.EDIT_TEXT, "Sample Text"));
-//            combinedList.add(new DummyProperty("Button 2", PropertyType.TOGGLE_BUTTON, false));
-//            properties.add(new DummyProperty("Combined Group", PropertyType.PROPERTY_GROUP, combinedList));
-//
-//            DummyThing thing = new DummyThing(i, "Thing_" + String.valueOf(i));
-//            thing.setProperties(properties);
-//            things.add(thing);
             }
             myThings = things;
         }

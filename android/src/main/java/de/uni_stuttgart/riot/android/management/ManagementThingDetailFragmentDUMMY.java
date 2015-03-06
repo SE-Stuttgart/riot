@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -24,20 +23,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.messages.IM;
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:All changes of the last commits
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
-=======
-import de.uni_stuttgart.riot.thing.PropertyDescription;
-import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.ThingDescription;
->>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -46,128 +33,19 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  *
  * @author Benny
  */
-public class ManagementThingDetailFragment extends ManagementDetailFragment {
+public class ManagementThingDetailFragmentDUMMY {
 
     // Is needed to set ids for grouped views
     private static final AtomicInteger GENERATED_ID = new AtomicInteger(1);
-    private String viewTitle = "";
-
-    private Thing theThing;
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.fragment_thing_detail;
-    }
-
-    @Override
-    protected String getTitle() {
-        return viewTitle;
-    }
-
-    @Override
-    protected boolean isInstanceOf(Object item) {
-        if (item instanceof DummyThing) {
-            isDummyThing = true;
-        }
-        return (isDummyThing || item instanceof ThingDescription);
-//        return (item instanceof ThingDescription);
-    }
-
-    @Override
-    protected void displayDetailData() {
-        if (isInstanceOf(data)) {
-            if (isDummyThing) {
-                // Save the view title
-                viewTitle = ((DummyThing) data).getName();
-                ManagementThingDetailFragmentDUMMY dummyManagement = new ManagementThingDetailFragmentDUMMY(this.view);
-
-                // Add items to the main layout
-                for (DummyProperty property : ((DummyThing) data).getProperties()) {
-                    View preparedItem = dummyManagement.prepareItem(property);
-                    if (preparedItem != null) {
-                        ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
-                    }
-                }
-            }
-        } else {
-
-            // Save the thing
-            if (!doGetThing((ThingDescription) data)) {
-                // Set a default title if it was not successful
-                viewTitle = getResources().getString(R.string.thing_detail);
-                return;
-            }
-
-            // Save the view title
-            viewTitle = this.theThing.getName();
-
-            // Add items to the main layout
-            for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
-                View preparedItem = prepareItem(propertyDescription);
-                if (preparedItem != null) {
-                    ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
-                }
-            }
-        }
-
-        // En-/Disable all layout items
-        enableLayoutItems(this.enableElements); // ToDo maybe not all elements?
-    }
-
-    @Override
-    protected Object getData() {
-        if (!isDummyThing) {
-            try {
-                // Get the thing description with the given id
-                for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
-                    if (this.itemId == thingDescription.getThingId()) {
-                        return thingDescription;
-                    }
-                }
-            } catch (Exception e) {
-                // FIXME output message!!
-                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
-            }
-        }
-
-        // Load dummy objects if the above method was not successful
-        return getThing(this.itemId);
-    }
-
-    @Override
-    protected void setOnBackClick() {
-        callOtherFragment(new ManagementThingListFragment());
-    }
-
-    @Override
-    protected void callThisFragment(boolean edit) {
-        Bundle args = new Bundle();
-        args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, edit);
-        callOtherFragment(new ManagementThingDetailFragment(), args);
-    }
-
-    @Override
-    protected void saveChanges() {
-        // TODO !!!
-        IM.INSTANCES.getMH().showQuickMessage("Changes should be changed now :)");
-    }
+    private View view;
 
     /**
-     * Tires to save the thing of this ThingDescription.
+     * .
      *
-     * @param thingDescription the description of the thing
-     * @return true if it was successful - false if not
+     * @param view .
      */
-    private boolean doGetThing(ThingDescription thingDescription) {
-        try {
-            this.theThing = RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription(thingDescription);
-            return true;
-        } catch (Exception e) {
-            // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by saving thing: " + e.getMessage());
-        }
-        return false;
+    public ManagementThingDetailFragmentDUMMY(View view) {
+        this.view = view;
     }
 
     /**
@@ -176,18 +54,18 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription is the unchanged property
      * @param value               is the new value
      */
-    private void updateProperty(PropertyDescription propertyDescription, Object value) {
+    private void updateProperty(DummyProperty propertyDescription, Object value) {
         // theThing.getProperty(propertyDescription.getName()).setValue(value);
         // TODO directly or just on saving??
-        if (isInstanceOf(data)) {
-            // Save changes local
+//        if (isInstanceOf(data)) {
+        // Save changes local
 //            ((ThingDescription) data).updateProperty(property, value);
 
-            // Send changes directly to the server if it should be updated instant
+        // Send changes directly to the server if it should be updated instant
 //            if (property.isInstantUpdate()) {
 //                // ToDo
 //            }
-        }
+//        }
         // Note:
         // Aenderung eines properties ruft immer diese Methode auf.
         // Hier wird das property lokal geaendert.
@@ -224,14 +102,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription for that item the view will be prepared
      * @return the prepared view
      */
-    private View prepareItem(PropertyDescription propertyDescription) {
+    public View prepareItem(DummyProperty propertyDescription) {
         // Create new layout element
         LinearLayout linearLayoutItem = new LinearLayout(view.getContext());
         LinearLayout.LayoutParams linearLayoutItemParams;
 
         // Add name of the propertyDescription
-        if (!isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
-//        if (!isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
+        if (!isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             View preparedTextView = prepareTextView(propertyDescription.getName());
             if (preparedTextView != null) {
                 linearLayoutItem.addView(preparedTextView);
@@ -243,13 +120,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             linearLayoutItem.setOrientation(LinearLayout.VERTICAL);
 
             // Set a padding on the top and the bottom
-            linearLayoutItem.setPadding(0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) * 3, 0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
+            linearLayoutItem.setPadding(0, (int) view.getResources().getDimension(R.dimen.fragment_margin_between_elements) * 3, 0, (int) view.getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
         } else {
             //Get layout params
             linearLayoutItemParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
             // Set a padding on the top and the bottom
-            linearLayoutItem.setPadding(0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
+            linearLayoutItem.setPadding(0, (int) view.getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) view.getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
         }
 
         // Set layout params
@@ -274,7 +151,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyType        the property type that will be checked
      * @return .
      */
-    private boolean isPropertyType(PropertyDescription propertyDescription, Class<?> propertyType) {
+    private boolean isPropertyType(DummyProperty propertyDescription, PropertyType propertyType) {
         return propertyDescription.getValueType().equals(propertyType);
     }
 
@@ -284,7 +161,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription includes the value
      * @param linearLayoutItem    the layout around the property
      */
-    private void preparePropertyItems(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
+    private void preparePropertyItems(DummyProperty propertyDescription, LinearLayout linearLayoutItem) {
         // Split method into sub methods because it is to complex for maven
         if (preparePropertyItems1(propertyDescription, linearLayoutItem)) {
             return;
@@ -304,7 +181,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param linearLayoutItem    the layout around the property
      * @return true if a item was prepared | false if no item was prepared
      */
-    private boolean preparePropertyItems1(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
+    private boolean preparePropertyItems1(DummyProperty propertyDescription, LinearLayout linearLayoutItem) {
         // If property is a group element get the sub list and prepare this items
 //        if (isPropertyType(propertyDescription, PropertyType.GROUP)) {
 //            // Prepare and add property group
@@ -313,22 +190,19 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 //                linearLayoutItem.addView(preparedView);
 //            }
 //        } else
-        if (isPropertyType(propertyDescription, UIHint.EditText.class)) {
-//        if (isPropertyType(propertyDescription, PropertyType.EditText)) {
+        if (isPropertyType(propertyDescription, PropertyType.EditText)) {
             // Prepare and add edit text property
             View preparedView = prepareTextProperty(propertyDescription, false, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.EditNumber.class)) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.EditNumber)) {
+        } else if (isPropertyType(propertyDescription, PropertyType.EditNumber)) {
             // Prepare and add edit number property
             View preparedView = prepareTextProperty(propertyDescription, true, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
+        } else if (isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             // Prepare and add toggle button property
             View preparedView = prepareToggleButtonProperty(propertyDescription);
             if (preparedView != null) {
@@ -347,18 +221,16 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param linearLayoutItem    the layout around the property
      * @return true if a item was prepared | false if no item was prepared
      */
-    private boolean preparePropertyItems2(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
+    private boolean preparePropertyItems2(DummyProperty propertyDescription, LinearLayout linearLayoutItem) {
         // If property is a group element get the sub list and prepare this items
-        if (isPropertyType(propertyDescription, UIHint.FractionalSlider.class)) {
-//        if (isPropertyType(propertyDescription, PropertyType.FractionalSlider)) {
+        if (isPropertyType(propertyDescription, PropertyType.FractionalSlider)) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) propertyDescription.getUiHint();
             View preparedView = prepareDoubleSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeCelsius);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.IntegralSlider.class)) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.IntegralSlider)) {
+        } else if (isPropertyType(propertyDescription, PropertyType.IntegralSlider)) {
             // Prepare and add scale value property
             UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) propertyDescription.getUiHint();
             // TODO TODO evtl als int speichern!!
@@ -366,8 +238,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.PercentageSlider.class)) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.PercentageSlider)) {
+        } else if (isPropertyType(propertyDescription, PropertyType.PercentageSlider)) {
             // Prepare and add scale percent property
             final int min = 0;
             final int max = 100;
@@ -375,8 +246,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.DropDown.class)) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.DropDown)) {
+        } else if (isPropertyType(propertyDescription, PropertyType.DropDown)) {
             // Prepare and add scale percent property
             UIHint.DropDown uiHint = (UIHint.DropDown) propertyDescription.getUiHint();
             ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
@@ -414,7 +284,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             textView.setText(text);
         } else {
             // Set default values
-            textView.setText(getResources().getText(R.string.default_item_title));
+            textView.setText(view.getResources().getText(R.string.default_item_title));
         }
 
         return textView;
@@ -426,9 +296,9 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription the root element of the group
      * @return the prepared property group
      */
-    private View preparePropertyGroup(PropertyDescription propertyDescription) {
+    private View preparePropertyGroup(DummyProperty propertyDescription) {
         // Save sub list
-        ArrayList<PropertyDescription> subList = null; //propertyDescription.getSubList();
+        ArrayList<DummyProperty> subList = null; //propertyDescription.getSubList();
 // TODO TODO Handle propertyType group!!
 
         // Create new layout element
@@ -455,14 +325,14 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         relativeLayoutGroup.setLayoutParams(relativeLayoutGroupParams);
 
         // Set linearLayoutGroup attributes
-        relativeLayoutGroup.setBackground(getResources().getDrawable(R.drawable.group_border));
-        int padding = (int) getResources().getDimension(R.dimen.group_padding);
+        relativeLayoutGroup.setBackground(view.getResources().getDrawable(R.drawable.group_border));
+        int padding = (int) view.getResources().getDimension(R.dimen.group_padding);
         relativeLayoutGroup.setPadding(padding, padding, padding, padding);
 
 
         // Add sub items to group
         if (subList != null) {
-            for (PropertyDescription subItem : subList) {
+            for (DummyProperty subItem : subList) {
                 View preparedItem = prepareItem(subItem);
 
                 // Add an id to the view
@@ -540,7 +410,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param allowNegativeNumbers is true if the input of negative numbers is allowed
      * @return the prepared view
      */
-    private View prepareTextProperty(final PropertyDescription propertyDescription, boolean onlyNumbers, boolean allowNegativeNumbers) {
+    private View prepareTextProperty(final DummyProperty propertyDescription, boolean onlyNumbers, boolean allowNegativeNumbers) {
         // Create new layout elements
         final EditText editText = new EditText(view.getContext());
 
@@ -591,7 +461,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription includes the value
      * @return the prepared view
      */
-    private View prepareToggleButtonProperty(final PropertyDescription propertyDescription) {
+    private View prepareToggleButtonProperty(final DummyProperty propertyDescription) {
         // Create new layout elements
         ToggleButton toggleButton = new ToggleButton(view.getContext());
 
@@ -602,8 +472,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         toggleButton.setLayoutParams(toggleButtonParams);
 
         // Set toggleButton attributes
-        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getResources().getString(R.string.off)));
-        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getResources().getString(R.string.on)));
+        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), view.getResources().getString(R.string.off)));
+        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), view.getResources().getString(R.string.on)));
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -632,7 +502,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param identifier          is the identifier behind the value (e.g. %, °C,...)
      * @return the prepared view
      */
-    private View prepareLongSliderProperty(final PropertyDescription propertyDescription, long min, long max, int identifier) {
+    private View prepareLongSliderProperty(final DummyProperty propertyDescription, long min, long max, int identifier) {
         // ToDo maybe a long value is too big for the slider?
         return prepareSliderProperty(propertyDescription, (int) min, (int) max, identifier, 1);
 
@@ -647,7 +517,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param identifier          is the identifier behind the value (e.g. %, °C,...)
      * @return the prepared view
      */
-    private View prepareDoubleSliderProperty(final PropertyDescription propertyDescription, double min, double max, int identifier) {
+    private View prepareDoubleSliderProperty(final DummyProperty propertyDescription, double min, double max, int identifier) {
 
         // Get number of decimal places
         final int ten = 10;
@@ -681,7 +551,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param factor              is the factor that is used for the output value
      * @return the prepared view
      */
-    private View prepareSliderProperty(final PropertyDescription propertyDescription, final int min, final int max, final int identifier, int factor) {
+    private View prepareSliderProperty(final DummyProperty propertyDescription, final int min, final int max, final int identifier, int factor) {
         final float tTMPlowWeight = (float) 0.2;
         final float tTMPhighWeight = (float) 0.8;
 
@@ -756,7 +626,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription includes the value
      * @param factor              is the factor that is used for the output value
      */
-    private void setCurrentSliderValue(SeekBar seekBar, EditText editText, PropertyDescription propertyDescription, int min, int factor) {
+    private void setCurrentSliderValue(SeekBar seekBar, EditText editText, DummyProperty propertyDescription, int min, int factor) {
         // ToDo optimize this method
         Object value = getValue(propertyDescription);
         if (value != null && value instanceof Number) {
@@ -815,7 +685,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param max                 is the maximum value that can be selected
      * @param factor              is the factor that is used for the output value
      */
-    private void setActionListenerTo(final EditText editText, final SeekBar seekBar, final PropertyDescription propertyDescription, final int min, final int max, final int factor) {
+    private void setActionListenerTo(final EditText editText, final SeekBar seekBar, final DummyProperty propertyDescription, final int min, final int max, final int factor) {
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -849,7 +719,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param min                 is the minimum value that can be selected
      * @param factor              is the factor that is used for the output value
      */
-    private void setChangeListenerTo(SeekBar seekBar, final EditText editText, final PropertyDescription propertyDescription, final int min, final int factor) {
+    private void setChangeListenerTo(SeekBar seekBar, final EditText editText, final DummyProperty propertyDescription, final int min, final int factor) {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -870,22 +740,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     }
 
     /**
-     * En-/disables all items on this detail layout.
-     *
-     * @param value is an boolean value to en-/disable this items
-     */
-    private void enableLayoutItems(boolean value) {
-        enableChildItems((ViewGroup) view.findViewById(R.id.thing_linear_layout), value);
-    }
-
-    /**
      * Prepare a drop down field.
      *
      * @param propertyDescription includes the value
      * @param enums               .
      * @return the prepared view
      */
-    private View prepareDropDownProperty(final PropertyDescription propertyDescription, ArrayList<Enum<?>> enums) {
+    private View prepareDropDownProperty(final DummyProperty propertyDescription, ArrayList<Enum<?>> enums) {
         // Create new layout elements
         final Spinner spinner = new Spinner(view.getContext());
 
@@ -935,8 +796,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription the description of this property
      * @return the value of this property
      */
-    private Object getValue(PropertyDescription propertyDescription) {
-        return theThing.getProperty(propertyDescription.getName()).getValue();
+    private Object getValue(DummyProperty propertyDescription) {
+        return propertyDescription.getValue();
     }
 
     /**
