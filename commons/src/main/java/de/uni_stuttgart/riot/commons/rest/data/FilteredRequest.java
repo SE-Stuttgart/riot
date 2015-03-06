@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.commons.rest.data;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * This class specifies a Request using filtering and pagination.
@@ -48,5 +50,24 @@ public class FilteredRequest {
     public void setLimit(int limit) {
         this.limit = limit;
     }
+
+    /**
+     * Parses the query params. Invalid entries are ignored (otherwise additional query params would cause server errors).
+     *
+     * @param entrySet
+     *            the entry set
+     */
+    public void parseQueryParams(Set<Entry<String, List<String>>> entrySet) {
+        for (Entry<String, List<String>> filter : entrySet) {
+            try {
+                FilterAttribute filterAttr = new FilterAttribute(filter);
+                this.filterAttributes.add(filterAttr);
+            } catch (IllegalArgumentException ex) {
+                // ignore this filter, log a warning
+            }
+
+        }
+    }
+
 
 }

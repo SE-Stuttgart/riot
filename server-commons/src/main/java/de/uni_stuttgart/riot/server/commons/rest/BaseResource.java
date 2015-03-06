@@ -144,14 +144,15 @@ public abstract class BaseResource<E extends Storable> {
      * @throws DatasourceFindException
      *             when retrieving the data fails
      */
-    @POST
+    @GET
     @Path("/filter")
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> getBy(FilteredRequest request) throws DatasourceFindException {
-        if (request == null) {
-            throw new BadRequestException("please provide an entity in the request body.");
-        }
+    public Collection<E> getBy(@Context UriInfo info, @QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
+        FilteredRequest request = new FilteredRequest();
+        request.setLimit(limit);
+        request.setOffset(offset);
+        request.parseQueryParams(info.getQueryParameters().entrySet());
         try {
             Collection<E> result = dao.findAll(request);
             for (E e : result) {
