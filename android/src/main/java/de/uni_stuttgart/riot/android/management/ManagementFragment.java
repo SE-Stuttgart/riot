@@ -36,7 +36,7 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
 public abstract class ManagementFragment extends Fragment {
 
     // TODO is just for testing reasons
-    protected boolean isDummyThing = true;
+    protected boolean isDummyThing = IM.INSTANCES.getDummyThing();
 
     protected static final String BUNDLE_OBJECT_ID = "bundle_object_id";
 

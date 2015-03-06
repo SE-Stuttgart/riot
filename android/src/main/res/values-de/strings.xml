@@ -3,6 +3,23 @@
 
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
+<<<<<<< HEAD
+=======
+
+    <string-array name="menu_array">
+        <item>Home</item>
+        <item>RIOT-Konto</item>
+        <item>Sprache</item>
+        <item>Standortinformationen</item>
+        <item>UserListe</item>
+        <item>ThingsListe</item>
+        <item>ThingsListONLINE</item>
+        <!--<item>DevicesListe</item>-->
+    </string-array>
+
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
+>>>>>>> RIOT-87:Android:Add two thing menus for testing
     <string name="settings">Einstellungen</string>
     <string name="pleaseWait">Bitte warten &#8230;</string>
     <string name="edit">Bearbeiten</string>
