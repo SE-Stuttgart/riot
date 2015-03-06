@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import de.enpro.android.riot.R;
 
+//CHECKSTYLE:OFF TODO 
 public class CoffeeMachineCanvas extends View {
 
     private Paint paint = new Paint();

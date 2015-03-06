@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import de.enpro.android.riot.R;
 
+//CHECKSTYLE:OFF TODO 
 public class CoffeeMachine extends Activity {
 
     // private HomeScreen homeScreen;

@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.android.things;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+// CHECKSTYLE:OFF TODO 
 public class CoffeeMachineButton {
 
     private boolean isPressed;
