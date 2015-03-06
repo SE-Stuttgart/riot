@@ -71,7 +71,7 @@ public abstract class ManagementFragment extends Fragment {
 
                 try {
                     SharedPreferences settings = view.getContext().getSharedPreferences("MANAGEMENT", 0);
-                    int deviceNumber = settings.getInt("DEVICE_NUMBER", 20);
+                    int deviceNumber = settings.getInt("DEVICE_NUMBER", 500);
                     deviceNumber = deviceNumber + 1;
 
                     SharedPreferences.Editor editor = settings.edit();

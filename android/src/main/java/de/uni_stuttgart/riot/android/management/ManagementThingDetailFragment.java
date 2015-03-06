@@ -88,24 +88,23 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                         ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
                     }
                 }
-            }
-        } else {
+            } else {
+                // Save the thing
+                if (!doGetThing((ThingDescription) data)) {
+                    // Set a default title if it was not successful
+                    viewTitle = getResources().getString(R.string.thing_detail);
+                    return;
+                }
 
-            // Save the thing
-            if (!doGetThing((ThingDescription) data)) {
-                // Set a default title if it was not successful
-                viewTitle = getResources().getString(R.string.thing_detail);
-                return;
-            }
+                // Save the view title
+                viewTitle = this.theThing.getName();
 
-            // Save the view title
-            viewTitle = this.theThing.getName();
-
-            // Add items to the main layout
-            for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
-                View preparedItem = prepareItem(propertyDescription);
-                if (preparedItem != null) {
-                    ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
+                // Add items to the main layout
+                for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
+                    View preparedItem = prepareItem(propertyDescription);
+                    if (preparedItem != null) {
+                        ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
+                    }
                 }
             }
         }
@@ -230,7 +229,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         LinearLayout.LayoutParams linearLayoutItemParams;
 
         // Add name of the propertyDescription
-        if (!isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
+//        if (!isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
+        if (!(propertyDescription.getUiHint() instanceof UIHint.ToggleButton)) {
 //        if (!isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             View preparedTextView = prepareTextView(propertyDescription.getName());
             if (preparedTextView != null) {
@@ -276,6 +276,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private boolean isPropertyType(PropertyDescription propertyDescription, Class<?> propertyType) {
         return propertyDescription.getValueType().equals(propertyType);
+//        return propertyDescription.getValueType().equals(propertyType);
     }
 
     /**
@@ -313,21 +314,24 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 //                linearLayoutItem.addView(preparedView);
 //            }
 //        } else
-        if (isPropertyType(propertyDescription, UIHint.EditText.class)) {
+//        if (isPropertyType(propertyDescription, UIHint.EditText.class)) {
+        if (propertyDescription.getUiHint() instanceof UIHint.EditText) {
 //        if (isPropertyType(propertyDescription, PropertyType.EditText)) {
             // Prepare and add edit text property
             View preparedView = prepareTextProperty(propertyDescription, false, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.EditNumber.class)) {
+//        } else if (isPropertyType(propertyDescription, UIHint.EditNumber.class)) {
+        } else if (propertyDescription.getUiHint() instanceof UIHint.EditNumber) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.EditNumber)) {
             // Prepare and add edit number property
             View preparedView = prepareTextProperty(propertyDescription, true, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
+//        } else if (isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
+        } else if (propertyDescription.getUiHint() instanceof UIHint.ToggleButton) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             // Prepare and add toggle button property
             View preparedView = prepareToggleButtonProperty(propertyDescription);
@@ -349,7 +353,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private boolean preparePropertyItems2(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
         // If property is a group element get the sub list and prepare this items
-        if (isPropertyType(propertyDescription, UIHint.FractionalSlider.class)) {
+//        if (isPropertyType(propertyDescription, UIHint.FractionalSlider.class)) {
+        if (propertyDescription.getUiHint() instanceof UIHint.FractionalSlider) {
 //        if (isPropertyType(propertyDescription, PropertyType.FractionalSlider)) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) propertyDescription.getUiHint();
@@ -357,7 +362,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.IntegralSlider.class)) {
+//        } else if (isPropertyType(propertyDescription, UIHint.IntegralSlider.class)) {
+        } else if (propertyDescription.getUiHint() instanceof UIHint.IntegralSlider) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.IntegralSlider)) {
             // Prepare and add scale value property
             UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) propertyDescription.getUiHint();
@@ -366,7 +372,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.PercentageSlider.class)) {
+//        } else if (isPropertyType(propertyDescription, UIHint.PercentageSlider.class)) {
+        } else if (propertyDescription.getUiHint() instanceof UIHint.PercentageSlider) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.PercentageSlider)) {
             // Prepare and add scale percent property
             final int min = 0;
@@ -375,7 +382,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-        } else if (isPropertyType(propertyDescription, UIHint.DropDown.class)) {
+//        } else if (isPropertyType(propertyDescription, UIHint.DropDown.class)) {
+        } else if (propertyDescription.getUiHint() instanceof UIHint.DropDown) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.DropDown)) {
             // Prepare and add scale percent property
             UIHint.DropDown uiHint = (UIHint.DropDown) propertyDescription.getUiHint();
