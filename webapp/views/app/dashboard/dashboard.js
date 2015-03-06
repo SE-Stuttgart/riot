@@ -8,28 +8,28 @@ angular.module('riot').config(function($stateProvider) {
 angular.module('riot').controller('DashboardCtrl', function($scope) {
   $scope.items = {};
 
-  $scope.items.devices = [{
-    name: "Device 1",
+  $scope.items.things = [{
+    name: "Thing 1",
     link: "http://www.google.de",
     type: "ok"
   }, {
-    name: "Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2Device 2",
+    name: "Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2Thing 2",
     link: "http://www.google.de",
     type: "ok"
   }, {
-    name: "Device 3",
+    name: "Thing 3",
     link: "http://www.google.de",
     type: "error"
   }, {
-    name: "Device 4",
+    name: "Thing 4",
     link: "http://www.google.de",
     type: "error"
   }, {
-    name: "Device 5",
+    name: "Thing 5",
     link: "http://www.google.de",
     type: "warning"
   }, {
-    name: "Device 6",
+    name: "Thing 6",
     link: "http://www.google.de",
     type: "warning"
   }];
@@ -90,6 +90,12 @@ angular.module('riot').controller('DashboardCtrl', function($scope) {
     icon: "fa-info-circle"
   }, {
     text: "This is a test text 3",
+    time: new Date()
+  }, {
+    text: "Event 1 started",
+    time: new Date()
+  }, {
+    text: "Event 2 started",
     time: new Date()
   }];
 });
