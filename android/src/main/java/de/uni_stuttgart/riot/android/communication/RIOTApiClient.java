@@ -5,8 +5,8 @@ import java.io.IOException;
 import android.content.Context;
 import android.os.Looper;
 import android.os.NetworkOnMainThreadException;
-import de.uni_stuttgart.riot.clientlibrary.server.client.ConfigurationClient;
 import de.uni_stuttgart.riot.clientlibrary.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.server.client.ConfigurationClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementClient;
 
 /**
@@ -17,7 +17,7 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementC
 public class RIOTApiClient {
 
     /** The Constant API_URL. */
-    private static final String API_URL = "http://10.0.2.2:8080/riot"; // TODO url, 10.0.2.2 is localhost for the android emulator
+    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot";
 
     /** The instance. */
     private static RIOTApiClient instance;

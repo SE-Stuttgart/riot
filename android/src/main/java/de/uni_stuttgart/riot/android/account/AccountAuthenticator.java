@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import de.uni_stuttgart.riot.android.MainActivity;
+import de.uni_stuttgart.riot.android.HomeScreen;
 
 // CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /*
@@ -41,7 +41,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             String[] requiredFeatures,
             Bundle options) throws NetworkErrorException {
 
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, HomeScreen.class);
         intent.setAction("de.uni_stuttgart.riot.android.account.LOGIN");
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, r);
         Bundle reply = new Bundle();

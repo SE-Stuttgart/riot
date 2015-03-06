@@ -16,7 +16,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.ColorPicker;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 
 //CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
 /**
@@ -76,15 +75,12 @@ public class AccountFragment extends Fragment implements OnClickListener, ColorP
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // Initialize the API client. Initialization is not allowed in the main thread.
-        final Context ctx = getActivity();
-        new Thread() {
-            @Override
-            public void run() {
-                RIOTApiClient.getInstance().init(ctx, "androidApp"); // TODO device name
-                androidUser = new AndroidUser(ctx);
-            }
-        }.start();
+        /*
+         * // Initialize the API client. Initialization is not allowed in the main thread. final Context ctx = getActivity(); new Thread() {
+         * 
+         * @Override public void run() { RIOTApiClient.getInstance().init(ctx, "androidApp"); // TODO device name androidUser = new
+         * AndroidUser(ctx); } }.start();
+         */
 
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         // String menu = getArguments().getString("Menu");
