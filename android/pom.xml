@@ -82,6 +82,10 @@
 			<version>18.0.0</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-android</artifactId>
+		</dependency>
 
 		<!-- Spring -->
 		<dependency>

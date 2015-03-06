@@ -51,6 +51,12 @@
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.android</artifactId>
 			<version>${project.parent.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-android</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
