@@ -91,6 +91,14 @@
 			<plugin>
 			    <artifactId>maven-resources-plugin</artifactId>
 			    <version>2.6</version>
+				<configuration> 
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>woff</nonFilteredFileExtension>
+						<nonFilteredFileExtension>eot</nonFilteredFileExtension>
+						<nonFilteredFileExtension>otf</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration> 
 			    <executions>
 			         <execution>
 			            <id>copy-resources</id>
