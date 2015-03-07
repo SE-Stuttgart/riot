@@ -2,8 +2,8 @@
   <div class="col-lg-7">
 
     <!-- Administration -->
-    <div ng-if="userDetail.id !== undefined">
-      <h3><strong>Administration</strong></h3>
+    <div class="detail-group" ng-if="userDetail.id !== undefined">
+      <div class="detail-group-header">Administration</div>
       <form class="form-horizontal">
         <!-- delete user -->
         <div class="form-group">
@@ -19,127 +19,110 @@
     </div>
 
     <!-- User Data -->
-    <h3><strong>User Data</strong></h3>
-    <form name="formUserData" class="form-horizontal margin-top-30" novalidate ng-submit="formUserData.$valid">
-      <!-- userid -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="userid">{{ 'user.userId' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="userid" name="userid" type="text" placeholder="" class="form-control" ng-model="userDetail.id" disabled>
-        </div>
-      </div>
-
-      <!-- username -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="username">{{ 'user.username' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="username" name="username" type="text" placeholder="" class="form-control" ng-model="userDetail.username">
-        </div>
-      </div>
-
-      <!-- password1 -->
-      <div class="form-group margin-top-30" ng-model="userDetail.password1" ng-class="{'has-error': formUserData.password1.$error.validator}">
-        <label class="control-label col-md-2" for="password1">{{ 'user.password' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="password1" name="password1" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password2'" ui-validate="'$value==userDetail.password2'" ng-model="userDetail.password1">
-        </div>
-      </div>
-
-      <!-- password2 -->
-      <div class="form-group" ng-class="{'has-error': formUserData.password2.$error.validator}">
-        <label class="control-label col-md-2" for="password2">{{ 'user.repeatPassword' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="password2" name="password2" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password1'" ui-validate="'$value==userDetail.password1'" ng-model="userDetail.password2">
-        </div>
-      </div>
-
-      <!-- firstname -->
-      <div class="form-group margin-top-30">
-        <label class="control-label col-md-2" for="email">{{ 'user.email' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="email" name="email" type="email" placeholder="" class="form-control" ng-model="userDetail.email">
-        </div>
-      </div>
-
-      <!-- firstname -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="firstname">{{ 'user.firstname' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="firstname" name="firstname" type="text" placeholder="" class="form-control" ng-model="userDetail.firstname">
-        </div>
-      </div>
-
-      <!-- lastname -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="lastname">{{ 'user.lastname' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="lastname" name="lastname" type="text" placeholder="" class="form-control" ng-model="userDetail.lastname">
-        </div>
-      </div>
-
-      <!-- Save -->
-      <div class="form-group">
-        <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
-          <button ui-sref="admin.users.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
-        </div>
-      </div>
-    </form>
-
-    <div class="form-horizontal" ng-if="userDetail.id !== undefined">
-      <!-- Roles -->
-      <h3><strong>{{ 'user.roles' | i18n }}</strong></h3>
-      <div class="form-group">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-          <!-- add role to user -->
-          <div class="btn-group" ng-show="(roles | duplicateFilter:userDetail.roles).length > 0">
-            <button type="button" class="btn btn-default dropdown-toggle dropdown-width" data-toggle="dropdown">
-              &nbsp;
-              <span ng-bind="selectedRole.roleName"></span>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-full-width" role="menu">
-              <li ng-click="$event.stopPropagation();">
-                <div class="input-group" style="width: 100%;">
-                  <input type="text" class="form-control" placeholder="Filter" ng-model="rolesFilter">
-                  <span class="input-group-btn" ng-show="rolesFilter">
-                    <button type="button" class="btn btn-default" ng-click="rolesFilter=''">
-                      <span class="fa fa-times"></span>
-                    </button>
-                  </span>
-                </div>
-              </li>
-              <li ng-repeat="role in roles | filter:{roleName: rolesFilter} | duplicateFilter:userDetail.roles"><a href="" ng-click="$parent.selectedRole=role">{{role.roleName}}</a></li>
-            </ul>
-            <button type="button" class="btn btn-success" ng-click="addUserRole(userDetail, selectedRole); selectedRole=null;">
-              <span class="fa fa-plus"></span>
-            </button>
+    <div class="detail-group">
+      <div class="detail-group-header">User Data</div>
+      <form name="formUserData" class="form-horizontal margin-top-30" novalidate ng-submit="formUserData.$valid">
+        <!-- userid -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="userid">{{ 'user.userId' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="userid" name="userid" type="text" placeholder="" class="form-control" ng-model="userDetail.id" disabled>
           </div>
-          <!-- roles list -->
-          <div class="list-group margin-top-10">
-            <div class="panel panel-default" ng-repeat="role in userDetail.roles">
-              <div class="panel-heading">
-                <strong>{{role.roleName}}</strong>
-                <span class="pull-right">
-                  <button type="button" class="btn btn-xs btn-danger" ng-click="removeUserRole(userDetail, role)">
-                    <span class="fa fa-times"></span>
-                    {{ 'common.remove' | i18n }}
-                  </button>
-                </span>
-              </div>
-              <!-- permissions list -->
-              <ul class="list-group">
-                <li class="list-group-item" ng-repeat="permission in role.permissions">
-                  {{permission.permissionValue}}
-                </li>
-              </ul>
+        </div>
+
+        <!-- username -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="username">{{ 'user.username' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="username" name="username" type="text" placeholder="" class="form-control" ng-model="userDetail.username">
+          </div>
+        </div>
+
+        <!-- password1 -->
+        <div class="form-group margin-top-30" ng-model="userDetail.password1" ng-class="{'has-error': formUserData.password1.$error.validator}">
+          <label class="control-label col-md-2" for="password1">{{ 'user.password' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="password1" name="password1" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password2'" ui-validate="'$value==userDetail.password2'" ng-model="userDetail.password1">
+          </div>
+        </div>
+
+        <!-- password2 -->
+        <div class="form-group" ng-class="{'has-error': formUserData.password2.$error.validator}">
+          <label class="control-label col-md-2" for="password2">{{ 'user.repeatPassword' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="password2" name="password2" type="password" placeholder="" class="form-control" ui-validate-watch="'userDetail.password1'" ui-validate="'$value==userDetail.password1'" ng-model="userDetail.password2">
+          </div>
+        </div>
+
+        <!-- firstname -->
+        <div class="form-group margin-top-30">
+          <label class="control-label col-md-2" for="email">{{ 'user.email' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="email" name="email" type="email" placeholder="" class="form-control" ng-model="userDetail.email">
+          </div>
+        </div>
+
+        <!-- firstname -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="firstname">{{ 'user.firstname' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="firstname" name="firstname" type="text" placeholder="" class="form-control" ng-model="userDetail.firstname">
+          </div>
+        </div>
+
+        <!-- lastname -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="lastname">{{ 'user.lastname' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="lastname" name="lastname" type="text" placeholder="" class="form-control" ng-model="userDetail.lastname">
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
+            <button ui-sref="admin.users.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="detail-group" ng-if="userDetail.id !== undefined">
+      <!-- Roles -->
+      <div class="detail-group-header">{{ 'user.roles' | i18n }}</div>
+      <div class="col-md-offset-2 col-md-8 form-padding-fix">
+        <!-- add role to user -->
+        <div class="form-inline">
+          <div class="form-group">
+            <div style="width:300px;" complex-dropdown="roles"></div>
+          </div>
+          <button type="button" class="btn btn-success" submit="addUserRole(userDetail, roles.selection); roles.selection=null" loading-button>
+            <span class="fa fa-plus"></span>
+          </button>
+        </div>
+        <!-- roles list -->
+        <div class="list-group margin-top-10">
+          <div class="panel panel-default" ng-repeat="role in userDetail.roles">
+            <div class="panel-heading">
+              <strong>{{role.roleName}}</strong>
+              <span class="pull-right">
+                <button type="button" class="btn btn-xs btn-danger" ng-click="removeUserRole(userDetail, role)">
+                  <span class="fa fa-times"></span>
+                  {{ 'common.remove' | i18n }}
+                </button>
+              </span>
             </div>
+            <!-- permissions list -->
+            <ul class="list-group">
+              <li class="list-group-item" ng-repeat="permission in role.permissions">
+                {{permission.permissionValue}}
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
 
   </div>
-  <div class="col-lg-5"></div>
 </div>

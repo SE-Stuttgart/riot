@@ -10,11 +10,14 @@ angular.module('riot').directive('loadingButton', function() {
       element.attr('data-style', 'expand-left');
       element.append('<span class="ladda-label" ng-transclude></span>');
       element.on('click', function() {
-        var l = Ladda.create(element[0]);
-        l.start();
-        scope.submit().then(function() {
-          l.stop();
-        });
+        var q = scope.submit();
+        if (q) {
+          var l = Ladda.create(element[0]);
+          l.start();
+          q.then(function() {
+            l.stop();
+          });
+        }
       });
       /* jshint ignore:end */
     }

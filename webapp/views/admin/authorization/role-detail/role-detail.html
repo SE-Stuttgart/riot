@@ -1,8 +1,9 @@
 <div class="row" ng-controller="RoleDetailCtrl">
   <div class="col-lg-7">
+
     <!-- Administration -->
-    <div ng-if="roleDetail.id !== undefined">
-      <h3><strong>Administration</strong></h3>
+    <div class="detail-group" ng-if="roleDetail.id !== undefined">
+      <div class="detail-group-header">Administration</div>
       <form class="form-horizontal">
         <!-- delete role -->
         <div class="form-group">
@@ -17,89 +18,71 @@
       </form>
     </div>
 
-    <h3><strong>Role Data</strong></h3>
-    <form name="formRoleDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formRoleDetail.$valid">
-      <!-- roleid -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="roleid">{{ 'user.roleId' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="roleid" name="roleid" type="text" placeholder="" class="form-control" ng-model="roleDetail.id" disabled>
-        </div>
-      </div>
-
-      <!-- name -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="name">{{ 'user.roleName' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="roleDetail.roleName">
-        </div>
-      </div>
-
-      <!-- description -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="description">{{ 'user.description' | i18n }}</label>
-        <div class="col-md-8">
-          <textarea id="description" name="description" class="form-control" rows="4" ng-model="roleDetail.description"></textarea>
-        </div>
-      </div>
-
-      <!-- Save -->
-      <div class="form-group">
-        <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
-          <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
-        </div>
-      </div>
-    </form>
-
-    <div class="form-horizontal" ng-if="roleDetail.id !== undefined">
-      <!-- Permissions -->
-      <h3><strong>{{ 'user.permissions' | i18n }}</strong></h3>
-      <div class="form-group">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-          <!-- add permission to role -->
-          <div class="btn-group" ng-show="(permissions | duplicateFilter:roleDetail.permissions).length > 0">
-            <button type="button" class="btn btn-default dropdown-toggle dropdown-width" data-toggle="dropdown">
-              &nbsp;
-              <span ng-bind="selectedPermission.permissionValue"></span>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-full-width" role="menu">
-              <li ng-click="$event.stopPropagation();">
-                <div class="input-group" style="width: 100%;">
-                  <input type="text" class="form-control" placeholder="Filter" ng-model="permissionsFilter">
-                  <span class="input-group-btn" ng-show="permissionsFilter">
-                    <button type="button" class="btn btn-default" ng-click="permissionsFilter=''">
-                      <span class="fa fa-times"></span>
-                    </button>
-                  </span>
-                </div>
-              </li>
-              <li ng-repeat="permission in permissions | filter:{permissionValue: permissionsFilter} | duplicateFilter:roleDetail.permissions">
-                <a href="" ng-click="$parent.selectedPermission=permission">{{permission.permissionValue}}</a>
-              </li>
-            </ul>
-            <button type="button" class="btn btn-success" submit="addRolePermission(roleDetail, selectedPermission); selectedPermission=null" loading-button="addRolePermission">
-              <span class="fa fa-plus"></span>
-            </button>
+    <!-- Role Data -->
+    <div class="detail-group">
+      <div class="detail-group-header">Role Data</div>
+      <form name="formRoleDetail" class="form-horizontal" novalidate ng-submit="formRoleDetail.$valid">
+        <!-- roleid -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="roleid">{{ 'user.roleId' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="roleid" name="roleid" type="text" placeholder="" class="form-control" ng-model="roleDetail.id" disabled>
           </div>
-          <!-- permissions list -->
-          <ul class="list-group margin-top-10">
-            <li class="list-group-item" ng-repeat="permission in roleDetail.permissions">
-              {{permission.permissionValue}}
-              <span class="pull-right">
-                <button type="button" class="btn btn-xs btn-danger" submit="removeRolePermission(roleDetail, permission)" loading-button="removeRolePermission">
-                  <span class="fa fa-times"></span>
-                  {{ 'common.remove' | i18n }}
-                </button>
-              </span>
-            </li>
-          </ul>
         </div>
+
+        <!-- name -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="name">{{ 'user.roleName' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="roleDetail.roleName">
+          </div>
+        </div>
+
+        <!-- description -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="description">{{ 'user.description' | i18n }}</label>
+          <div class="col-md-8">
+            <textarea id="description" name="description" class="form-control" rows="4" ng-model="roleDetail.description"></textarea>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
+            <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Permissions -->
+    <div class="detail-group" ng-if="roleDetail.id !== undefined">
+      <div class="detail-group-header">{{ 'user.permissions' | i18n }}</div>
+      <div class="col-md-offset-2 col-md-8 form-padding-fix">
+        <!-- add permission to role -->
+        <div class="form-inline">
+          <div class="form-group">
+            <div style="width:300px;" complex-dropdown="permissions"></div>
+          </div>
+          <button type="button" class="btn btn-success" submit="addRolePermission(roleDetail, permissions.selection); permissions.selection=null" loading-button>
+            <span class="fa fa-plus"></span>
+          </button>
+        </div>
+        <!-- permissions list -->
+        <ul class="list-group margin-top-10">
+          <li class="list-group-item" ng-repeat="permission in roleDetail.permissions">
+            {{permission.permissionValue}}
+            <span class="pull-right">
+              <button type="button" class="btn btn-xs btn-danger" submit="removeRolePermission(roleDetail, permission)" loading-button>
+                <span class="fa fa-times"></span>
+                {{ 'common.remove' | i18n }}
+              </button>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
 
   </div>
-  <div class="col-lg-5"></div>
 </div>

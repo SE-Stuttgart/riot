@@ -9,13 +9,29 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
   var alertId = null;
 
   var init = function() {
+    $scope.roles = {
+      data: [],
+      selection: null,
+      pagination: {
+        current: 1,
+        limit: 10,
+        total: 0
+      },
+      filter: null,
+      update: $scope.getRoles,
+      toString: function(dataEntry) {
+        return dataEntry['roleName'];
+      }
+    };
     $scope.getRoles();
     $scope.getUser();
   };
 
   $scope.getRoles = function() {
-    Role.getList().then(function(roles) {
-      $scope.roles = roles;
+    Role.getList({limit: $scope.roles.pagination.limit, offset: ($scope.roles.pagination.current - 1) * $scope.roles.pagination.limit}).then(function(roles) {
+      $scope.roles.pagination.limit = roles.pagination.limit;
+      $scope.roles.pagination.total = roles.pagination.total;
+      $scope.roles.data = roles;
     });
   };
 

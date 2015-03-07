@@ -9,13 +9,28 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $state, $sta
   var alertId = null;
 
   var init = function() {
-    $scope.getPermissions();
+    $scope.permissions = {
+      data: [],
+      selection: null,
+      pagination: {
+        current: 1,
+        limit: 10,
+        total: 0
+      },
+      filter: null,
+      update: $scope.getPermissions,
+      toString: function(dataEntry) {
+        return dataEntry['permissionValue'];
+      }
+    };
     $scope.getRole();
   };
 
   $scope.getPermissions = function() {
-    Permission.getList().then(function(permissions) {
-      $scope.permissions = permissions;
+    Permission.getList({limit: $scope.permissions.pagination.limit, offset: ($scope.permissions.pagination.current - 1) * $scope.permissions.pagination.limit}).then(function(permissions) {
+      $scope.permissions.pagination.limit = permissions.pagination.limit;
+      $scope.permissions.pagination.total = permissions.pagination.total;
+      $scope.permissions.data = permissions;
     });
   };
 
@@ -44,6 +59,7 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $state, $sta
   };
 
   $scope.addRolePermission = function(role, permission) {
+    console.log(role, permission)
     if (role && permission) {
       return role.addPermission(permission.id).then(function() {
           $scope.alerts.close(alertId);

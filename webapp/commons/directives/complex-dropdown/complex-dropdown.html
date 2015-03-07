@@ -1,0 +1,28 @@
+<div class="btn-group complex-dropdown">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    &nbsp;
+    <span ng-if="options.selection">{{options.toString(options.selection)}}</span>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu dropdown-full-width" role="menu">
+    <li ng-click="$event.stopPropagation();">
+      <div class="input-group filter" style="width: 100%;">
+        <input type="text" class="form-control" placeholder="Filter" ng-model="permissionsFilter">
+        <span class="input-group-btn" ng-show="permissionsFilter">
+          <button type="button" class="btn btn-default" ng-click="permissionsFilter=''">
+            <span class="fa fa-times"></span>
+          </button>
+        </span>
+      </div>
+    </li>
+    <li ng-repeat="data in options.data">
+      <a href="" ng-click="options.selection=data">{{options.toString(data)}}</a>
+    </li>
+    <li ng-if="options.pagination" ng-click="$event.stopPropagation();">
+      <div class="pagination-info">
+        {{ 'common.showing' | i18n }} {{(options.pagination.current - 1) * options.pagination.limit + 1}} {{ 'common.to' | i18n }} {{(options.pagination.current - 1) * options.pagination.limit + options.data.length}} {{ 'common.of' | i18n }} {{options.pagination.total}} {{ 'common.entries' | i18n }}
+      </div>
+      <pager ng-model="options.pagination.current" items-per-page="options.pagination.limit" total-items="options.pagination.total" ng-change="options.update()"></pager>
+    </li>
+  </ul>
+</div>

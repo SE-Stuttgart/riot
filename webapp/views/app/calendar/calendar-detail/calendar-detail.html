@@ -1,67 +1,71 @@
 <div class="row" ng-controller="CalendarDetailCtrl">
   <div class="col-lg-7">
-    <h3><strong>{{ 'calendar.calendarEntry' | i18n }}</strong></h3>
-    <form name="formUserDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formUserDetail.$valid && save()">
-      <!-- title -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="title">{{ 'calendar.title' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="title" name="title" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.title">
-        </div>
-      </div>
 
-      <!-- location -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="location">{{ 'calendar.location' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="location" name="location" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.location">
-        </div>
-      </div>
-
-      <!-- startTime -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="startTime">{{ 'calendar.startDate' | i18n }}</label>
-        <div class="col-md-8">
-          <div class="input-group col-md-6">
-            <input id="startTime" name="startTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.startTime" is-open="datepickerStart" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerStart = !datepickerStart;"><i class="fa fa-calendar"></i></button>
-            </span>
+    <!-- Calender Entry -->
+    <div class="detail-group">
+      <div class="detail-group-header">{{ 'calendar.calendarEntry' | i18n }}</div>
+      <form name="formUserDetail" class="form-horizontal" novalidate ng-submit="formUserDetail.$valid && save()">
+        <!-- title -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="title">{{ 'calendar.title' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="title" name="title" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.title">
           </div>
-          <timepicker ng-model="calendarEntryDetail.startTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
         </div>
-      </div>
 
-      <!-- endTime -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="endTime">{{ 'calendar.endDate' | i18n }}</label>
-        <div class="col-md-8">
-          <div class="input-group col-md-6">
-            <input id="endTime" name="endTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.endTime" is-open="datepickerEnd" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerEnd = !datepickerEnd;"><i class="fa fa-calendar"></i></button>
-            </span>
+        <!-- location -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="location">{{ 'calendar.location' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="location" name="location" type="text" placeholder="" class="form-control" ng-model="calendarEntryDetail.location">
           </div>
-          <timepicker ng-model="calendarEntryDetail.endTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
         </div>
-      </div>
 
-      <!-- description -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="description">{{ 'calendar.description' | i18n }}</label>
-        <div class="col-md-8">
-          <textarea id="description" name="description" rows="3" class="form-control" ng-model="calendarEntryDetail.description"></textarea>
+        <!-- startTime -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="startTime">{{ 'calendar.startDate' | i18n }}</label>
+          <div class="col-md-8">
+            <div class="input-group col-md-6">
+              <input id="startTime" name="startTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.startTime" is-open="datepickerStart" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerStart = !datepickerStart;"><i class="fa fa-calendar"></i></button>
+              </span>
+            </div>
+            <timepicker ng-model="calendarEntryDetail.startTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
+          </div>
         </div>
-      </div>
 
-      <!-- Save -->
-      <div class="form-group">
-        <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
-          <button ui-sref="app.calendar.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+        <!-- endTime -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="endTime">{{ 'calendar.endDate' | i18n }}</label>
+          <div class="col-md-8">
+            <div class="input-group col-md-6">
+              <input id="endTime" name="endTime" type="text" class="form-control" datepicker-popup="{{datepickerOptions.format}}" ng-model="calendarEntryDetail.endTime" is-open="datepickerEnd" show-weeks="false" datepicker-options="datepickerOptions" ng-required="true" current-text="{{datepickerOptions.currentText}}" clear-text="{{datepickerOptions.clearText}}" close-text="{{datepickerOptions.closeText}}" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="$event.preventDefault(); $event.stopPropagation(); datepickerEnd = !datepickerEnd;"><i class="fa fa-calendar"></i></button>
+              </span>
+            </div>
+            <timepicker ng-model="calendarEntryDetail.endTime" minute-step="timepickerOptions.minuteStep" hour-step="timepickerOptions.hourStep" show-meridian="timepickerOptions.meridian"></timepicker>
+          </div>
         </div>
-      </div>
-    </form>
+
+        <!-- description -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="description">{{ 'calendar.description' | i18n }}</label>
+          <div class="col-md-8">
+            <textarea id="description" name="description" rows="3" class="form-control" ng-model="calendarEntryDetail.description"></textarea>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
+            <button ui-sref="app.calendar.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
   </div>
-  <div class="col-lg-5"></div>
 </div>

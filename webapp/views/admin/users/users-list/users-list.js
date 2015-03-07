@@ -22,7 +22,7 @@ angular.module('riot').controller('UsersListCtrl',function($scope, User){
   };
 
   $scope.getUsers = function() {
-    User.getList({limit: $scope.limit, offset: ($scope.current - 1) * $scope.limit}).then(function(users, u) {
+    User.getList({limit: $scope.limit, offset: ($scope.current - 1) * $scope.limit}).then(function(users) {
       $scope.limit = users.pagination.limit;
       $scope.total = users.pagination.total;
       $scope.users = users;

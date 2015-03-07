@@ -1,55 +1,60 @@
 <div class="row" ng-controller="PermissionDetailCtrl">
   <div class="col-lg-7">
+
     <!-- Administration -->
-    <h3><strong>Administration</strong></h3>
-    <form class="form-horizontal">
-      <!-- delete permission -->
-      <div class="form-group">
-        <label class="control-label col-md-2">Delete Permission</label>
-        <div class="col-md-8">
-          <button type="button" class="btn btn-danger" ng-click="removePermission()">
-            <span class="fa fa-times"></span>
-            Remove
-          </button>
+    <div ng-if="permissionDetail.id !== undefined">
+      <div class="detail-group">Administration</div>
+      <form class="form-horizontal">
+        <!-- delete permission -->
+        <div class="form-group">
+          <label class="control-label col-md-2">Delete Permission</label>
+          <div class="col-md-8">
+            <button type="button" class="btn btn-danger" ng-click="removePermission()">
+              <span class="fa fa-times"></span>
+              Remove
+            </button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
 
-    <h3><strong>Permission Data</strong></h3>
-    <form name="formPermissionDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formPermissionDetail.$valid">
-      <!-- permissionid -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="permissionid">{{ 'user.permissionId' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="permissionid" name="permissionid" type="text" placeholder="" class="form-control" ng-model="permissionDetail.id" disabled>
+    <!-- Permission Data -->
+    <div class="detail-group">
+      <div class="detail-group-header">Permission Data</div>
+      <form name="formPermissionDetail" class="form-horizontal" novalidate ng-submit="formPermissionDetail.$valid">
+        <!-- permissionid -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="permissionid">{{ 'user.permissionId' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="permissionid" name="permissionid" type="text" placeholder="" class="form-control" ng-model="permissionDetail.id" disabled>
+          </div>
         </div>
-      </div>
 
-      <!-- value -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="value">{{ 'user.value' | i18n }}</label>
-        <div class="col-md-8">
-          <input id="value" value="value" type="text" placeholder="" class="form-control" ng-model="permissionDetail.permissionValue">
+        <!-- value -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="value">{{ 'user.value' | i18n }}</label>
+          <div class="col-md-8">
+            <input id="value" value="value" type="text" placeholder="" class="form-control" ng-model="permissionDetail.permissionValue">
+          </div>
         </div>
-      </div>
 
-      <!-- description -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="description">{{ 'user.description' | i18n }}</label>
-        <div class="col-md-8">
-          <textarea id="description" name="description" class="form-control" rows="4" ng-model="permissionDetail.description"></textarea>
+        <!-- description -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="description">{{ 'user.description' | i18n }}</label>
+          <div class="col-md-8">
+            <textarea id="description" name="description" class="form-control" rows="4" ng-model="permissionDetail.description"></textarea>
+          </div>
         </div>
-      </div>
 
-      <!-- Save -->
-      <div class="form-group">
-        <div class="col-md-offset-2 col-md-8">
-          <button type="submit" class="btn btn-primary" submit="save()" loading-button="save">{{ 'common.save' | i18n }}</button>
-          <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+        <!-- Save -->
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
+            <button ui-sref="admin.authorization.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
 
   </div>
-  <div class="col-lg-5"></div>
 </div>
