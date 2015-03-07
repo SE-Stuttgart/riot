@@ -43,6 +43,7 @@
     <string name="change_color">Change Color</string>
     <string name="ACCOUNT_TYPE">de.uni_stuttgart.riot.android.account.type</string>
     <string name="ACCOUNT_SYNC_FREQ">1800</string>
+    <string name="DEVICE_NAME">AndroidPhone</string>
 
     <!-- Notification (all entries for language please insert here) -->
     <string-array name="priority">

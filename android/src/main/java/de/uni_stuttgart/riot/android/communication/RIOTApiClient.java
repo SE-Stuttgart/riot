@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.communication;
 
 import java.io.IOException;
 
+import android.accounts.Account;
 import android.content.Context;
 import android.os.Looper;
 import android.os.NetworkOnMainThreadException;
@@ -17,7 +18,7 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.UsermanagementC
 public class RIOTApiClient {
 
     /** The Constant API_URL. */
-    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot/api/v1/"; // TODO url, 10.0.2.2 is localhost for the
+    private static final String API_URL = "https://belgrad.informatik.uni-stuttgart.de:8181/riot"; // TODO url, 10.0.2.2 is localhost for the
                                                                                               // android emulator
 
     /** The instance. */
@@ -60,13 +61,18 @@ public class RIOTApiClient {
      *            the activity
      * @param deviceName
      *            the device name
+     * @param account
+     *            the android account of the user for which the api is created
      */
-    public void init(Context context, String deviceName) {
+    public void init(Context context, String deviceName, Account account) {
         throwExceptionIfOnMainThread();
 
         try {
-            loginClient = new LoginClient(API_URL, deviceName, new TokenManager(context));
+            loginClient = new LoginClient(API_URL, deviceName, new TokenManager(context, account));
         } catch (IOException e) {
+            //CHECKSTYLE: OFF
+            e.printStackTrace();
+            //CHECKSTYLE: ON
             // FIXME use NotificationManagers
         }
         userManagementClient = new UsermanagementClient(loginClient);
@@ -122,7 +128,9 @@ public class RIOTApiClient {
      */
     private void throwExceptionIfOnMainThread() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            throw new NetworkOnMainThreadException();
+//TODO why do we need to throw this exeception?
+//      if we want to throw it we should not check that this works from an async task! (where the code is also executed in the main thread apparently
+//            throw new NetworkOnMainThreadException();
         }
     }
 }

@@ -7,6 +7,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
+import android.util.Log;
 
 import de.uni_stuttgart.riot.android.account.AndroidUser;
 
@@ -43,14 +44,16 @@ public class TokenManager implements de.uni_stuttgart.riot.clientlibrary.userman
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public TokenManager(Context context) throws IOException {
-        account = AndroidUser.getAccount(context);
+    public TokenManager(Context context, Account account) throws IOException {
+        this.account = account;
         accountManager = AccountManager.get(context);
 
         try {
             if(account != null) {
                 accessToken = accountManager.blockingGetAuthToken(account, ACCESS_TOKEN, false);
                 refreshToken = accountManager.blockingGetAuthToken(account, REFRESH_TOKEN, false);
+                Log.v("TokenManager", "accessToken" + accessToken);
+                Log.v("TokenManager", "refreshToken"+refreshToken);
             }
         } catch (OperationCanceledException e) {
             throw new RuntimeException(e);

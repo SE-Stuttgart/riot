@@ -25,64 +25,6 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestExceptio
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
 //CHECKSTYLE:OFF
-/*
- class MySSLSocketFactory extends SSLSocketFactory {
- SSLContext sslContext = SSLContext.getInstance("TLS");
-
- public MySSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
- super(truststore);
-
- TrustManager tm = new X509TrustManager() {
- public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
- }
-
- public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
- }
-
- public X509Certificate[] getAcceptedIssuers() {
- return null;
- }
- };
-
- sslContext.init(null, new TrustManager[] { tm }, null);
- }
-
- @Override
- public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException, UnknownHostException {
- return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
- }
-
- @Override
- public Socket createSocket() throws IOException {
- return sslContext.getSocketFactory().createSocket();
- }
- }
-
- public HttpClient createHttpClient() {
- try {
- KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
- trustStore.load(null, null);
-
- SSLSocketFactory sf = new MySSLSocketFactory(trustStore);
- sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
- HttpParams params = new BasicHttpParams();
- HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
- HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
- SchemeRegistry registry = new SchemeRegistry();
- registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
- registry.register(new Scheme("https", sf, 443));
-
- ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-
- return new DefaultHttpClient(ccm, params);
- } catch (Exception e) {
- return new DefaultHttpClient();
- }
- }
-
- */
 
 /**
  * SyncAdapter for periodical syncs of the calendar data
@@ -161,13 +103,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * This is needed cause the task is not allowd form the main thread
      *
      */
-    public class CalendarSyncTask extends AsyncTask<ContentProviderClient, Integer, Long> {
+    public class CalendarSyncTask extends AsyncTask<Void, Integer, Long> {
+
+        Account account;
+        ContentProviderClient providerClient;
+
+        CalendarSyncTask(Account account, ContentProviderClient providerClient)
+        {
+            this.account = account;
+            this.providerClient = providerClient;
+        }
 
         @Override
-        protected Long doInBackground(ContentProviderClient... provider) {
+        protected Long doInBackground(Void ... voids) {
             mCalendarClient = new CalendarClient(RIOTApiClient.getInstance().getLoginClient());
-            mAndroidUser = new AndroidUser(getContext());
-            syncCalendar(provider[0]);
+            mAndroidUser = new AndroidUser(getContext(), account.name);
+            syncCalendar(providerClient);
             return null;
         }
     }
@@ -181,7 +132,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.i(TAG, "Performing sync for authority " + authority);
-        new CalendarSyncTask().execute(provider);
+        new CalendarSyncTask(account, provider).execute();
     }
 
     /**
@@ -230,8 +181,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      *            the id of the calender of which the events are read
      * @return
      */
-    Cursor getEvents(ContentProviderClient contentResolver, long calendarId) {
-        Uri url = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(Calendars.ACCOUNT_NAME, AndroidUser.getAccount(getContext()).name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).build();
+    private Cursor getEvents(ContentProviderClient contentResolver, long calendarId) {
+        Account account = mAndroidUser.getAccount();
+        Uri url = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).build();
 
         Cursor eventCursor = null;
         try {
@@ -246,8 +198,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         return eventCursor;
     }
 
-    boolean checkIfEventExists(ContentProviderClient contentResolver, long calendarId, long sync_id) {
-        Uri url = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(Calendars.ACCOUNT_NAME, AndroidUser.getAccount(getContext()).name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).build();
+    private boolean checkIfEventExists(ContentProviderClient contentResolver, long calendarId, long sync_id) {
+        Account account = mAndroidUser.getAccount();
+        Uri url = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).build();
         try {
             Cursor eventCursor = contentResolver.query(url, new String[] { BaseColumns._ID, CalendarContract.Events.DELETED }, // projection
                     CalendarContract.Events.CALENDAR_ID + " = ?" + CalendarContract.Events._SYNC_ID + " = ?", // selection
@@ -267,13 +220,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      *            the android calender entry which is transmited
      * @return
      */
-    public boolean updateEventSyncID(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
+    private boolean updateEventSyncID(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
         ContentValues cv = new ContentValues();
         cv.put(CalendarContract.Events._SYNC_ID, entry.getId());
         cv.put(CalendarContract.Events.DIRTY, entry.isDirty());
         String cs[] = new String[] { Long.toString(entry.getAndroid_id()) };
 
-        Uri calendarsURI = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, AndroidUser.getAccount(getContext()).name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
+        Account account = mAndroidUser.getAccount();
+        Uri calendarsURI = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
         try {
             int ret = contentResolver.update(calendarsURI, cv, BaseColumns._ID + " = ? ", cs);
             Log.v(TAG, "Event id(" + entry.getAndroid_id() + ") updated sid:" + entry.getId() + " done:" + ret);
@@ -322,7 +276,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     // search for id in local calendar database
                     if (!checkIfEventExists(contentResolver, calendar_id, entry.getId())) {
                         if (cal == null) {
-                            cal = new Calendar(AndroidUser.getAccount(getContext()), contentResolver, calendar_id);
+                            Account account = mAndroidUser.getAccount();
+                            cal = new Calendar(account, contentResolver, calendar_id);
                         }
                         // create this event
                         AndroidCalendarEventEntry event = new AndroidCalendarEventEntry(entry);

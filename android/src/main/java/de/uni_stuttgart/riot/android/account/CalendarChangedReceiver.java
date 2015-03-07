@@ -22,14 +22,16 @@ public class CalendarChangedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "calendar changed! " + intent.toUri(Intent.URI_INTENT_SCHEME));
+        Log.v(TAG, "calendar changed! " + intent.getDataString() + intent.getCategories());
 
         Bundle settingsBundle = new Bundle();
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-        Account acc = AndroidUser.getAccount(context);
+        Account[] acc = AndroidUser.getAccounts(context);
         if (acc != null) {
-            ContentResolver.requestSync(acc, acc.name, settingsBundle);
+            //TODO figure out how we can get the correct account associated with this change event, until then just take the first account
+            ContentResolver.requestSync(acc[0], acc[0].name, settingsBundle);
         }
     }
 }

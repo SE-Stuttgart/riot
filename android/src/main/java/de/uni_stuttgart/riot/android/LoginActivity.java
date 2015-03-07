@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,6 @@ import java.io.IOException;
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.account.AndroidUser;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
-import de.uni_stuttgart.riot.clientlibrary.LoginClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 
 /**
  * Created by dirkmb on 2/11/15.
@@ -34,7 +33,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     EditText editUsername;
     EditText editPassword;
-    AndroidUser androidUser;
     ProgressDialog mDialog;
 
     @Override
@@ -53,13 +51,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         mDialog.setMessage("Loading...");
         mDialog.setCancelable(false);
 
-        // check for existing android account
-        Account account = AndroidUser.getAccount(this);
-        if (account == null) {
+        // check for any existing android account
+        Account[] accounts = AndroidUser.getAccounts(this);
+        if (accounts == null) {
             //nothing to do, login elements automatically shown
         } else {
             ///verify that the token is valid
-            new DoLoginRequest(this).execute();
+            for (Account account : accounts) {
+                Log.v("LoginActivity", "Checking login of account" + account);
+                new DoCheckLoginToken(this, account).execute();
+            }
         }
     }
 
@@ -79,7 +80,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     Toast.makeText(view.getContext(), "Please insert username and password.", Toast.LENGTH_LONG).show();
                 } else {
                     mDialog.show();
-                    new DoLoginRequest(this).execute(username, password);
+                    Account account = AndroidUser.getAccount(this.getApplicationContext(), username);
+                    if (account == null) {
+                        account = AndroidUser.createAndroidAccount(username, this.getApplicationContext());
+                    }
+                    if (account != null) {
+                        DoLoginRequest loginRequest = new DoLoginRequest(this, account);
+                        loginRequest.execute(username, password);
+                    }
                 }
                 break;
             default:
@@ -93,17 +101,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      *            the username which is used as account name, and send back if we got called form the system account manager
      */
     void answerIntent(String username) {
-        if (AndroidUser.getAccount(this) == null) {
-            boolean accountCreated = androidUser.CreateAndroidAccount(username, this.getApplicationContext());
+        if (AndroidUser.getAccount(this, username) == null) {
             Bundle extras = this.getIntent().getExtras();
             if (extras != null) {
-                if (accountCreated) { // Pass the new account back to the account manager
-                    AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-                    Bundle result = new Bundle();
-                    result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
-                    result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.ACCOUNT_TYPE));
-                    response.onResult(result);
-                }
+                AccountAuthenticatorResponse response = extras.getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+                Bundle result = new Bundle();
+                result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
+                result.putString(AccountManager.KEY_ACCOUNT_TYPE, getString(R.string.ACCOUNT_TYPE));
+                response.onResult(result);
                 this.finish();
             }
         } else {
@@ -115,35 +120,76 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 /**
  * The AsycTask for the server communication.
  */
-class DoLoginRequest extends AsyncTask<String, Integer, Long> {
+class DoCheckLoginToken extends AsyncTask<String, Integer, Long> {
 
     LoginActivity loginActivity;
+    Account account;
 
-    DoLoginRequest(LoginActivity loginActivity) {
+    DoCheckLoginToken(LoginActivity loginActivity, Account account) {
         this.loginActivity = loginActivity;
+        this.account = account;
     }
 
     @Override
     protected Long doInBackground(String[] parameter) {
-        RIOTApiClient.getInstance().init(loginActivity, loginActivity.getPackageName()/*TODO set the device name*/);
-        LoginClient loginClient = RIOTApiClient.getInstance().getLoginClient();
-        if (loginClient.isLoggedIn()) {
+        RIOTApiClient.getInstance().init(loginActivity, loginActivity.getString(R.string.DEVICE_NAME), account);
+        AndroidUser androidUser = new AndroidUser(loginActivity, account.name);
+        Long ret = 0L;
+        if (androidUser.isLoggedIn()) {
+            return 1L;
+        }
+        return ret;
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... progress) {
+        // setProgressPercent(progress[0]);
+    }
+
+    @Override
+    protected void onPostExecute(Long result) {
+        loginActivity.mDialog.dismiss();
+        if (result == 1) {
+            Toast.makeText(loginActivity, "Your login was correct.", Toast.LENGTH_LONG).show();
+            Intent mainScreen = new Intent(loginActivity, HomeScreen.class);
+            //TODO needed some parameters? mainScreen.putExtra("pressedButton", "house");
+            loginActivity.startActivity(mainScreen);
+        } else {
+            Toast.makeText(loginActivity, "Your login was NOT correct.", Toast.LENGTH_LONG).show();
+        }
+    }
+}
+
+
+
+/**
+ * The AsycTask for the server communication.
+ */
+class DoLoginRequest extends AsyncTask<String, Integer, Long> {
+
+    LoginActivity loginActivity;
+    Account account;
+
+    DoLoginRequest(LoginActivity loginActivity, Account account) {
+        this.loginActivity = loginActivity;
+        this.account = account;
+    }
+
+    @Override
+    protected Long doInBackground(String[] parameter) {
+        RIOTApiClient.getInstance().init(loginActivity, loginActivity.getString(R.string.DEVICE_NAME), account);
+        AndroidUser androidUser = new AndroidUser(loginActivity, account.name);
+
+        Long ret = 0L;
+        if (androidUser.isLoggedIn()) {
             return 1L;
         } else if (parameter.length == 2) {
-            try {
-                loginClient.login(parameter[0], parameter[1]);
-            } catch (RequestException e) {
-                //CHECKSTYLE:OFF
-                e.printStackTrace();
-            } catch (IOException e) {
-                //CHECKSTYLE:OFF
-                e.printStackTrace();
-            }
-            if (loginClient.isLoggedIn()) {
-                return 1L;
+            androidUser.logIn(parameter[0], parameter[1]);
+            if (androidUser.isLoggedIn()) {
+                ret += 1L;
             }
         }
-        return 0L;
+        return ret;
     }
 
     @Override
