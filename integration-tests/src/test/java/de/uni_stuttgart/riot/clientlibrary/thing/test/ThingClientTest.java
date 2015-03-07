@@ -7,6 +7,9 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
@@ -31,7 +34,7 @@ import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 
-@TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql", "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql" })
+@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
 public class ThingClientTest extends ShiroEnabledTest {
 
     @Before
@@ -178,6 +181,20 @@ public class ThingClientTest extends ShiroEnabledTest {
         thingClientYoda.share(1, 2, ThingPermission.READ);
         Thing thing = thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
         assertThat(thing.getName(), is("My Test Thing"));
+        
+        // check the permissions reported by the server
+        Map<Long, Set<ThingPermission>> permissions = thingClientYoda.getThingUserPermissions(1);
+        assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));
+        assertThat(permissions.get(2L), equalTo(EnumSet.of(ThingPermission.READ)));
+
+        // and unshare again
+        thingClientYoda.unshare(1, 2, ThingPermission.READ);
+        try {
+            thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
+            fail();
+        } catch (RequestException e) {
+            // exception expected, because R2D2 has not the right to read thing/1
+        }
     }
 
 }

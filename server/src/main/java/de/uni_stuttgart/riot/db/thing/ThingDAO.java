@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.sql2o.Connection;
@@ -322,24 +321,34 @@ public class ThingDAO implements DAO<Thing> {
             long thingID = resultSet.getLong("id");
             String typeName = resultSet.getString("type");
             String thingName = resultSet.getString("name");
-            Thing thing = ThingFactory.create(typeName, thingID, thingName, behaviorFactory);
+            ServerThingBehavior behavior = ThingFactory.create(typeName, thingID, thingName, behaviorFactory);
+            Thing thing = behavior.getThing();
             thing.setOwnerId(resultSet.getLong("ownerID"));
-            List<UnresolvedEntry> values;
 
+            // Fetch more information about the thing.
             try (Connection connection = getConnection()) {
+
+                // Its current property values.
                 String query = "SELECT name, val FROM propertyvalues WHERE thingID = :thingID";
                 try (Query stmt = connection.createQuery(query)) {
                     stmt.addParameter("thingID", thingID);
-                    values = stmt.executeAndFetch(UnresolvedEntry.class);
+                    for (UnresolvedEntry value : stmt.executeAndFetch(UnresolvedEntry.class)) {
+                        Property<?> property = thing.getProperty(value.name);
+                        if (property == null) {
+                            throw new SQLException("Database contains value for unknown property " + value.name);
+                        }
+                        ThingState.silentSetThingProperty(property, stringToValue(value.val, property.getValueType()));
+                    }
                 }
-            }
 
-            for (UnresolvedEntry value : values) {
-                Property<?> property = thing.getProperty(value.name);
-                if (property == null) {
-                    throw new SQLException("Database contains value for unknown property " + value.name);
+                // The user permissions for the thing.
+                String query2 = "SELECT * FROM things_users WHERE thingID = :thingID";
+                try (Query stmt = connection.createQuery(query2)) {
+                    stmt.addParameter("thingID", thingID);
+                    for (ThingUser thingUser : stmt.executeAndFetch(ThingUser.class)) {
+                        behavior.addUserPermission(thingUser.getUserID(), thingUser.getPermission());
+                    }
                 }
-                ThingState.silentSetThingProperty(property, stringToValue(value.val, property.getValueType()));
             }
 
             return thing;

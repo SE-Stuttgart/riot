@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +57,9 @@ public class ThingClient {
 
     private static final String GET_LAST_ONLINE_SUFFIX = "/online";
 
-    private static final String SHARE_THING = THINGS_PREFIX + "share";
+    private static final String POST_SHARE_SUFFIX = "/share";
+    private static final String POST_UNSHARE_SUFFIX = "/unshare";
+    private static final String GET_PERMISSIONS_SUFFIX = "/sharedWith";
 
     private static final long TEN_MIN = 1000 * 60 * 10;
     private static final long FIVE_MIN = 1000 * 60 * 5;
@@ -168,7 +173,7 @@ public class ThingClient {
         }
 
         // Create the thing itself.
-        Thing thing = ThingFactory.create(node.get("type").asText(), node.get("id").asLong(), node.get("name").asText(), behaviorFactory);
+        Thing thing = ThingFactory.create(node.get("type").asText(), node.get("id").asLong(), node.get("name").asText(), behaviorFactory).getThing();
 
         // Restore its state from the JSON object.
         // TODO We should be able to remove this part and replace it by ThingState?
@@ -416,13 +421,56 @@ public class ThingClient {
      *             the request exception
      */
     public void share(long thingID, long userID, ThingPermission permission) throws RequestException {
-        ShareRequest sr = new ShareRequest(userID, thingID, permission);
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + SHARE_THING, sr);
+        ShareRequest sr = new ShareRequest(userID, permission);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + thingID + POST_SHARE_SUFFIX, sr);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
             }
         } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
+
+    /**
+     * Unshare a thing with another user.
+     *
+     * @param thingID
+     *            the id of the thing to be shared
+     * @param userID
+     *            the id of the user to share with
+     * @param permission
+     *            the permission
+     * @throws RequestException
+     *             the request exception
+     */
+    public void unshare(long thingID, long userID, ThingPermission permission) throws RequestException {
+        ShareRequest sr = new ShareRequest(userID, permission);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + thingID + POST_UNSHARE_SUFFIX, sr);
+        try {
+            if (response.getEntity() != null) {
+                response.getEntity().consumeContent();
+            }
+        } catch (IOException e) {
+            throw new RequestException(e);
+        }
+    }
+
+    /**
+     * Gets all the users and their permissions for a given thing.
+     * 
+     * @param thingID
+     *            The id of the thing.
+     * @return A map where the keys are the users' ids and the values are sets of permissions that the respective user has.
+     * @throws RequestException
+     *             the request exception
+     */
+    public Map<Long, Set<ThingPermission>> getThingUserPermissions(long thingID) throws RequestException {
+        HttpResponse response = this.loginClient.get(this.loginClient.getServerUrl() + THINGS_PREFIX + thingID + GET_PERMISSIONS_SUFFIX);
+        try {
+            return this.loginClient.getJsonMapper().readValue(response.getEntity().getContent(), new TypeReference<Map<Long, Set<ThingPermission>>>() {
+            });
+        } catch (Exception e) {
             throw new RequestException(e);
         }
     }

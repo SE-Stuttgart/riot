@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS
+things_users,
 roles_permissions,
 tokens_roles,
 users_roles,

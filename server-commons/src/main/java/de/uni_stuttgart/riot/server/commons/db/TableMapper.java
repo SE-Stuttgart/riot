@@ -39,6 +39,8 @@ public class TableMapper {
             return "configuration";
         } else if (className.equals("UserPermission")) {
             return "users_permissions";
+        } else if (className.equals("ThingUser")) {
+            return "things_users";
         }
         return className;
     }

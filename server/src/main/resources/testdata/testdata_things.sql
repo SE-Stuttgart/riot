@@ -7,3 +7,7 @@ INSERT INTO things (id, type, ownerID, name) VALUES
 INSERT INTO propertyValues (thingID, name, val) VALUES
 (1, 'int', '42'),
 (1, 'readonlyString', 'String from Database');
+
+INSERT INTO things_users (id, thingID, userID, permission) VALUES
+(1, 1, 1, 'FULL'),
+(2, 2, 2, 'FULL');

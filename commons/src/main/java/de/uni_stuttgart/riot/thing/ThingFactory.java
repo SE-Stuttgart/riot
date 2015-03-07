@@ -107,7 +107,7 @@ public final class ThingFactory {
      * @return The new thing.
      */
     public static <B extends ThingBehavior, T extends Thing> T create(Class<T> thingType, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
-        return thingType.cast(create(thingType.getName(), thingID, thingName, behaviorFactory));
+        return thingType.cast(create(thingType.getName(), thingID, thingName, behaviorFactory).getThing());
     }
 
     /**
@@ -126,7 +126,7 @@ public final class ThingFactory {
      *            A factory that will produce the behavior for the new thing and that will be notified of the new thing.
      * @return The new thing.
      */
-    public static <B extends ThingBehavior> Thing create(String typeName, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
+    public static <B extends ThingBehavior> B create(String typeName, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
         Class<? extends Thing> thingClass = resolveType(typeName);
         B behavior = behaviorFactory.newBehavior(thingID, thingName, thingClass);
         Thing thing;
@@ -140,6 +140,6 @@ public final class ThingFactory {
 
         thing.setId(thingID);
         behaviorFactory.onThingCreated(thing, behavior);
-        return thing;
+        return behavior;
     }
 }

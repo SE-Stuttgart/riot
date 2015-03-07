@@ -4,14 +4,19 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
 /**
@@ -28,6 +33,7 @@ public class ServerThingBehavior extends ThingBehavior {
 
     private final Queue<ActionInstance> outstandingActions = new LinkedList<>();
     private final Queue<EventInstance> occuredEvents = new LinkedList<>();
+    private final Map<Long, Set<ThingPermission>> userPermissions = new HashMap<>();
     private Date lastConnection;
 
     /**
@@ -44,6 +50,64 @@ public class ServerThingBehavior extends ThingBehavior {
         // Transport the action to the executing thing.
         getActionFromInstance(actionInstance); // Just check if it's there.
         outstandingActions.add(actionInstance);
+    }
+
+    /**
+     * Adds the permission for the user. If it already exists, this will be ignored.
+     * 
+     * @param userId
+     *            The user id.
+     * @param permission
+     *            The permission.
+     */
+    public void addUserPermission(Long userId, ThingPermission permission) {
+        Set<ThingPermission> permissions = userPermissions.get(userId);
+        if (permissions == null) {
+            permissions = new HashSet<>();
+            userPermissions.put(userId, permissions);
+        }
+        permissions.add(permission);
+    }
+
+    /**
+     * Removes the permission for the user. If it does not exist, it will be ignored.
+     * 
+     * @param userId
+     *            The user id.
+     * @param permission
+     *            The permission.
+     */
+    public void removeUserPermission(Long userId, ThingPermission permission) {
+        Set<ThingPermission> permissions = userPermissions.get(userId);
+        if (permissions != null) {
+            permissions.remove(permission);
+            if (permissions.isEmpty()) {
+                userPermissions.remove(userId);
+            }
+        }
+    }
+
+    /**
+     * Determines if the given user has the given permission on this thing.
+     * 
+     * @param userId
+     *            The user id.
+     * @param permission
+     *            The permission to check for.
+     * @return True if the user has the permission (or the FULL permission), false otherwise.
+     */
+    public boolean canAccess(Long userId, ThingPermission permission) {
+        Set<ThingPermission> permissions = userPermissions.get(userId);
+        return (permissions == null) ? false : (permissions.contains(permission) || permissions.contains(ThingPermission.FULL));
+    }
+
+    /**
+     * Gets all current permissions on this thing.
+     * 
+     * @return The permissions.
+     */
+    public Map<Long, Set<ThingPermission>> getUserPermissions() {
+        return userPermissions;
     }
 
     /**

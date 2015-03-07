@@ -26,7 +26,7 @@ import de.uni_stuttgart.riot.thing.remote.ServerThingBehavior;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 
-@TestData({ "/schema/schema_things.sql", "/testdata/testdata_things.sql" })
+@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql" })
 public class ThingDBTest extends BaseDatabaseTest {
 
     /**

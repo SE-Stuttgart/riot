@@ -139,7 +139,8 @@ public class UserManagementFacade {
     }
 
     /**
-     * Delete an existing user.
+     * Delete an existing user. Whoever calls this method from an actual server service should remember to remove the user from all
+     * ServerThingBehaviors as well!
      * 
      * @param id
      *            Id of the user

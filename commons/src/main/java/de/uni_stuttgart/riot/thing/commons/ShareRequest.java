@@ -8,9 +8,6 @@ public class ShareRequest {
     /** The right. */
     private ThingPermission permission;
 
-    /** The thing id. */
-    private long thingId;
-
     /** The user id. */
     private long userId;
 
@@ -25,14 +22,11 @@ public class ShareRequest {
      *
      * @param userId
      *            the user
-     * @param thingId
-     *            the thing id
      * @param accessRight
      *            the right
      */
-    public ShareRequest(long userId, long thingId, ThingPermission accessRight) {
+    public ShareRequest(long userId, ThingPermission accessRight) {
         this.userId = userId;
-        this.thingId = thingId;
         this.permission = accessRight;
     }
 
@@ -43,15 +37,6 @@ public class ShareRequest {
      */
     public ThingPermission getPermission() {
         return permission;
-    }
-
-    /**
-     * Gets the thing id.
-     *
-     * @return the thing id
-     */
-    public long getThingId() {
-        return thingId;
     }
 
     /**

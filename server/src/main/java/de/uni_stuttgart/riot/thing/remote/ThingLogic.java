@@ -1,19 +1,23 @@
 package de.uni_stuttgart.riot.thing.remote;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.shiro.SecurityUtils;
-
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
+import de.uni_stuttgart.riot.db.thing.ThingUser;
+import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
+import de.uni_stuttgart.riot.server.commons.db.DAO;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
+import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -26,7 +30,6 @@ import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -38,6 +41,16 @@ public class ThingLogic {
      * Instance of the singleton pattern.
      */
     private static ThingLogic instance;
+
+    /**
+     * The User Management Facade.
+     */
+    private final UserManagementFacade umFacade = UserManagementFacade.getInstance();
+
+    /**
+     * The DAO for storing sharing information.
+     */
+    private final DAO<ThingUser> thingUserDAO = new ThingUserSqlQueryDAO();
 
     /**
      * Contains all known things. These need to be held in memory to allow for links like event listeners, etc. It is important to use a Map
@@ -134,20 +147,21 @@ public class ThingLogic {
     }
 
     /**
-     * Gets a stream of all things that the current user can access.
+     * Gets a stream of all things that a user can access.
      * 
+     * @param userId
+     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
      * @param permission
      *            The permission that the user must have for the things to be returned. If this is <tt>null</tt>, all things will be
      *            returned.
      * @return The matching things.
      */
-    private Stream<Thing> getThingStream(ThingPermission permission) {
+    private Stream<Thing> getThingStream(Long userId, ThingPermission permission) {
         if (permission == null) {
             return things.values().stream().map(ThingBehavior::getThing);
         } else {
-            return things.values().stream().map(ThingBehavior::getThing).filter((thing) -> {
-                return SecurityUtils.getSubject().isPermitted(permission.buildShiroPermission(thing.getId()));
-            });
+            long finalUserId = (userId == null) ? umFacade.getCurrentUserId() : userId;
+            return things.values().stream().filter((behavior) -> behavior.canAccess(finalUserId, permission)).map(ThingBehavior::getThing);
         }
     }
 
@@ -156,12 +170,14 @@ public class ThingLogic {
      * 
      * @param filter
      *            The filter.
+     * @param userId
+     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
      * @param requirePermission
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The things that match the filter.
      */
-    public Collection<Thing> findThings(FilteredRequest filter, ThingPermission requirePermission) {
-        Stream<Thing> stream = getThingStream(requirePermission);
+    public Collection<Thing> findThings(FilteredRequest filter, Long userId, ThingPermission requirePermission) {
+        Stream<Thing> stream = getThingStream(userId, requirePermission);
 
         if (!filter.getFilterAttributes().isEmpty()) {
             stream = stream.filter(thing -> {
@@ -203,12 +219,14 @@ public class ThingLogic {
      *            The offset (first index to be returned).
      * @param limit
      *            The number of things to be returned.
+     * @param userId
+     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
      * @param requirePermission
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The matching collection of things.
      */
-    public Collection<Thing> findThings(int offset, int limit, ThingPermission requirePermission) {
-        Stream<Thing> stream = getThingStream(requirePermission).skip(offset);
+    public Collection<Thing> findThings(int offset, int limit, Long userId, ThingPermission requirePermission) {
+        Stream<Thing> stream = getThingStream(userId, requirePermission).skip(offset);
         if (limit > 0) {
             stream = stream.limit(limit);
         }
@@ -218,12 +236,14 @@ public class ThingLogic {
     /**
      * Returns a collection of all known things.
      * 
+     * @param userId
+     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
      * @param requirePermission
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return All things.
      */
-    public Collection<Thing> getAllThings(ThingPermission requirePermission) {
-        return getThingStream(requirePermission).collect(Collectors.toList());
+    public Collection<Thing> getAllThings(Long userId, ThingPermission requirePermission) {
+        return getThingStream(userId, requirePermission).collect(Collectors.toList());
     }
 
     /**
@@ -243,8 +263,8 @@ public class ThingLogic {
     public synchronized Thing registerThing(String thingType, String thingName, long ownerId) throws DatasourceInsertException {
         try {
             // Note that the thing will be added to the things list by the behaviorFactory.
-            Thing thing = ThingFactory.create(thingType, 0, thingName, behaviorFactory);
-            ServerThingBehavior behavior = (ServerThingBehavior) thing.getBehavior();
+            ServerThingBehavior behavior = ThingFactory.create(thingType, 0, thingName, behaviorFactory);
+            Thing thing = behavior.getThing();
             thing.setOwnerId(ownerId);
             thingDAO.insert(thing);
             things.put(thing.getId(), behavior);
@@ -378,14 +398,70 @@ public class ThingLogic {
      * @param userId
      *            the user id
      * @param permission
-     *            the right
-     * @throws GetPermissionException
-     *             the get permission exception
+     *            the permission
+     * @throws DatasourceFindException
+     *             If the given thing does not exist.
      * @throws DatasourceInsertException
-     *             the datasource insert exception
+     *             When storing the new permission fails.
      */
-    public void share(long thingId, long userId, ThingPermission permission) throws GetPermissionException, DatasourceInsertException {
-        UserManagementFacade.getInstance().addNewPermissionToUser(userId, new Permission(permission.buildShiroPermission(thingId)));
+    public void share(long thingId, long userId, ThingPermission permission) throws DatasourceFindException, DatasourceInsertException {
+        getBehavior(thingId).addUserPermission(userId, permission);
+        thingUserDAO.insert(new ThingUser(thingId, userId, permission));
+    }
+
+    /**
+     * Revokes a thing access permission from a user.
+     *
+     * @param thingId
+     *            the thing id
+     * @param userId
+     *            The user id.
+     * @param permission
+     *            The permission to be deleted.
+     * @throws DatasourceFindException
+     *             If the given thing does not exist.
+     * @throws DatasourceDeleteException
+     *             When deleting the entry fails.
+     */
+    public void unshare(long thingId, long userId, ThingPermission permission) throws DatasourceFindException, DatasourceDeleteException {
+        getBehavior(thingId).removeUserPermission(userId, permission);
+        Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+        searchParams.add(new SearchParameter(SearchFields.THINGID, thingId));
+        searchParams.add(new SearchParameter(SearchFields.USERID, userId));
+        searchParams.add(new SearchParameter(SearchFields.THINGPERMISSION, permission));
+        for (ThingUser e : thingUserDAO.findBy(searchParams, false)) {
+            thingUserDAO.delete(e);
+        }
+    }
+
+    /**
+     * Determines if the given user has the right to access the given thing.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @param userId
+     *            The user id. If this is <tt>null</tt>, it will be replaced with the current user's id.
+     * @param permission
+     *            The permission to check for.
+     * @return True if the access is permitted, false otherwise.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     */
+    public boolean canAccess(long thingId, Long userId, ThingPermission permission) throws DatasourceFindException {
+        return getBehavior(thingId).canAccess(userId == null ? umFacade.getCurrentUserId() : userId, permission);
+    }
+
+    /**
+     * Gets the permissions of all users on the given thing.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @return A map where the keys are the user ids and the value is the set of permissions that the respective user has.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     */
+    public Map<Long, Set<ThingPermission>> getThingUserPermissions(long thingId) throws DatasourceFindException {
+        return getBehavior(thingId).getUserPermissions();
     }
 
 }
