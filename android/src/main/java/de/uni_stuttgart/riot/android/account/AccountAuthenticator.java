@@ -11,15 +11,18 @@ import android.os.Bundle;
 
 import de.uni_stuttgart.riot.android.HomeScreen;
 
-// CHECKSTYLE:OFF FIXME PLEASE FIX THE CHECKSTYLE ERRORS IN THIS FILE AND DONT COMMIT FILES THAN CONTAIN CHECKSTYLE ERRORS
-/*
+/**
  * Implement AbstractAccountAuthenticator and stub out all
- * of its methods
+ * of its methods.
  */
 public class AccountAuthenticator extends AbstractAccountAuthenticator {
     Context context;
 
-    // Simple constructor
+    /**
+     * Simple constructor.
+     * @param context
+     *              the android context.
+     */
     public AccountAuthenticator(Context context) {
         super(context);
         this.context = context;

@@ -24,10 +24,8 @@ import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.CalendarClient;
 import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
 import de.uni_stuttgart.riot.commons.rest.data.calendar.CalendarEntry;
 
-//CHECKSTYLE:OFF
-
 /**
- * SyncAdapter for periodical syncs of the calendar data
+ * SyncAdapter for periodical syncs of the calendar data.
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static final String TAG = "SyncAdapter";
@@ -36,7 +34,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     AndroidUser mAndroidUser;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param context
      *            the android context
@@ -47,12 +45,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
+     * createEventOnServer.
      * @param contentResolver
      *            the content resolver for data acces
      * @param entry
      *            the android calender entry which is transmited
      */
-    public void CreateEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
+    public void createEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
         try {
             CalendarEntry ret = mCalendarClient.createEvent(entry);
             if (ret.getId() > 0) {
@@ -60,17 +59,20 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 updateEventSyncID(contentResolver, entry);
             }
         } catch (RequestException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
     }
 
     /**
+     * updateEventOnServer.
      * @param contentResolver
      *            the content resolver for data acces
      * @param entry
      *            the android calender entry which is transmited
      */
-    public void UpdateEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
+    public void updateEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
         try {
             CalendarEntry ret = mCalendarClient.updateEvent(entry);
             if (ret.getId() > 0) {
@@ -78,29 +80,34 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 updateEventSyncID(contentResolver, entry);
             }
         } catch (RequestException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
     }
 
     /**
+     * deleteEventOnServer.
      * @param contentResolver
      *            the content resolver for data acces
      * @param entry
      *            the android calender entry which is transmited
      */
-    public void DeleteEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
+    public void deleteEventOnServer(ContentProviderClient contentResolver, AndroidCalendarEventEntry entry) {
         try {
             if (mCalendarClient.deleteEvent(entry)) {
                 entry.setDirty(false);
                 updateEventSyncID(contentResolver, entry);
             }
         } catch (RequestException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
     }
 
     /**
-     * This is needed cause the task is not allowd form the main thread
+     * This is needed cause the task is not allowd form the main thread.
      *
      */
     public class CalendarSyncTask extends AsyncTask<Void, Integer, Long> {
@@ -108,8 +115,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Account account;
         ContentProviderClient providerClient;
 
-        CalendarSyncTask(Account account, ContentProviderClient providerClient)
-        {
+        CalendarSyncTask(Account account, ContentProviderClient providerClient) {
             this.account = account;
             this.providerClient = providerClient;
         }
@@ -147,28 +153,32 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             cursor = contentResolver.query(Calendars.CONTENT_URI, (new String[] { BaseColumns._ID, Calendars.NAME, Calendars.ACCOUNT_TYPE, Calendars.ACCOUNT_NAME }), null, null, null);
         } catch (RemoteException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
 
         HashSet<Long> calendarIds = new HashSet<Long>();
         try {
-            System.out.println("Found #" + cursor.getCount() + " calendars");
+            Log.v("SyncAdapter", "Found #" + cursor.getCount() + " calendars");
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
 
-                    String _id = cursor.getString(0);
+                    String cId = cursor.getString(0);
                     String displayName = cursor.getString(1);
-                    String acc_type = cursor.getString(2);
-                    String acc_name = cursor.getString(3);
+                    String accType = cursor.getString(2);
+                    String accName = cursor.getString(3);
 
-                    System.out.println("Id: " + _id + " Display Name: " + displayName + " Acc: " + acc_type + " - " + acc_name);
-                    calendarIds.add(Long.valueOf(_id));
+                    Log.v("SyncAdapter", "Id: " + cId + " Display Name: " + displayName + " Acc: " + accType + " - " + accName);
+                    calendarIds.add(Long.valueOf(cId));
                 }
             }
         } catch (AssertionError ex) {
+            //CHECKSTYLE: OFF
             ex.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
         cursor.close();
         return calendarIds;
@@ -193,22 +203,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     // args
                     CalendarContract.Events.DTSTART + " ASC");
         } catch (RemoteException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
         return eventCursor;
     }
 
-    private boolean checkIfEventExists(ContentProviderClient contentResolver, long calendarId, long sync_id) {
+    private boolean checkIfEventExists(ContentProviderClient contentResolver, long calendarId, long syncId) {
         Account account = mAndroidUser.getAccount();
         Uri url = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).build();
         try {
             Cursor eventCursor = contentResolver.query(url, new String[] { BaseColumns._ID, CalendarContract.Events.DELETED }, // projection
                     CalendarContract.Events.CALENDAR_ID + " = ?" + CalendarContract.Events._SYNC_ID + " = ?", // selection
-                    new String[] { Long.toString(calendarId), Long.toString(sync_id) }, // selection args
+                    new String[] { Long.toString(calendarId), Long.toString(syncId) }, // selection args
                     null);
             return eventCursor.getCount() > 0;
         } catch (RemoteException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
         return false;
     }
@@ -224,21 +238,24 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentValues cv = new ContentValues();
         cv.put(CalendarContract.Events._SYNC_ID, entry.getId());
         cv.put(CalendarContract.Events.DIRTY, entry.isDirty());
-        String cs[] = new String[] { Long.toString(entry.getAndroid_id()) };
+        String[] cs = new String[] { Long.toString(entry.getAndroidId()) };
 
         Account account = mAndroidUser.getAccount();
         Uri calendarsURI = CalendarContract.Events.CONTENT_URI.buildUpon().appendQueryParameter(Calendars.ACCOUNT_NAME, account.name).appendQueryParameter(Calendars.ACCOUNT_TYPE, getContext().getString(R.string.ACCOUNT_TYPE)).appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true").build();
         try {
             int ret = contentResolver.update(calendarsURI, cv, BaseColumns._ID + " = ? ", cs);
-            Log.v(TAG, "Event id(" + entry.getAndroid_id() + ") updated sid:" + entry.getId() + " done:" + ret);
+            Log.v(TAG, "Event id(" + entry.getAndroidId() + ") updated sid:" + entry.getId() + " done:" + ret);
             return ret >= 1;
         } catch (RemoteException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
         return false;
     }
 
     /**
+     * syncCalendar syncs the complete calendar with the server using a two way sync.
      * @param contentResolver
      *            the content resolver for data acces
      */
@@ -246,25 +263,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Calendar cal = null;
         // For each calendar, display all the events from the previous week to
         // the end of next week.
-        for (Long calendar_id : getCalendarIds(contentResolver)) {
-            Log.d(TAG, "Get all events from calendar " + calendar_id);
+        for (Long calendarId : getCalendarIds(contentResolver)) {
+            Log.d(TAG, "Get all events from calendar " + calendarId);
 
-            Cursor eventCursor = getEvents(contentResolver, calendar_id);
+            Cursor eventCursor = getEvents(contentResolver, calendarId);
 
-            System.out.println("eventCursor count=" + eventCursor.getCount());
+            Log.v("SyncAdapter", "eventCursor count=" + eventCursor.getCount());
             for (eventCursor.moveToFirst(); !eventCursor.isAfterLast(); eventCursor.moveToNext()) {
                 AndroidCalendarEventEntry evt = new AndroidCalendarEventEntry(eventCursor);
 
                 // getId returns the id of the server, not of the local database
                 if ((evt.getId() == 0) && evt.isDirty()) {
                     Log.v(TAG, "Create on Server");
-                    CreateEventOnServer(contentResolver, evt);
+                    createEventOnServer(contentResolver, evt);
                 } else if ((evt.getId() > 0) && evt.isDirty()) {
                     Log.v(TAG, "Update on Server");
-                    UpdateEventOnServer(contentResolver, evt);
+                    updateEventOnServer(contentResolver, evt);
                 } else if ((evt.getId() > 0) && evt.isDeleted()) {
                     Log.v(TAG, "Delete on Server");
-                    DeleteEventOnServer(contentResolver, evt);
+                    deleteEventOnServer(contentResolver, evt);
                 } else {
                     Log.v(TAG, "Nothing to update");
                 }
@@ -274,10 +291,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 for (CalendarEntry entry : mCalendarClient.getEvents()) {
                     // search for id in local calendar database
-                    if (!checkIfEventExists(contentResolver, calendar_id, entry.getId())) {
+                    if (!checkIfEventExists(contentResolver, calendarId, entry.getId())) {
                         if (cal == null) {
                             Account account = mAndroidUser.getAccount();
-                            cal = new Calendar(account, contentResolver, calendar_id);
+                            cal = new Calendar(account, contentResolver, calendarId);
                         }
                         // create this event
                         AndroidCalendarEventEntry event = new AndroidCalendarEventEntry(entry);
@@ -285,7 +302,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
             } catch (RequestException e) {
+                //CHECKSTYLE: OFF
                 e.printStackTrace();
+                //CHECKSTYLE: ON
             }
         }
     }

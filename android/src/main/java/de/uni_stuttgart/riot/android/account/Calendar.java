@@ -13,14 +13,13 @@ import android.util.Log;
 
 import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
-
 /**
  * This class handles all calendar actions, creation of events, adding new calendars, changing the color and loading the calendar to an
- * given account
+ * given account.
  */
 public class Calendar {
     private static final String TAG = "Calendar";
+    private static final long DEFAULT_COLOUR = 0xFFC3EA6E;
     private long calendarId;
     private Account account;
     private ContentProviderClient client;
@@ -62,7 +61,7 @@ public class Calendar {
 
     /**
      * search for a calendar with the given name
-     * 
+     *
      * @param calendarName
      *            name of the calender
      * @return the id of the calendar, -1 if none found
@@ -87,9 +86,10 @@ public class Calendar {
     }
 
     /**
-     * change the color of the current calendar
-     * 
+     * change the color of the current calendar.
+     *
      * @param color
+     *          the color
      */
     public void changeColor(int color) {
         ContentValues values = new ContentValues();
@@ -98,13 +98,15 @@ public class Calendar {
         try {
             client.update(calendarsURI, values, "", null);
         } catch (RemoteException e) {
+            //CHECKSTYLE: OFF
             e.printStackTrace();
+            //CHECKSTYLE: ON
         }
     }
 
     /**
-     * create a new calendar with the name and title
-     * 
+     * create a new calendar with the name and title.
+     *
      * @param calendarName
      *            the internal name of the calendar
      * @param calendarTitle
@@ -117,7 +119,7 @@ public class Calendar {
         values.put(CalendarContract.Calendars.ACCOUNT_TYPE, account.type);
         values.put(CalendarContract.Calendars.NAME, calendarName);
         values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendarTitle);
-        values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0xFFC3EA6E);
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, DEFAULT_COLOUR);
         values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
         values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
         values.put(CalendarContract.Calendars.VISIBLE, 1);
@@ -164,8 +166,9 @@ public class Calendar {
      * @return The ID of the created event.
      */
     public long addEvent(String eventName, long dtstart) {
-        // default end is 2min after start
+        //CHECKSTYLE: OFF default end is 2min after start
         return addEvent(eventName, dtstart, java.util.Calendar.getInstance().getTimeInMillis() + 120000);
+        //CHECKSTYLE: ON
     }
 
     /**
@@ -206,8 +209,8 @@ public class Calendar {
     }
 
     /**
-     * creates a new event in the current calendar
-     * 
+     * creates a new event in the current calendar.
+     *
      * @param entry
      *            the androidEventEntry which is added
      * @return the id of the new event
