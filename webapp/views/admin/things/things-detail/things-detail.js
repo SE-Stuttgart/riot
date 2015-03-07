@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $state, $stateParams, Thing, User){
+angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $state, $stateParams, Thing, User, locale){
   var alertId = null;
 
   var init = function() {
@@ -46,8 +46,17 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
   };
   
   $scope.getSharedUsers = function() {
-    Thing.one($stateParams.thingid).getList('sharedwith').then(function(users) {
-      $scope.sharedUsers = users;
+    Thing.one($stateParams.thingid).getList('sharedWithUsers').then(function(userPermissions) {
+      $scope.sharedUserPermissions = [];
+      
+      angular.forEach(userPermissions, function(value) {
+        angular.forEach(value.value, function(permission) {
+          $scope.sharedUserPermissions.push({
+            user: value.key,
+            permission: permission
+          });
+        });
+      });
     });
   };
   
@@ -56,6 +65,40 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
     User.getList({limit: 1000, offset: 0}).then(function(users, u) {
       $scope.users = users;
       $scope.selectedUser = {}; //selectedUser must be set in order to update the select box, when the users array is modified
+      $scope.selectedRight = {};
+    });
+  };
+  
+  $scope.share = function(userId, right) {
+    if(right === locale.getString('thing.read')) {
+      right = 'READ';
+    } else if (right === locale.getString('thing.control')) {
+      right = 'CONTROL';
+    } else if (right === locale.getString('thing.execute')) {
+      right = 'EXECUTE';
+    } else if (right === locale.getString('thing.delete')) {
+      right = 'DELETE';
+    } else if (right === locale.getString('thing.share')) {
+      right = 'SHARE';
+    } else if (right === locale.getString('thing.full')) {
+      right = 'FULL';
+    }
+    
+    Thing.one($stateParams.thingid).post('share', {
+      userId: userId,
+      permission: right
+    }).then(function() {
+      $scope.getSharedUsers();
+    });
+    
+  };
+  
+  $scope.unshare = function(userId, right) {
+    Thing.one($stateParams.thingid).post('unshare', {
+      userId: userId,
+      permission: right.toUpperCase()
+    }).then(function() {
+      $scope.getSharedUsers();
     });
   };
 

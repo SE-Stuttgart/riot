@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
@@ -25,6 +26,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -38,9 +42,14 @@ import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.commons.ShareRequest;
+import de.uni_stuttgart.riot.thing.commons.ThingPermission;
+import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
+import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
  * The thing service will handle any access (create, read, update, delete) to the "things".
@@ -389,6 +398,25 @@ public class ThingService {
     public Map<Long, Set<ThingPermission>> sharedWith(@PathParam("id") long thingId) throws DatasourceFindException {
         assertPermitted(thingId, ThingPermission.SHARE);
         return this.logic.getThingUserPermissions(thingId);
+    }
+
+    /**
+     * Gets all the users and their permissions for a given thing. The result is a JSON object that contains full users as keys and arrays
+     * of their permissions as values.
+     *
+     * @param thingId
+     *            The id to request the permissions for.
+     * @return The permissions of users for the thing.
+     * @throws DatasourceFindException
+     *             the datasource find exception
+     * @throws GetUserException
+     *             the get user exception
+     */
+    @GET
+    @Path("{id}/sharedWithUsers")
+    public Collection<Entry<User, Set<ThingPermission>>> sharedWithUser(@PathParam("id") long thingId) throws DatasourceFindException, GetUserException {
+        assertPermitted(thingId, ThingPermission.SHARE);
+        return this.logic.getThingUserPermissionsFullUser(thingId);
     }
 
     /**

@@ -76,28 +76,28 @@
 
     <div class="form-horizontal">
       <!-- Sharing -->
-      <h3><strong>Sharing</strong></h3>
+      <h3><strong>{{ 'thing.sharing' | i18n }}</strong></h3>
       <div class="form-group">
         <div class="col-md-10">
           <div class="row list-group-item">
             <div class="col-md-6">
-              <select selectpicker class="form-control" data-live-search="true" title='Choose a user...'
+              <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareUser' | i18n }}"
                 ng-options="u.username for u in users"
                 ng-model="selectedUser">
               </select>
             </div>
             <div class="col-md-5">
-              <select selectpicker class="form-control" data-live-search="true">
-                <option>Read</option>
-                <option>Control</option>
-                <option>Execute</option>
-                <option>Delete</option>
-                <option>Share</option>
-                <option>Full</option>
+              <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareRight' | i18n }}" ng-model="selectedRight">
+                <option>{{ 'thing.read' | i18n }}</option>
+                <option>{{ 'thing.control' | i18n }}</option>
+                <option>{{ 'thing.execute' | i18n }}</option>
+                <option>{{ 'thing.delete' | i18n }}</option>
+                <option>{{ 'thing.share' | i18n }}</option>
+                <option>{{ 'thing.full' | i18n }}</option>
               </select>            
             </div>
             <div class="col-md-1">
-              <button class="btn btn-success"><strong>+</strong></button>
+              <button class="btn btn-success" ng-click="share(selectedUser.id, selectedRight)"><strong>+</strong></button>
             </div>
           </div>
         </div>
@@ -139,16 +139,16 @@
         <table class="table table-striped table-bordered table-hover">
           <thead>
             <tr role="row">
-              <th>User</th>
-              <th style="width: 100px;">Right</th>
-              <th style="width: 50px;">Actions</th>
+              <th>{{ 'user.user' | i18n }}</th>
+              <th style="width: 150px;">{{ 'user.permission' | i18n }}</th>
+              <th style="width: 50px;">{{ 'common.action' | i18n }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="user in sharedUsers">
-              <td>{{user.username}}</td>
-              <td>{{user.email}}</td>
-              <td><button class="btn btn-danger" style="margin-left: 9px;"><strong>X</strong></button></td>
+            <tr ng-repeat="userPerm in sharedUserPermissions">
+                <td>{{ userPerm.user.username }}</td>
+                <td>{{ 'thing.' + userPerm.permission | lowercase | i18n }}</td>
+                <td><button class="btn btn-danger btn-xs" style="margin-left: 9px;" ng-click="unshare(userPerm.user.id, userPerm.permission)"><strong>X</strong></button></td>
             </tr>
           </tbody>
         </table>

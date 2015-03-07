@@ -1,9 +1,11 @@
 package de.uni_stuttgart.riot.thing.remote;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -12,6 +14,7 @@ import java.util.stream.Stream;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
 import de.uni_stuttgart.riot.db.thing.ThingUser;
 import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
@@ -30,6 +33,7 @@ import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -464,4 +468,26 @@ public class ThingLogic {
         return getBehavior(thingId).getUserPermissions();
     }
 
+    /**
+     * Gets the permissions of all users on the given thing.
+     *
+     * @param thingId
+     *            The thing id.
+     * @return A map where the keys are the users and the value is the set of permissions that the respective user has.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     * @throws GetUserException
+     *             the get user exception
+     */
+    public Collection<Entry<User, Set<ThingPermission>>> getThingUserPermissionsFullUser(long thingId) throws DatasourceFindException, GetUserException {
+        Map<Long, Set<ThingPermission>> ups = getBehavior(thingId).getUserPermissions();
+        Collection<Entry<User, Set<ThingPermission>>> upsFull = new ArrayList<>();
+
+        for (Entry<Long, Set<ThingPermission>> upsEntry : ups.entrySet()) {
+            User user = umFacade.getUser(upsEntry.getKey());
+            upsFull.add(new AbstractMap.SimpleEntry<User, Set<ThingPermission>>(user, upsEntry.getValue()));
+        }
+
+        return upsFull;
+    }
 }
