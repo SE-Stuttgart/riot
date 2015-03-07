@@ -3,6 +3,7 @@
 Url | Method | Description
 ----|--------|------------
 [/users](#get-all-users) | GET | Get all users
+[/users/self/] (#get-current-user) | GET | Get current logged in user
 [/users/\{userID\}](#get-user) | GET | Get user
 [/users](#add-new-user) | PUT | Add new user
 [/users/\{userID\}](#edit-user) | PUT | Edit user
