@@ -81,10 +81,11 @@
         <div class="col-md-10">
           <div class="row list-group-item">
             <div class="col-md-6">
-              <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareUser' | i18n }}"
-                ng-options="u.username for u in users"
-                ng-model="selectedUser">
-              </select>
+<!--               <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareUser' | i18n }}" -->
+<!--                 ng-options="u.username for u in users" -->
+<!--                 ng-model="selectedUser"> -->
+<!--               </select> -->
+              <button class="btn btn-default form-control" ng-click="openSelectUserModal()">{{ selectedUser.username }}</button>
             </div>
             <div class="col-md-5">
               <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareRight' | i18n }}" ng-model="selectedRight">
@@ -104,68 +105,87 @@
       </div>
       
         <!-- table -->
-        <div class="row">
-  <div class="col-md-10 list-group-item">
-    <button class="btn btn-default list-collapse-button" type="button" data-toggle="collapse" data-target=".list-options" aria-expanded="false">
-      <span class="fa fa-bars"></span>
-    </button>
+      <div class="row">
+        <div class="col-md-10 list-group-item">
+          <button class="btn btn-default list-collapse-button"
+            type="button" data-toggle="collapse"
+            data-target=".list-options" aria-expanded="false">
+            <span class="fa fa-bars"></span>
+          </button>
 
-    <!-- table header -->
-    <div class="row form-inline list-options margin-top-10">
-      <div class="col-sm-6">
-        <div class="input-group input-limit">
-          <input type="text" class="form-control" ng-model="limit">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-              <li><a ng-click="limit=10" href="">10</a></li>
-              <li><a ng-click="limit=20" href="">20</a></li>
-              <li><a ng-click="limit=50" href="">50</a></li>
-              <li><a ng-click="limit=100" href="">100</a></li>
-            </ul>
+          <!-- table header -->
+<!--           <div class="row form-inline list-options margin-top-10">
+            <div class="col-sm-6">
+              <div class="input-group input-limit">
+                <input type="text" class="form-control" ng-model="limit">
+                <div class="input-group-btn">
+                  <button type="button"
+                    class="btn btn-default dropdown-toggle"
+                    data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right"
+                    role="menu">
+                    <li><a ng-click="limit=10" href="">10</a></li>
+                    <li><a ng-click="limit=20" href="">20</a></li>
+                    <li><a ng-click="limit=50" href="">50</a></li>
+                    <li><a ng-click="limit=100" href="">100</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <input id="listFilter" type="search"
+                class="form-control pull-right" placeholder="Filter"
+                ng-model="filter">
+            </div>
+          </div> -->
+
+          <!-- table content -->
+          <div class="table-list margin-top-10">
+            <div class="table-responsive">
+              <table
+                class="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr role="row">
+                    <th>{{ 'user.user' | i18n }}</th>
+                    <th style="width: 150px;">{{ 'user.permission'
+                      | i18n }}</th>
+                    <th style="width: 50px;">{{ 'common.action' |
+                      i18n }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="userPerm in sharedUserPermissions">
+                    <td>{{ userPerm.user.username }}</td>
+                    <td>{{ 'thing.' + userPerm.permission |
+                      lowercase | i18n }}</td>
+                    <td><button class="btn btn-danger btn-xs"
+                        style="margin-left: 9px;"
+                        ng-click="unshare(userPerm.user.id, userPerm.permission)">
+                        <strong>X</strong>
+                      </button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          <!-- table footer
+          <div class="row">
+            <div class="col-sm-6">
+              <div>{{ 'common.showing' | i18n }} {{(current - 1) *
+                limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) *
+                limit + things.length}} {{ 'common.of' | i18n }}
+                {{total}} {{ 'common.entries' | i18n }}</div>
+            </div>
+            <div class="col-sm-12 text-center">
+              <pagination ng-model="current" items-per-page="limit"
+                total-items="total" ng-change="getThings()"></pagination>
+            </div>
+          </div> -->
         </div>
       </div>
-      <div class="col-sm-6">
-        <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="filter">
-      </div>
-    </div>
-
-    <!-- table content -->
-    <div class="table-list margin-top-10">
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead>
-            <tr role="row">
-              <th>{{ 'user.user' | i18n }}</th>
-              <th style="width: 150px;">{{ 'user.permission' | i18n }}</th>
-              <th style="width: 50px;">{{ 'common.action' | i18n }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="userPerm in sharedUserPermissions">
-                <td>{{ userPerm.user.username }}</td>
-                <td>{{ 'thing.' + userPerm.permission | lowercase | i18n }}</td>
-                <td><button class="btn btn-danger btn-xs" style="margin-left: 9px;" ng-click="unshare(userPerm.user.id, userPerm.permission)"><strong>X</strong></button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- table footer -->
-    <div class="row">
-      <div class="col-sm-6">
-        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + things.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
-      </div>
-      <div class="col-sm-12 text-center">
-        <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getThings()"></pagination>
-      </div>
-    </div>
-  </div>
-  </div>
       
     </div>
 

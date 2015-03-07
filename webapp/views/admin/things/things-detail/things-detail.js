@@ -5,12 +5,22 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $state, $stateParams, Thing, User, locale){
+angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $state, $stateParams, $modal, Thing, User, locale){
   var alertId = null;
 
   var init = function() {
     $scope.users = [];
-    $scope.selectedUser = {};
+    $scope.limit = 10;
+    $scope.current = 1;
+    
+    locale.ready('thing').then(function () {
+      $scope.selectedUser = {};
+      $scope.selectedUser.username = locale.getString('thing.chooseShareUser');
+      
+      //selectedRight must be set after the locale service has initialized, in order to 
+      //force the select box with the permissions to update
+      $scope.selectedRight = {}; 
+    });
     
     $scope.getThing();
     $scope.getUsers();
@@ -62,11 +72,11 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
   
   $scope.getUsers = function() {
     //TODO would it be feasible to get all users?
-    User.getList({limit: 1000, offset: 0}).then(function(users, u) {
-      $scope.users = users;
-      $scope.selectedUser = {}; //selectedUser must be set in order to update the select box, when the users array is modified
-      $scope.selectedRight = {};
-    });
+//    User.getList({limit: 1000, offset: 0}).then(function(users, u) {
+//      $scope.users = users;
+//      $scope.selectedUser = {}; //selectedUser must be set in order to update the select box, when the users array is modified
+//      $scope.selectedRight = {};
+//    });
   };
   
   $scope.share = function(userId, right) {
@@ -99,6 +109,18 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
       permission: right.toUpperCase()
     }).then(function() {
       $scope.getSharedUsers();
+    });
+  };
+  
+  $scope.openSelectUserModal = function() {
+    var modalInstance = $modal.open({
+      templateUrl: 'views/admin/things/things-detail/select-user-modal/select-user-modal.html',
+      controller: 'SelectUserModalCtrl',
+      size: 'lg'
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      $scope.selectedUser = selectedItem;
     });
   };
 
