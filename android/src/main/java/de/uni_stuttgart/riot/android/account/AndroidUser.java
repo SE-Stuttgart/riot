@@ -209,8 +209,7 @@ public class AndroidUser {
      */
     public boolean isLoggedIn() {
         try {
-            Log.v("AndroidUser", "url:"+loginClient.getServerUrl()+"/api/v1/permissions/");
-            HttpResponse res = loginClient.get(loginClient.getServerUrl()+"/api/v1/permissions/");
+            HttpResponse res = loginClient.get(loginClient.getServerUrl()+"/api/v1/users/self/");
             return res.getStatusLine().getStatusCode() == 200;
         } catch (RequestException e) {
             e.printStackTrace();
