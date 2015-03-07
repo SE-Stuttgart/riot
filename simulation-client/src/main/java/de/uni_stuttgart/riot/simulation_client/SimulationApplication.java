@@ -20,6 +20,8 @@ import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import javafx.application.Application;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -53,11 +55,26 @@ public class SimulationApplication extends Application {
     public void start(Stage primaryStage) throws Exception { // NOCS (Ignore path complexity, it is irrelevant here)
 
         // Check and load the settings.
+        File configurationFile;
         if (getParameters().getRaw().isEmpty()) {
-            logger.error("Please specify the configuration file name as the first parameter!");
-            System.exit(1);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new ExtensionFilter("Simulation Properties File", "*.properties"));
+            fileChooser.setTitle("Please choose a settings file");
+            File resourcesFolder = new File("src/main/resources");
+            if (resourcesFolder.exists()) {
+                fileChooser.setInitialDirectory(resourcesFolder);
+            } else {
+                fileChooser.setInitialDirectory(new File("."));
+            }
+            configurationFile = fileChooser.showOpenDialog(primaryStage);
+            if (configurationFile == null) {
+                logger.info("No file selected, aborting");
+                System.exit(0);
+                return;
+            }
+        } else {
+            configurationFile = new File(getParameters().getRaw().get(0));
         }
-        File configurationFile = new File(getParameters().getRaw().get(0));
         if (!configurationFile.exists() || !configurationFile.isFile() || !configurationFile.canWrite()) {
             logger.error("The specified configuration file {} does not exist or is not writable!", configurationFile);
             logger.info("Path is {}", new File(".").getAbsolutePath());

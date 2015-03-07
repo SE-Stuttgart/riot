@@ -76,6 +76,8 @@ public class SimulationWindow extends Stage {
         TitledPane actionsHistoryPane = new TitledPane("Actions History", produceActionsHistoryPane());
         TitledPane fireEventsPane = new TitledPane("Fire events", produceFireEventsPane());
         statePane.setCollapsible(false);
+        actionsHistoryPane.setCollapsible(false);
+        fireEventsPane.setCollapsible(false);
 
         HBox container = new HBox(INNER_SPACING, statePane, actionsHistoryPane, fireEventsPane);
         container.setPadding(new Insets(OUTER_PADDING));
