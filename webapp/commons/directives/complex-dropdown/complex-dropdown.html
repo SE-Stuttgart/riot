@@ -15,8 +15,8 @@
         </span>
       </div>
     </li>
-    <li ng-repeat="data in options.data">
-      <a href="" ng-click="options.selection=data">{{options.toString(data)}}</a>
+    <li ng-repeat="data in options.data" ng-class="{'disabled': isDisabled(data)}">
+      <a href="" ng-click="!isDisabled(data) && (options.selection=data)">{{options.toString(data)}}</a>
     </li>
     <li ng-if="options.pagination" ng-click="$event.stopPropagation();">
       <div class="pagination-info">

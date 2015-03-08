@@ -18,6 +18,7 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $state, $sta
         total: 0
       },
       filter: null,
+      disabled: [],
       update: $scope.getPermissions,
       toString: function(dataEntry) {
         return dataEntry['permissionValue'];
@@ -43,6 +44,7 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $state, $sta
 
     Role.one($stateParams.roleid).get().then(function(role) {
       $scope.roleDetail = role;
+      $scope.permissions.disabled = role.permissions;
     });
   };
 

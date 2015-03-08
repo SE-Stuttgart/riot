@@ -12,6 +12,8 @@
 
     - filter      [Object]      TODO
 
+    - disabled    [Array]       List of data entries which will be disabled in the dropdown
+
     - update      [Function]    A function which will be called when the current page changes
                                 You should request the new data entries from the server according to the limit and
                                 offset values and update the total data entries
@@ -29,6 +31,18 @@ angular.module('riot').directive('complexDropdown', function() {
     controller: function($scope) {
       var init = function() {
         $scope.options.update();
+      };
+
+      $scope.isDisabled = function(dataEntry) {
+        if ($scope.options.disabled) {
+          for (var i = 0; i < $scope.options.disabled.length; i++) {
+            if ($scope.options.disabled[i].id == dataEntry.id) {
+              return true;
+            }
+          }
+        }
+
+        return false;
       };
 
       init();

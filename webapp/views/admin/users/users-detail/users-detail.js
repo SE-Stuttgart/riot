@@ -18,6 +18,7 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
         total: 0
       },
       filter: null,
+      disabled: [],
       update: $scope.getRoles,
       toString: function(dataEntry) {
         return dataEntry['roleName'];
@@ -46,6 +47,7 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
       user.password1 = '';
       user.password2 = '';
       $scope.userDetail = user;
+      $scope.roles.disabled = user.roles;
     });
   };
 
