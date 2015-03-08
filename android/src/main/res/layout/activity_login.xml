@@ -1,24 +1,21 @@
-
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-
-    <LinearLayout
-        android:id="@+id/login_content_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_content_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/acc_username"/>
+        android:text="@string/acc_username" />
 
     <EditText
+        android:id="@+id/acc_edit_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/acc_edit_username" />
+        android:inputType="textEmailAddress" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,20 +23,65 @@
         android:text="@string/acc_password" />
 
     <EditText
+        android:id="@+id/acc_edit_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/acc_edit_password" />
+        android:inputType="textPassword" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <CheckBox
+        android:id="@+id/acc_chk_connection_settings"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/acc_login"
-        android:id="@+id/btn_add_acc"
-        android:layout_gravity="center_horizontal" />
+        android:text="@string/acc_connection_settings" />
 
+    <LinearLayout
+        android:id="@+id/acc_pnl_connection_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/acc_host" />
+
+        <EditText
+            android:id="@+id/acc_edit_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/acc_port" />
+
+        <EditText
+            android:id="@+id/acc_edit_port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/acc_path" />
+
+        <EditText
+            android:id="@+id/acc_edit_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_add_acc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/acc_login" />
 
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>

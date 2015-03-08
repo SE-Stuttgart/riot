@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.account;
+package de.uni_stuttgart.riot.android.calendar;
 
 import android.app.Service;
 import android.content.Intent;
@@ -6,34 +6,38 @@ import android.os.IBinder;
 import android.util.Log;
 
 /**
- * The service responsible for syncing with the server.
+ * The service responsible for syncing the calendar data with the server.
  */
-public class SyncService extends Service {
-    private static final String TAG = "SyncService";
+public class CalendarSyncService extends Service {
 
-    private static SyncAdapter syncAdapter;
+    /**
+     * The synchronization frequency of the calendar in seconds.
+     */
+    public static final int SYNC_FREQUENCY = 1800;
+
+    private static final String TAG = "CalendarSyncService";
+
+    private static CalendarSyncAdapter syncAdapter;
 
     /**
      * Thread-safe constructor, creates static {@link SyncAdapter} instance.
      */
     @Override
     public void onCreate() {
-        // super.onCreate();
         Log.i(TAG, "Service created");
-        synchronized (SyncService.class) {
+        synchronized (CalendarSyncService.class) {
             if (syncAdapter == null) {
-                syncAdapter = new SyncAdapter(getApplicationContext());
+                syncAdapter = new CalendarSyncAdapter(getApplicationContext());
                 Log.i(TAG, "New syncAdapter created");
             }
         }
     }
 
-    @Override
     /**
      * Logging-only destructor.
      */
+    @Override
     public void onDestroy() {
-        // super.onDestroy();
         syncAdapter = null;
         Log.i(TAG, "Service destroyed");
     }

@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.account;
+package de.uni_stuttgart.riot.android;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

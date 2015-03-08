@@ -1,6 +1,8 @@
-package de.uni_stuttgart.riot.android.account;
+package de.uni_stuttgart.riot.android.calendar;
 
+import de.uni_stuttgart.riot.android.account.AuthConstants;
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,16 +11,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * This class receives calder change events. So if the user changes something with the default calendar app we will be notified.
+ * This class receives calendar change events. So if the user changes something with the default calendar app we will be notified.
  */
 public class CalendarChangedReceiver extends BroadcastReceiver {
+
     private static final String TAG = "CalendarChangedReceiver";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context, android.content.Intent)
-     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "calendar changed! " + intent.toUri(Intent.URI_INTENT_SCHEME));
@@ -28,10 +26,10 @@ public class CalendarChangedReceiver extends BroadcastReceiver {
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 
-        Account[] acc = AndroidUser.getAccounts(context);
-        if (acc != null) {
-            //TODO figure out how we can get the correct account associated with this change event, until then just take the first account
-            ContentResolver.requestSync(acc[0], acc[0].name, settingsBundle);
+        Account[] accounts = AccountManager.get(context).getAccountsByType(AuthConstants.ACCOUNT_TYPE);
+        // TODO figure out how we can get the correct account associated with this change event, until then just sync all of them
+        for (Account account : accounts) {
+            ContentResolver.requestSync(account, account.name, settingsBundle);
         }
     }
 }

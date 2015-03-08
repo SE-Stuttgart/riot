@@ -13,7 +13,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
-import de.uni_stuttgart.riot.android.communication.ServerConnection;
+import de.uni_stuttgart.riot.android.communication.NotificationServerConnection;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.messages.IM;
@@ -75,7 +75,7 @@ public class NotificationScreen extends Activity {
 
         if (isNetworkAvailable()) {
             // get the latest Notifications
-            new ServerConnection(this, database).execute();
+            new NotificationServerConnection(this, database).execute();
         } else {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
         }
@@ -146,7 +146,7 @@ public class NotificationScreen extends Activity {
             database.setFilter(new FilterItem(3, item, NotificationType.WARNING, false));
             return true;
         case R.id.action_refresh:
-            new ServerConnection(this, database).execute();
+            new NotificationServerConnection(this, database).execute();
             return true;
         case android.R.id.home:
             onBackPressed();

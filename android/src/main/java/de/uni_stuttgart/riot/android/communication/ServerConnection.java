@@ -1,73 +1,113 @@
 package de.uni_stuttgart.riot.android.communication;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
 
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.clientlibrary.UnauthenticatedException;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
-import de.uni_stuttgart.riot.android.NotificationScreen;
-import de.uni_stuttgart.riot.android.database.RIOTDatabase;
-import de.uni_stuttgart.riot.android.notification.Notification;
-import de.uni_stuttgart.riot.android.notification.NotificationType;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
-public class ServerConnection extends AsyncTask<Void, Void, List<Notification>> {
+/**
+ * Helper class for executing asynchronous requests to the server on Android.
+ * 
+ * @author Philipp Keck
+ * @param <T>
+ *            The type of the result, may be {@link Void}.
+ */
+public abstract class ServerConnection<T> extends AsyncTask<Void, Void, T> {
 
-    private NotificationScreen notificationScreen;
-    private RIOTDatabase database;
-    private Notification testNotification;
-    private List<Notification> notificationList = new ArrayList<Notification>();
-
-    public ServerConnection(NotificationScreen notificationScreen, RIOTDatabase database) {
-        this.notificationScreen = notificationScreen;
-        this.database = database;
-    }
+    private IOException ioException;
+    private UnauthenticatedException unauthenticatedException;
 
     @Override
-    protected List<Notification> doInBackground(Void... params) {
+    protected final T doInBackground(Void... params) {
+        ioException = null;
+        unauthenticatedException = null;
         try {
-            final String url = "http://rest-service.guides.spring.io/greeting";
-            RestTemplate restTemplate = new RestTemplate();
-
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            testNotification = restTemplate.getForObject(url, Notification.class);
-
-            if (testNotification == null) {
-                Toast.makeText(notificationScreen, "Server Connection Error", 5).show();
-            } else {
-
-                Notification n1 = new Notification(1, "FIRE!!!", "Call 112", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "House");
-                notificationList.add(n1);
-                Notification n2 = new Notification(2, "Refill water", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "Coffee");
-                notificationList.add(n2);
-                Notification n3 = new Notification(3, "Refill beans", "", NotificationType.ERROR, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "Coffee");
-                notificationList.add(n3);
-                Notification n4 = new Notification(4, "Buy some food", "Bananas, Beer, Butter", NotificationType.WARNING, new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), "House");
-                notificationList.add(n4);
-                Notification n5 = new Notification(5, "Refuel car", "", NotificationType.WARNING, new SimpleDateFormat("K:mm a, E d.MMM, yyyy").format(new Date()), "Car");
-                notificationList.add(n5);
-
-                return notificationList;
-            }
-
-        } catch (HttpClientErrorException e) {
-            Log.e("MainActivity", e.getMessage(), e);
+            ServerConnector serverConnector = AndroidConnectionProvider.getConnector(getContext());
+            return executeRequest(serverConnector);
+        } catch (IOException e) {
+            ioException = e;
+            return null;
+        } catch (UnauthenticatedException e) {
+            unauthenticatedException = e;
+            return null;
+        } catch (HandledAuthenticationException e) {
+            // There is an authentication problem, but it is already being handled.
+            // This request will not be able to complete. So just abort it.
+            abortTask();
+            return null;
+        } catch (RequestException e) {
+            // This really shouldn't happen.
+            throw new RuntimeException(e);
         }
 
-        return null;
     }
 
     @Override
-    protected void onPostExecute(List<Notification> notificationList) {
-        database.updateNotificationEntries(notificationList);
-        database.filterNotifications();
+    protected final void onPostExecute(T result) {
+        if (ioException != null) {
+            handleNetworkError(ioException);
+            ioException = null;
+        } else if (unauthenticatedException != null) {
+            handleAuthenticationError(unauthenticatedException);
+            unauthenticatedException = null;
+        } else {
+            onSuccess(result);
+        }
     }
+
+    /**
+     * Aborts the task and tries to close the caller (e.g. an activity) of the task.
+     */
+    protected void abortTask() {
+        cancel(false);
+    }
+
+    /**
+     * Gets the context.
+     * 
+     * @return The context for the request.
+     */
+    protected abstract Context getContext();
+
+    /**
+     * Handles a network error that occured, probably by refreshing the connection information in the connector or by simply aborting the
+     * operation.
+     * 
+     * @param e
+     *            The error.
+     */
+    protected abstract void handleNetworkError(IOException e);
+
+    /**
+     * Handles an authentication error that occurred, probably by re-logging in the connector or by simply aborting the operation.
+     * 
+     * @param e
+     *            The error.
+     */
+    protected abstract void handleAuthenticationError(UnauthenticatedException e);
+
+    /**
+     * Executes the actual request.
+     * 
+     * @param serverConnector
+     *            The server connector for communication.
+     * @return The request result.
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     */
+    protected abstract T executeRequest(ServerConnector serverConnector) throws IOException, RequestException;
+
+    /**
+     * This will be called on the UI thread to work with the result.
+     * 
+     * @param result
+     *            The result of the request.
+     */
+    protected abstract void onSuccess(T result);
 
 }

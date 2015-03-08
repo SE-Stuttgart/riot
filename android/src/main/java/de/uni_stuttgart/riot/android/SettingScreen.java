@@ -3,29 +3,20 @@ package de.uni_stuttgart.riot.android;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentProviderClient;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.account.AndroidUser;
-import de.uni_stuttgart.riot.android.account.Calendar;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
 
 /**
  * Setting screen.
- *
- *
- *
  */
 public class SettingScreen extends Activity {
 
@@ -77,16 +68,16 @@ public class SettingScreen extends Activity {
             }
         });
 
-        final ColorPicker picker = new ColorPicker(getApplicationContext(),
-                new ColorPicker.OnColorChangedListener() {
-                    @Override
-                    public void colorChanged(int color) {
-                        Log.v("RIOT", "Color:" + color);
-                        //ContentProviderClient client = SettingScreen.this.getContentResolver().acquireContentProviderClient(CalendarContract.Calendars.CONTENT_URI);
-                        //Calendar cal = new Calendar(AndroidUser.getAccount(SettingScreen.this.getApplicationContext()), client, "RIOT");
-                        //cal.changeColor(color);
-                    }
-                }, 0x000000);
+        final ColorPicker picker = new ColorPicker(getApplicationContext(), new ColorPicker.OnColorChangedListener() {
+            @Override
+            public void colorChanged(int color) {
+                Log.v("RIOT", "Color:" + color);
+                // ContentProviderClient client =
+                // SettingScreen.this.getContentResolver().acquireContentProviderClient(CalendarContract.Calendars.CONTENT_URI);
+                // Calendar cal = new Calendar(AndroidUser.getAccount(SettingScreen.this.getApplicationContext()), client, "RIOT");
+                // cal.changeColor(color);
+            }
+        }, 0x000000);
         btnColorCalendar = (Button) findViewById(R.id.btnColor);
         btnColorCalendar.setOnClickListener(new OnClickListener() {
             @Override

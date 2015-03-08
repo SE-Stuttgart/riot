@@ -10,10 +10,19 @@
     <string name="filter_error">Errors</string>
     <string name="filter_warning">Warnings</string>
 
+    <!-- Login -->
+    <string name="loading">Loading&#8230;</string>
+    <string name="login_incorrect">Your login was NOT correct.</string>
+    <string name="login_correct">Your login was correct.</string>
+    <string name="login_missing_settings">Please insert all of the connection settings.</string>
+    <string name="login_missing_credentials">Please insert username and password.</string>
+    <string name="login_invalid_port">The port number is invalid.</string>
+    <string name="login_network_error">Network error during login.</string>
+
     <!-- Settings (all entries for language please insert here) -->
     <string name="language">Language</string>
     <string name="changeLanguage">Change language</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="color">Calendar color</string>
     <string name="changeColor">Change color</string>
@@ -22,6 +31,10 @@
     <string name="acc_login">Login</string>
     <string name="acc_username">Username:</string>
     <string name="acc_password">Password:</string>
+    <string name="acc_connection_settings">Display connection settings</string>
+    <string name="acc_host">Host:</string>
+    <string name="acc_port">Port:</string>
+    <string name="acc_path">Path:</string>
     <string name="user_role">User-Role:</string>
     <string name="user_permission">User-Permissions:</string>
     <string name="user_edit">Edit User</string>
@@ -41,8 +54,6 @@
     <string name="location_distance">Distance from current position to</string>
     <string name="location_store_distance">Notify within a range of</string>
     <string name="change_color">Change Color</string>
-    <string name="ACCOUNT_TYPE">de.uni_stuttgart.riot.android.account.type</string>
-    <string name="ACCOUNT_SYNC_FREQ">1800</string>
     <string name="DEVICE_NAME">AndroidPhone</string>
 
     <!-- Notification (all entries for language please insert here) -->
@@ -53,6 +64,7 @@
         <item>low</item>
         <item>min</item>
     </string-array>
+
     <string name="notification_messages_with">\u00A0Messages with\u00A0</string>
     <string name="notification_priority">\u00A0priority</string>
     <string name="user_save">Save</string>
@@ -72,4 +84,5 @@
     <string name="thing_name">Thing Name</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
+
 </resources>

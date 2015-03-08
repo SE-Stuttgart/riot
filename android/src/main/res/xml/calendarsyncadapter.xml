@@ -16,8 +16,8 @@ limitations under the License.
 -->
 
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:contentAuthority="de.uni_stuttgart.riot.android.account.auth"
-    android:accountType="de.uni_stuttgart.riot.android.account.type"
+    android:contentAuthority="de.uni_stuttgart.riot.android.dummy"
+    android:accountType="de.uni_stuttgart.riot.android.account"
     android:userVisible="true"
     android:supportsUploading="false"
     android:allowParallelSyncs="false"

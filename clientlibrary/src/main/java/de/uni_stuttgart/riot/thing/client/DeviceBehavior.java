@@ -1,9 +1,11 @@
 package de.uni_stuttgart.riot.thing.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.AndroidThing;
@@ -28,7 +30,7 @@ public class DeviceBehavior extends ExecutingThingBehavior {
     public DeviceBehavior(ThingClient thingClient) {
         super(thingClient);
     }
-    
+
     /**
      * Creates a new {@link AndroidThing} with {@link DeviceBehavior} and returns the behavior. The Thing will be registered at the server.
      * 
@@ -39,8 +41,10 @@ public class DeviceBehavior extends ExecutingThingBehavior {
      * @return the things behavior
      * @throws RequestException
      *             on service call error
+     * @throws IOException
+     *             on network error
      */
-    public static DeviceBehavior create(String name, final ThingClient thingClient) throws RequestException {
+    public static DeviceBehavior create(String name, final ThingClient thingClient) throws RequestException, IOException {
         return DeviceBehavior.launchNewThing(AndroidThing.class, thingClient, name, new ThingBehaviorFactory<DeviceBehavior>() {
             @Override
             public DeviceBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
@@ -59,10 +63,12 @@ public class DeviceBehavior extends ExecutingThingBehavior {
      * @param thingDescription
      *            the corresponding {@link ThingDescription}
      * @return the Thing
-     * @throws ThingNotFoundException
+     * @throws NotFoundException
      *             if its not found
+     * @throws IOException
+     *             if a network error occurs
      */
-    public Thing getThingByDiscription(ThingDescription thingDescription) throws ThingNotFoundException {
+    public Thing getThingByDiscription(ThingDescription thingDescription) throws NotFoundException, IOException {
         return this.getOtherThing(thingDescription.getThingId());
     }
 
@@ -71,8 +77,10 @@ public class DeviceBehavior extends ExecutingThingBehavior {
      * 
      * @throws RequestException
      *             error on calling the Service.
+     * @throws IOException
+     *             error with network connection
      */
-    public void updateThings() throws RequestException {
+    public void updateThings() throws RequestException, IOException {
         Collection<Thing> things = thingClient.getThings(this.behaviorFactory);
         ArrayList<ThingDescription> descriptions = new ArrayList<ThingDescription>();
         for (Thing thing : things) {
@@ -91,9 +99,13 @@ public class DeviceBehavior extends ExecutingThingBehavior {
      * 
      * @param thing
      *            thing to be updated
+     * @throws NotFoundException
+     *             thing not found
+     * @throws IOException
+     *             network error
      * @see MirroringThingBehavior#updateThingState(Thing).
      */
-    public void updateThingState(Thing thing) {
+    public void updateThingState(Thing thing) throws IOException, NotFoundException {
         super.updateThingState(thing);
     }
 

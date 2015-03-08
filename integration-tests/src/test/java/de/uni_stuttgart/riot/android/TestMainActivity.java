@@ -18,7 +18,6 @@ import org.robolectric.shadows.ShadowListView;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ListView;
-import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.notification.Notification;
 

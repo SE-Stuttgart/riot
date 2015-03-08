@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.account;
+package de.uni_stuttgart.riot.android.calendar;
 
 import android.accounts.Account;
 import android.content.ContentProviderClient;
@@ -10,8 +10,6 @@ import android.os.RemoteException;
 import android.provider.BaseColumns;
 import android.provider.CalendarContract;
 import android.util.Log;
-
-import de.uni_stuttgart.riot.android.calendar.AndroidCalendarEventEntry;
 
 /**
  * This class handles all calendar actions, creation of events, adding new calendars, changing the color and loading the calendar to an
