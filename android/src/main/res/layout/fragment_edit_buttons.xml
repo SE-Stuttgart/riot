@@ -8,7 +8,7 @@
 
 
     <ImageButton
-        android:id="@+id/detail_edit_button"
+        android:id="@+id/detail_button_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/edit"
@@ -17,15 +17,16 @@
         android:visibility="gone" />
 
     <ImageButton
-        android:id="@+id/detail_back_button"
+        android:id="@+id/detail_button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/back"
         android:src="@android:drawable/ic_menu_revert"
+        android:layout_marginRight="@dimen/fragment_margin_between_elements"
         android:visibility="gone" />
 
     <ImageButton
-        android:id="@+id/detail_save_button"
+        android:id="@+id/detail_button_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/save"
@@ -34,10 +35,19 @@
         android:visibility="gone" />
 
     <ImageButton
-        android:id="@+id/detail_abort_button"
+        android:id="@+id/detail_button_abort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/abort"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_marginRight="@dimen/fragment_margin_between_elements"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/detail_button_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/refresh"
+        android:src="@android:drawable/stat_notify_sync"
         android:visibility="gone" />
 </LinearLayout>

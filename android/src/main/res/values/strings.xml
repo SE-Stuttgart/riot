@@ -3,23 +3,6 @@
 
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
-<<<<<<< HEAD
-=======
-
-    <string-array name="menu_array">
-        <item>Home</item>
-        <item>RIOT-Account</item>
-        <item>Language</item>
-        <item>Location</item>
-        <item>UserList</item>
-        <item>ThingsList</item>
-        <item>ThingsListONLINE</item>
-        <!--<item>DevicesList</item>-->
-    </string-array>
-
-    <string name="drawer_open">Open Drawer</string>
-    <string name="drawer_close">Close Drawer</string>
->>>>>>> RIOT-87:Android:Add two thing menus for testing
     <string name="settings">Settings</string>
     <string name="pleaseWait">Please wait &#8230;</string>
     <string name="edit">Edit</string>
@@ -110,6 +93,7 @@
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     <!-- Rules -->
@@ -126,6 +110,8 @@
 >>>>>>> RIOT-87:Android:All changes of the last commits
 </resources>
 =======
+=======
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
     <string name="thing_temperature">Temperatur</string>
     <string name="thing_filling">Füllstand</string>
     <string name="percent">&#37;</string>
@@ -145,13 +131,20 @@
 =======
     <string name="default_item_title">Item without a title</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 </resources>>>>>>>> RIOT-87:Android:All changes of the last commits
 <<<<<<< HEAD
 >>>>>>> RIOT-87:Android:Use UIHint for Things-Views
 =======
 =======
+=======
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
     <string name="loading">Loading</string>
     <string name="prepareData">Data are preparing</string>
+    <string name="backslash">\\</string>
 </resources>
+<<<<<<< HEAD
 >>>>>>> RIOT-87:Android:Get things from the server
 >>>>>>> RIOT-87:Android:Get things from the server
+=======
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data

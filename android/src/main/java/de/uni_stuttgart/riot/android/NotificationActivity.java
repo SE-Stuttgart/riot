@@ -51,9 +51,6 @@ public class NotificationActivity extends Activity {
         //database.setNotificationScreen(this);
         // TODO Use the getFilteredNotifications()
 
-        // Save the application context in the singleton objects
-        IM.INSTANCES.setContext(getApplicationContext());
-
         // Sets the language
         // Language.setLanguage(this);
 

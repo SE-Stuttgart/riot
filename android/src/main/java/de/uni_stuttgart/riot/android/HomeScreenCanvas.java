@@ -1,8 +1,5 @@
 package de.uni_stuttgart.riot.android;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,11 +13,23 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.account.LoginActivity;
+=======
+import java.util.ArrayList;
+import java.util.List;
+
+import de.enpro.android.riot.R;
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.rules.RuleListActivity;
+=======
+import de.uni_stuttgart.riot.android.management.ManagementThingListFragment;
+import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -54,6 +63,9 @@ public class HomeScreenCanvas extends View {
 
     private int alphaTouched = 50;
     private int alphaNormal = 255;
+
+    private final String MANAGEMENT_THINGS = "Thing Management";
+    private final String MANAGEMENT_USER = "User Management";
 
     // private List<HomeScreenButton> buttonList2 = new ArrayList<HomeScreenButton>();
 
@@ -92,6 +104,10 @@ public class HomeScreenCanvas extends View {
             buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
 
             buttonList.add(new HomeScreenButton(this, 6, "Logout", 10, 10, R.drawable.logout));
+
+            buttonList.add(new HomeScreenButton(this, 7, MANAGEMENT_THINGS, 200, 200, R.drawable.flag_de));
+
+            buttonList.add(new HomeScreenButton(this, 8, MANAGEMENT_USER, 240, 240, R.drawable.flag_uk));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -253,14 +269,26 @@ public class HomeScreenCanvas extends View {
                     Intent coffeeIntent = new Intent(homeScreen, CoffeeMachine.class);
                     coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(coffeeIntent);
+<<<<<<< HEAD
                 } else if (selectedButton.getButtonDescription().equals("Rules")) { // Special intent for the rules management
                     Intent rulesIntent = new Intent(homeScreen, RuleListActivity.class);
                     homeScreen.startActivity(rulesIntent);
+=======
+<<<<<<< HEAD
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
                 } else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
                     Intent logoutIntend = new Intent(homeScreen, LoginActivity.class);
                     //TODO should we send an logout request or just show the loginWindow?
                     //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
                     homeScreen.startActivity(logoutIntend);
+=======
+                } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_THINGS)) { // Special intent for the management
+                    Intent management = new Intent(homeScreen, ManagementThingListFragment.class);
+                    homeScreen.startActivity(management);
+                } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_USER)) { // Special intent for the management
+                    Intent management = new Intent(homeScreen, ManagementUserListFragment.class);
+                    homeScreen.startActivity(management);
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
                 } else {
                     Intent newNotificationScreen = new Intent(homeScreen, NotificationActivity.class);
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());

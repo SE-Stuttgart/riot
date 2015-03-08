@@ -71,6 +71,7 @@
             android:name="de.uni_stuttgart.riot.android.things.CoffeeMachine"
             android:screenOrientation="portrait" >
         </activity>
+<<<<<<< HEAD
         <activity 
             android:name="de.uni_stuttgart.riot.android.serverconfiguration.ServerConfigurationScreen"
             android:screenOrientation="portrait" >
@@ -79,6 +80,38 @@
         <service
             android:name="de.uni_stuttgart.riot.android.account.AccountAuthenticatorService"
             android:exported="true" >
+=======
+        <activity
+            android:name="de.uni_stuttgart.riot.android.management.ManagementThingListFragment"
+            android:theme="@style/ManagementTheme"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.uni_stuttgart.riot.android.management.ManagementThingDetailFragment"
+            android:theme="@style/ManagementTheme"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.uni_stuttgart.riot.android.management.ManagementUserListFragment"
+            android:theme="@style/ManagementTheme"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.uni_stuttgart.riot.android.management.ManagementUserDetailFragment"
+            android:theme="@style/ManagementTheme"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <!--
+        This implements the account we'll use as an attachment point for our SyncAdapter.
+        It's also possible to attach a SyncAdapter to an existing account provided by another
+        package. In that case, this element could be omitted here.
+
+        -->
+        <service android:name="de.uni_stuttgart.riot.android.account.AccountAuthenticatorService" >
+
+            <!-- Required filter used by the system to launch our account service. -->
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>

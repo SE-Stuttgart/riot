@@ -13,6 +13,7 @@ public enum IM {
      */
     INSTANCES(new NotificationFactory(), new MessageHandler());
 
+    private Context context;
     private NotificationFactory notificationFactory = null;
     private MessageHandler messageHandler = null;
 
@@ -72,7 +73,17 @@ public enum IM {
      * @param context the context of the application
      */
     public void setContext(Context context) {
+        this.context = context;
         notificationFactory.setContext(context);
         messageHandler.setContext(context);
+    }
+
+    /**
+     * Return the application context.
+     *
+     * @return the context of the application
+     */
+    public Context getContext() {
+        return this.context;
     }
 }

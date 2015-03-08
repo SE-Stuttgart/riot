@@ -3,23 +3,6 @@
 
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
-<<<<<<< HEAD
-=======
-
-    <string-array name="menu_array">
-        <item>Home</item>
-        <item>RIOT-Konto</item>
-        <item>Sprache</item>
-        <item>Standortinformationen</item>
-        <item>UserListe</item>
-        <item>ThingsListe</item>
-        <item>ThingsListONLINE</item>
-        <!--<item>DevicesListe</item>-->
-    </string-array>
-
-    <string name="drawer_open">Open Drawer</string>
-    <string name="drawer_close">Close Drawer</string>
->>>>>>> RIOT-87:Android:Add two thing menus for testing
     <string name="settings">Einstellungen</string>
     <string name="pleaseWait">Bitte warten &#8230;</string>
     <string name="edit">Bearbeiten</string>
@@ -95,6 +78,7 @@
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     <!-- Rules -->
     <string name="rules_emptytext">Sie haben noch keine Regeln angelegt. Tippen Sie hier um eine neue Regel hinzuzufügen:</string>
@@ -108,6 +92,8 @@
 >>>>>>> RIOT-87:Android:All changes of the last commits
 </resources>
 =======
+=======
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
     <string name="thing_temperature">Temperatur</string>
     <string name="thing_filling">Füllstand</string>
     <string name="percent">&#37;</string>
@@ -121,10 +107,6 @@
     <string name="save">Save</string>
     <string name="back">Back</string>
     <string name="default_item_title">Item without a title</string>
-<<<<<<< HEAD
-</resources>>>>>>>> RIOT-87:Android:All changes of the last commits
-=======
     <string name="loading">Loading</string>
     <string name="prepareData">Data are preparing</string>
 </resources>
->>>>>>> RIOT-87:Android:Get things from the server

@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -32,6 +32,10 @@ public abstract class ManagementListFragment extends ManagementFragment {
     }
 
     @Override
+    protected void handleArguments(Bundle bundle) {
+    }
+
+    @Override
     protected void displayData() {
         List<Object> data = getData();
         if (data == null) {
@@ -40,8 +44,13 @@ public abstract class ManagementListFragment extends ManagementFragment {
             return;
         }
 
-        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), getActivity(), R.layout.list_item_managment_list, data);
-        ListView listView = (ListView) this.view.findViewById(R.id.management_list_view);
+        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), this, R.layout.list_item_managment_list, data);
+        ListView listView = (ListView) findViewById(R.id.management_list_view);
+        if (listView == null) {
+            // ToDo output message!
+            IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
+            return;
+        }
         listView.setAdapter(managementListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -51,10 +60,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
         });
         // If you want to change items afterwards (when list adapter is already installed) use:
         // managementListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void handleArguments(Bundle args) {
     }
 
     /**
@@ -76,7 +81,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
      *
      * @return the called fragment (null if there should be no onClick action)
      */
-    protected abstract Fragment getOnItemClickFragment();
+    protected abstract Class getOnItemClickActivity();
 
     /**
      * Returns the id of the list item.
@@ -187,25 +192,55 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
         // Set the subject value
         if (defaultSubject != null && !defaultSubject.isEmpty()) {
-            ((TextView) view.findViewById(R.id.list_item_management_subject)).setText(defaultSubject);
+            TextView textView = (TextView) view.findViewById(R.id.list_item_management_subject);
+            if (textView == null) {
+                // ToDo output message!
+                IM.INSTANCES.getMH().writeErrorMessage("No text view was found!");
+                return;
+            }
+            textView.setText(defaultSubject);
         }
 
         // Set the description value
         if (defaultDescription != null && !defaultDescription.isEmpty()) {
-            ((TextView) view.findViewById(R.id.list_item_management_description)).setText(defaultDescription);
+            TextView textView = (TextView) view.findViewById(R.id.list_item_management_description);
+            if (textView == null) {
+                // ToDo output message!
+                IM.INSTANCES.getMH().writeErrorMessage("No text view was found!");
+                return;
+            }
+            textView.setText(defaultDescription);
         }
 
         // Set the image value
         if (defaultImageId != 0) {
-            ((ImageView) view.findViewById(R.id.list_item_management_picture)).setImageResource(defaultImageId);
+            ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_picture);
+            if (imageView == null) {
+                // ToDo output message!
+                IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                return;
+            }
+            imageView.setImageResource(defaultImageId);
         } else if (defaultImageUri != null && !defaultImageUri.isEmpty()) {
-            ((ImageView) view.findViewById(R.id.list_item_management_picture)).setImageURI(Uri.parse(defaultImageUri));
+            ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_picture);
+            if (imageView == null) {
+                // ToDo output message!
+                IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                return;
+            }
+            imageView.setImageURI(Uri.parse(defaultImageUri));
             // ToDo maybe load asynchronous??
         }
 
         // Set the online state value
         if (defaultOnlineState != null) {
-            ((ImageView) view.findViewById(R.id.list_item_management_online_state)).setImageResource(getOnlineStateResourceId(defaultOnlineState));
+            ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
+            if (imageView == null) {
+                // ToDo output message!
+                IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                return;
+            }
+            imageView.setImageResource(getOnlineStateResourceId(defaultOnlineState));
         }
     }
 
@@ -308,13 +343,13 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param id       the id of the element?
      */
     private void doOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (getOnItemClickFragment() != null) {
+        if (getOnItemClickActivity() != null) {
             Object item = parent.getItemAtPosition(position);
 
-            // Save information for the calling fragment
-            Bundle args = new Bundle();
-            args.putLong(BUNDLE_OBJECT_ID, getId(item));
-            callOtherFragment(getOnItemClickFragment(), args);
+            // Call detail view with the id as argument
+            Intent detailView = new Intent(getApplicationContext(), getOnItemClickActivity());
+            detailView.putExtra(BUNDLE_OBJECT_ID, getId(item));
+            startActivity(detailView);
         }
     }
 }

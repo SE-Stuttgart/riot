@@ -65,7 +65,7 @@ public class DummyUser extends User {
      * @return .
      */
     public LinkedHashSet<String> getRoleNames() {
-        return ManagementFragment.getRoleNames(getRoles());
+        return null;//ManagementFragment.getRoleNames(getRoles());
     }
 
     /**
@@ -74,7 +74,7 @@ public class DummyUser extends User {
      * @return .
      */
     public LinkedHashSet<String> getPermissionNames() {
-        return ManagementFragment.getPermissionNames(getPermissions());
+        return null;// ManagementFragment.getPermissionNames(getPermissions());
     }
 
     /**

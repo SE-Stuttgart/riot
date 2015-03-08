@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -37,7 +36,11 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.PropertyDescription;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
+<<<<<<< HEAD
 >>>>>>> RIOT-87:Android:Get things from the server
+=======
+import de.uni_stuttgart.riot.thing.WritableProperty;
+>>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -48,10 +51,17 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
+    // TODO setOnUpdate erst nachdem der default value gesetzt wurde!
+
+    // Pruefen wie oft die rest calls aufgerufen werden - evtl. optimieren
+
+    // ToDo REFRESH !!replace data - not add!! --> reload activity?
+
+    // FIXME check findViewById() if item was found!! (like in ListFragment)
+
     // Is needed to set ids for grouped views
     private static final AtomicInteger GENERATED_ID = new AtomicInteger(1);
     private String viewTitle = "";
-
     private Thing theThing;
 
     @Override
@@ -60,96 +70,87 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected String getTitle() {
+    protected String getPageTitle() {
+        if (this.viewTitle.isEmpty()) {
+            return getString(R.string.thing_detail);
+        }
         return viewTitle;
     }
 
     @Override
     protected boolean isInstanceOf(Object item) {
-        if (item instanceof DummyThing) {
-            isDummyThing = true;
-        }
-        return (isDummyThing || item instanceof ThingDescription);
-//        return (item instanceof ThingDescription);
+        return (item instanceof ThingDescription);
     }
 
     @Override
     protected void displayDetailData() {
         if (isInstanceOf(data)) {
-            if (isDummyThing) {
-                // Save the view title
-                viewTitle = ((DummyThing) data).getName();
-                ManagementThingDetailFragmentDUMMY dummyManagement = new ManagementThingDetailFragmentDUMMY(this.view);
+            // Save the thing
+            if (!doGetThing((ThingDescription) data)) {
+                // Set a default title if it was not successful
+                viewTitle = getString(R.string.thing_detail);
+                return;
+            }
 
-                // Add items to the main layout
-                for (DummyProperty property : ((DummyThing) data).getProperties()) {
-                    View preparedItem = dummyManagement.prepareItem(property);
-                    if (preparedItem != null) {
-                        ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
-                    }
-                }
-            } else {
-                // Save the thing
-                if (!doGetThing((ThingDescription) data)) {
-                    // Set a default title if it was not successful
-                    viewTitle = getResources().getString(R.string.thing_detail);
-                    return;
-                }
+            // Save the view title
+            viewTitle = this.theThing.getName();
 
-                // Save the view title
-                viewTitle = this.theThing.getName();
-
-                // Add items to the main layout
-                for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
-                    View preparedItem = prepareItem(propertyDescription);
-                    if (preparedItem != null) {
-                        ((LinearLayout) view.findViewById(R.id.thing_linear_layout)).addView(preparedItem);
-                    }
+            // Add items to the main layout
+            for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
+                View preparedItem = prepareItem(propertyDescription);
+                if (preparedItem != null) {
+                    ((LinearLayout) findViewById(R.id.thing_linear_layout)).addView(preparedItem);
                 }
             }
         }
 
-        // En-/Disable all layout items
-        enableLayoutItems(this.enableElements); // ToDo maybe not all elements?
+        // En-/Disable all layout items (on this place again because the data will be loaded asynchronous
+        enableItems(false); // ToDo maybe not all elements?
     }
 
     @Override
     protected Object getData() {
-        if (!isDummyThing) {
-            try {
-                // Get the thing description with the given id
-                for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
-                    if (this.itemId == thingDescription.getThingId()) {
-                        return thingDescription;
-                    }
+        try {
+            // Get the thing description with the given id
+            for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
+                if (this.itemId == thingDescription.getThingId()) {
+                    return thingDescription;
                 }
-            } catch (Exception e) {
-                // FIXME output message!!
-                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
             }
+        } catch (Exception e) {
+            // FIXME output message!!
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
         }
-
-        // Load dummy objects if the above method was not successful
-        return getThing(this.itemId);
-    }
-
-    @Override
-    protected void setOnBackClick() {
-        callOtherFragment(new ManagementThingListFragment());
-    }
-
-    @Override
-    protected void callThisFragment(boolean edit) {
-        Bundle args = new Bundle();
-        args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, edit);
-        callOtherFragment(new ManagementThingDetailFragment(), args);
+        return null;
     }
 
     @Override
     protected void saveChanges() {
-        // TODO !!!
-        IM.INSTANCES.getMH().showQuickMessage("Changes should be changed now :)");
+        final Thing tmpThing = this.theThing;
+        new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    RIOTApiClient.getInstance().getDeviceBehavior().updateThingState(tmpThing);
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("Error during changing: " + e.getMessage());
+                    return;
+                }
+                // Display the data in the main thread
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        IM.INSTANCES.getMH().showQuickMessage("Saves are changed!");
+                    }
+                });
+            }
+        }.start();
+    }
+
+    @Override
+    protected void enableDetailItems(boolean enableElements) {
+        enableChildItems((ViewGroup) findViewById(R.id.thing_linear_layout), enableElements);
     }
 
     /**
@@ -175,19 +176,20 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param propertyDescription is the unchanged property
      * @param value               is the new value
      */
-    private void updateProperty(PropertyDescription propertyDescription, Object value) {
-        // theThing.getProperty(propertyDescription.getName()).setValue(value);
-        // TODO directly or just on saving??
-        if (isInstanceOf(data)) {
-            // Save changes local
-//            ((ThingDescription) data).updateProperty(property, value);
+    private void updateProperty(final PropertyDescription propertyDescription, final Object value) {
 
-            // Send changes directly to the server if it should be updated instant
-//            if (property.isInstantUpdate()) {
-//                // ToDo
-//            }
-        }
-        // Note:
+        new Thread() {
+
+            @Override
+            public void run() {
+                if (propertyDescription.isWritable()) {
+                    setProperty(theThing.getWritableProperty(propertyDescription.getName()), value);
+
+                    // TODO ? RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
+                }
+            }
+        }.start();
+        // Note - ja / nein??:
         // Aenderung eines properties ruft immer diese Methode auf.
         // Hier wird das property lokal geaendert.
         // Gibt es einen "instant-update" flag oder attribut oder aehnliches wird es direkt an den server geschickt.
@@ -195,6 +197,21 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // (problem bei instant-update properties und dem abort-button)
     }
 
+    /**
+     * Helper method to update the value of a property.
+     *
+     * @param property the property that will get another value
+     * @param value    is the new value
+     * @param <E>      the unknown type
+     */
+    private static <E> void setProperty(WritableProperty<E> property, Object value) {
+        try {
+            property.set(property.getValueType().cast(value));
+        } catch (Exception e) { // FIXME choose the right one
+            // Show a message that there was an failure (ToDo output)
+            IM.INSTANCES.getMH().writeErrorMessage("Error in updating property: " + e.getMessage());
+        }
+    }
 
     /**
      * Generate a value suitable for use in View.setId(int).
@@ -225,7 +242,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private View prepareItem(PropertyDescription propertyDescription) {
         // Create new layout element
-        LinearLayout linearLayoutItem = new LinearLayout(view.getContext());
+        LinearLayout linearLayoutItem = new LinearLayout(getApplicationContext());
         LinearLayout.LayoutParams linearLayoutItemParams;
 
         // Add name of the propertyDescription
@@ -260,23 +277,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
         // Change top padding of the first element in the group
 //        if (isPropertyType(propertyDescription, PropertyType.GROUP)) {
-//            ((ViewGroup) linearLayoutItem.getChildAt(1)).getChildAt(0).setPadding(0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
+//            ((ViewGroup) linearLayoutItem.getChildAt(1)).getChildAt(0).setPadding(0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2);
 //        }
 
         // Return prepared item
         return linearLayoutItem;
-    }
-
-    /**
-     * Check if the propertyDescription is from this property type.
-     *
-     * @param propertyDescription the property that will be checked
-     * @param propertyType        the property type that will be checked
-     * @return .
-     */
-    private boolean isPropertyType(PropertyDescription propertyDescription, Class<?> propertyType) {
-        return propertyDescription.getValueType().equals(propertyType);
-//        return propertyDescription.getValueType().equals(propertyType);
     }
 
     /**
@@ -293,6 +298,18 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         if (preparePropertyItems2(propertyDescription, linearLayoutItem)) {
             return;
         }
+
+        /**
+         * Note for UIHint - value types:
+         *
+         * EditText = String
+         * EditNumber = Double
+         * ToggleButton = Boolean
+         * IntegralSlider = Integer
+         * PercentageSlider = Double
+         * FractionalSlider = Double
+         * DropDown = Enum<?>
+         **/
 
         // Show a quick message that this type is unknown (ToDo log this?)
         IM.INSTANCES.getMH().showQuickMessage("Unknown type in preparePropertyItems(): " + propertyDescription.getValueType().toString());
@@ -368,7 +385,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             // Prepare and add scale value property
             UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) propertyDescription.getUiHint();
             // TODO TODO evtl als int speichern!!
-            View preparedView = prepareLongSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeFahrenheit);
+            View preparedView = prepareIntegerSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeFahrenheit);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
@@ -376,9 +393,9 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         } else if (propertyDescription.getUiHint() instanceof UIHint.PercentageSlider) {
 //        } else if (isPropertyType(propertyDescription, PropertyType.PercentageSlider)) {
             // Prepare and add scale percent property
-            final int min = 0;
-            final int max = 100;
-            View preparedView = prepareLongSliderProperty(propertyDescription, min, max, R.string.percent);
+            final double min = 0.0;
+            final double max = 1.0;
+            View preparedView = prepareDoubleSliderProperty(propertyDescription, min, max, R.string.percent);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
@@ -409,7 +426,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private View prepareTextView(String text) {
         // Create new layout elements
-        TextView textView = new TextView(view.getContext());
+        TextView textView = new TextView(getApplicationContext());
 
         // Get layout params
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -422,7 +439,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             textView.setText(text);
         } else {
             // Set default values
-            textView.setText(getResources().getText(R.string.default_item_title));
+            textView.setText(getText(R.string.default_item_title));
         }
 
         return textView;
@@ -440,7 +457,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 // TODO TODO Handle propertyType group!!
 
         // Create new layout element
-        final RelativeLayout relativeLayoutGroup = new RelativeLayout(view.getContext());
+        final RelativeLayout relativeLayoutGroup = new RelativeLayout(getApplicationContext());
 
         // Set an listener to the layout to order the items inside after they know their size
         relativeLayoutGroup.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -491,7 +508,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     private void orderGroupedItems(RelativeLayout relativeLayoutGroup) {
 
         // Get available width and decrement with two times left and right padding of the main layout and two times of the group layout
-        int availableWidth = relativeLayoutGroup.getMeasuredWidth(); // - (2 * (int) getResources().getDimension(R.dimen.fragment_main_margin));
+        int availableWidth = relativeLayoutGroup.getMeasuredWidth(); // - (2 * (int) getDimension(R.dimen.fragment_main_margin));
         int usedWidth = 0;
 
         int idOfFirstElementInLastRow = 0;
@@ -548,9 +565,9 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param allowNegativeNumbers is true if the input of negative numbers is allowed
      * @return the prepared view
      */
-    private View prepareTextProperty(final PropertyDescription propertyDescription, boolean onlyNumbers, boolean allowNegativeNumbers) {
+    private View prepareTextProperty(final PropertyDescription propertyDescription, final boolean onlyNumbers, boolean allowNegativeNumbers) {
         // Create new layout elements
-        final EditText editText = new EditText(view.getContext());
+        final EditText editText = new EditText(getApplicationContext());
 
         // Get layout params
         LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -577,14 +594,26 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                updateProperty(propertyDescription, editText.getText());
+                String text = editText.getText().toString();
+                if (onlyNumbers && !text.isEmpty()) {
+                    updateProperty(propertyDescription, Double.parseDouble(text));//, Double.class);
+                } else {
+                    updateProperty(propertyDescription, text);//, String.class);
+                }
             }
         });
 
         // Set the current value
         Object value = getValue(propertyDescription);
-        if (value != null && value instanceof String) {
-            editText.setText((String) value);
+        if (value != null) {
+            if (value instanceof String) {
+                editText.setText((String) value);
+            } else if (value instanceof Double) {
+                editText.setText(String.valueOf(value));
+            } else {
+                // Set default values
+                editText.setText("");
+            }
         } else {
             // Set default values
             editText.setText("");
@@ -601,7 +630,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private View prepareToggleButtonProperty(final PropertyDescription propertyDescription) {
         // Create new layout elements
-        ToggleButton toggleButton = new ToggleButton(view.getContext());
+        ToggleButton toggleButton = new ToggleButton(getApplicationContext());
 
         // Get layout params
         LinearLayout.LayoutParams toggleButtonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -610,12 +639,12 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         toggleButton.setLayoutParams(toggleButtonParams);
 
         // Set toggleButton attributes
-        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getResources().getString(R.string.off)));
-        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getResources().getString(R.string.on)));
+        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getString(R.string.off)));
+        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getString(R.string.on)));
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateProperty(propertyDescription, isChecked);
+                updateProperty(propertyDescription, isChecked);//, Boolean.class);
             }
         });
 
@@ -640,7 +669,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param identifier          is the identifier behind the value (e.g. %, °C,...)
      * @return the prepared view
      */
-    private View prepareLongSliderProperty(final PropertyDescription propertyDescription, long min, long max, int identifier) {
+    private View prepareIntegerSliderProperty(final PropertyDescription propertyDescription, long min, long max, int identifier) {
         // ToDo maybe a long value is too big for the slider?
         return prepareSliderProperty(propertyDescription, (int) min, (int) max, identifier, 1);
 
@@ -662,7 +691,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         int minFactor = 0;
         int maxFactor = 0;
         int factor;
-        String decimalSeparator = "\\" + String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
+        String decimalSeparator = getString(R.string.backslash) + String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
 
         String[] minSplit = Double.toString(min).split(decimalSeparator);
         if (minSplit.length > 1) {
@@ -697,11 +726,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         final int realMax = max - min;
 
         // Create new layout elements
-        LinearLayout linearLayoutRow = new LinearLayout(view.getContext());
-        final SeekBar seekBar = new SeekBar(view.getContext());
-        LinearLayout linearLayoutText = new LinearLayout(view.getContext());
-        final EditText editText = new EditText(view.getContext());
-        TextView textView = new TextView(view.getContext());
+        LinearLayout linearLayoutRow = new LinearLayout(getApplicationContext());
+        final SeekBar seekBar = new SeekBar(getApplicationContext());
+        LinearLayout linearLayoutText = new LinearLayout(getApplicationContext());
+        final EditText editText = new EditText(getApplicationContext());
+        TextView textView = new TextView(getApplicationContext());
 
         // Link the layout elements
         linearLayoutText.addView(editText);
@@ -713,7 +742,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         LinearLayout.LayoutParams linearLayoutRowParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams seekBarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams linearLayoutTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        // int editTextWidth = (int) getResources().getDimension(R.dimen.slider_edit_text_width); // ToDo use factor? for dynamic size
+        // int editTextWidth = (int) getDimension(R.dimen.slider_edit_text_width); // ToDo use factor? for dynamic size
         LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -837,7 +866,12 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                         setSliderEditText(editText, (double) (seekBar.getProgress() + min) / factor, factor);
                     } else {
                         seekBar.setProgress(value - min);
-                        updateProperty(propertyDescription, (double) value / factor);
+                        Double newVal = (double) value / factor;
+                        if (factor == 1) {
+                            updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
+                        } else {
+                            updateProperty(propertyDescription, newVal);//, Double.class);
+                        }
                     }
                 } catch (Exception e) {
                     // Show a quick message that there was an error (ToDo log this?)
@@ -872,18 +906,14 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                updateProperty(propertyDescription, (double) (seekBar.getProgress() + min) / factor);
+                Double newVal = (double) (seekBar.getProgress() + min) / factor;
+                if (factor == 1) {
+                    updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
+                } else {
+                    updateProperty(propertyDescription, newVal);//, Double.class);
+                }
             }
         });
-    }
-
-    /**
-     * En-/disables all items on this detail layout.
-     *
-     * @param value is an boolean value to en-/disable this items
-     */
-    private void enableLayoutItems(boolean value) {
-        enableChildItems((ViewGroup) view.findViewById(R.id.thing_linear_layout), value);
     }
 
     /**
@@ -893,9 +923,9 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param enums               .
      * @return the prepared view
      */
-    private View prepareDropDownProperty(final PropertyDescription propertyDescription, ArrayList<Enum<?>> enums) {
+    private View prepareDropDownProperty(final PropertyDescription propertyDescription, final ArrayList<Enum<?>> enums) {
         // Create new layout elements
-        final Spinner spinner = new Spinner(view.getContext());
+        final Spinner spinner = new Spinner(getApplicationContext());
 
         // Get layout params
         LinearLayout.LayoutParams spinnerParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -911,19 +941,21 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         }
 
         // Set spinner attributes
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_spinner_dropdown_item, itemsAsArray);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, itemsAsArray);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateProperty(propertyDescription, spinner.getSelectedItem());
-            }
+        if (propertyDescription.isWritable()) { // TODO!!
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    updateProperty(propertyDescription, enums.get(position));//, Enum<E>.class);
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        }
 
         // Set the current value
         Object value = getValue(propertyDescription);
