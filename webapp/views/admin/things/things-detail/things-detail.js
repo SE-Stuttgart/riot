@@ -9,21 +9,34 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
   var alertId = null;
 
   var init = function() {
-    $scope.users = [];
-    $scope.limit = 10;
-    $scope.current = 1;
     
     locale.ready('thing').then(function () {
-      $scope.selectedUser = {};
-      $scope.selectedUser.username = locale.getString('thing.chooseShareUser');
+      $scope.users.selection = locale.getString('thing.chooseShareUser');
       
       //selectedRight must be set after the locale service has initialized, in order to 
       //force the select box with the permissions to update
-      $scope.selectedRight = {}; 
+      $scope.selectedRight = null; 
     });
     
+    $scope.users = {
+      data: [],
+      selection: null,
+      pagination: {
+        current: 1,
+        limit: 10,
+        total: 0
+      },
+      filter: null,
+      update: $scope.getUsers,
+      toString: function(data) {
+        if(data['username']) {
+          return data['username'];
+        }
+        return data;
+      }
+    };
+    
     $scope.getThing();
-    $scope.getUsers();
     $scope.getSharedUsers();
   };
 
@@ -71,15 +84,18 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
   };
   
   $scope.getUsers = function() {
-    //TODO would it be feasible to get all users?
-//    User.getList({limit: 1000, offset: 0}).then(function(users, u) {
-//      $scope.users = users;
-//      $scope.selectedUser = {}; //selectedUser must be set in order to update the select box, when the users array is modified
-//      $scope.selectedRight = {};
-//    });
+    User.getList({limit: $scope.users.pagination.limit, offset: ($scope.users.pagination.current - 1) * $scope.users.pagination.limit}).then(function(users) {
+      $scope.users.pagination.limit = users.pagination.limit;
+      $scope.users.pagination.total = users.pagination.total;
+      $scope.users.data = users;
+    });
   };
   
   $scope.share = function(userId, right) {
+    if(!userId || !right) {
+      return;
+    }
+    
     if(right === locale.getString('thing.read')) {
       right = 'READ';
     } else if (right === locale.getString('thing.control')) {
@@ -109,18 +125,6 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
       permission: right.toUpperCase()
     }).then(function() {
       $scope.getSharedUsers();
-    });
-  };
-  
-  $scope.openSelectUserModal = function() {
-    var modalInstance = $modal.open({
-      templateUrl: 'views/admin/things/things-detail/select-user-modal/select-user-modal.html',
-      controller: 'SelectUserModalCtrl',
-      size: 'lg'
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      $scope.selectedUser = selectedItem;
     });
   };
 

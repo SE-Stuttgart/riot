@@ -81,11 +81,7 @@
         <div class="col-md-10">
           <div class="row list-group-item">
             <div class="col-md-6">
-<!--               <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareUser' | i18n }}" -->
-<!--                 ng-options="u.username for u in users" -->
-<!--                 ng-model="selectedUser"> -->
-<!--               </select> -->
-              <button class="btn btn-default form-control" ng-click="openSelectUserModal()">{{ selectedUser.username }}</button>
+              <div complex-dropdown="users"></div>
             </div>
             <div class="col-md-5">
               <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareRight' | i18n }}" ng-model="selectedRight">
@@ -98,7 +94,7 @@
               </select>            
             </div>
             <div class="col-md-1">
-              <button class="btn btn-success" ng-click="share(selectedUser.id, selectedRight)"><strong>+</strong></button>
+              <button class="btn btn-success" ng-click="share(users.selection.id, selectedRight)"><strong>+</strong></button>
             </div>
           </div>
         </div>
@@ -112,34 +108,6 @@
             data-target=".list-options" aria-expanded="false">
             <span class="fa fa-bars"></span>
           </button>
-
-          <!-- table header -->
-<!--           <div class="row form-inline list-options margin-top-10">
-            <div class="col-sm-6">
-              <div class="input-group input-limit">
-                <input type="text" class="form-control" ng-model="limit">
-                <div class="input-group-btn">
-                  <button type="button"
-                    class="btn btn-default dropdown-toggle"
-                    data-toggle="dropdown" aria-expanded="false">
-                    <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-right"
-                    role="menu">
-                    <li><a ng-click="limit=10" href="">10</a></li>
-                    <li><a ng-click="limit=20" href="">20</a></li>
-                    <li><a ng-click="limit=50" href="">50</a></li>
-                    <li><a ng-click="limit=100" href="">100</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <input id="listFilter" type="search"
-                class="form-control pull-right" placeholder="Filter"
-                ng-model="filter">
-            </div>
-          </div> -->
 
           <!-- table content -->
           <div class="table-list margin-top-10">
@@ -170,20 +138,6 @@
               </table>
             </div>
           </div>
-
-          <!-- table footer
-          <div class="row">
-            <div class="col-sm-6">
-              <div>{{ 'common.showing' | i18n }} {{(current - 1) *
-                limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) *
-                limit + things.length}} {{ 'common.of' | i18n }}
-                {{total}} {{ 'common.entries' | i18n }}</div>
-            </div>
-            <div class="col-sm-12 text-center">
-              <pagination ng-model="current" items-per-page="limit"
-                total-items="total" ng-change="getThings()"></pagination>
-            </div>
-          </div> -->
         </div>
       </div>
       
