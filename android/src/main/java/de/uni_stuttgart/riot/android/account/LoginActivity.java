@@ -31,7 +31,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.response.Authentication
 /**
  * The activity that shows the login form (and, if required, the network settings) and sends the login data to the backend to make
  * connections.
- * 
+ *
  * @author Dirk Braunschweiger
  * @author Philipp KEck
  */
@@ -136,7 +136,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
     /**
      * Applies the connection settings that the user entered (if they were visible).
-     * 
+     *
      * @return True if successful or no-op, false if the process must be aborted.
      */
     private boolean applyConnectionSettings() {
@@ -169,7 +169,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     /**
      * Performs a login for the given user on the server and calls the callback if successful (shows an error toast otherwise). Displays a
      * progress dialog during the login process.
-     * 
+     *
      * @param username
      *            The username.
      * @param password
@@ -218,7 +218,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     /**
      * Ensures that the (possibly newly created) account that corresponds to the credentials in the response is activated in the connection
      * provider.
-     * 
+     *
      * @param response
      *            The authentication response containing username and tokens.
      * @param account
@@ -228,6 +228,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         Account account = AccountAuthenticator.getOrCreateAccount(getApplicationContext(), response.getUser().getUsername());
         AndroidConnectionProvider.getInstance().saveNewAccountInformation(account, response.getAccessToken(), response.getRefreshToken(), response.getUser());
         return account;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        // do nothing
     }
 
 }

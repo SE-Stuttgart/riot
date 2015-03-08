@@ -23,7 +23,7 @@ import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 /**
  * This class draws the different buttons in the home screen menu and handles all touch events.
- * 
+ *
  * @author Florian
  *
  */
@@ -56,7 +56,7 @@ public class HomeScreenCanvas extends View {
 
     /**
      * Constructor that sets the buttons the first time or gets them from the database.
-     * 
+     *
      * @param context
      *            The main context of the App.
      */
@@ -85,7 +85,7 @@ public class HomeScreenCanvas extends View {
 
             buttonList.add(new HomeScreenButton(this, 5, "Location", 300, 500, R.drawable.location));
 
-            buttonList.add(new HomeScreenButton(this, 6, "Logout", 100, 700, R.drawable.logout));
+            buttonList.add(new HomeScreenButton(this, 6, "Logout", 10, 10, R.drawable.logout));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -96,7 +96,7 @@ public class HomeScreenCanvas extends View {
 
     /**
      * Rotate a given bitmap with a defined degree value.
-     * 
+     *
      * @param bitmap
      *            The bitmap that will be rotated
      * @return The new rotated bitmap
@@ -136,7 +136,7 @@ public class HomeScreenCanvas extends View {
 
     /**
      * Buttons can't be dragged outside of the canvas.
-     * 
+     *
      * @param fingerX
      *            X-Coordinate of the finger.
      * @param fingerY
@@ -149,7 +149,7 @@ public class HomeScreenCanvas extends View {
 
     /**
      * Method that checks if a button collides with another button while dragging. Prevents the stacking of buttons.
-     * 
+     *
      * @param button
      *            A button from the buttonList which is checked against the selected button for collisions.
      * @return A collision was detected or not.
@@ -201,16 +201,16 @@ public class HomeScreenCanvas extends View {
                         /*
                          * float dx = selectedButton.getButtonX() - button.getButtonX(); float dy = selectedButton.getButtonY() -
                          * button.getButtonY();
-                         * 
+                         *
                          * float angle = (float) Math.atan2(dy, dx);
-                         * 
+                         *
                          * float tempRadius = 1.5f;
-                         * 
+                         *
                          * float targetX = (float) (selectedButton.getButtonX() + Math.cos(angle)) * tempRadius; float targetY = (float)
                          * (selectedButton.getButtonY() + Math.sin(angle)) * tempRadius;
-                         * 
+                         *
                          * float ax = targetX - button.getButtonX(); float ay = targetY - button.getButtonY();
-                         * 
+                         *
                          * selectedButton.setButtonX((int) (selectedButton.getButtonX() - ax)); selectedButton.setButtonY((int)
                          * (selectedButton.getButtonY() - ay)); System.out.println(selectedButton.getButtonX() + " " +
                          * selectedButton.getButtonY());
@@ -247,6 +247,11 @@ public class HomeScreenCanvas extends View {
                     Intent coffeeIntent = new Intent(homeScreen, CoffeeMachine.class);
                     coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(coffeeIntent);
+                } else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
+                    Intent logoutIntend = new Intent(homeScreen, LoginActivity.class);
+                    //TODO should we send an logout request or just show the loginWindow?
+                    //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
+                    homeScreen.startActivity(logoutIntend);
                 } else {
                     Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
@@ -265,7 +270,7 @@ public class HomeScreenCanvas extends View {
 
     /**
      * This class is necessary to implement only a couple of GestureListener and not all of them.
-     * 
+     *
      */
     class GestureListener extends SimpleOnGestureListener {
 

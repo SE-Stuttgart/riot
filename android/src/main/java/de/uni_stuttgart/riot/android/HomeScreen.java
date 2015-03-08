@@ -44,4 +44,9 @@ public class HomeScreen extends Activity {
         // }.start();
 
     }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing
+    }
 }
