@@ -18,15 +18,17 @@ import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.WrongCredentialsException;
 import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 public class AuthenticationLogicTest extends LogicTestBase {
 
-    private static final String WRONG_USERNAMEEXCEPTION = "de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException: Wrong Username/Password";
-    private static final String PASSWORD_TOO_MANY_TIMES_WRONG = "de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException: Password was too many times wrong. Please change the password.";
+    private static final String WRONG_USERNAMEEXCEPTION = "Wrong Username/Password";
+    private static final String PASSWORD_TOO_MANY_TIMES_WRONG = "Password was too many times wrong. Please change the password.";
 
     private AuthenticationLogic al = new AuthenticationLogic();
 
@@ -92,6 +94,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
             try {
                 al.login("Yoda", "Invalid");
             } catch (LoginException e) {
+                assertEquals(e.getClass(), WrongCredentialsException.class);
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
@@ -173,17 +176,17 @@ public class AuthenticationLogicTest extends LogicTestBase {
         assertFalse(token.getRefreshtokenValue().isEmpty());
     }
 
-    @Test(expected = RefreshException.class)
+    @Test(expected = InvalidTokenException.class)
     public void testRefreshTokenInvalid() throws Exception {
         al.refreshToken("Invalid");
     }
 
-    @Test(expected = RefreshException.class)
+    @Test(expected = InvalidTokenException.class)
     public void testRefreshTokenNull() throws Exception {
         al.refreshToken(null);
     }
 
-    @Test(expected = RefreshException.class)
+    @Test(expected = InvalidTokenException.class)
     public void testRefreshTokenEmpty() throws Exception {
         al.refreshToken("");
     }
@@ -192,7 +195,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
      * Logout tests
      */
 
-    @Test(expected = RefreshException.class)
+    @Test(expected = InvalidTokenException.class)
     public void testLogoutValid() throws Exception {
         al.logout("token1");
 

@@ -8,6 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -20,9 +21,11 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.request.LoginRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.RefreshRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.response.AuthenticationResponse;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.WrongCredentialsException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
@@ -41,24 +44,28 @@ public class AuthenticationService {
 
     /**
      * Login as a user based on a provided username and password. On a successful authentication a access token and refresh token will be
-     * returned which can be used to access the API.
+     * returned which can be used to access the API. Returns HTTP 401 if the credentials were wrong.
      *
      * @param request
      *            The login request containing username and password.
      * @return Returns a new access and refresh token on success.
      * @throws LoginException
-     *             When the operation fails.
+     *             When the operation fails for technical reasons.
      */
     @PUT
     @Path("/login")
-    public AuthenticationResponse login(LoginRequest request) throws LoginException {
+    public Response login(LoginRequest request) throws LoginException {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
             User u = UserManagementFacade.getInstance().getUser(token);
             User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
-            return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
+            return Response.ok().entity(new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user)).build();
+        } catch (WrongCredentialsException e) {
+            return Response.status(Status.UNAUTHORIZED).build();
+        } catch (LoginException e) {
+            throw e;
         } catch (UserManagementException e) {
-            throw new LoginException(e.getMessage(), e);
+            throw new LoginException(e);
         }
     }
 
@@ -69,19 +76,23 @@ public class AuthenticationService {
      * @param request
      *            The refresh request containing a refresh token.
      * @return Returns a new access and refresh token on success.
+     * @throws InvalidTokenException
+     *             When the provided token is invalid.
      * @throws RefreshException
-     *             When the operation fails.
+     *             When another, rather unexpected error occurs.
      */
     @PUT
     @Path("/refresh")
-    public AuthenticationResponse refresh(RefreshRequest request) throws RefreshException {
+    public Response refresh(RefreshRequest request) throws InvalidTokenException, RefreshException {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
             User u = UserManagementFacade.getInstance().getUser(token);
             User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
-            return new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user);
+            return Response.ok().entity(new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user)).build();
+        } catch (InvalidTokenException e) {
+            return Response.status(Status.UNAUTHORIZED).build();
         } catch (UserManagementException e) {
-            throw new RefreshException(e.getMessage(), e);
+            throw new RefreshException(e);
         }
     }
 

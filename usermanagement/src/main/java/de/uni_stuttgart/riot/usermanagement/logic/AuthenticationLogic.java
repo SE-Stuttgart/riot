@@ -16,14 +16,19 @@ import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenRoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.TokenRole;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.WrongCredentialsException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 
@@ -50,57 +55,67 @@ public class AuthenticationLogic {
      * @param password
      *            Password of the user. Is used for authentication.
      * @throws LoginException
-     *             Thrown if any error happens
+     *             Thrown if any error happens.
      * 
      * @return A response containing the bearer and refresh token
      */
     public Token login(String username, String password) throws LoginException {
+        Subject subject = SecurityUtils.getSubject();
+        UserLogic ul = new UserLogic();
+
+        UMUser user;
         try {
-            Subject subject = SecurityUtils.getSubject();
-            UserLogic ul = new UserLogic();
+            user = ul.getUser(username);
+        } catch (GetUserException e) {
+            // We don't tell anyone the reason for this exception. Simply "username and/or password wrong" must suffice.
+            throw new WrongCredentialsException();
+        }
 
-            UMUser user = ul.getUser(username);
+        if (user.getLoginAttemptCount() > Configuration.getInt(ConfigurationKey.um_maxLoginRetries)) {
+            throw new WrongCredentialsException("Password was too many times wrong. Please change the password.");
+        }
 
-            if (user.getLoginAttemptCount() > Configuration.getInt(ConfigurationKey.um_maxLoginRetries)) {
-                throw new LoginException("Password was too many times wrong. Please change the password.");
-            }
+        String hashedPassword = AuthenticationUtil.getHashedString(password, user.getPasswordSalt(), user.getHashIterations());
 
-            String hashedPassword = AuthenticationUtil.getHashedString(password, user.getPasswordSalt(), user.getHashIterations());
-
+        try {
+            subject.login(new UsernamePasswordToken(username, hashedPassword));
+        } catch (AuthenticationException e) {
             try {
-                subject.login(new UsernamePasswordToken(username, hashedPassword));
-            } catch (AuthenticationException e) {
                 incLoginRetryCount(ul, user);
-                throw new LoginException("Wrong Username/Password", e);
+            } catch (UpdateUserException e2) {
+                // Ignore this one.
             }
+            throw new WrongCredentialsException("Wrong Username/Password");
+        }
 
-            if (subject.isAuthenticated()) {
-                try {
-                    // reset user attempt counter, so the user has again the maximum number of login retries
-                    user.setLoginAttemptCount(0);
-                    ul.updateUser(user, null);
+        if (subject.isAuthenticated()) {
+            try {
+                // reset user attempt counter, so the user has again the maximum number of login retries
+                user.setLoginAttemptCount(0);
+                ul.updateUser(user, null);
 
-                    Token token = generateAndSaveTokens(user.getId());
+                Token token = generateAndSaveTokens(user.getId());
 
-                    // get all roles of the user
-                    Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
-                    DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO();
+                // get all roles of the user
+                Collection<Role> roles = ul.getAllRolesFromUser(user.getId());
+                DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO();
 
-                    // assign the token the same roles as the user has
-                    for (Role role : roles) {
-                        tokenRoleDao.insert(new TokenRole(token.getId(), role.getId()));
-                    }
-
-                    return token;
-                } catch (Exception e) {
-                    throw new LoginException(e);
+                // assign the token the same roles as the user has
+                for (Role role : roles) {
+                    tokenRoleDao.insert(new TokenRole(token.getId(), role.getId()));
                 }
-            } else {
-                incLoginRetryCount(ul, user);
-                throw new LoginException("Wrong Username/Password");
+
+                return token;
+            } catch (Exception e) {
+                throw new LoginException(e);
             }
-        } catch (Exception e) {
-            throw new LoginException(e);
+        } else {
+            try {
+                incLoginRetryCount(ul, user);
+            } catch (UpdateUserException e) {
+                // Ignore this one.
+            }
+            throw new WrongCredentialsException();
         }
     }
 
@@ -110,18 +125,24 @@ public class AuthenticationLogic {
      * @param providedRefreshToken
      *            The refresh token used for generating the new tokens.
      * @return A response containing the bearer and refresh token.
+     * @throws InvalidTokenException
+     *             When the provided token is invalid.
      * @throws RefreshException
-     *             Thrown if any error happens
+     *             When another, rather unexpected error occurs.
      */
-    public Token refreshToken(String providedRefreshToken) throws RefreshException {
+    public Token refreshToken(String providedRefreshToken) throws RefreshException, InvalidTokenException {
 
+        // find the token belonging to the given refresh token
+        Token token;
         try {
-            // find the token belonging to the given refresh token
-            Token token = dao.findByUniqueField(new SearchParameter(SearchFields.REFRESHTOKEN, providedRefreshToken));
+            token = dao.findByUniqueField(new SearchParameter(SearchFields.REFRESHTOKEN, providedRefreshToken));
+        } catch (DatasourceFindException e) {
+            throw new InvalidTokenException("The provided token does not exist!", e);
+        }
 
-            // test, if token is valid
-            if (token != null && token.isValid()) {
-
+        // test, if token is valid
+        if (token != null && token.isValid()) {
+            try {
                 DAO<TokenRole> tokenRoleDao = new TokenRoleSqlQueryDAO();
 
                 // generate a new token and save it in the db
@@ -141,11 +162,11 @@ public class AuthenticationLogic {
                 dao.update(token);
 
                 return newToken;
-            } else {
-                throw new RefreshException("The provided refresh token is not valid");
+            } catch (DatasourceException | LoginException e) {
+                throw new RefreshException(e);
             }
-        } catch (Exception e) {
-            throw new RefreshException(e);
+        } else {
+            throw new InvalidTokenException("The provided refresh token is not valid");
         }
     }
 

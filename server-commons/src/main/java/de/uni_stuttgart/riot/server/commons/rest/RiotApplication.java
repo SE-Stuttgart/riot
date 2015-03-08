@@ -5,6 +5,8 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
+import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
@@ -69,6 +71,8 @@ public class RiotApplication extends ResourceConfig {
      * Registers the JSON provider.
      */
     protected void registerJacksonProvider() {
+        register(JsonParseExceptionMapper.class);
+        register(JsonMappingExceptionMapper.class);
         register(produceJacksonProvider());
     }
 

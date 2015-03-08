@@ -1,11 +1,12 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest.exception;
 
-import javax.json.Json;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 
@@ -19,12 +20,15 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.LogicException;
 @Provider
 public class UserManagementExceptionMapper implements ExceptionMapper<LogicException> {
 
+    // TODO This should not be here. Refactor this class in general.
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     @Override
     public Response toResponse(LogicException exception) {
         // TODO Return proper status codes, especially when user logs in with wrong credentials, a BAD REQUEST is not the correct answer.
         // TODO Log security-relevant incidents here.
         return Response.status(Status.BAD_REQUEST) // TODO status code
-                .entity(Json.createObjectBuilder().add("errorCode", exception.getErrorCode()).add("errorMessage", exception.getEndUserMessage()).build()).type(MediaType.APPLICATION_JSON).build();
+                .entity(OBJECT_MAPPER.createObjectNode().put("errorCode", exception.getErrorCode()).put("errorMessage", exception.getEndUserMessage()).toString()).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

@@ -38,6 +38,8 @@ public class ErrorCodes {
     public static final int GET_PERMISSIONS_FROM_ROLE = 28;
 
     public static final int GET_TOKEN = 31;
+    public static final int INVALID_TOKEN = 35;
+    public static final int INVALID_CREDENTIALS = 36;
     public static final int LOGOUT = 32;
 
     public static final int PASSWORD_VALIDATION = 41;

@@ -18,6 +18,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.TokenLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
@@ -102,10 +103,12 @@ public class UserManagementFacade {
      * @param refreshToken
      *            The refresh token used for generating the new tokens
      * @return Contains the generated bearer and refresh token
+     * @throws InvalidTokenException
+     *             When the provided token is invalid.
      * @throws RefreshException
-     *             Thrown if any errors occur
+     *             When another, rather unexpected error occurs.
      */
-    public Token refreshToken(String refreshToken) throws RefreshException {
+    public Token refreshToken(String refreshToken) throws RefreshException, InvalidTokenException {
         return authLogic.refreshToken(refreshToken);
     }
 
