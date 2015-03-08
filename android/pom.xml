@@ -123,6 +123,7 @@
 				<configuration>
 					<files>
 						<file>thing</file>
+						<file>configuration</file>
 					</files>
 					<languages>
 						<language>de</language>

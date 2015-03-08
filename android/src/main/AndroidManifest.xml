@@ -61,7 +61,11 @@
             android:name="de.uni_stuttgart.riot.android.things.CoffeeMachine"
             android:screenOrientation="portrait" >
         </activity>
-
+        <activity 
+            android:name="de.uni_stuttgart.riot.android.serverconfiguration.ServerConfigurationScreen"
+            android:screenOrientation="portrait" >
+        </activity>
+        
         <service
             android:name="de.uni_stuttgart.riot.android.account.AccountAuthenticatorService"
             android:exported="true" >

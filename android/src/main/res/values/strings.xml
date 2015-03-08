@@ -24,8 +24,13 @@
     <string name="changeLanguage">Change language</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="set">Set</string>
     <string name="color">Calendar color</string>
     <string name="changeColor">Change color</string>
+    <string name="serverConfiguration">Server Configuration</string>
+    <string name="manageConfiguration">Manage Configuration</string>
+    <string name="loadConfiguration_error">Configuration could not be loaded from server</string>
+    <string name="unknownName">Unknown</string>
 
     <!-- Account (all entries for account please insert here) -->
     <string name="acc_login">Login</string>

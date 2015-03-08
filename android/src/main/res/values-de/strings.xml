@@ -16,9 +16,14 @@
     <string name="changeLanguage">Sprache wählen</string>
     <string name="ok">Ok</string>
     <string name="cancel">Abbrechen</string>
+    <string name="set">Ändern</string>
     <string name="color">Kalenderfarbe</string>
     <string name="changeColor">Farbe ändern</string>
-
+    <string name="serverConfiguration">Server-Konfiguration</string>
+    <string name="manageConfiguration">Konfiguration verwalten</string>
+    <string name="loadConfiguration_error">Konfiguration konnte nicht vom Server geladen werden</string>
+    <string name="unknownName">Unbekannt</string>
+    
     <!-- Account (all entries for account please insert here) -->
     <string name="acc_login">Login</string>
     <string name="acc_username">Benutzername:</string>
