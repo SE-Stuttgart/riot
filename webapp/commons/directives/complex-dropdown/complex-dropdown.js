@@ -36,7 +36,7 @@ angular.module('riot').directive('complexDropdown', function() {
       $scope.isDisabled = function(dataEntry) {
         if ($scope.options.disabled) {
           for (var i = 0; i < $scope.options.disabled.length; i++) {
-            if ($scope.options.disabled[i].id == dataEntry.id) {
+            if ($scope.options.disabled[i].id === dataEntry.id) {
               return true;
             }
           }

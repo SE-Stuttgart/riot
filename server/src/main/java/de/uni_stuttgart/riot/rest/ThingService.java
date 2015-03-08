@@ -27,16 +27,10 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
-import de.uni_stuttgart.riot.thing.commons.ShareRequest;
-import de.uni_stuttgart.riot.thing.commons.ThingPermission;
-import de.uni_stuttgart.riot.thing.remote.ThingLogic;
-import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
-import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
