@@ -30,7 +30,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     /**
      * Simple constructor.
-     * 
+     *
      * @param context
      *            the android context.
      */
@@ -131,7 +131,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     /**
      * Returns the account for the given username, first creates it if necessary.
-     * 
+     *
      * @param context
      *            The context.
      * @param username
