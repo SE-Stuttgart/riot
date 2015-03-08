@@ -13,20 +13,12 @@
     <!-- table header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <div class="input-group input-limit">
-          <input type="text" class="form-control" ng-model="limit">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-              <li><a ng-click="limit=10" href="">10</a></li>
-              <li><a ng-click="limit=20" href="">20</a></li>
-              <li><a ng-click="limit=50" href="">50</a></li>
-              <li><a ng-click="limit=100" href="">100</a></li>
-            </ul>
-          </div>
-        </div>
+        <select selectpicker class="form-control" data-width="100px" ng-model="limit">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
       </div>
       <div class="col-sm-6 form-group">
         <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="filter">

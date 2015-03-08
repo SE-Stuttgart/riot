@@ -1,148 +1,132 @@
 <div class="row" ng-controller="ThingsAdminDetailCtrl">
   <div class="col-lg-7">
     <!-- Administration -->
-    <h3><strong>Administration</strong></h3>
-    <form class="form-horizontal">
-      <!-- delete thing -->
-      <div class="form-group">
-        <label class="control-label col-md-2">Delete Thing</label>
-        <div class="col-md-8">
-          <button type="button" class="btn btn-danger" ng-click="removeThing()">
-            <span class="fa fa-times"></span>
-            Remove
-          </button>
-        </div>
-      </div>
-    </form>
-
-    <h3><strong>Thing Data</strong></h3>
-    <form name="formThingDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formThingDetail.$valid">
-      <!-- thingid -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="thingid">Thing ID</label>
-        <div class="col-md-8">
-          <input id="thingid" name="thingid" type="text" placeholder="" class="form-control" ng-model="thingDetail.id" disabled>
-        </div>
-      </div>
-
-      <!-- name -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="name">Name</label>
-        <div class="col-md-8">
-          <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.name" disabled>
-        </div>
-      </div>
-
-      <!-- type -->
-      <div class="form-group">
-        <label class="control-label col-md-2" for="type">Type</label>
-        <div class="col-md-8">
-          <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="thingDetail.type" disabled>
-        </div>
-      </div>
-    </form>
-
-    <div class="form-horizontal">
-      <!-- Properties -->
-      <h3><strong>Properties</strong></h3>
-      <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingDetail[property.name]" description="property" things-value></div>
-    </div>
-
-    <div class="form-horizontal">
-      <!-- Events -->
-      <h3><strong>Events</strong></h3>
-      <div class="form-group">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-        ...
-        </div>
-      </div>
-    </div>
-
-    <div class="form-horizontal">
-      <!-- Actions -->
-      <h3><strong>Actions</strong></h3>
-      <div class="form-group">
-        <div class="col-md-10">
-          <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
-            <h4 class="list-group-item-heading">{{action.name}}</h4>
-            <div class="list-group-item-text">
-              <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
-            </div>
+    <div class="detail-group" ng-if="thingDetail.id !== undefined">
+      <div class="detail-group-header">Administration</div>
+      <form class="form-horizontal">
+        <!-- delete thing -->
+        <div class="form-group">
+          <label class="control-label col-md-2">Delete Thing</label>
+          <div class="col-md-8">
+            <button type="button" class="btn btn-danger" ng-click="removeThing()">
+              <span class="fa fa-times"></span>
+              Remove
+            </button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
 
-    <div class="form-horizontal">
-      <!-- Sharing -->
-      <h3><strong>{{ 'thing.sharing' | i18n }}</strong></h3>
-      <div class="form-group">
-        <div class="col-md-10">
-          <div class="row list-group-item">
-            <div class="col-md-6">
-              <div complex-dropdown="users"></div>
+    <div class="detail-group">
+      <div class="detail-group-header">Thing Data</div>
+      <form name="formThingDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formThingDetail.$valid">
+        <!-- thingid -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="thingid">Thing ID</label>
+          <div class="col-md-8">
+            <input id="thingid" name="thingid" type="text" placeholder="" class="form-control" ng-model="thingDetail.id" disabled>
+          </div>
+        </div>
+
+        <!-- name -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="name">Name</label>
+          <div class="col-md-8">
+            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.name" disabled>
+          </div>
+        </div>
+
+        <!-- type -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="type">Type</label>
+          <div class="col-md-8">
+            <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="thingDetail.type" disabled>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Properties -->
+    <div class="detail-group">
+      <div class="detail-group-header">Properties</div>
+      <form class="form-horizontal">
+        <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingDetail[property.name]" description="property" things-value></div>
+      </form>
+    </div>
+
+    <!-- Events -->
+    <div class="detail-group">
+      <div class="detail-group-header">Events</div>
+      <form class="form-horizontal">
+        <div class="list-group-item margin-top-10" ng-repeat="event in thingDescription.events">
+          <h4 class="list-group-item-heading">{{event.name}}</h4>
+          <div class="list-group-item-text">
+            <div ng-repeat="parameter in event.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div class="detail-group">
+      <div class="detail-group-header">Actions</div>
+      <form class="form-horizontal">
+        <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
+          <h4 class="list-group-item-heading">{{action.name}}</h4>
+          <div class="list-group-item-text">
+            <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="detail-group">
+      <div class="detail-group-header">{{ 'thing.sharing' | i18n }}</div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <!-- share select -->
+          <div class="form-inline">
+            <div class="form-group">
+              <div style="min-width: 300px" complex-dropdown="users"></div>
             </div>
-            <div class="col-md-5">
-              <select selectpicker class="form-control" data-live-search="true" title="{{ 'thing.chooseShareRight' | i18n }}" ng-model="selectedRight">
+            <div class="form-group">
+              <select selectpicker class="form-control" title="{{ 'thing.chooseShareRight' | i18n }}" data-width="200px" ng-model="selectedRight">
                 <option>{{ 'thing.read' | i18n }}</option>
                 <option>{{ 'thing.control' | i18n }}</option>
                 <option>{{ 'thing.execute' | i18n }}</option>
                 <option>{{ 'thing.delete' | i18n }}</option>
                 <option>{{ 'thing.share' | i18n }}</option>
                 <option>{{ 'thing.full' | i18n }}</option>
-              </select>            
+              </select>
             </div>
-            <div class="col-md-1">
-              <button class="btn btn-success" ng-click="share(users.selection.id, selectedRight)"><strong>+</strong></button>
-            </div>
+            <button class="btn btn-success" ng-click="share(users.selection.id, selectedRight)">
+              <span class="fa fa-plus"></span>
+            </button>
           </div>
         </div>
+        <!-- shared users -->
+        <table class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr role="row">
+              <th>{{ 'user.user' | i18n }}</th>
+              <th style="width: 150px;">{{ 'user.permission' | i18n }}</th>
+              <th style="width: 50px;">{{ 'common.action' | i18n }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="userPerm in sharedUserPermissions">
+              <td>{{ userPerm.user.username }}</td>
+              <td>{{ 'thing.' + userPerm.permission | lowercase | i18n }}</td>
+              <td>
+                <button class="btn btn-danger btn-xs" style="margin-left: 9px;" ng-click="unshare(userPerm.user.id, userPerm.permission)">
+                  <span class="fa fa-times"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      
-        <!-- table -->
-      <div class="row">
-        <div class="col-md-10 list-group-item">
-          <button class="btn btn-default list-collapse-button"
-            type="button" data-toggle="collapse"
-            data-target=".list-options" aria-expanded="false">
-            <span class="fa fa-bars"></span>
-          </button>
-
-          <!-- table content -->
-          <div class="table-list margin-top-10">
-            <div class="table-responsive">
-              <table
-                class="table table-striped table-bordered table-hover">
-                <thead>
-                  <tr role="row">
-                    <th>{{ 'user.user' | i18n }}</th>
-                    <th style="width: 150px;">{{ 'user.permission'
-                      | i18n }}</th>
-                    <th style="width: 50px;">{{ 'common.action' |
-                      i18n }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="userPerm in sharedUserPermissions">
-                    <td>{{ userPerm.user.username }}</td>
-                    <td>{{ 'thing.' + userPerm.permission |
-                      lowercase | i18n }}</td>
-                    <td><button class="btn btn-danger btn-xs"
-                        style="margin-left: 9px;"
-                        ng-click="unshare(userPerm.user.id, userPerm.permission)">
-                        <strong>X</strong>
-                      </button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-      
     </div>
 
   </div>
-  <div class="col-lg-5"></div>
 </div>

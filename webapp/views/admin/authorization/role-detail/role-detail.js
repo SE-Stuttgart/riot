@@ -59,7 +59,6 @@ angular.module('riot').controller('RoleDetailCtrl',function($scope, $state, $sta
   };
 
   $scope.addRolePermission = function(role, permission) {
-    console.log(role, permission)
     if (role && permission) {
       return role.addPermission(permission.id).then(function() {
           $scope.alerts.close(alertId);

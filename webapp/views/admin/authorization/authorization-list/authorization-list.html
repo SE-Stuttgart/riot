@@ -13,20 +13,12 @@
     <!-- header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <div class="input-group input-limit">
-          <input type="text" class="form-control" ng-model="rolesList.limit">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-              <li><a ng-click="rolesList.limit=10" href="">10</a></li>
-              <li><a ng-click="rolesList.limit=20" href="">20</a></li>
-              <li><a ng-click="rolesList.limit=50" href="">50</a></li>
-              <li><a ng-click="rolesList.limit=100" href="">100</a></li>
-            </ul>
-          </div>
-        </div>
+        <select selectpicker class="form-control" data-width="100px" ng-model="rolesList.limit">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
       </div>
       <div class="col-sm-6 form-group">
         <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="rolesList.filter">
@@ -71,20 +63,12 @@
     <!-- header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <div class="input-group input-limit">
-          <input type="text" class="form-control" ng-model="permissionsList.limit">
-          <div class="input-group-btn">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-              <li><a ng-click="permissionsList.limit=10" href="">10</a></li>
-              <li><a ng-click="permissionsList.limit=20" href="">20</a></li>
-              <li><a ng-click="permissionsList.limit=50" href="">50</a></li>
-              <li><a ng-click="permissionsList.limit=100" href="">100</a></li>
-            </ul>
-          </div>
-        </div>
+        <select selectpicker class="form-control" data-width="100px" ng-model="permissionsList.limit">
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+        </select>
       </div>
       <div class="col-sm-6 form-group">
         <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="permissionsList.filter">
