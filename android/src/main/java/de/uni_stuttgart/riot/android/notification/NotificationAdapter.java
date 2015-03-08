@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class NotificationAdapter extends BaseAdapter {

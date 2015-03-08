@@ -5,7 +5,7 @@ import android.graphics.Paint;
 import android.support.v4.view.GestureDetectorCompat;
 import android.view.MotionEvent;
 import android.view.View;
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 
 //CHECKSTYLE:OFF TODO 
 public class CoffeeMachineCanvas extends View {

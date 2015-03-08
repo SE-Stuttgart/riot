@@ -11,7 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.ListView;
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.FilterItem;
 import de.uni_stuttgart.riot.android.HomeScreen;
 import de.uni_stuttgart.riot.android.HomeScreenButton;

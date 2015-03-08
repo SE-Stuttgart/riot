@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 
 /**

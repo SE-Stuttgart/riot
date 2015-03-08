@@ -15,7 +15,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;

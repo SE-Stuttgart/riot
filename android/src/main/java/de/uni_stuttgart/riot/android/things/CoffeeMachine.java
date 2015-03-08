@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 
 //CHECKSTYLE:OFF TODO 
 public class CoffeeMachine extends Activity {
