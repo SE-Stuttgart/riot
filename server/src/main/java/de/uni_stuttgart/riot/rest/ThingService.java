@@ -394,6 +394,8 @@ public class ThingService {
     /**
      * Called by the executing thing to raise an event.
      * 
+     * @param thingId
+     *            ID of the thing
      * @param eventInstance
      *            The event instance.
      * @return Nothing.
@@ -401,9 +403,9 @@ public class ThingService {
      *             If the corresponding thing or its event could not be found.
      */
     @POST
-    @Path("notify")
-    public Response notifyEvent(EventInstance eventInstance) throws DatasourceFindException {
-        assertPermitted(eventInstance.getThingId(), ThingPermission.EXECUTE);
+    @Path("{id}/notify")
+    public Response notifyEvent(@PathParam("id") long thingId, EventInstance eventInstance) throws DatasourceFindException {
+        assertPermitted(thingId, ThingPermission.EXECUTE);
         this.logic.fireEvent(eventInstance);
         return Response.noContent().build();
     }
@@ -413,14 +415,15 @@ public class ThingService {
      * 
      * @param actionInstance
      *            The action instance.
-     * 
+     * @param thingId
+     *            ID of the thing
      * @throws DatasourceFindException
      *             If the thing was not found.
      */
     @POST
-    @Path("action")
-    public void submitAction(ActionInstance actionInstance) throws DatasourceFindException {
-        assertPermitted(actionInstance.getThingId(), ThingPermission.CONTROL);
+    @Path("{id}/action")
+    public void submitAction(@PathParam("id") long thingId, ActionInstance actionInstance) throws DatasourceFindException {
+        assertPermitted(thingId, ThingPermission.CONTROL);
         this.logic.submitAction(actionInstance);
     }
 

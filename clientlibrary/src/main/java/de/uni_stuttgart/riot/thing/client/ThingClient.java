@@ -41,8 +41,8 @@ public class ThingClient {
     private static final String THINGS_PREFIX = PREFIX + "things/";
 
     private static final String POST_ADD_THING = PREFIX + "things";
-    private static final String POST_SUBMIT_ACTION = THINGS_PREFIX + "action";
-    private static final String POST_NOTIFY_EVENT = THINGS_PREFIX + "notify";
+    private static final String POST_SUBMIT_ACTION = "/action";
+    private static final String POST_NOTIFY_EVENT = "/notify";
 
     private static final String GET_THING = THINGS_PREFIX;
     private static final String GET_UPDATES_SUFFIX = "/updates";
@@ -237,7 +237,7 @@ public class ThingClient {
      *             if Action instance could not be submitted.
      */
     public void submitAction(ActionInstance actionInstance) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_SUBMIT_ACTION, actionInstance);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + actionInstance.getThingId() + POST_SUBMIT_ACTION, actionInstance);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
@@ -257,7 +257,7 @@ public class ThingClient {
      *             if Thing could not be added.
      */
     public void notifyEvent(EventInstance eventInstance) throws RequestException {
-        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + POST_NOTIFY_EVENT, eventInstance);
+        HttpResponse response = this.loginClient.post(this.loginClient.getServerUrl() + THINGS_PREFIX + eventInstance.getThingId() + POST_NOTIFY_EVENT, eventInstance);
         try {
             if (response.getEntity() != null) {
                 response.getEntity().consumeContent();
