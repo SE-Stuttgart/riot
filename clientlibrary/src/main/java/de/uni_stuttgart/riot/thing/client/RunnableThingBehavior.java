@@ -1,12 +1,19 @@
 package de.uni_stuttgart.riot.thing.client;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 
 /**
  * A {@link ThingBehavior} that simulates the actual thing by running a thread that regularly polls the server for updates.
  */
 public abstract class RunnableThingBehavior extends ExecutingThingBehavior implements Runnable {
+
+    private final Logger logger = LoggerFactory.getLogger(RunnableThingBehavior.class);
 
     /** The delay between update polling requests. */
     private final long delay;
@@ -48,9 +55,12 @@ public abstract class RunnableThingBehavior extends ExecutingThingBehavior imple
             while (started) {
                 try {
                     fetchUpdates();
-                } catch (RequestException e) {
-                    // FIXME handle exception, stop thread or continue trying send requests?
-
+                } catch (IOException e) {
+                    started = false;
+                    logger.error("Error when polling the server", e);
+                } catch (NotFoundException e) {
+                    started = false;
+                    logger.error("Error when polling the server", e);
                 }
                 Thread.sleep(this.delay);
             }
@@ -60,7 +70,7 @@ public abstract class RunnableThingBehavior extends ExecutingThingBehavior imple
         try {
             shutdown();
         } catch (Exception e) {
-            // FIXME What to do with this exception?
+            logger.error("Error during shutdown", e);
         }
     }
 

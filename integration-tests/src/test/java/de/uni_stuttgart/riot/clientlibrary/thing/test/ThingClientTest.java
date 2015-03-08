@@ -11,14 +11,13 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uni_stuttgart.riot.clientlibrary.LoginClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
+import de.uni_stuttgart.riot.clientlibrary.BaseClientTest;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -35,7 +34,7 @@ import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
-public class ThingClientTest extends ShiroEnabledTest {
+public class ThingClientTest extends BaseClientTest {
 
     @Before
     public void clearThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -44,14 +43,12 @@ public class ThingClientTest extends ShiroEnabledTest {
         field.set(null, null);
     }
 
-    public ThingClient getLoggedInThingClient() throws ClientProtocolException, RequestException, IOException {
-        LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
-        loginClient.login("Yoda", "YodaPW");
-        return new ThingClient(loginClient);
+    public ThingClient getLoggedInThingClient() {
+        return new ThingClient(getLoggedInConnector());
     }
 
     @Test
-    public void registerNewThing() throws ClientProtocolException, RequestException, IOException {
+    public void registerNewThing() throws RequestException, IOException, NotFoundException {
 
         ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
 
@@ -82,14 +79,14 @@ public class ThingClientTest extends ShiroEnabledTest {
         try {
             thingClient.getLastOnline(thing.getId());
             fail();
-        } catch (RequestException e) {
+        } catch (NotFoundException e) {
             // Expected
         }
 
     }
 
     @Test
-    public void registerExistingThing() throws RequestException, ClientProtocolException, IOException {
+    public void registerExistingThing() throws RequestException, IOException, NotFoundException {
 
         ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
 
@@ -103,7 +100,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     }
 
     @Test
-    public void registerEventTest() throws ClientProtocolException, RequestException, IOException {
+    public void registerEventTest() throws RequestException, IOException, NotFoundException {
 
         // Build the thing that will receive the event.
         ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
@@ -136,7 +133,7 @@ public class ThingClientTest extends ShiroEnabledTest {
     }
 
     @Test
-    public void fireActionTest() throws ClientProtocolException, RequestException, IOException {
+    public void fireActionTest() throws RequestException, IOException, NotFoundException {
 
         // Build the thing that the action will be executed on.
         ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
@@ -165,9 +162,9 @@ public class ThingClientTest extends ShiroEnabledTest {
     public void shareTest() throws Exception {
         ThingClient thingClientYoda = this.getLoggedInThingClient();
 
-        LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
-        loginClient.login("R2D2", "R2D2PW");
-        ThingClient thingClientR2D2 = new ThingClient(loginClient);
+        ServerConnector secondConnector = produceNewServerConnector();
+        secondConnector.login("R2D2", "R2D2PW");
+        ThingClient thingClientR2D2 = new ThingClient(secondConnector);
 
         // try to read the thing with the id 1, should fail
         try {
@@ -181,7 +178,7 @@ public class ThingClientTest extends ShiroEnabledTest {
         thingClientYoda.share(1, 2, ThingPermission.READ);
         Thing thing = thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
         assertThat(thing.getName(), is("My Test Thing"));
-        
+
         // check the permissions reported by the server
         Map<Long, Set<ThingPermission>> permissions = thingClientYoda.getThingUserPermissions(1);
         assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));

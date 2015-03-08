@@ -12,9 +12,10 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_stuttgart.riot.clientlibrary.LoginClient;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.TokenManager;
+import de.uni_stuttgart.riot.clientlibrary.ConnectionInformation;
+import de.uni_stuttgart.riot.clientlibrary.ConnectionInformationProvider;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
@@ -32,8 +33,8 @@ import javafx.util.Pair;
  */
 public class SimulationApplication extends Application {
 
+    private static final String REST_ROOT_PATH = "/riot/api/v1/";
     private static final int THREAD_POOL_SIZE = 5;
-
     private static final long POLLING_INTERVAL = 100;
 
     private final Logger logger = LoggerFactory.getLogger(SimulationApplication.class);
@@ -105,7 +106,7 @@ public class SimulationApplication extends Application {
             return;
         }
 
-        // Get the thing name and host address
+        // Get the thing name, host address and port.
         final String thingName = settings.getProperty("name");
         if (thingName == null || thingName.isEmpty()) {
             logger.error("Please specify the thing name as a property 'name' in the configuration file.");
@@ -117,11 +118,16 @@ public class SimulationApplication extends Application {
             logger.error("Please specify the host address (IP or domain name including port) as a property 'host' in the configuration file.");
             System.exit(1);
         }
+        final int port = Integer.parseInt(settings.getProperty("port", "8181"));
 
         // Initialize the client library.
-        final LoginClient loginClient = new LoginClient(protocol + "://" + host + "/riot", thingName, new TokenManager() {
+        final ServerConnector connector = new ServerConnector(new ConnectionInformationProvider() {
             public void setRefreshToken(String refreshToken) {
-                settings.setProperty("refreshToken", refreshToken);
+                if (refreshToken == null) {
+                    settings.remove("refreshToken");
+                } else {
+                    settings.setProperty("refreshToken", refreshToken);
+                }
                 try {
                     settings.store(new FileOutputStream(configurationFile), null);
                 } catch (IOException e) {
@@ -130,7 +136,11 @@ public class SimulationApplication extends Application {
             }
 
             public void setAccessToken(String accessToken) {
-                settings.setProperty("accessToken", accessToken);
+                if (accessToken == null) {
+                    settings.remove("accessToken");
+                } else {
+                    settings.setProperty("accessToken", accessToken);
+                }
                 try {
                     settings.store(new FileOutputStream(configurationFile), null);
                 } catch (IOException e) {
@@ -145,26 +155,45 @@ public class SimulationApplication extends Application {
             public String getAccessToken() {
                 return settings.getProperty("accessToken");
             }
+
+            public boolean relogin(ServerConnector serverConnector) {
+                Pair<String, String> credentials = LoginDialog.showDialog(primaryStage);
+                if (credentials == null) {
+                    logger.info("Aborting due to missing credentials");
+                    System.exit(0);
+                    return false;
+                }
+
+                try {
+                    serverConnector.login(credentials.getKey(), credentials.getValue());
+                    return true;
+                } catch (Exception e) {
+                    logger.info("Failed to login using the specified credentials: " + e.getMessage());
+                    System.exit(1);
+                    return false;
+                }
+            }
+
+            public ConnectionInformation getNewInformation(ConnectionInformation oldInformation) {
+                return null; // Not supported!
+            }
+
+            public ConnectionInformation getInformation() {
+                return new ConnectionInformation(protocol, host, port, REST_ROOT_PATH);
+            }
+
+            public void invalidateAccessToken() {
+                setAccessToken(null);
+            }
+
+            @Override
+            public boolean handlesTokenRefresh() {
+                return false;
+            }
         });
 
-        // Login if necessary.
-        if (!settings.containsKey("accessToken")) {
-            Pair<String, String> credentials = LoginDialog.showDialog(primaryStage);
-            if (credentials == null) {
-                logger.info("Aborting due to missing credentials");
-                System.exit(0);
-            }
-
-            try {
-                loginClient.login(credentials.getKey(), credentials.getValue());
-            } catch (Exception e) {
-                logger.info("Failed to login using the specified credentials: " + e.getMessage());
-                System.exit(1);
-            }
-        }
-
         // Create the ThingClient and the Thing that we will work with.
-        final ThingClient thingClient = new ThingClient(loginClient);
+        final ThingClient thingClient = new ThingClient(connector);
         final ThingBehaviorFactory<SimulatedThingBehavior> simulatedBehaviorFactory = new ThingBehaviorFactory<SimulatedThingBehavior>() {
             @Override
             public SimulatedThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
@@ -257,5 +286,4 @@ public class SimulationApplication extends Application {
             }
         }, 0, POLLING_INTERVAL, TimeUnit.MILLISECONDS);
     }
-
 }

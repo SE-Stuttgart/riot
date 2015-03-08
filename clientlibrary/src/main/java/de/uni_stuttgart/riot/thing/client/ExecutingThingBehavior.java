@@ -1,9 +1,12 @@
 package de.uni_stuttgart.riot.thing.client;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -104,6 +107,8 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
             sendToServer(eventInstance);
         } catch (RequestException e) {
             logger.error("Error when executing event {}", eventInstance, e);
+        } catch (IOException e) {
+            logger.error("Error when executing event {}", eventInstance, e);
         }
     }
 
@@ -133,8 +138,10 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
      * 
      * @throws RequestException
      *             When the unregistering fails.
+     * @throws IOException
+     *             When a network error occured.
      */
-    public void unregisterAndShutdown() throws RequestException {
+    public void unregisterAndShutdown() throws RequestException, IOException {
         Exception exception = null;
         try {
             shutdown();
@@ -165,8 +172,12 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
      * @return The thing's behavior (you can access the thing through {@link ThingBehavior#getThing()}.
      * @throws RequestException
      *             When querying the server fails.
+     * @throws NotFoundException
+     *             If the thing does not exist.
+     * @throws IOException
+     *             When a network error occured.
      */
-    public static <T extends Thing, B extends ExecutingThingBehavior> B launchExistingThing(Class<T> thingType, ThingClient thingClient, long id, ThingBehaviorFactory<B> behaviorFactory) throws RequestException {
+    public static <T extends Thing, B extends ExecutingThingBehavior> B launchExistingThing(Class<T> thingType, ThingClient thingClient, long id, ThingBehaviorFactory<B> behaviorFactory) throws RequestException, IOException, NotFoundException {
         Thing thing = thingClient.getExistingThing(id, behaviorFactory);
         if (!thingType.isInstance(thing)) {
             throw new IllegalArgumentException("The returned thing is of type " + thing.getClass() + " instead of " + thingType);
@@ -195,8 +206,10 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
      * @return The thing's behavior (you can access the thing through {@link ThingBehavior#getThing()}.
      * @throws RequestException
      *             When querying the server fails.
+     * @throws IOException
+     *             When a network error occured.
      */
-    public static <T extends Thing, B extends ExecutingThingBehavior> B launchNewThing(Class<T> thingType, ThingClient thingClient, String name, ThingBehaviorFactory<B> behaviorFactory) throws RequestException {
+    public static <T extends Thing, B extends ExecutingThingBehavior> B launchNewThing(Class<T> thingType, ThingClient thingClient, String name, ThingBehaviorFactory<B> behaviorFactory) throws RequestException, IOException {
         Thing thing = thingClient.registerNewThing(name, thingType.getName(), null, behaviorFactory);
         if (!thingType.isInstance(thing)) {
             throw new IllegalArgumentException("The returned thing is of type " + thing.getClass() + " instead of " + thingType);

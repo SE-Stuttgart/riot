@@ -6,10 +6,13 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -87,8 +90,10 @@ public class Fridge extends Thing {
      * @return The behavior of the fridge. Call {@link FridgeBehavior#getFridge()} to get the fridge.
      * @throws RequestException
      *             When registering the thing with the server failed.
+     * @throws IOException
+     *             When a network error occured.
      */
-    public static FridgeBehavior create(ThingClient client, String name) throws RequestException {
+    public static FridgeBehavior create(ThingClient client, String name) throws RequestException, IOException {
         @SuppressWarnings("unchecked")
         ThingBehaviorFactory<FridgeBehavior> behaviorFactory = mock(ThingBehaviorFactory.class);
         when(behaviorFactory.newBehavior(anyLong(), anyString(), any())).thenReturn(new FridgeBehavior(client));
@@ -120,7 +125,7 @@ public class Fridge extends Thing {
         }
 
         @Override
-        protected void fetchUpdates() throws RequestException {
+        protected void fetchUpdates() throws IOException, NotFoundException {
             super.fetchUpdates();
         }
 

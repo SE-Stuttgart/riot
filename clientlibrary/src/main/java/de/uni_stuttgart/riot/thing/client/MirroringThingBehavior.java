@@ -1,9 +1,11 @@
 package de.uni_stuttgart.riot.thing.client;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -57,10 +59,12 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
     /**
      * Fetches the updates from the server and executes them locally.
      * 
-     * @throws RequestException
-     *             When querying the server failed.
+     * @throws NotFoundException
+     *             When the thing is not known to the server anymore.
+     * @throws IOException
+     *             When a network error occured.
      */
-    protected void fetchUpdates() throws RequestException {
+    protected void fetchUpdates() throws IOException, NotFoundException {
         applyUpdates(downloadUpdates());
     }
 
@@ -68,11 +72,17 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      * Downloads the updates from the server.
      * 
      * @return The updates.
-     * @throws RequestException
-     *             When querying the server fails.
+     * @throws NotFoundException
+     *             When the thing is not known to the server anymore.
+     * @throws IOException
+     *             When a network error occured.
      */
-    protected ThingUpdatesResponse downloadUpdates() throws RequestException {
-        return getClient().getUpdates(getThing().getId());
+    protected ThingUpdatesResponse downloadUpdates() throws IOException, NotFoundException {
+        try {
+            return getClient().getUpdates(getThing().getId());
+        } catch (RequestException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -102,20 +112,24 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      * @param id
      *            The ID of the other thing.
      * @return The other thing.
-     * @throws ThingNotFoundException
+     * @throws NotFoundException
      *             When the thing could not be resolved.
+     * @throws IOException
+     *             When a network error occured.
      */
-    protected Thing getOtherThing(long id) throws ThingNotFoundException {
+    protected Thing getOtherThing(long id) throws NotFoundException, IOException {
         MirroredThingBehavior behavior = knownOtherThings.get(id);
         if (behavior == null) {
             try {
                 getClient().getExistingThing(id, behaviorFactory);
+            } catch (NotFoundException e) {
+                throw new NotFoundException("Thing " + id + " could not be resolved!", e);
             } catch (RequestException e) {
-                throw new ThingNotFoundException("Thing " + id + " could not be resolved!", e);
+                throw new RuntimeException(e);
             }
             behavior = knownOtherThings.get(id);
             if (behavior == null) {
-                throw new ThingNotFoundException("Thing " + id + " could not be resolved!");
+                throw new NotFoundException("Thing " + id + " could not be resolved!");
             }
         }
         return behavior.getThing();
@@ -132,10 +146,12 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      * @param expectedType
      *            The type of the other thing.
      * @return The other thing.
-     * @throws ThingNotFoundException
+     * @throws IOException
+     *             When a network error occured.
+     * @throws NotFoundException
      *             When the thing could not be resolved.
      */
-    protected <T extends Thing> T getOtherThing(long id, Class<T> expectedType) throws ThingNotFoundException {
+    protected <T extends Thing> T getOtherThing(long id, Class<T> expectedType) throws NotFoundException, IOException {
         return expectedType.cast(getOtherThing(id));
     }
 
@@ -158,8 +174,12 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      * 
      * @param otherThing
      *            The thing to update.
+     * @throws NotFoundException
+     *             When the thing does not exist anymore.
+     * @throws IOException
+     *             When a network error occured.
      */
-    protected void updateThingState(Thing otherThing) {
+    protected void updateThingState(Thing otherThing) throws IOException, NotFoundException {
         assertOwnOtherThing(otherThing);
         try {
             ThingState state = getClient().getThingState(otherThing.getId());

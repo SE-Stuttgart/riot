@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.thing.client;
 
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -60,6 +61,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
             getClient().submitAction(actionInstance);
         } catch (RequestException e) {
             logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, getThing().getId(), e);
+        } catch (IOException e) {
+            logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, getThing().getId(), e);
         }
     }
 
@@ -88,6 +91,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
                 registeredEvents.add(event.getName());
             } catch (RequestException e) {
                 logger.error("Could not register to event " + event.getName() + " of thing " + getThing().getId());
+            } catch (IOException e) {
+                logger.error("Could not register to event " + event.getName() + " of thing " + getThing().getId());
             }
         }
     }
@@ -103,6 +108,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
                 getClient().unregisterFromEvent(mirroringBehavior.getThing().getId(), request);
                 registeredEvents.remove(event.getName());
             } catch (RequestException e) {
+                logger.error("Could not unregister from event " + event.getName() + " of thing " + getThing().getId());
+            } catch (IOException e) {
                 logger.error("Could not unregister from event " + event.getName() + " of thing " + getThing().getId());
             }
         }
@@ -137,6 +144,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
             getClient().registerToEvents(mirroringBehavior.getThing().getId(), requests);
         } catch (RequestException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         registeredEvents.addAll(eventNames);
     }
@@ -160,6 +169,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
             getClient().unregisterFromEvents(mirroringBehavior.getThing().getId(), requests);
         } catch (RequestException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         registeredEvents.removeAll(eventNames);
     }
@@ -175,8 +186,10 @@ public class MirroredThingBehavior extends ClientThingBehavior {
      * 
      * @throws RequestException
      *             When the request failed.
+     * @throws IOException
+     *             When a network error occured.
      */
-    private void unregisterAllEvents() throws RequestException {
+    private void unregisterAllEvents() throws RequestException, IOException {
         if (registeredEvents.isEmpty()) {
             return;
         }

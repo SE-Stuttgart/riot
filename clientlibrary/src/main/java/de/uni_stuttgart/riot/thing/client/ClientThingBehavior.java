@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.thing.client;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import java.io.IOException;
+
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
@@ -43,8 +45,10 @@ public abstract class ClientThingBehavior extends ThingBehavior {
      *            The event instance.
      * @throws RequestException
      *             When sending to the server failed.
+     * @throws IOException
+     *             When a network error occured.
      */
-    protected void sendToServer(EventInstance eventInstance) throws RequestException {
+    protected void sendToServer(EventInstance eventInstance) throws RequestException, IOException {
         thingClient.notifyEvent(eventInstance);
     }
 

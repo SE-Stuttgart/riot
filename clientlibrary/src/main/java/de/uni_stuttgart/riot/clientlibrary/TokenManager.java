@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.clientlibrary.usermanagement.client;
+package de.uni_stuttgart.riot.clientlibrary;
 
 /**
  * The Token Manager defines how the tokens should be managed in the application. For example android variables can get lost, if the
@@ -22,7 +22,12 @@ public interface TokenManager {
      *            the new access token
      */
     void setAccessToken(String accessToken);
-
+    
+    /**
+     * Mark the current access token as invalid and never return it again.
+     */
+    void invalidateAccessToken();
+    
     /**
      * Gets the refresh token.
      *
@@ -37,4 +42,5 @@ public interface TokenManager {
      *            the new refresh token
      */
     void setRefreshToken(String refreshToken);
+
 }

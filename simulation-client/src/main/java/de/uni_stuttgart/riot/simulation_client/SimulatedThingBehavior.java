@@ -1,11 +1,12 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -113,7 +114,7 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
     }
 
     @Override
-    protected void fetchUpdates() throws RequestException {
+    protected void fetchUpdates() throws IOException, NotFoundException {
         super.fetchUpdates();
     }
 

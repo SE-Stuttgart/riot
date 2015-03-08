@@ -11,34 +11,29 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import de.uni_stuttgart.riot.clientlibrary.LoginClient;
+import de.uni_stuttgart.riot.clientlibrary.BaseClientTest;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.thing.test.Fridge.OutOfFoodEventInstance;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.DefaultTokenManager;
-import de.uni_stuttgart.riot.clientlibrary.usermanagement.client.RequestException;
-import de.uni_stuttgart.riot.commons.test.ShiroEnabledTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.client.DeviceBehavior;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
-import de.uni_stuttgart.riot.thing.client.ThingNotFoundException;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
-public class ThingTest extends ShiroEnabledTest {
+public class ThingTest extends BaseClientTest {
 
-    private ThingClient getLoggedInThingClient() throws ClientProtocolException, RequestException, IOException {
-        LoginClient loginClient = new LoginClient("http://localhost:" + getPort(), "TestThing", new DefaultTokenManager());
-        loginClient.login("Yoda", "YodaPW");
-        return new ThingClient(loginClient);
+    private ThingClient getLoggedInThingClient() throws RequestException, IOException {
+        return new ThingClient(getLoggedInConnector());
     }
 
     @Before
@@ -49,7 +44,7 @@ public class ThingTest extends ShiroEnabledTest {
     }
 
     @Test
-    public void scenarioFridge() throws ClientProtocolException, RequestException, IOException, ThingNotFoundException {
+    public void scenarioFridge() throws RequestException, IOException, NotFoundException {
 
         Fridge.FridgeBehavior fridgeBehavior = Fridge.create(getLoggedInThingClient(), "Peter");
         Fridge fridge = fridgeBehavior.getFridge();
@@ -111,7 +106,7 @@ public class ThingTest extends ShiroEnabledTest {
     }
 
     @Test
-    public void scenarioExistingTestThing() throws ClientProtocolException, RequestException, IOException {
+    public void scenarioExistingTestThing() throws RequestException, IOException, NotFoundException {
         // Login as the existing test thing with ID 1.
         ThingClient thingClient = getLoggedInThingClient();
         TestExecutingThingBehavior behavior = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
@@ -119,7 +114,7 @@ public class ThingTest extends ShiroEnabledTest {
     }
 
     @Test
-    public void getAssignedThingsTest() throws ClientProtocolException, RequestException, IOException, ThingNotFoundException {
+    public void getAssignedThingsTest() throws RequestException, IOException, NotFoundException {
         // Getting a LoginCLient
         ThingClient thingClient = this.getLoggedInThingClient();
 
