@@ -41,7 +41,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
-        if (!accountType.equals(AuthConstants.ACCOUNT_TYPE) || !authTokenType.equals(AuthConstants.ACCESS_TOKEN_TYPE)) {
+        if (!accountType.equals(AuthConstants.ACCOUNT_TYPE) || (authTokenType != null && !authTokenType.equals(AuthConstants.ACCESS_TOKEN_TYPE))) {
             Log.v(TAG, "addAccount for invalid types " + accountType + " " + authTokenType);
             return null;
         }
