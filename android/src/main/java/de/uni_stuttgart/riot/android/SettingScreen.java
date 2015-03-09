@@ -1,8 +1,8 @@
 package de.uni_stuttgart.riot.android;
 
-import android.accounts.Account;
+import java.io.IOException;
+
 import android.app.ActionBar;
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -10,16 +10,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import de.uni_stuttgart.riot.android.communication.ActivityServerConnection;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.language.Language;
 import de.uni_stuttgart.riot.android.serverconfiguration.ServerConfigurationScreen;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.clientlibrary.client.UsermanagementClient;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
  * Setting screen.
@@ -28,12 +33,6 @@ public class SettingScreen extends Activity {
 
     /** The Constant for the Administrator Role. TODO: using MASTER for testing. Change to ADMIN. */
     private static final String ADMIN_ROLE = "Master";
-
-    /** Flag that tells if current logged in user has Administrator Role. */
-    private boolean isAdmin = false;
-
-    /** The current logged in android user. */
-    private AndroidUser androidUser;
 
     private Button btnLanguage;
     private Button btnColorCalendar;
@@ -160,73 +159,54 @@ public class SettingScreen extends Activity {
     }
 
     /**
-     * Check if current user has ADMIN role.
-     */
-    private void checkCurrentUserRole() {
-
-        if (androidUser == null) {
-            // TODO: how to find current username?
-            Account[] accounts = AndroidUser.getAccounts(this);
-            if (accounts != null) {
-                androidUser = new AndroidUser(this, accounts[0].name);
-            }
-        }
-
-        // FIXME androidUser.isLoggedIn() -> no server request works after this is called
-        if (androidUser != null && /* androidUser.isLoggedIn() && */androidUser.hasRole(ADMIN_ROLE)) {
-            this.isAdmin = true;
-        } else {
-            this.isAdmin = false;
-        }
-    }
-
-    /**
-     * Show admin settings button to go to server settings activity.
+     * Shows admin settings button to go to server settings activity, but only if logged in user has admin role.
      */
     private void showAdminSettings() {
-        // if logged in with admin rights, shows server configuration option
-        Thread thread = new Thread() {
+
+        new ActivityServerConnection<User>(this) {
             @Override
-            public void run() {
-                checkCurrentUserRole();
+            protected User executeRequest(ServerConnector serverConnector) throws IOException, RequestException {
+                try {
+                    Log.v("SettingScreen", "getting current user.");
+                    return new UsermanagementClient(serverConnector).getCurrentUser();
+                } catch (NotFoundException e) {
+                    Log.v("SettingScreen", "Exception getting current user.", e);
+                    throw new RuntimeException(e);
+                }
             }
-        };
-        thread.start();
 
-        // waits for thread to finish processing
-        try {
-            final int timeout = 2000;
-            thread.join(timeout);
-            if (!isAdmin) {
-                return;
-            }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
-        }
-
-        // current user is ADMIN
-
-        LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        TextView label = new TextView(this);
-        label.setText(R.string.serverConfiguration);
-        final int paddingStart = 30;
-        final int paddingTop = 50;
-        final int paddingBottom = 10;
-        label.setPaddingRelative(paddingStart, paddingTop, 0, paddingBottom);
-
-        Button btnManageConfiguration = new Button(this);
-        btnManageConfiguration.setText(R.string.manageConfiguration);
-        btnManageConfiguration.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startServerConfigurationActivity();
-            }
-        });
+            protected void onSuccess(User result) {
+                Log.v("SettingScreen", "Received user: " + result.getUsername());
+                boolean hasAdminRole = false;
+                for (Role role : result.getRoles()) {
+                    if (role.getRoleName().equalsIgnoreCase(ADMIN_ROLE)) {
+                        hasAdminRole = true;
+                        break;
+                    }
+                }
 
-        LinearLayout ll = (LinearLayout) findViewById(R.id.settingScreen);
-        ll.addView(label, lp);
-        ll.addView(btnManageConfiguration, lp);
+                if (hasAdminRole) {
+                    // current user is ADMIN
+                    ((TextView) findViewById(R.id.textViewServerConfig)).setVisibility(View.VISIBLE);
+                    ((View) findViewById(R.id.viewServerConfig)).setVisibility(View.VISIBLE);
+
+                    Button btnConfig = (Button) findViewById(R.id.btnManageConfig);
+                    btnConfig.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startServerConfigurationActivity();
+                        }
+                    });
+                    btnConfig.setVisibility(View.VISIBLE);
+
+                } else {
+                    ((Button) findViewById(R.id.btnManageConfig)).setVisibility(View.GONE);
+                    ((TextView) findViewById(R.id.textViewServerConfig)).setVisibility(View.GONE);
+                    ((View) findViewById(R.id.viewServerConfig)).setVisibility(View.GONE);
+                }
+            }
+        }.execute();
     }
 
     /**

@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 
 /**
  * Dialog to edit a server configuration.

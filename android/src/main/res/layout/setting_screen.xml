@@ -42,5 +42,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/changeColor" />
+    
+    <TextView
+        android:id="@+id/textViewServerConfig"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingTop="20dp"
+        android:text="@string/serverConfiguration" />
+
+    <View
+        android:id="@+id/viewServerConfig"
+        android:visibility="gone"
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp" />
+
+    <Button
+        android:id="@+id/btnManageConfig"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/manageConfiguration" />
 
 </LinearLayout>
