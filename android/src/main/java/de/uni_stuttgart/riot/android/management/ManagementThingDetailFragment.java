@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.management;
 
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -21,7 +22,6 @@ import android.widget.ToggleButton;
 
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 <<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
@@ -51,15 +51,22 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
-    // Is needed to set ids for grouped views
-    private static final AtomicInteger GENERATED_ID = new AtomicInteger(1);
-
     private String viewTitle = "";
     private Thing theThing;
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.fragment_thing_detail;
+        return R.layout.management_detail;
+    }
+
+    @Override
+    protected Drawable getHomeIcon() {
+        return null; // ToDo load images
+    }
+
+    @Override
+    protected int getHomeLogo() {
+        return R.drawable.ic_drawer;
     }
 
     @Override
@@ -88,6 +95,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
             // Save the view title
             this.viewTitle = this.theThing.getName();
+
+            if(findViewById(R.id.thing_linear_layout) == null) {
+                return;
+            }
+
+            // Clear all children
+            ((LinearLayout) findViewById(R.id.thing_linear_layout)).removeAllViews();
 
             // Add items to the main layout
             for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
@@ -163,27 +177,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         } catch (Exception e) { // FIXME choose the right one
             // Show a message that there was an failure (ToDo output)
             IM.INSTANCES.getMH().writeErrorMessage("Error in updating property: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Generate a value suitable for use in View.setId(int).
-     * This value will not collide with ID values generated at build time by aapt for R.id.
-     *
-     * @return a generated ID value
-     */
-    private static int generateViewId() {
-        for (; ; ) {
-            final int result = GENERATED_ID.get();
-            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
-            final int maxValue = 0x00FFFFFF;
-            int newValue = result + 1;
-            if (newValue > maxValue) {
-                newValue = 1; // Roll over to 1, not 0.
-            }
-            if (GENERATED_ID.compareAndSet(result, newValue)) {
-                return result;
-            }
         }
     }
 

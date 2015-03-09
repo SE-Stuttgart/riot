@@ -16,4 +16,5 @@
     <dimen name="list_item_details_size">50px</dimen>
     <dimen name="group_padding">10px</dimen>
     <dimen name="slider_edit_text_width">400px</dimen>
+    <dimen name="management_menu_item_size">28dp</dimen>
 </resources>

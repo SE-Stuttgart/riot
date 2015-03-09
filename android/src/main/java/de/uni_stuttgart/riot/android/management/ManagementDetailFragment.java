@@ -48,13 +48,6 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
         displayDetailData();
     }
 
-    @Override
-    protected void doOnRefreshClick() {
-        // Reload this activity
-        finish();
-        startActivity(getIntent());
-    }
-
     /**
      * Returns a list of all data that will be displayed.
      *

@@ -116,12 +116,16 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected void getOnlineState(final Object item, final View view) {
+        if (item == null) {
+            return;
+        }
         new Thread() {
 
             @Override
             public void run() {
                 try {
-                    doUpdateOnlineState(view, RIOTApiClient.getInstance().getThingClient().getOnlineState(((ThingDescription) item).getThingId()));
+                    doUpdateOnlineState(view, null);
+                    // FIXME - .getOnlineState() NULL POINTER!! doUpdateOnlineState(view, RIOTApiClient.getInstance().getThingClient().getOnlineState(((ThingDescription) item).getThingId()));
                 } catch (Exception e) {
                     // FIXME output message!!
                     IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: " + e.getMessage());

@@ -10,8 +10,6 @@
         android:layout_height="match_parent"
         android:padding="@dimen/fragment_main_margin">
 
-        <include layout="@layout/fragment_edit_buttons" />
-
         <LinearLayout
             android:id="@+id/thing_linear_layout"
             android:orientation="vertical"

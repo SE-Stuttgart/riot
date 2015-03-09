@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.management;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -24,6 +25,10 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 =======
 >>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 =======
+=======
+import android.graphics.drawable.Drawable;
+
+>>>>>>> RIOT-87:Android:Add management action menu
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
@@ -117,7 +122,17 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.fragment_user_edit;
+        return R.layout.management_detail_user;
+    }
+
+    @Override
+    protected Drawable getHomeIcon() {
+        return null;
+    }
+
+    @Override
+    protected int getHomeLogo() {
+        return 0;
     }
 
     @Override

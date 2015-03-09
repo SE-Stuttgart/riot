@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -28,7 +29,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
     @Override
     protected int getLayoutResource() {
-        return R.layout.fragment_management_list;
+        return R.layout.management_list;
     }
 
     @Override
@@ -44,7 +45,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
             return;
         }
 
-        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), this, R.layout.list_item_managment_list, data);
+        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), this, R.layout.managment_list_item, data);
         ListView listView = (ListView) findViewById(R.id.management_list_view);
         if (listView == null) {
             // Show a message that no list view was found (ToDo output message!)
@@ -62,10 +63,15 @@ public abstract class ManagementListFragment extends ManagementFragment {
         // managementListAdapter.notifyDataSetChanged();
     }
 
+
     @Override
-    protected void doOnRefreshClick() {
-        // Refresh this activity
-        displayData();
+    protected Drawable getHomeIcon() {
+        return null;
+    }
+
+    @Override
+    protected int getHomeLogo() {
+        return 0;
     }
 
     /**
