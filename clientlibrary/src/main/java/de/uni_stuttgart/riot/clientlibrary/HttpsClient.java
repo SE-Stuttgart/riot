@@ -89,7 +89,7 @@ public class HttpsClient extends DefaultHttpClient {
 
             // Hostname verification from certificate
             // http://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html#d4e506
-            sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
             return sf;
         } catch (Exception e) {
             throw new AssertionError(e);
