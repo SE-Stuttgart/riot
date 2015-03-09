@@ -118,9 +118,11 @@
               <td>{{ userPerm.user.username }}</td>
               <td>{{ 'thing.' + userPerm.permission | lowercase | i18n }}</td>
               <td>
-                <button class="btn btn-danger btn-xs" style="margin-left: 9px;" ng-click="unshare(userPerm.user.id, userPerm.permission)">
-                  <span class="fa fa-times"></span>
-                </button>
+                <div confirm-dialog title="'common.delete' | i18n" text="'thing.deleteShare' | i18n" confirm="unshare(userPerm.user.id, userPerm.permission)">
+                  <button class="btn btn-danger btn-xs" style="margin-left: 9px;">
+                    <span class="fa fa-times"></span>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $state, $stateParams, $modal, Thing, User, locale){
+angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $rootScope, $state, $stateParams, $modal, Thing, User, locale){
   var alertId = null;
 
   var init = function() {
@@ -74,10 +74,12 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
       
       angular.forEach(userPermissions, function(value) {
         angular.forEach(value.value, function(permission) {
-          $scope.sharedUserPermissions.push({
-            user: value.key,
-            permission: permission
-          });
+          if(value.key.username !== $rootScope.user().username) {
+            $scope.sharedUserPermissions.push({
+              user: value.key,
+              permission: permission
+            });
+          }
         });
       });
     });
@@ -87,6 +89,15 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $sta
     User.getList({limit: $scope.users.pagination.limit, offset: ($scope.users.pagination.current - 1) * $scope.users.pagination.limit}).then(function(users) {
       $scope.users.pagination.limit = users.pagination.limit;
       $scope.users.pagination.total = users.pagination.total;
+      
+      //remove current user from array, so he can not be used for sharing
+      for (var i = 0; i < users.length; i++) {
+        if(users[i].username === $rootScope.user().username) {
+          users.splice(i, 1);
+          break;
+        }
+      }
+      
       $scope.users.data = users;
     });
   };
