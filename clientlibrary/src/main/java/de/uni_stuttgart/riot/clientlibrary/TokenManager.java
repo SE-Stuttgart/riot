@@ -22,12 +22,12 @@ public interface TokenManager {
      *            the new access token
      */
     void setAccessToken(String accessToken);
-    
+
     /**
      * Mark the current access token as invalid and never return it again.
      */
     void invalidateAccessToken();
-    
+
     /**
      * Gets the refresh token.
      *
@@ -36,7 +36,9 @@ public interface TokenManager {
     String getRefreshToken();
 
     /**
-     * Sets the refresh token.
+     * Sets the refresh token. Note that using this method may clear the access token (but does not have to)! For example, the Android
+     * AccountManager clears all AuthTokens when the password (=refresh token) is changed. So always call {@link #setRefreshToken(String)}
+     * before {@link #setAccessToken(String)}.
      *
      * @param refreshToken
      *            the new refresh token

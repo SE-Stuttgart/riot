@@ -102,8 +102,9 @@ public final class ServerConnector {
      */
     public User login(String username, String password) throws IOException, RequestException, UnauthenticatedException {
         AuthenticationResponse response = executeLoginRequest(username, password);
-        tokenManager.setAccessToken(response.getAccessToken());
+        // Set refresh token before auth token! See TokenManager.setRefreshToken() for more information.
         tokenManager.setRefreshToken(response.getRefreshToken());
+        tokenManager.setAccessToken(response.getAccessToken());
         currentUser = response.getUser();
         return currentUser;
     }
@@ -169,7 +170,7 @@ public final class ServerConnector {
         if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             return readResponseContent(response, AuthenticationResponse.class);
         } else if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            throw new UnauthenticatedException("The server did not accept the refreshToken!");
+            throw new UnauthenticatedException("The server did not accept the password or refreshToken!");
         } else {
             throwPlainError(PUT_REFRESH, response);
             return null;
@@ -186,8 +187,9 @@ public final class ServerConnector {
      */
     public void logout() throws IOException, RequestException {
         doPUT(PUT_LOGOUT, "");
-        tokenManager.setAccessToken(null);
+        // Set refresh token before auth token! See TokenManager.setRefreshToken() for more information.
         tokenManager.setRefreshToken(null);
+        tokenManager.setAccessToken(null);
         currentUser = null;
     }
 
@@ -381,6 +383,13 @@ public final class ServerConnector {
      * 
      * @param request
      *            The request to execute.
+     * @param retryConnection
+     *            Whether the request should be retried if a connection error occured.
+     * @param refreshToken
+     *            Whether the request should be retried after getting a new access token, if the old one was invalid.
+     * @param retryLogin
+     *            Whether the request should try to call the ConnectionInformationProvider for a relogin if it failed due to an
+     *            authentication error.
      * @return The response.
      * @throws IOException
      *             When a network error occured.
@@ -493,8 +502,9 @@ public final class ServerConnector {
 
         try {
             AuthenticationResponse result = executeRefreshRequest(refreshToken);
-            tokenManager.setAccessToken(result.getAccessToken());
+            // Set refresh token before auth token! See TokenManager.setRefreshToken() for more information.
             tokenManager.setRefreshToken(result.getRefreshToken());
+            tokenManager.setAccessToken(result.getAccessToken());
             currentUser = result.getUser();
             return true;
         } catch (UnauthenticatedException e) {

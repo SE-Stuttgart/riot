@@ -30,7 +30,6 @@ public class HomeScreen extends Activity {
         // Initialise the InstanceManager for the message/notifications
         IM.INSTANCES.setContext(this);
 
-
         // Database stuff
         // this.deleteDatabase("Database");
 
@@ -56,12 +55,11 @@ public class HomeScreen extends Activity {
 
             @Override
             protected void onSuccess(User result) {
-                //show username
+                // show username
                 Log.v("HomeScreen", "current user: " + result.getUsername());
                 IM.INSTANCES.getMH().showMessage("Logged in with: " + result.getUsername());
             }
         }.execute();
-
 
         // // Initialize the API client. Initialization is not allowed in the main
         // // thread.
@@ -82,8 +80,4 @@ public class HomeScreen extends Activity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        // do nothing
-    }
 }

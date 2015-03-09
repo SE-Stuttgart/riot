@@ -37,6 +37,21 @@ public abstract class ActivityServerConnection<T> extends ServerConnection<T> {
     }
 
     @Override
+    protected T doInBackground(Void... params) {
+        Activity activity = activityReference.get();
+        if (activity == null) {
+            return super.doInBackground(params);
+        } else {
+            AndroidConnectionProvider.REQUESTING_ACTIVITY.set(activity);
+            try {
+                return super.doInBackground(params);
+            } finally {
+                AndroidConnectionProvider.REQUESTING_ACTIVITY.remove();
+            }
+        }
+    }
+
+    @Override
     protected void handleAuthenticationError(UnauthenticatedException e) {
         showLoginActivity(false);
     }

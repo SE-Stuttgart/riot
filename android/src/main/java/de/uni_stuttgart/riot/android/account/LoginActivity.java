@@ -6,6 +6,7 @@ import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -183,7 +184,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         dialog.setCancelable(false);
         dialog.show();
 
-        new ServerConnection<AuthenticationResponse>() {
+        ServerConnection<AuthenticationResponse> connection = new ServerConnection<AuthenticationResponse>() {
             protected Context getContext() {
                 return LoginActivity.this;
             }
@@ -212,7 +213,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 Toast.makeText(LoginActivity.this, R.string.login_correct, Toast.LENGTH_LONG).show();
                 callback.callback(result);
             }
-        }.execute();
+        };
+
+        // We need to execute the connection on a thread pool because other tasks might be blocked currently, waiting for their access
+        // token, and thus we can't rely on the single-thread scheduler.
+        connection.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -228,12 +233,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         Account account = AccountAuthenticator.getOrCreateAccount(getApplicationContext(), response.getUser().getUsername());
         AndroidConnectionProvider.getInstance().saveNewAccountInformation(account, response.getAccessToken(), response.getRefreshToken(), response.getUser());
         return account;
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        // do nothing
     }
 
 }

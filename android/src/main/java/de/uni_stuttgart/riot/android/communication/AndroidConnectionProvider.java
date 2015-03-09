@@ -11,6 +11,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -21,12 +22,20 @@ import android.util.Log;
  */
 public class AndroidConnectionProvider implements ConnectionInformationProvider {
 
+    /**
+     * This field can be used to store the activity that performs the current request. Make sure to always clear this field!
+     */
+    static final ThreadLocal<Activity> REQUESTING_ACTIVITY = new ThreadLocal<Activity>();
+
     private static final String DEFAULT_HOST = "belgrad.informatik.uni-stuttgart.de";
     private static final int DEFAULT_PORT = 8181;
     private static final String DEFAULT_PATH = "/riot/api/v1/";
     private static final String TAG = "AndroidConnectionProvider";
     private static final String CONNECTION_PREFERENCES = "ConnectionPreferences";
 
+    /**
+     * The singleton instance.
+     */
     private static final AndroidConnectionProvider INSTANCE = new AndroidConnectionProvider();
 
     private ServerConnector connector;
@@ -184,8 +193,9 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
      */
     public void saveNewAccountInformation(Account account, String accessToken, String refreshToken, User user) {
         setCurrentAccount(account);
-        setAccessToken(accessToken);
+        // Set refresh token before auth token! See TokenManager.setRefreshToken() for more information.
         setRefreshToken(refreshToken);
+        setAccessToken(accessToken);
         if (connector != null && user != null) {
             connector.setCurrentUser(user);
         }
@@ -197,17 +207,31 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
             return null;
         } else {
             try {
-                return accountManager.blockingGetAuthToken(currentAccount, AuthConstants.ACCESS_TOKEN_TYPE, true);
+                Activity requestingActivity = REQUESTING_ACTIVITY.get();
+                if (requestingActivity == null) {
+                    // The request is executed in a background thread.
+                    // We use blockingGetAuthToken, which will show an Android notification in case the authentication fails.
+                    return accountManager.blockingGetAuthToken(currentAccount, AuthConstants.ACCESS_TOKEN_TYPE, true);
+                } else {
+                    // The request is executed in the context of an activity, i.e. in the foreground.
+                    // We use getAuthToken and pass this activity to indicate that its context can be used to display a login form, if
+                    // necessary.
+                    return accountManager //
+                            .getAuthToken(currentAccount, AuthConstants.ACCESS_TOKEN_TYPE, null, requestingActivity, null, null) //
+                            .getResult() //
+                            .getString(AccountManager.KEY_AUTHTOKEN);
+                }
             } catch (AuthenticatorException e) {
                 Log.e(TAG, "Error when getting auth token!", e);
                 return null;
             } catch (OperationCanceledException e) {
                 Log.e(TAG, "Error when getting auth token!", e);
-                return null;
+                throw new AbortTaskException(e);
             } catch (IOException e) {
                 Log.e(TAG, "Error when getting auth token!", e);
                 return null;
             }
+
         }
     }
 
@@ -303,17 +327,6 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     @Override
     public boolean handlesTokenRefresh() {
-        if (getRefreshToken() == null) {
-            // When this method is called, a request failed. Since there is no refresh token, it is not possible to refresh the tokens.
-            // The AccountAuthenticator.getAuthToken() method will already have noticed that and opened an activity to deal with the
-            // problem. However, there is no chance for us to wait for that relogin and the activity that is waiting for the request is in
-            // the background now. Thus, we the task by throwing the right exception with a special message that ActivityServerConnection
-            // will recognize so that it doesn't open another login activity.
-            // TODO FIXME throw new HandledAuthenticationException();
-            //throw new HandledAuthenticationException();
-            // if we throw an exception the login activity is not shown when there is no valid token (e.g. when there is no account at all)
-            return false;
-        }
         return true;
     }
 

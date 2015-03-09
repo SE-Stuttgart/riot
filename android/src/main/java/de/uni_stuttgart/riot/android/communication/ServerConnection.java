@@ -21,7 +21,7 @@ public abstract class ServerConnection<T> extends AsyncTask<Void, Void, T> {
     private UnauthenticatedException unauthenticatedException;
 
     @Override
-    protected final T doInBackground(Void... params) {
+    protected T doInBackground(Void... params) {
         ioException = null;
         unauthenticatedException = null;
         try {
@@ -33,9 +33,7 @@ public abstract class ServerConnection<T> extends AsyncTask<Void, Void, T> {
         } catch (UnauthenticatedException e) {
             unauthenticatedException = e;
             return null;
-        } catch (HandledAuthenticationException e) {
-            // There is an authentication problem, but it is already being handled.
-            // This request will not be able to complete. So just abort it.
+        } catch (AbortTaskException e) {
             abortTask();
             return null;
         } catch (RequestException e) {
