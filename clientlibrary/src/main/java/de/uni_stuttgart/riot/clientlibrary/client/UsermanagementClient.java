@@ -19,6 +19,7 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
 public class UsermanagementClient extends BaseClient {
 
     private static final String GET_USERS = "users";
+    private static final String GET_CURRENT_USER = "users/self";
     private static final String GET_ROLES = "roles";
     private static final String GET_PERMISSIONS = "permissions";
     private static final String GET_USER_ROLES = "/roles";
@@ -44,7 +45,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Constructor.
-     * 
+     *
      * @param serverConnector
      *            the {@link ServerConnector} to be used
      */
@@ -54,7 +55,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Updates the user with id userID with the given values of userRequest.
-     * 
+     *
      * @param userID
      *            id of user to be updated
      * @param userRequest
@@ -70,7 +71,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Updates the role with id roleID with the given values of role.
-     * 
+     *
      * @param roleID
      *            id of role to be updated
      * @param role
@@ -86,7 +87,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Updates the permission with id permissionID with the given values of permission.
-     * 
+     *
      * @param permissionID
      *            if of the permission to be updated
      * @param permission
@@ -102,7 +103,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Deletes the role with id roleID for the roles of the user with id userID.
-     * 
+     *
      * @param userID
      *            user id
      * @param roleID
@@ -118,7 +119,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Deletes the user with id userID.
-     * 
+     *
      * @param userID
      *            id of user t be deleted
      * @throws IOException
@@ -132,7 +133,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Deletes the role with id roleID.
-     * 
+     *
      * @param roleID
      *            id of role to be deleted
      * @throws IOException
@@ -146,7 +147,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Deletes the permission with id permissionID.
-     * 
+     *
      * @param permissionID
      *            id of permission to be deleted
      * @throws IOException
@@ -160,7 +161,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Adds a User.
-     * 
+     *
      * @param userRequest
      *            data of user to be added.
      * @return the added user
@@ -175,7 +176,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Adds a {@link Role}.
-     * 
+     *
      * @param role
      *            role to be added
      * @return the added role
@@ -190,7 +191,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Adds the role with id roleID to the roles of user with id userID.
-     * 
+     *
      * @param userID
      *            user id
      * @param roleID
@@ -206,7 +207,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Adds a Permission.
-     * 
+     *
      * @param permission
      *            to be added
      * @return the new permission
@@ -221,7 +222,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Retrieves all roles of a given user.
-     * 
+     *
      * @param userid
      *            user id
      * @return Collection of roles associated with the given user.
@@ -240,7 +241,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns the user with the given id.
-     * 
+     *
      * @param id
      *            user id
      * @return the user
@@ -256,8 +257,23 @@ public class UsermanagementClient extends BaseClient {
     }
 
     /**
+     * Returns the current logged in user.
+     *
+     * @return the user
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When executing the request failed.
+     * @throws NotFoundException
+     *             If the user does not exist.
+     */
+    public User getCurrentUser() throws RequestException, IOException, NotFoundException {
+        return getConnector().doGET(GET_CURRENT_USER, User.class);
+    }
+
+    /**
      * Returns the role with the given id.
-     * 
+     *
      * @param id
      *            role id
      * @return the role found
@@ -274,7 +290,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns the online state of user with given id.
-     * 
+     *
      * @param userId
      *            users id
      * @return the onlinestate
@@ -291,7 +307,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns the permission with the given id.
-     * 
+     *
      * @param id
      *            permission id
      * @return the permission found
@@ -308,7 +324,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns all users.
-     * 
+     *
      * @return collection of all users.
      * @throws IOException
      *             When a network error occured.
@@ -325,7 +341,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns all roles.
-     * 
+     *
      * @return collection of all roles
      * @throws IOException
      *             When a network error occured.
@@ -342,7 +358,7 @@ public class UsermanagementClient extends BaseClient {
 
     /**
      * Returns all permissions.
-     * 
+     *
      * @return collection of all permissions
      * @throws IOException
      *             When a network error occured.
