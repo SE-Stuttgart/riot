@@ -42,7 +42,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Gets the singleton instance.
-     * 
+     *
      * @return The instance.
      */
     public static AndroidConnectionProvider getInstance() {
@@ -51,7 +51,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Gets the connector.
-     * 
+     *
      * @param context
      *            Some Android context to be used for loading preferences, etc.
      * @return The connector.
@@ -78,7 +78,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Gets the connector, initializes it if necessary.
-     * 
+     *
      * @param androidContext
      *            The Android context to use if initialization is necessary.
      */
@@ -94,7 +94,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Reads the preferences and detects which one of the accounts was previously selected. Loads that one.
-     * 
+     *
      * @return True if successful.
      */
     private boolean loadCurrentAccount() {
@@ -116,7 +116,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Loads any of the accounts (the first one).
-     * 
+     *
      * @return True if successful.
      */
     private boolean loadFirstAccount() {
@@ -140,7 +140,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Gets the currently active account.
-     * 
+     *
      * @return The current account or <tt>null</tt>.
      */
     public Account getCurrentAccount() {
@@ -149,7 +149,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Changes the currently active account.
-     * 
+     *
      * @param account
      *            The new account.
      */
@@ -163,7 +163,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Gets the name of the currently active account.
-     * 
+     *
      * @return The name of the current account or <tt>null</tt>.
      */
     public String getCurrentAccountName() {
@@ -172,7 +172,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Saves new account data, making this the active account. This is a convenience method that simply calls a couple of others.
-     * 
+     *
      * @param account
      *            The new account.
      * @param accessToken
@@ -258,7 +258,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Loads the connection information from the preferences store.
-     * 
+     *
      * @param androidContext
      *            The Android context.
      * @return The loaded information.
@@ -273,7 +273,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
 
     /**
      * Saves and applies the new connection information.
-     * 
+     *
      * @param androidContext
      *            The Android context.
      * @param host
@@ -309,7 +309,10 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
             // problem. However, there is no chance for us to wait for that relogin and the activity that is waiting for the request is in
             // the background now. Thus, we the task by throwing the right exception with a special message that ActivityServerConnection
             // will recognize so that it doesn't open another login activity.
-            throw new HandledAuthenticationException();
+            // TODO FIXME throw new HandledAuthenticationException();
+            //throw new HandledAuthenticationException();
+            // if we throw an exception the login activity is not shown when there is no valid token (e.g. when there is no account at all)
+            return false;
         }
         return true;
     }
