@@ -44,23 +44,16 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
- * Fragment that displays all details of a thing.
+ * Activity that displays all details of a thing.
  * It also provides to edit this information.
  *
  * @author Benny
  */
 public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
-    // TODO setOnUpdate erst nachdem der default value gesetzt wurde!
-
-    // Pruefen wie oft die rest calls aufgerufen werden - evtl. optimieren
-
-    // ToDo REFRESH !!replace data - not add!! --> reload activity?
-
-    // FIXME check findViewById() if item was found!! (like in ListFragment)
-
     // Is needed to set ids for grouped views
     private static final AtomicInteger GENERATED_ID = new AtomicInteger(1);
+
     private String viewTitle = "";
     private Thing theThing;
 
@@ -71,7 +64,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
     @Override
     protected String getPageTitle() {
-        if (this.viewTitle.isEmpty()) {
+        if (this.viewTitle == null || this.viewTitle.isEmpty()) {
+            // Use default page title if there is not a saved one yet
             return getString(R.string.thing_detail);
         }
         return viewTitle;
@@ -88,12 +82,12 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             // Save the thing
             if (!doGetThing((ThingDescription) data)) {
                 // Set a default title if it was not successful
-                viewTitle = getString(R.string.thing_detail);
+                this.viewTitle = getString(R.string.thing_detail);
                 return;
             }
 
             // Save the view title
-            viewTitle = this.theThing.getName();
+            this.viewTitle = this.theThing.getName();
 
             // Add items to the main layout
             for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
@@ -103,9 +97,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                 }
             }
         }
-
-        // En-/Disable all layout items (on this place again because the data will be loaded asynchronous
-        enableItems(false); // ToDo maybe not all elements?
     }
 
     @Override
@@ -114,7 +105,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             // Get the thing description with the given id
             for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
                 if (this.itemId == thingDescription.getThingId()) {
-                    return thingDescription;
+                    return thingDescription; // FIXME is there a better method to do this?
                 }
             }
         } catch (Exception e) {
@@ -122,35 +113,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
         }
         return null;
-    }
-
-    @Override
-    protected void saveChanges() {
-        final Thing tmpThing = this.theThing;
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    RIOTApiClient.getInstance().getDeviceBehavior().updateThingState(tmpThing);
-                } catch (Exception e) {
-                    IM.INSTANCES.getMH().writeErrorMessage("Error during changing: " + e.getMessage());
-                    return;
-                }
-                // Display the data in the main thread
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        IM.INSTANCES.getMH().showQuickMessage("Saves are changed!");
-                    }
-                });
-            }
-        }.start();
-    }
-
-    @Override
-    protected void enableDetailItems(boolean enableElements) {
-        enableChildItems((ViewGroup) findViewById(R.id.thing_linear_layout), enableElements);
     }
 
     /**
@@ -177,24 +139,15 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @param value               is the new value
      */
     private void updateProperty(final PropertyDescription propertyDescription, final Object value) {
-
         new Thread() {
 
             @Override
             public void run() {
                 if (propertyDescription.isWritable()) {
                     setProperty(theThing.getWritableProperty(propertyDescription.getName()), value);
-
-                    // TODO ? RIOTApiClient.getInstance().getDeviceBehavior().updateThings();
                 }
             }
         }.start();
-        // Note - ja / nein??:
-        // Aenderung eines properties ruft immer diese Methode auf.
-        // Hier wird das property lokal geaendert.
-        // Gibt es einen "instant-update" flag oder attribut oder aehnliches wird es direkt an den server geschickt.
-        // Beim klick auf den save-button werden alle lokal geaenderten properties an den server geschickt.
-        // (problem bei instant-update properties und dem abort-button)
     }
 
     /**
@@ -246,9 +199,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         LinearLayout.LayoutParams linearLayoutItemParams;
 
         // Add name of the propertyDescription
-//        if (!isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
         if (!(propertyDescription.getUiHint() instanceof UIHint.ToggleButton)) {
-//        if (!isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             View preparedTextView = prepareTextView(propertyDescription.getName());
             if (preparedTextView != null) {
                 linearLayoutItem.addView(preparedTextView);
@@ -275,7 +226,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Prepare the propertyDescription items
         preparePropertyItems(propertyDescription, linearLayoutItem);
 
-        // Change top padding of the first element in the group
+//        // Change top padding of the first element in the group TODO add group property
 //        if (isPropertyType(propertyDescription, PropertyType.GROUP)) {
 //            ((ViewGroup) linearLayoutItem.getChildAt(1)).getChildAt(0).setPadding(0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2);
 //        }
@@ -323,33 +274,27 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @return true if a item was prepared | false if no item was prepared
      */
     private boolean preparePropertyItems1(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
-        // If property is a group element get the sub list and prepare this items
-//        if (isPropertyType(propertyDescription, PropertyType.GROUP)) {
+//        // If property is a group element get the sub list and prepare this items TODO add group property
+//        if (propertyDescription.getUiHint() instanceof UIHint.GROUP)) {
 //            // Prepare and add property group
 //            View preparedView = preparePropertyGroup(propertyDescription);
 //            if (preparedView != null) {
 //                linearLayoutItem.addView(preparedView);
 //            }
 //        } else
-//        if (isPropertyType(propertyDescription, UIHint.EditText.class)) {
         if (propertyDescription.getUiHint() instanceof UIHint.EditText) {
-//        if (isPropertyType(propertyDescription, PropertyType.EditText)) {
             // Prepare and add edit text property
             View preparedView = prepareTextProperty(propertyDescription, false, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-//        } else if (isPropertyType(propertyDescription, UIHint.EditNumber.class)) {
         } else if (propertyDescription.getUiHint() instanceof UIHint.EditNumber) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.EditNumber)) {
             // Prepare and add edit number property
             View preparedView = prepareTextProperty(propertyDescription, true, false);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-//        } else if (isPropertyType(propertyDescription, UIHint.ToggleButton.class)) {
         } else if (propertyDescription.getUiHint() instanceof UIHint.ToggleButton) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.ToggleButton)) {
             // Prepare and add toggle button property
             View preparedView = prepareToggleButtonProperty(propertyDescription);
             if (preparedView != null) {
@@ -370,28 +315,21 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      */
     private boolean preparePropertyItems2(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
         // If property is a group element get the sub list and prepare this items
-//        if (isPropertyType(propertyDescription, UIHint.FractionalSlider.class)) {
         if (propertyDescription.getUiHint() instanceof UIHint.FractionalSlider) {
-//        if (isPropertyType(propertyDescription, PropertyType.FractionalSlider)) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) propertyDescription.getUiHint();
             View preparedView = prepareDoubleSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeCelsius);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-//        } else if (isPropertyType(propertyDescription, UIHint.IntegralSlider.class)) {
         } else if (propertyDescription.getUiHint() instanceof UIHint.IntegralSlider) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.IntegralSlider)) {
             // Prepare and add scale value property
             UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) propertyDescription.getUiHint();
-            // TODO TODO evtl als int speichern!!
             View preparedView = prepareIntegerSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeFahrenheit);
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-//        } else if (isPropertyType(propertyDescription, UIHint.PercentageSlider.class)) {
         } else if (propertyDescription.getUiHint() instanceof UIHint.PercentageSlider) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.PercentageSlider)) {
             // Prepare and add scale percent property
             final double min = 0.0;
             final double max = 1.0;
@@ -399,13 +337,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             if (preparedView != null) {
                 linearLayoutItem.addView(preparedView);
             }
-//        } else if (isPropertyType(propertyDescription, UIHint.DropDown.class)) {
         } else if (propertyDescription.getUiHint() instanceof UIHint.DropDown) {
-//        } else if (isPropertyType(propertyDescription, PropertyType.DropDown)) {
             // Prepare and add scale percent property
             UIHint.DropDown uiHint = (UIHint.DropDown) propertyDescription.getUiHint();
             ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
-            for (Enum<?> singleEnum : uiHint.possibleValues) { // TODO TODO evtl als ArrayList speichern!!
+            for (Enum<?> singleEnum : uiHint.possibleValues) { // TODO maybe save this as ArrayList - is easier to work with
                 possibleValues.add(singleEnum);
             }
             View preparedView = prepareDropDownProperty(propertyDescription, possibleValues);
@@ -454,7 +390,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     private View preparePropertyGroup(PropertyDescription propertyDescription) {
         // Save sub list
         ArrayList<PropertyDescription> subList = null; //propertyDescription.getSubList();
-// TODO TODO Handle propertyType group!!
+        // TODO Handle propertyType group!!
 
         // Create new layout element
         final RelativeLayout relativeLayoutGroup = new RelativeLayout(getApplicationContext());
@@ -575,34 +511,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set layout params
         editText.setLayoutParams(editTextParams);
 
-        // Set text edit attributes
-        if (onlyNumbers) {
-            if (allowNegativeNumbers) {
-                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
-            } else {
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            }
-        }
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String text = editText.getText().toString();
-                if (onlyNumbers && !text.isEmpty()) {
-                    updateProperty(propertyDescription, Double.parseDouble(text));//, Double.class);
-                } else {
-                    updateProperty(propertyDescription, text);//, String.class);
-                }
-            }
-        });
-
         // Set the current value
         Object value = getValue(propertyDescription);
         if (value != null) {
@@ -618,6 +526,37 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             // Set default values
             editText.setText("");
         }
+
+        // Set text edit attributes
+        if (onlyNumbers) {
+            if (allowNegativeNumbers) {
+                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
+            } else {
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
+        }
+        if (propertyDescription.isWritable()) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String text = editText.getText().toString();
+                    if (onlyNumbers && !text.isEmpty()) {
+                        updateProperty(propertyDescription, Double.parseDouble(text));
+                    } else {
+                        updateProperty(propertyDescription, text);
+                    }
+                }
+            });
+        }
+        editText.setEnabled(propertyDescription.isWritable());
 
         return editText;
     }
@@ -638,16 +577,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set layout params
         toggleButton.setLayoutParams(toggleButtonParams);
 
-        // Set toggleButton attributes
-        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getString(R.string.off)));
-        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getString(R.string.on)));
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                updateProperty(propertyDescription, isChecked);//, Boolean.class);
-            }
-        });
-
         // Set the current value
         Object value = getValue(propertyDescription);
         if (value != null && value instanceof Boolean) {
@@ -656,6 +585,20 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             // Set default values
             toggleButton.setChecked(false);
         }
+
+        // Set toggleButton attributes
+        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getString(R.string.off)));
+        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getString(R.string.on)));
+
+        if (propertyDescription.isWritable()) {
+            toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    updateProperty(propertyDescription, isChecked);
+                }
+            });
+        }
+        toggleButton.setEnabled(propertyDescription.isWritable());
 
         return toggleButton;
     }
@@ -670,7 +613,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
      * @return the prepared view
      */
     private View prepareIntegerSliderProperty(final PropertyDescription propertyDescription, long min, long max, int identifier) {
-        // ToDo maybe a long value is too big for the slider?
+        // FIXME maybe a long value is too big for the slider?
         return prepareSliderProperty(propertyDescription, (int) min, (int) max, identifier, 1);
 
     }
@@ -756,6 +699,9 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set linearLayoutRow attributes
         linearLayoutRow.setOrientation(LinearLayout.HORIZONTAL);
 
+        // Set the current value
+        setCurrentSliderValue(seekBar, editText, propertyDescription, min, factor);
+
         // Set seekBar attributes
         seekBarParams.weight = tTMPlowWeight;
         seekBarParams.gravity = Gravity.CENTER;
@@ -779,8 +725,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set textView attributes
         textView.setText(identifier);
 
-        // Set the current value
-        setCurrentSliderValue(seekBar, editText, propertyDescription, min, factor);
+        // En-/Disable this view
+        enableChildItems(linearLayoutRow, propertyDescription.isWritable());
 
         return linearLayoutRow;
     }
@@ -866,11 +812,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                         setSliderEditText(editText, (double) (seekBar.getProgress() + min) / factor, factor);
                     } else {
                         seekBar.setProgress(value - min);
-                        Double newVal = (double) value / factor;
-                        if (factor == 1) {
-                            updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
-                        } else {
-                            updateProperty(propertyDescription, newVal);//, Double.class);
+                        if (propertyDescription.isWritable()) {
+                            Double newVal = (double) value / factor;
+                            if (factor == 1) {
+                                updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
+                            } else {
+                                updateProperty(propertyDescription, newVal);//, Double.class);
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -906,11 +854,13 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Double newVal = (double) (seekBar.getProgress() + min) / factor;
-                if (factor == 1) {
-                    updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
-                } else {
-                    updateProperty(propertyDescription, newVal);//, Double.class);
+                if (propertyDescription.isWritable()) {
+                    Double newVal = (double) (seekBar.getProgress() + min) / factor;
+                    if (factor == 1) {
+                        updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
+                    } else {
+                        updateProperty(propertyDescription, newVal);//, Double.class);
+                    }
                 }
             }
         });
@@ -933,6 +883,15 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set layout params
         spinner.setLayoutParams(spinnerParams);
 
+        // Set the current value
+        Object value = getValue(propertyDescription);
+        if (value != null && value instanceof Enum<?>) {
+            int index = enums.indexOf(value);
+            if (index != -1) {
+                spinner.setSelection(index);
+            }
+        }
+
         // Convert the enum array list to a string array
         int enumLength = enums.size();
         String[] itemsAsArray = new String[enumLength];
@@ -944,7 +903,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, itemsAsArray);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
-        if (propertyDescription.isWritable()) { // TODO!!
+        if (propertyDescription.isWritable()) {
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -956,15 +915,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                 }
             });
         }
-
-        // Set the current value
-        Object value = getValue(propertyDescription);
-        if (value != null && value instanceof Enum<?>) {
-            int index = enums.indexOf(value);
-            if (index != -1) {
-                spinner.setSelection(index);
-            }
-        }
+        enableChildItems(spinner, propertyDescription.isWritable());
 
         return spinner;
     }

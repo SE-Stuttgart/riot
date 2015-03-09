@@ -105,9 +105,9 @@ public class HomeScreenCanvas extends View {
 
             buttonList.add(new HomeScreenButton(this, 6, "Logout", 10, 10, R.drawable.logout));
 
-            buttonList.add(new HomeScreenButton(this, 7, MANAGEMENT_THINGS, 200, 200, R.drawable.flag_de));
+            buttonList.add(new HomeScreenButton(this, 7, MANAGEMENT_THINGS, 200, 200, R.drawable.ic_launcher));
 
-            buttonList.add(new HomeScreenButton(this, 8, MANAGEMENT_USER, 240, 240, R.drawable.flag_uk));
+//            buttonList.add(new HomeScreenButton(this, 8, MANAGEMENT_USER, 240, 240, R.drawable.flag_uk));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);

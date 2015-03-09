@@ -20,7 +20,7 @@ import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 
 /**
- * Abstract fragment that provides a list to show all elements of a Object item typ.
+ * Abstract activity that provides a list to show all elements of a Object item typ.
  *
  * @author Benny
  */
@@ -47,7 +47,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
         ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), this, R.layout.list_item_managment_list, data);
         ListView listView = (ListView) findViewById(R.id.management_list_view);
         if (listView == null) {
-            // ToDo output message!
+            // Show a message that no list view was found (ToDo output message!)
             IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
             return;
         }
@@ -58,8 +58,14 @@ public abstract class ManagementListFragment extends ManagementFragment {
                 doOnItemClick(parent, view, position, id);
             }
         });
-        // If you want to change items afterwards (when list adapter is already installed) use:
+        // To change items afterwards (when list adapter is already installed) use:
         // managementListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void doOnRefreshClick() {
+        // Refresh this activity
+        displayData();
     }
 
     /**
@@ -162,10 +168,10 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * Returns the online state of the list item.
      *
      * @param item the item
+     * @param view the list item
      * @return the online state of the list item
      */
-    protected abstract OnlineState getOnlineState(Object item);
-    // TODO updateOnlineState - asynchronous
+    protected abstract void getOnlineState(Object item, View view);
 
     /**
      * Set values of the given item to the view elements.
@@ -179,7 +185,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
         String defaultDescription = getDefaultDescription();
         int defaultImageId = getDefaultImageId();
         String defaultImageUri = getDefaultImageUri();
-        OnlineState defaultOnlineState = getDefaultOnlineState();
 
         // Get values of the item when the item is an instance of the expected class
         if (isInstanceOf(item)) {
@@ -187,7 +192,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
             defaultDescription = doGetDescription(item, defaultDescription);
             defaultImageId = doGetImageId(item, defaultImageId);
             defaultImageUri = doGetImageUri(item, defaultImageUri);
-            defaultOnlineState = doGetOnlineState(item, defaultOnlineState);
         }
 
         // Set the subject value
@@ -232,16 +236,40 @@ public abstract class ManagementListFragment extends ManagementFragment {
             // ToDo maybe load asynchronous??
         }
 
-        // Set the online state value
-        if (defaultOnlineState != null) {
-            ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
-            if (imageView == null) {
-                // ToDo output message!
-                IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
-                return;
-            }
-            imageView.setImageResource(getOnlineStateResourceId(defaultOnlineState));
+        // Load data asynchronous
+        getOnlineState(item, view);
+    }
+
+    /**
+     * Update the online state of the list item.
+     *
+     * @param onlineState is the online state of one item
+     */
+    protected void doUpdateOnlineState(final View view, OnlineState onlineState) {
+        // FIXME always offline (from server side)
+        final OnlineState defaultOnlineState;
+        if (onlineState == null) {
+            // Take default online state if there is no one
+            defaultOnlineState = getDefaultOnlineState();
+        } else {
+            defaultOnlineState = onlineState;
         }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Set the online state value
+                if (defaultOnlineState != null) {
+                    ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
+                    if (imageView == null) {
+                        // ToDo output message!
+                        IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                        return;
+                    }
+                    imageView.setImageResource(getOnlineStateResourceId(defaultOnlineState));
+                }
+            }
+        });
     }
 
     /**
@@ -314,24 +342,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
             return imageUri;
         }
         return defaultImageUri;
-    }
-
-    /**
-     * Get the online state from the item.
-     *
-     * @param item               includes the values
-     * @param defaultOnlineState is the default value if the item does not have the wanted value
-     * @return the value from the item or the default value
-     */
-    private OnlineState doGetOnlineState(Object item, OnlineState defaultOnlineState) {
-        // Get online state from item
-        OnlineState onlineState = getOnlineState(item);
-
-        // Check if item had a online state
-        if (onlineState != null) {
-            return onlineState;
-        }
-        return defaultOnlineState;
     }
 
     /**

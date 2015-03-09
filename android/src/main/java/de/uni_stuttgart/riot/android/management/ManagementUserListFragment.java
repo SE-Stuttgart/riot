@@ -1,7 +1,10 @@
 package de.uni_stuttgart.riot.android.management;
 
+import android.view.View;
+
 import java.util.List;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import de.uni_stuttgart.riot.android.R;
@@ -12,14 +15,20 @@ import de.uni_stuttgart.riot.android.messages.IM;
 >>>>>>> RIOT-87:Android:Get things from the server
 =======
 >>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+=======
+import de.enpro.android.riot.R;
+>>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
 import de.uni_stuttgart.riot.commons.model.OnlineState;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
- * Fragment that displays all users in a list.
+ * Activity that displays all users in a list.
  *
  * @author Benny
  */
 public class ManagementUserListFragment extends ManagementListFragment {
+    // ToDo!!
+
     @Override
     protected List<Object> getData() {
         return null;
@@ -27,37 +36,37 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected ManagementListFragment getFragment() {
-        return null;
+        return this;
     }
 
     @Override
     protected Class getOnItemClickActivity() {
-        return null;
+        return ManagementUserDetailFragment.class;
     }
 
     @Override
     protected long getId(Object item) {
-        return 0;
+        return ((User) item).getId();
     }
 
     @Override
     protected String getDefaultSubject() {
-        return null;
+        return getString(R.string.default_user);
     }
 
     @Override
     protected String getSubject(Object item) {
-        return null;
+        return ((User) item).getUsername();
     }
 
     @Override
     protected String getDefaultDescription() {
-        return null;
+        return getString(R.string.default_user_description);
     }
 
     @Override
     protected String getDescription(Object item) {
-        return null;
+        return ((User) item).getEmail();
     }
 
     @Override
@@ -68,11 +77,11 @@ public class ManagementUserListFragment extends ManagementListFragment {
     @Override
     protected String getImageUri(Object item) {
         return null;
-    }
+    }// ToDo loading images asynchronous?
 
     @Override
     protected int getDefaultImageId() {
-        return 0;
+        return android.R.drawable.ic_menu_gallery;
     }
 
     @Override
@@ -82,110 +91,20 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected OnlineState getDefaultOnlineState() {
-        return null;
+        return OnlineState.STATUS_OFFLINE;
     }
 
     @Override
-    protected OnlineState getOnlineState(Object item) {
-        return null;
+    protected void getOnlineState(Object item, View view) {
     }
 
     @Override
     protected String getPageTitle() {
-        return null;
+        return getResources().getString(R.string.user_list);
     }
 
     @Override
     protected boolean isInstanceOf(Object item) {
-        return false;
+        return (item instanceof User);
     }
-
-//    @Override
-//    protected String getPageTitle() {
-//        return getResources().getString(R.string.user_list);
-//    }
-//
-//    @Override
-//    protected boolean isInstanceOf(Object item) {
-//        return (item instanceof User);
-//    }
-//
-//    @Override
-//    protected List<Object> getData() {
-//        try {
-//            Collection<User> users = RIOTApiClient.getInstance().getUserManagementClient().getUsers();
-//            return new ArrayList<Object>(users);
-//        } catch (Exception e) {
-//            // FIXME output message!!
-//            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
-//        }
-//
-//        // Load dummy objects if the above method was not successful
-//        return (List<Object>) (List<?>) getUsers();
-//    }
-//
-//    @Override
-//    protected ManagementListFragment getFragment() {
-//        return this;
-//    }
-//
-//    @Override
-//    protected Fragment getOnItemClickActivity() {
-//        return new ManagementUserDetailFragment();
-//    }
-//
-//    @Override
-//    protected long getId(Object item) {
-//        return ((User) item).getId();
-//    }
-//
-//    @Override
-//    protected String getDefaultSubject() {
-//        return "This is a User";
-//    }
-//
-//    @Override
-//    protected String getSubject(Object item) {
-//        return ((User) item).getUsername();
-//    }
-//
-//    @Override
-//    protected String getDefaultDescription() {
-//        return "This is the description of the user";
-//    }
-//
-//    @Override
-//    protected String getDescription(Object item) {
-//        return ((User) item).getEmail();
-//    }
-//
-//    @Override
-//    protected String getDefaultImageUri() {
-//        return null; // ToDo loading images asynchronous?
-//    }
-//
-//    @Override
-//    protected String getImageUri(Object item) {
-//        return null;
-//    }
-//
-//    @Override
-//    protected int getDefaultImageId() {
-//        return android.R.drawable.ic_menu_gallery;
-//    }
-//
-//    @Override
-//    protected int getImageId(Object item) {
-//        return 0; // TODO
-//    }
-//
-//    @Override
-//    protected OnlineState getDefaultOnlineState() {
-//        return OnlineState.STATUS_OFFLINE;
-//    }
-//
-//    @Override
-//    protected OnlineState getOnlineState(Object item) {
-//        return null; // TODO
-//    }
 }

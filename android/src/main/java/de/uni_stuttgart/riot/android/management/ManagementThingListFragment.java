@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.android.management;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +17,7 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 
 /**
- * Fragment that displays all things in a list.
+ * Activity that displays all things in a list.
  *
  * @author Benny
  */
@@ -61,7 +63,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDefaultSubject() {
-        return "This is a Thing";
+        return getString(R.string.thing_default);
     }
 
     @Override
@@ -70,7 +72,6 @@ public class ManagementThingListFragment extends ManagementListFragment {
             // Get the name of the thing
             return RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription((ThingDescription) item).getName();
             // ToDo maybe extend that!! deviceBehavior.getThingById(getId(item));
-            // TODO or use this: String thingName = thingDescription.getThingName();
         } catch (Exception e) {
             // FIXME output message!!
             IM.INSTANCES.getMH().writeErrorMessage("Problems by displaying data: " + e.getMessage());
@@ -80,12 +81,11 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDefaultDescription() {
-        return "This is the description of the thing";
+        return getString(R.string.default_thing_description);
     }
 
     @Override
     protected String getDescription(Object item) {
-        // Get the description of the thing
         return "This is the description: " + String.valueOf(getId(item));
     }
 
@@ -96,7 +96,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getImageUri(Object item) {
-        return null; // ((Thing) item).getImageUri();  // ToDo loading images asynchronous?
+        return null; // ((ThingDescription) item).getImageUri();  // ToDo loading images asynchronous?
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected int getImageId(Object item) {
-        return 0; // ((Thing) item).getImageId(); // ToDo
+        return 0; // ((ThingDescription) item).getImageId(); // ToDo
     }
 
     @Override
@@ -115,14 +115,18 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected OnlineState getOnlineState(Object item) {
-//        thingclient getonlinestaze TODO TODO TODO TODO
-//        try {
-//            return RIOTApiClient.getInstance().getThingClient().getOnlineState(getId(item));
-//        } catch (Exception e) {
-//            // FIXME output message!!
-//            IM.INSTANCES.getMH().writeErrorMessage("Problems by displaying data: " + e.getMessage());
-//        }
-        return null;
+    protected void getOnlineState(final Object item, final View view) {
+        new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    doUpdateOnlineState(view, RIOTApiClient.getInstance().getThingClient().getOnlineState(((ThingDescription) item).getThingId()));
+                } catch (Exception e) {
+                    // FIXME output message!!
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: " + e.getMessage());
+                }
+            }
+        }.start();
     }
 }

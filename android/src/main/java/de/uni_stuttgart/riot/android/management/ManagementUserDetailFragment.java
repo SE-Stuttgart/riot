@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.android.management;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -22,65 +23,36 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 =======
 >>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+=======
+import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+
+>>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
 /**
- * Fragment that displays all details of an user.
+ * Activity that displays all details of an user.
  * It also provides to edit this information.
  *
  * @author Benny
  */
 public class ManagementUserDetailFragment extends ManagementDetailFragment {
+    // TODO !!
+
     @Override
     protected Object getData() {
+//        try {
+//            return RIOTApiClient.getInstance().getUserManagementClient().getUser(this.itemId);
+//        } catch (Exception e) {
+//            // FIXME output message!!
+//            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+//        }
+//
+//        // Load dummy objects if the above method was not successful
+//        return getUser(this.itemId);
         return null;
     }
 
     @Override
     protected void displayDetailData() {
-
-    }
-
-    @Override
-    protected void saveChanges() {
-
-    }
-
-    @Override
-    protected void enableDetailItems(boolean enableElements) {
-
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return 0;
-    }
-
-    @Override
-    protected String getPageTitle() {
-        return null;
-    }
-
-    @Override
-    protected boolean isInstanceOf(Object item) {
-        return false;
-    }
-//
-//    @Override
-//    protected int getLayoutResource() {
-//        return R.layout.fragment_user_edit;
-//    }
-//
-//    @Override
-//    protected String getPageTitle() {
-//        return getResources().getString(R.string.user_detail);
-//    }
-//
-//    @Override
-//    protected boolean isInstanceOf(Object item) {
-//        return (item instanceof User);
-//    }
-//
-//    @Override
-//    protected void displayDetailData() {
 //        // Save the default values
 //        Long defaultId = getDefaultId();
 //        String defaultUsername = getDefaultUsername();
@@ -141,45 +113,29 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 ////
 ////        // Set all permission names
 ////        doSetPermissions(permissions, allPermissionNames);
-//    }
-//
-//    @Override
-//    protected void setOnBackClick() {
-//        callOtherFragment(new ManagementUserListFragment());
-//    }
-//
-//    @Override
-//    protected void saveChanges() {
-//        // TODO
-//    }
-//
-//    @Override
-//    protected void callThisFragment(boolean edit) {
-//        Bundle args = new Bundle();
-//        args.putLong(ManagementFragment.BUNDLE_OBJECT_ID, this.itemId);
-//        args.putBoolean(BUNDLE_ENABLE_ELEMENTS, edit);
-//        callOtherPage(new ManagementUserDetailFragment(), args);
-//    }
-//
-//    @Override
-//    protected Object getData() {
-//        try {
-//            return RIOTApiClient.getInstance().getUserManagementClient().getUser(this.itemId);
-//        } catch (Exception e) {
-//            // FIXME output message!!
-//            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
-//        }
-//
-//        // Load dummy objects if the above method was not successful
-//        return getUser(this.itemId);
-//    }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.fragment_user_edit;
+    }
+
+    @Override
+    protected String getPageTitle() {
+        return getString(R.string.user_detail);
+    }
+
+    @Override
+    protected boolean isInstanceOf(Object item) {
+        return (item instanceof User);
+    }
 //
 //    /**
 //     * Returns the default id of the object.
 //     *
 //     * @return is null if the element should not be displayed
 //     */
-//    protected Long getDefaultId() {
+//    private Long getDefaultId() {
 //        return null;
 //    }
 //
@@ -188,7 +144,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 //     *
 //     * @return is null if the element should not be displayed
 //     */
-//    protected String getDefaultUsername() {
+//    private String getDefaultUsername() {
 //        return null;
 //    }
 //
@@ -197,7 +153,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 //     *
 //     * @return is null if the element should not be displayed
 //     */
-//    protected String getDefaultImageUri() {
+//    private String getDefaultImageUri() {
 //        return null;
 //    }
 //
@@ -206,7 +162,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 //     *
 //     * @return is 0 if the element should not be displayed
 //     */
-//    protected int getDefaultImageId() {
+//    private int getDefaultImageId() {
 //        return 0;
 //    }
 //
@@ -215,10 +171,9 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
 //     *
 //     * @return is null if the element should not be displayed
 //     */
-//    protected OnlineState getDefaultOnlineState() {
+//    private OnlineState getDefaultOnlineState() {
 //        return null;
 //    }
-//
 //
 //    /**
 //     * Get the id from the item.
