@@ -8,4 +8,4 @@ INSERT INTO configuration(configKey, configValue, dataType)
 		('um_pwValidator_upperCaseCharCount', '1', 'Integer'),
 		('um_pwValidator_allowedSpecialChars', '"][?\\/<~#`''!@$%^&§*()+-=}\"|:;,>{"', 'String'),
 		('um_maxLoginRetries', '5', 'Integer'),
-		('um_authTokenValidTime', '10800', 'String');
+		('um_authTokenValidTime', '10800', 'Integer');
