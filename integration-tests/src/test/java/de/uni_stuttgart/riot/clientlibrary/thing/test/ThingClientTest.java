@@ -26,8 +26,8 @@ import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
-import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
@@ -111,7 +111,7 @@ public class ThingClientTest extends BaseClientTest {
         TestThing otherThing = (TestThing) thingClient.getExistingThing(1, mockBehaviorFactory);
 
         // Register for the event.
-        RegisterRequest request = new RegisterRequest(1, "parameterizedEvent");
+        RegisterEventRequest request = new RegisterEventRequest(1, "parameterizedEvent");
         thingClient.registerToEvent(thing.getId(), request);
 
         // So far, there should be nothing.

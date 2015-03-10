@@ -23,6 +23,15 @@ public interface ThingBehaviorFactory<B extends ThingBehavior> {
     B newBehavior(long thingID, String thingName, Class<? extends Thing> thingType);
 
     /**
+     * To avoid duplicate instantiation of the same thing, this method retrieves an existing behavior for a thing by its ID.
+     * 
+     * @param thingID
+     *            The ID of the thing.
+     * @return The behavior of the thing if it is already there or <tt>null</tt> if it must be freshly created.
+     */
+    B existingBehavior(long thingID);
+
+    /**
      * Called after a thing has successfully been initialized.
      * 
      * @param thing

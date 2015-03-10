@@ -111,7 +111,8 @@ public final class ThingFactory {
     }
 
     /**
-     * Constructs a thing of the given type.
+     * Constructs a thing of the given type. If {@link ThingBehaviorFactory#existingBehavior(long)} returns an existing behavior, this one
+     * will be used and the according thing will be returned.
      * 
      * @param <B>
      *            The type of the thing's behavior.
@@ -128,6 +129,17 @@ public final class ThingFactory {
      */
     public static <B extends ThingBehavior> B create(String typeName, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
         Class<? extends Thing> thingClass = resolveType(typeName);
+        if (thingID > 0) {
+            B oldBehavior = behaviorFactory.existingBehavior(thingID);
+            if (oldBehavior != null) {
+                if (!thingClass.isInstance(oldBehavior.getThing())) {
+                    throw new IllegalStateException("The existing thing " + thingID + " is of type " + oldBehavior.getThing().getClass() + " instead of " + thingClass);
+                }
+                oldBehavior.getThing().setName(thingName);
+                return oldBehavior;
+            }
+        }
+
         B behavior = behaviorFactory.newBehavior(thingID, thingName, thingClass);
         Thing thing;
         try {

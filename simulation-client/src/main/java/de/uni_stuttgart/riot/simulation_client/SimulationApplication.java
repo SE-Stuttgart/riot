@@ -16,6 +16,7 @@ import de.uni_stuttgart.riot.clientlibrary.ConnectionInformation;
 import de.uni_stuttgart.riot.clientlibrary.ConnectionInformationProvider;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.thing.SingletonThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
@@ -194,17 +195,7 @@ public class SimulationApplication extends Application {
 
         // Create the ThingClient and the Thing that we will work with.
         final ThingClient thingClient = new ThingClient(connector);
-        final ThingBehaviorFactory<SimulatedThingBehavior> simulatedBehaviorFactory = new ThingBehaviorFactory<SimulatedThingBehavior>() {
-            @Override
-            public SimulatedThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
-                return new SimulatedThingBehavior(thingClient);
-            }
-
-            @Override
-            public void onThingCreated(Thing thing, SimulatedThingBehavior behavior) {
-                // This is called when the thing has successfully been created. We ignore it.
-            }
-        };
+        final ThingBehaviorFactory<SimulatedThingBehavior> simulatedBehaviorFactory = new SingletonThingBehaviorFactory<SimulatedThingBehavior>(new SimulatedThingBehavior(thingClient));
 
         // Check if we have an ID already, otherwise retrieve one. The behavior will retrieve the thing.
         SimulatedThingBehavior behavior;

@@ -91,7 +91,7 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
      * @param androidContext
      *            The Android context to use if initialization is necessary.
      */
-    private ServerConnector internalGetConnector(Context androidContext) {
+    private synchronized ServerConnector internalGetConnector(Context androidContext) {
         if (connector == null) {
             if (accountManager == null) {
                 init(androidContext);

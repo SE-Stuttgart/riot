@@ -51,7 +51,7 @@ public abstract class ThingBehavior implements ReferenceResolver {
      * @param newThing
      *            The thing to register with.
      */
-    synchronized void register(Thing newThing) {
+    protected synchronized void register(Thing newThing) {
         if (this.thing != null) {
             throw new IllegalStateException("This behavior was already register with " + this.thing);
         }

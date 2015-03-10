@@ -41,6 +41,11 @@ public class ThingDBTest extends BaseDatabaseTest {
         public ServerThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
             return new ServerThingBehavior(); // Could also use a Mock here.
         }
+
+        @Override
+        public ServerThingBehavior existingBehavior(long thingID) {
+            return null; // No reuse.
+        }
     };
 
     /**

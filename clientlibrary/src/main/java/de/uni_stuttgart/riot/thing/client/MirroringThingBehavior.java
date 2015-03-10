@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
@@ -15,6 +18,8 @@ import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
+import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
 /**
@@ -32,23 +37,33 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
      * and add them to the list of {@link #knownOtherThings}.
      */
     protected final ThingBehaviorFactory<MirroredThingBehavior> behaviorFactory = new ThingBehaviorFactory<MirroredThingBehavior>() {
-
-        @Override
         public MirroredThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
             return new MirroredThingBehavior(MirroringThingBehavior.this);
         }
 
-        @Override
+        public MirroredThingBehavior existingBehavior(long thingID) {
+            return knownOtherThings.get(thingID);
+        }
+
         public void onThingCreated(Thing thing, MirroredThingBehavior behavior) {
             knownOtherThings.put(thing.getId(), behavior);
         }
-
     };
+
+    /**
+     * The logger.
+     */
+    private final Logger logger = LoggerFactory.getLogger(MirroringThingBehavior.class);
 
     /**
      * The list of known things, i.e. the ones that are "cached" and used locally.
      */
     private final Map<Long, MirroredThingBehavior> knownOtherThings = new HashMap<Long, MirroredThingBehavior>();
+
+    /**
+     * This request is used to accumulate multiple event registrations. See
+     */
+    private MultipleEventsRequest registerMultipleEvents;
 
     /**
      * Creates a new behavior instance.
@@ -65,7 +80,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
      * Fetches the updates from the server and executes them locally.
      * 
      * @throws NotFoundException
-     *             When the thing is not known to the server anymore.
+     *             When the (mirroring) thing is not known to the server anymore.
      * @throws IOException
      *             When a network error occured.
      */
@@ -78,7 +93,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
      * 
      * @return The updates.
      * @throws NotFoundException
-     *             When the thing is not known to the server anymore.
+     *             When the (mirroring) thing is not known to the server anymore.
      * @throws IOException
      *             When a network error occured.
      */
@@ -112,13 +127,32 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
     }
 
     /**
+     * Called when the user (i.e. some part of the local code) fired an action of one of the mirrored things that is managed by this
+     * MirroringThingBehavior. In particular, this includes all intended changes to properties.
+     * 
+     * @param <A>
+     *            The type of the action instance.
+     * @param actionInstance
+     *            The action instance.
+     */
+    protected <A extends ActionInstance> void userFiredMirroredAction(A actionInstance) {
+        try {
+            getClient().submitAction(actionInstance);
+        } catch (RequestException e) {
+            logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, actionInstance.getThingId(), e);
+        } catch (IOException e) {
+            logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, actionInstance.getThingId(), e);
+        }
+    }
+
+    /**
      * Tries to resolve another thing by its ID.
      * 
      * @param id
      *            The ID of the other thing.
      * @return The other thing.
      * @throws NotFoundException
-     *             When the thing could not be resolved.
+     *             When the other thing could not be resolved.
      * @throws IOException
      *             When a network error occured.
      */
@@ -141,6 +175,17 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
     }
 
     /**
+     * Retrieves a mirrored thing from the cache by its ID.
+     * 
+     * @param id
+     *            The ID of the thing.
+     * @return The thing or <tt>null</tt> if it is not in the cache.
+     */
+    protected Thing getCachedThing(long id) {
+        return knownOtherThings.get(id).getThing();
+    }
+
+    /**
      * Tries to resolve another thing by its ID and casts it to the given type before returning it. A {@link ClassCastException} will occur
      * if the type does not match.
      * 
@@ -154,7 +199,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
      * @throws IOException
      *             When a network error occured.
      * @throws NotFoundException
-     *             When the thing could not be resolved.
+     *             When the other thing could not be resolved.
      */
     protected <T extends Thing> T getOtherThing(long id, Class<T> expectedType) throws NotFoundException, IOException {
         return expectedType.cast(getOtherThing(id));
@@ -175,12 +220,91 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
     }
 
     /**
+     * Starts a new multiple events request. All event registrations that are made until {@link #finishMultipleEventsRequest()} is called
+     * will not be sent to the server directly. Instead, they will be collected in {@link #registerMultipleEvents} and sent all at once.
+     * 
+     * @return True if the multiple events request was actually started. If this returns false, there was already one active and the caller
+     *         should not call {@link #finishMultipleEventsRequest()}!
+     */
+    public synchronized boolean startMultipleEventsRequest() {
+        if (registerMultipleEvents == null) {
+            registerMultipleEvents = new MultipleEventsRequest();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Finishes the multiple events request.
+     */
+    public synchronized void finishMultipleEventsRequest() {
+        if (registerMultipleEvents != null) {
+            MultipleEventsRequest request = registerMultipleEvents;
+            registerMultipleEvents = null;
+
+            if ((request.getRegisterTo() == null || request.getRegisterTo().isEmpty()) && (request.getUnregisterFrom() == null || request.getUnregisterFrom().isEmpty())) {
+                // Nothing to do.
+                return;
+            }
+
+            try {
+                getClient().multipleEvents(getThing().getId(), request);
+            } catch (RequestException e) {
+                logger.error("Could not execute multiple events registration for thing " + getThing().getId());
+            } catch (IOException e) {
+                logger.error("Could not execute multiple events registration for thing " + getThing().getId());
+            }
+        }
+    }
+
+    /**
+     * Registers to an event of another thing.
+     * 
+     * @param request
+     *            The event registration request identifying the other thing and its event.
+     */
+    synchronized void registerToEvent(RegisterEventRequest request) {
+        if (registerMultipleEvents == null) {
+            try {
+                getClient().registerToEvent(getThing().getId(), request);
+            } catch (RequestException e) {
+                logger.error("Could not register to event " + request.getTargetEventName() + " of thing " + request.getTargetThingID());
+            } catch (IOException e) {
+                logger.error("Could not register to event " + request.getTargetEventName() + " of thing " + request.getTargetThingID());
+            }
+        } else {
+            registerMultipleEvents.getRegisterTo().add(request);
+        }
+    }
+
+    /**
+     * Unregisters from an event of another thing.
+     * 
+     * @param request
+     *            The event registration request identifying the other thing and its event.
+     */
+    synchronized void unregisterToEvent(RegisterEventRequest request) {
+        if (registerMultipleEvents == null) {
+            try {
+                getClient().unregisterFromEvent(getThing().getId(), request);
+            } catch (RequestException e) {
+                logger.error("Could not unregister from event " + request.getTargetEventName() + " of thing " + request.getTargetThingID());
+            } catch (IOException e) {
+                logger.error("Could not unregister from event " + request.getTargetEventName() + " of thing " + request.getTargetThingID());
+            }
+        } else {
+            registerMultipleEvents.getUnregisterFrom().add(request);
+        }
+    }
+
+    /**
      * Retrieves the current state of the given thing from the server. This means that its properties will be up-to-date after the call.
      * 
      * @param otherThing
      *            The thing to update.
      * @throws NotFoundException
-     *             When the thing does not exist anymore.
+     *             When the (mirrored) thing does not exist anymore.
      * @throws IOException
      *             When a network error occured.
      */
@@ -191,6 +315,9 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
             state.apply(otherThing);
         } catch (RequestException e) {
             throw new RuntimeException(e);
+        } catch (NotFoundException e) {
+            knownOtherThings.remove(otherThing.getId());
+            throw e;
         }
     }
 
@@ -218,6 +345,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
     @Override
     protected void shutdown() throws Exception {
         Exception lastException = null;
+        startMultipleEventsRequest();
         for (MirroredThingBehavior otherBehavior : knownOtherThings.values()) {
             try {
                 otherBehavior.shutdown();
@@ -226,6 +354,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
             }
         }
         knownOtherThings.clear();
+        finishMultipleEventsRequest();
         if (lastException != null) {
             throw new Exception("At least one shutdown failed, last exception was", lastException);
         }

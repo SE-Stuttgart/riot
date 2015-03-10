@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +26,6 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.EventListener;
-import de.uni_stuttgart.riot.thing.ThingDescription;
-import de.uni_stuttgart.riot.thing.client.DeviceBehavior;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
@@ -52,7 +49,7 @@ public class ThingTest extends BaseClientTest {
     public void scenarioFridge() throws RequestException, IOException, NotFoundException {
 
         Fridge.FridgeBehavior fridgeBehavior = Fridge.create(getLoggedInThingClient(), "Peter");
-        Fridge fridge = fridgeBehavior.getFridge();
+        Fridge fridge = fridgeBehavior.getThing();
 
         Observer.ObserverBehavior observerBehavior = Observer.create(getLoggedInThingClient(), "Olli");
 
@@ -104,6 +101,15 @@ public class ThingTest extends BaseClientTest {
         verify(listener).onFired(Mockito.same(mirroredFridge.getOutOfFoodEvent()), eventCaptor.capture());
         assertThat(eventCaptor.getValue().getFood(), is("banana"));
 
+        // Stop the monitoring and ensure that the property changes no longer arrive.
+        assertThat(fridge.getTemp(), is(8));
+        assertThat(mirroredFridge.getTemp(), is(8));
+        observerBehavior.stopMonitoring(mirroredFridge);
+        fridgeBehavior.simulateTemperatureChange(11);
+        assertThat(fridge.getTemp(), is(11));
+        observerBehavior.fetchUpdates();
+        assertThat(mirroredFridge.getTemp(), is(8)); // Still the old value!
+
         // Shutdown
         observerBehavior.unregisterAndShutdown();
         fridgeBehavior.unregisterAndShutdown();
@@ -115,7 +121,7 @@ public class ThingTest extends BaseClientTest {
 
         // As in the previous scenario, we have a fridge and an observer.
         Fridge.FridgeBehavior fridgeBehavior = Fridge.create(getLoggedInThingClient(), "Peter");
-        Fridge fridge = fridgeBehavior.getFridge();
+        Fridge fridge = fridgeBehavior.getThing();
         Observer.ObserverBehavior observerBehavior = Observer.create(getLoggedInThingClient(), "Olli");
         Fridge mirroredFridge = observerBehavior.observe(fridge.getId(), Fridge.class);
 
@@ -185,39 +191,6 @@ public class ThingTest extends BaseClientTest {
         ThingClient thingClient = getLoggedInThingClient();
         TestExecutingThingBehavior behavior = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
         behavior.unregisterAndShutdown();
-    }
-
-    @Test
-    public void getAssignedThingsTest() throws RequestException, IOException, NotFoundException {
-        // Getting a LoginCLient
-        ThingClient thingClient = this.getLoggedInThingClient();
-
-        // Creating (includes registration on server) of the android device
-        DeviceBehavior andriod = DeviceBehavior.create("My Mobile", thingClient);
-
-        // Getting all assinged Things (Their descriptions)
-        andriod.updateThings();
-        Collection<ThingDescription> descriptions = andriod.getDescriptions();
-
-        ThingDescription testDesc = null;
-        for (ThingDescription thingDescription : descriptions) {
-            if (thingDescription.getThingId() == 1) {
-                testDesc = thingDescription;
-            }
-        }
-
-        // Launing on of those listet things to do some manipulation
-        TestExecutingThingBehavior realThingb = ExecutingThingBehavior.launchExistingThing(TestThing.class, thingClient, 1, TestExecutingThingBehavior.getMockFactory(thingClient));
-        TestThing realThing = (TestThing) realThingb.getThing();
-        // Changing some property
-        realThing.setInt(43);
-
-        // Checking if the mirror in our andriod is able to see the change
-        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
-        andriod.updateThingState(andriod.getThingByDiscription(testDesc));
-        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
-        assertThat(pre, is(42));
-        assertThat(post, is(43));
     }
 
 }

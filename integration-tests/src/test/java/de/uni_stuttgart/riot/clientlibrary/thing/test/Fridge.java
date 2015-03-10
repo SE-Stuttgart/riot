@@ -30,6 +30,7 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
 import de.uni_stuttgart.riot.thing.WritableReferenceProperty;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
+import de.uni_stuttgart.riot.thing.client.TypedExecutingThingBehavior;
 
 /**
  * A {@Thing} that represents a fridge. A fridge has a temperature that can only be read and a state. In addition, it has an action
@@ -96,7 +97,7 @@ public class Fridge extends Thing {
     public void setDeliveryGuy(User newGuy) {
         deliveryGuy.setTarget(newGuy);
     }
-    
+
     public Long getDeliveryGuyId() {
         return deliveryGuy.get();
     }
@@ -145,7 +146,7 @@ public class Fridge extends Thing {
      * A behavior for using the fridge as a standalone thing in tests. Note that this behavior would usually be a runnable behavior. For the
      * purpose of testing, however, the {@link #fetchUpdates()} method should be called manually.
      */
-    public static class FridgeBehavior extends ExecutingThingBehavior {
+    public static class FridgeBehavior extends TypedExecutingThingBehavior<Fridge> {
 
         /**
          * Creates a new FridgeBehavior.
@@ -154,15 +155,11 @@ public class Fridge extends Thing {
          *            The client that handles the REST operations
          */
         public FridgeBehavior(ThingClient thingClient) {
-            super(thingClient);
-        }
-
-        public Fridge getFridge() {
-            return (Fridge) getThing();
+            super(thingClient, Fridge.class);
         }
 
         public void simulateTemperatureChange(int newTemperature) {
-            changePropertyValue(getFridge().temp, newTemperature);
+            changePropertyValue(getThing().temp, newTemperature);
         }
 
         @Override
@@ -173,21 +170,21 @@ public class Fridge extends Thing {
         @Override
         protected <A extends ActionInstance> void executeAction(Action<A> action, A actionInstance) {
             // The ExecutingThingBehavior will take care of the PropertySetActions for us.
-            if (actionInstance instanceof EatActionInstance && action == getFridge().eatEverything) {
+            if (actionInstance instanceof EatActionInstance && action == getThing().eatEverything) {
                 // After eating everything, there is nothing left:
-                executeEvent(new OutOfFoodEventInstance(getFridge().outOfFood, ((EatActionInstance) actionInstance).getFood()));
-            } else if (actionInstance instanceof HireDeliveryGuyActionInstance && action == getFridge().hireDeliveryGuy) {
+                executeEvent(new OutOfFoodEventInstance(getThing().outOfFood, ((EatActionInstance) actionInstance).getFood()));
+            } else if (actionInstance instanceof HireDeliveryGuyActionInstance && action == getThing().hireDeliveryGuy) {
                 try {
                     User newGuy = resolve(((HireDeliveryGuyActionInstance) actionInstance).getNewGuy(), User.class);
 
                     // First fire the old guy, if necessary
-                    if (getFridge().getDeliveryGuy() != null) {
-                        String reason = getFridge().getDeliveryGuy().getUsername() + " was too slow, we now hired " + newGuy.getUsername();
-                        executeEvent(new FiredDeliveryGuyEventInstance(getFridge().firedDeliveryGuy, getFridge().getDeliveryGuy(), reason));
+                    if (getThing().getDeliveryGuy() != null) {
+                        String reason = getThing().getDeliveryGuy().getUsername() + " was too slow, we now hired " + newGuy.getUsername();
+                        executeEvent(new FiredDeliveryGuyEventInstance(getThing().firedDeliveryGuy, getThing().getDeliveryGuy(), reason));
                     }
 
                     // Then put in the new guy.
-                    getFridge().getDeliveryGuyProperty().setTarget(newGuy);
+                    getThing().getDeliveryGuyProperty().setTarget(newGuy);
                 } catch (ResolveReferenceException e) {
                     // Ignore
                 }

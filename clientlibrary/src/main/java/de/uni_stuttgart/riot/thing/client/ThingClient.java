@@ -26,7 +26,8 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
-import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
+import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
+import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
 import de.uni_stuttgart.riot.thing.rest.ShareRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
@@ -51,8 +52,7 @@ public class ThingClient extends BaseClient {
 
     private static final String POST_UNREGISTER_EVENT_SUFFIX = "/unregister";
     private static final String POST_REGISTER_EVENT_SUFFIX = "/register";
-    private static final String POST_UNREGISTER_EVENTS_SUFFIX = "/unregisterMultiple";
-    private static final String POST_REGISTER_EVENTS_SUFFIX = "/registerMultiple";
+    private static final String POST_MULTIPLE_EVENTS_SUFFIX = "/multipleEvents";
 
     private static final String GET_LAST_ONLINE_SUFFIX = "/online";
 
@@ -266,24 +266,8 @@ public class ThingClient extends BaseClient {
      * @throws IOException
      *             When a network error occured.
      */
-    public void registerToEvent(long observerId, RegisterRequest request) throws RequestException, IOException {
+    public void registerToEvent(long observerId, RegisterEventRequest request) throws RequestException, IOException {
         getConnector().doPOST(THINGS_PREFIX + observerId + POST_REGISTER_EVENT_SUFFIX, request);
-    }
-
-    /**
-     * Registers to multiple events.
-     *
-     * @param observerId
-     *            The ID of the thing that wants to register to the given event.
-     * @param requests
-     *            the register requests
-     * @throws RequestException
-     *             the request exception
-     * @throws IOException
-     *             When a network error occured.
-     */
-    public void registerToEvents(long observerId, Collection<RegisterRequest> requests) throws RequestException, IOException {
-        getConnector().doPOST(THINGS_PREFIX + observerId + POST_REGISTER_EVENTS_SUFFIX, requests);
     }
 
     /**
@@ -298,24 +282,24 @@ public class ThingClient extends BaseClient {
      * @throws IOException
      *             When a network error occured.
      */
-    public void unregisterFromEvent(long observerId, RegisterRequest request) throws RequestException, IOException {
+    public void unregisterFromEvent(long observerId, RegisterEventRequest request) throws RequestException, IOException {
         getConnector().doPOST(THINGS_PREFIX + observerId + POST_UNREGISTER_EVENT_SUFFIX, request);
     }
 
     /**
-     * Unregisters from multiple events.
+     * Registers to or unregisters from multiple events.
      *
      * @param observerId
-     *            The ID of the thing that wants to register to the given event.
+     *            The ID of the thing that wants to register to or unregister from the given event.
      * @param requests
-     *            the requests to unregister
+     *            the (un)register requests
      * @throws RequestException
      *             the request exception
      * @throws IOException
      *             When a network error occured.
      */
-    public void unregisterFromEvents(long observerId, Collection<RegisterRequest> requests) throws RequestException, IOException {
-        getConnector().doPOST(THINGS_PREFIX + observerId + POST_UNREGISTER_EVENTS_SUFFIX, requests);
+    public void multipleEvents(long observerId, MultipleEventsRequest requests) throws RequestException, IOException {
+        getConnector().doPOST(THINGS_PREFIX + observerId + POST_MULTIPLE_EVENTS_SUFFIX, requests);
     }
 
     /**

@@ -3,7 +3,7 @@ package de.uni_stuttgart.riot.thing.rest;
 /**
  * The request message to register on events. It is used in {@link ThingService}.
  */
-public class RegisterRequest {
+public class RegisterEventRequest {
 
     private long targetThingID;
     private String targetEventName;
@@ -11,7 +11,7 @@ public class RegisterRequest {
     /**
      * Instantiates a new empty register request.
      */
-    public RegisterRequest() {
+    public RegisterEventRequest() {
     }
 
     /**
@@ -22,7 +22,7 @@ public class RegisterRequest {
      * @param targetEventName
      *            The name of the event to register to.
      */
-    public RegisterRequest(long targetThingID, String targetEventName) {
+    public RegisterEventRequest(long targetThingID, String targetEventName) {
         super();
         this.targetThingID = targetThingID;
         this.targetEventName = targetEventName;

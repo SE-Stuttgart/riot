@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -308,6 +310,15 @@ public class Thing extends Storable implements Referenceable<Thing> {
     }
 
     /**
+     * Returns a non-editable collection of all events that this thing has.
+     * 
+     * @return The events of this thing.
+     */
+    public Collection<Event<?>> getEvents() {
+        return Collections.unmodifiableCollection(events.values());
+    }
+
+    /**
      * Retrieves an action by its name.
      * 
      * @param actionName
@@ -341,6 +352,15 @@ public class Thing extends Storable implements Referenceable<Thing> {
         @SuppressWarnings("unchecked")
         Action<A> result = (Action<A>) action;
         return result;
+    }
+
+    /**
+     * Returns a non-editable collection of all actions that this thing has.
+     * 
+     * @return The actions of this thing.
+     */
+    public Collection<Action<?>> getActions() {
+        return Collections.unmodifiableCollection(actions.values());
     }
 
     /**
@@ -415,6 +435,15 @@ public class Thing extends Storable implements Referenceable<Thing> {
         } else {
             throw new IllegalArgumentException("The property " + propertyName + " is not writable!");
         }
+    }
+
+    /**
+     * Returns a non-editable collection of all properties that this thing has.
+     * 
+     * @return The properties of this thing.
+     */
+    public Collection<Property<?>> getProperties() {
+        return Collections.unmodifiableCollection(properties.values());
     }
 
     @Override

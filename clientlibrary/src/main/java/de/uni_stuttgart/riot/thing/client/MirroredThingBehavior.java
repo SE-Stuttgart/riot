@@ -1,22 +1,13 @@
 package de.uni_stuttgart.riot.thing.client;
 
-import java.beans.PropertyChangeEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Property;
-import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
+import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
+import de.uni_stuttgart.riot.thing.PropertyChangeEvent.Instance;
+import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 
 /**
  * The behavior of a thing that is being mirrored locally. It should only be used with the {@link MirroringThingBehavior} instance that
@@ -25,19 +16,19 @@ import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 public class MirroredThingBehavior extends ClientThingBehavior {
 
     /**
-     * The logger.
-     */
-    private final Logger logger = LoggerFactory.getLogger(MirroredThingBehavior.class);
-
-    /**
      * The mirroring behavior that mirrors this mirrored behavior.
      */
     private final MirroringThingBehavior mirroringBehavior;
 
     /**
-     * The events that this mirrored thing has registered to on the server.
+     * This dummy listener is registered to property change events of this monitored thing to mark them as "needed". The events will
+     * register themselves with the server to fetch updates as long as there is a listener present.
      */
-    private final Set<String> registeredEvents = new HashSet<String>();
+    private final EventListener<PropertyChangeEvent.Instance<?>> dummyListener = new EventListener<PropertyChangeEvent.Instance<?>>() {
+        public void onFired(Event<? extends Instance<?>> event, Instance<?> eventInstance) {
+            // We do not need to do anything here, since PropertyChangeEvents are automatically evaluated by the Property anyway.
+        }
+    };
 
     /**
      * If true, the monitoring is active. This means that all property changes will regularly be fetched from the thing.
@@ -57,13 +48,8 @@ public class MirroredThingBehavior extends ClientThingBehavior {
 
     @Override
     protected <A extends ActionInstance> void userFiredAction(A actionInstance) {
-        try {
-            getClient().submitAction(actionInstance);
-        } catch (RequestException e) {
-            logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, getThing().getId(), e);
-        } catch (IOException e) {
-            logger.error("Could not send action instance {} for mirrored thing {}", actionInstance, getThing().getId(), e);
-        }
+        // We delegate this to the mirroring thing behavior so that it can decide what precisely needs to be done.
+        mirroringBehavior.userFiredMirroredAction(actionInstance);
     }
 
     /**
@@ -85,15 +71,7 @@ public class MirroredThingBehavior extends ClientThingBehavior {
             if (event.getThing() != getThing()) {
                 throw new IllegalArgumentException("Called with wrong event that does not belong to this thing!");
             }
-            RegisterRequest request = new RegisterRequest(getThing().getId(), event.getName());
-            try {
-                getClient().registerToEvent(mirroringBehavior.getThing().getId(), request);
-                registeredEvents.add(event.getName());
-            } catch (RequestException e) {
-                logger.error("Could not register to event " + event.getName() + " of thing " + getThing().getId());
-            } catch (IOException e) {
-                logger.error("Could not register to event " + event.getName() + " of thing " + getThing().getId());
-            }
+            mirroringBehavior.registerToEvent(new RegisterEventRequest(getThing().getId(), event.getName()));
         }
     }
 
@@ -103,15 +81,7 @@ public class MirroredThingBehavior extends ClientThingBehavior {
             if (event.getThing() != getThing()) {
                 throw new IllegalArgumentException("Called with wrong event that does not belong to this thing!");
             }
-            RegisterRequest request = new RegisterRequest(getThing().getId(), event.getName());
-            try {
-                getClient().unregisterFromEvent(mirroringBehavior.getThing().getId(), request);
-                registeredEvents.remove(event.getName());
-            } catch (RequestException e) {
-                logger.error("Could not unregister from event " + event.getName() + " of thing " + getThing().getId());
-            } catch (IOException e) {
-                logger.error("Could not unregister from event " + event.getName() + " of thing " + getThing().getId());
-            }
+            mirroringBehavior.unregisterToEvent(new RegisterEventRequest(getThing().getId(), event.getName()));
         }
     }
 
@@ -126,79 +96,51 @@ public class MirroredThingBehavior extends ClientThingBehavior {
 
     /**
      * Activates the monitoring. This means that the change-events of all properties of the thing will be registered and whenever
-     * {@link MirroringThingBehavior#fetchUpdates()} is called, these properties will be updated locally, too.
+     * {@link MirroringThingBehavior#fetchUpdates()} is called, these properties will be updated locally, too. The registration is done by
+     * registering the {@link #dummyListener} with the events.
      */
-    void startMonitoring() {
+    synchronized void startMonitoring() {
         if (monitored) {
             return;
         }
 
-        Set<String> eventNames = new HashSet<String>();
-        Collection<RegisterRequest> requests = new ArrayList<RegisterRequest>();
-        for (Property<?> property : getProperties().values()) {
-            eventNames.add(property.getChangeEvent().getName());
-            requests.add(new RegisterRequest(getThing().getId(), property.getChangeEvent().getName()));
+        boolean startedMultiRequest = mirroringBehavior.startMultipleEventsRequest();
+        try {
+            for (Property<?> property : getProperties().values()) {
+                property.getChangeEvent().register(dummyListener);
+            }
+        } finally {
+            if (startedMultiRequest) {
+                mirroringBehavior.finishMultipleEventsRequest();
+            }
         }
 
-        try {
-            getClient().registerToEvents(mirroringBehavior.getThing().getId(), requests);
-        } catch (RequestException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        registeredEvents.addAll(eventNames);
+        monitored = true;
     }
 
     /**
      * Deactivates the monitoring. See {@link #startMonitoring()}.
      */
-    void stopMonitoring() {
+    synchronized void stopMonitoring() {
         if (!monitored) {
             return;
         }
 
-        Set<String> eventNames = new HashSet<String>();
-        Collection<RegisterRequest> requests = new ArrayList<RegisterRequest>();
-        for (Property<?> property : getProperties().values()) {
-            eventNames.add(property.getChangeEvent().getName());
-            requests.add(new RegisterRequest(getThing().getId(), property.getChangeEvent().getName()));
-        }
-
+        boolean startedMultiRequest = mirroringBehavior.startMultipleEventsRequest();
         try {
-            getClient().unregisterFromEvents(mirroringBehavior.getThing().getId(), requests);
-        } catch (RequestException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            for (Property<?> property : getProperties().values()) {
+                property.getChangeEvent().unregister(dummyListener);
+            }
+        } finally {
+            if (startedMultiRequest) {
+                mirroringBehavior.finishMultipleEventsRequest();
+            }
         }
-        registeredEvents.removeAll(eventNames);
     }
 
     @Override
     protected void shutdown() throws Exception {
-        unregisterAllEvents();
-        monitored = false;
-    }
-
-    /**
-     * Unregisters all registered events for this thing.
-     * 
-     * @throws RequestException
-     *             When the request failed.
-     * @throws IOException
-     *             When a network error occured.
-     */
-    private void unregisterAllEvents() throws RequestException, IOException {
-        if (registeredEvents.isEmpty()) {
-            return;
-        }
-
-        Collection<RegisterRequest> requests = new ArrayList<RegisterRequest>(registeredEvents.size());
-        for (String eventName : registeredEvents) {
-            requests.add(new RegisterRequest(getThing().getId(), eventName));
-        }
-        getClient().unregisterFromEvents(mirroringBehavior.getThing().getId(), requests);
+        stopMonitoring();
     }
 
 }

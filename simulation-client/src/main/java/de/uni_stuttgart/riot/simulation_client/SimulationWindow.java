@@ -103,7 +103,7 @@ public class SimulationWindow extends Stage {
         container.setHgap(INNER_SPACING);
         container.setVgap(INNER_SPACING);
         int i = 0;
-        for (Property<?> property : behavior.getProperties().values()) {
+        for (Property<?> property : thing.getProperties()) {
             Label label = new Label(property.getName());
             Control valueControl = UIProducer.produceInternalControl(property, behavior);
             container.addRow(i, label, valueControl);

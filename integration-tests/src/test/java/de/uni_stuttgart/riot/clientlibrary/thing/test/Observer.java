@@ -18,6 +18,7 @@ import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
+import de.uni_stuttgart.riot.thing.client.TypedExecutingThingBehavior;
 
 /**
  * A {@Thing} that does not have any own properties, events or actions, but simply serves to register with the server for tests.
@@ -60,7 +61,7 @@ public class Observer extends Thing {
      * A behavior that exposes many things to unit tests. Note that this behavior would usually be a runnable behavior. For the purpose of
      * testing, however, the {@link #fetchUpdates()} method should be called manually.
      */
-    public static class ObserverBehavior extends ExecutingThingBehavior {
+    public static class ObserverBehavior extends TypedExecutingThingBehavior<Observer> {
 
         /**
          * Creates a new ObserverBehavior.
@@ -69,11 +70,7 @@ public class Observer extends Thing {
          *            The client that handles the REST operations
          */
         public ObserverBehavior(ThingClient thingClient) {
-            super(thingClient);
-        }
-
-        public Observer getObserver() {
-            return (Observer) getThing();
+            super(thingClient, Observer.class);
         }
 
         public <T extends Thing> T observe(long id, Class<T> expectedType) throws NotFoundException, IOException {

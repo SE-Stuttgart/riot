@@ -71,6 +71,10 @@ public class ThingLogic {
             return new ServerThingBehavior();
         }
 
+        public ServerThingBehavior existingBehavior(long thingID) {
+            return things.get(thingID);
+        }
+
         public void onThingCreated(Thing thing, ServerThingBehavior behavior) {
             if (thing.getId() != null && thing.getId() != 0) {
                 things.put(thing.getId(), behavior);

@@ -37,7 +37,8 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.remote.ThingLogic;
-import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
+import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
+import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
 import de.uni_stuttgart.riot.thing.rest.ShareRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
@@ -250,7 +251,7 @@ public class ThingService {
     }
 
     /**
-     * See {@link RegisterRequest} and {@link ThingLogic#registerToEvent(long, long, String)}.
+     * See {@link RegisterEventRequest} and {@link ThingLogic#registerToEvent(long, long, String)}.
      * 
      * @param observerId
      *            The ID of the thing that wants to register to the given event.
@@ -262,7 +263,7 @@ public class ThingService {
      */
     @POST
     @Path("{id}/register")
-    public Response registerToEvent(@PathParam("id") long observerId, RegisterRequest request) throws DatasourceFindException {
+    public Response registerToEvent(@PathParam("id") long observerId, RegisterEventRequest request) throws DatasourceFindException {
         assertPermitted(observerId, ThingPermission.EXECUTE);
         assertPermitted(request.getTargetThingID(), ThingPermission.READ);
         this.logic.registerToEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
@@ -270,29 +271,7 @@ public class ThingService {
     }
 
     /**
-     * See {@link RegisterRequest} and {@link ThingLogic#registerToEvent(long, long, String)}.
-     * 
-     * @param observerId
-     *            The ID of the thing that wants to register to the given events.
-     * @param requests
-     *            The request content.
-     * @return Nothing.
-     * @throws DatasourceFindException
-     *             If one of the things or the event could not be found.
-     */
-    @POST
-    @Path("{id}/registerMultiple")
-    public Response registerToEvents(@PathParam("id") long observerId, Collection<RegisterRequest> requests) throws DatasourceFindException {
-        for (RegisterRequest request : requests) {
-            assertPermitted(observerId, ThingPermission.EXECUTE);
-            assertPermitted(request.getTargetThingID(), ThingPermission.READ);
-            this.logic.registerToEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
-        }
-        return Response.noContent().build();
-    }
-
-    /**
-     * See {@link RegisterRequest} and {@link ThingLogic#unregisterFromEvent(long, long, String)}.
+     * See {@link RegisterEventRequest} and {@link ThingLogic#unregisterFromEvent(long, long, String)}.
      * 
      * @param observerId
      *            The ID of the thing that wants to unregister from the given event.
@@ -304,17 +283,17 @@ public class ThingService {
      */
     @POST
     @Path("{id}/unregister")
-    public Response unregisterFromEvent(@PathParam("id") long observerId, RegisterRequest request) throws DatasourceFindException {
+    public Response unregisterFromEvent(@PathParam("id") long observerId, RegisterEventRequest request) throws DatasourceFindException {
         assertPermitted(observerId, ThingPermission.EXECUTE);
         this.logic.unregisterFromEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
         return Response.noContent().build();
     }
 
     /**
-     * See {@link RegisterRequest} and {@link ThingLogic#unregisterFromEvent(long, long, String)}.
+     * See {@link RegisterEventRequest}. This method allows to register to and unregister from multiple events at once.
      * 
      * @param observerId
-     *            The ID of the thing that wants to unregister from the given events.
+     *            The ID of the thing that wants to register to or unregister from the given events.
      * @param requests
      *            The request content.
      * @return Nothing.
@@ -322,11 +301,20 @@ public class ThingService {
      *             If one of the things or the event could not be found.
      */
     @POST
-    @Path("{id}/unregisterMultiple")
-    public Response unregisterFromEvents(@PathParam("id") long observerId, Collection<RegisterRequest> requests) throws DatasourceFindException {
-        for (RegisterRequest request : requests) {
-            assertPermitted(observerId, ThingPermission.EXECUTE);
-            this.logic.unregisterFromEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
+    @Path("{id}/multipleEvents")
+    public Response multipleEvents(@PathParam("id") long observerId, MultipleEventsRequest requests) throws DatasourceFindException {
+        if (requests.getRegisterTo() != null) {
+            for (RegisterEventRequest request : requests.getRegisterTo()) {
+                assertPermitted(observerId, ThingPermission.EXECUTE);
+                assertPermitted(request.getTargetThingID(), ThingPermission.READ);
+                this.logic.registerToEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
+            }
+        }
+        if (requests.getUnregisterFrom() != null) {
+            for (RegisterEventRequest request : requests.getUnregisterFrom()) {
+                assertPermitted(observerId, ThingPermission.EXECUTE);
+                this.logic.unregisterFromEvent(observerId, request.getTargetThingID(), request.getTargetEventName());
+            }
         }
         return Response.noContent().build();
     }
