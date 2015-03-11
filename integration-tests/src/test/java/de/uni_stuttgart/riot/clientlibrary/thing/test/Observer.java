@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -102,6 +103,12 @@ public class Observer extends Thing {
         protected <A extends ActionInstance> void executeAction(Action<A> action, A actionInstance) {
             // The Observer does not have any actions, so nothing to do here.
         }
+
+        @Override
+        protected DelegatingReferenceResolver getDelegatingResolver() {
+            return super.getDelegatingResolver();
+        }
+
     }
 
 }

@@ -74,7 +74,7 @@ public class Property<V> {
      *
      * @return the value
      */
-    public V getValue() {
+    public V get() {
         return value;
     }
 

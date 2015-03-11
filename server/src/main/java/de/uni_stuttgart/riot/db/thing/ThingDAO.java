@@ -184,7 +184,7 @@ public class ThingDAO implements DAO<Thing> {
      * @return The string representation.
      */
     private static String valueToString(Object value) {
-        return value.toString();
+        return value == null ? null : value.toString();
     }
 
     /**
@@ -197,7 +197,9 @@ public class ThingDAO implements DAO<Thing> {
      * @return The converted value.
      */
     private static <T> T stringToValue(String value, Class<T> valueType) {
-        if (valueType == String.class) {
+        if (value == null) {
+            return null;
+        } else if (valueType == String.class) {
             return valueType.cast(value);
         }
         try {

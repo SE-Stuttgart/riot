@@ -12,11 +12,14 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.request.UserRequest;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.references.TargetNotFoundException;
+import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 
 /**
  * Rest client for the Usermanagement. // FIXME handle baseresource changes
  */
-public class UsermanagementClient extends BaseClient {
+public class UsermanagementClient extends BaseClient implements TypedReferenceResolver<User> {
 
     private static final String GET_USERS = "users";
     private static final String GET_CURRENT_USER = "users/self";
@@ -254,6 +257,19 @@ public class UsermanagementClient extends BaseClient {
      */
     public User getUser(long id) throws RequestException, IOException, NotFoundException {
         return getConnector().doGET(GET_USER + id, User.class);
+    }
+
+    @Override
+    public User resolve(long targetId) throws ResolveReferenceException {
+        try {
+            return getUser(targetId);
+        } catch (RequestException e) {
+            throw new ResolveReferenceException(e);
+        } catch (IOException e) {
+            throw new ResolveReferenceException(e);
+        } catch (NotFoundException e) {
+            throw new TargetNotFoundException(e);
+        }
     }
 
     /**

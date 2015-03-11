@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class BaseInstanceDescription {
 
     private final Class<? extends BaseInstance> instanceType;
-    private final List<InstanceParameterDescription> parameters;
+    private final List<ParameterDescription> parameters;
 
     /**
      * Instantiates a new BaseInstanceDescription. Use {@link #create(Class)} to retrieve an instance.
@@ -32,7 +32,7 @@ public class BaseInstanceDescription {
      *            The parameters of the type.
      */
     @JsonCreator
-    private BaseInstanceDescription(@JsonProperty("instanceType") Class<? extends BaseInstance> instanceType, @JsonProperty("parameters") List<InstanceParameterDescription> parameters) {
+    private BaseInstanceDescription(@JsonProperty("instanceType") Class<? extends BaseInstance> instanceType, @JsonProperty("parameters") List<ParameterDescription> parameters) {
         this.instanceType = instanceType;
         this.parameters = parameters;
     }
@@ -51,7 +51,7 @@ public class BaseInstanceDescription {
      * 
      * @return The parameters of the type.
      */
-    public List<InstanceParameterDescription> getParameters() {
+    public List<ParameterDescription> getParameters() {
         return parameters;
     }
 
@@ -63,13 +63,13 @@ public class BaseInstanceDescription {
      * @return The instance description.
      */
     public static BaseInstanceDescription create(Class<? extends BaseInstance> instanceType) {
-        List<InstanceParameterDescription> parameters = new ArrayList<InstanceParameterDescription>();
+        List<ParameterDescription> parameters = new ArrayList<ParameterDescription>();
         Class<?> clazz = instanceType;
         while (clazz != BaseInstance.class) {
             // We detect the "parameters" by checking which fields are declared (privately) in the class.
             for (Field field : clazz.getDeclaredFields()) {
                 if (Modifier.isPrivate(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
-                    parameters.add(InstanceParameterDescription.create(field));
+                    parameters.add(ParameterDescription.create(field));
                 }
             }
             clazz = clazz.getSuperclass();

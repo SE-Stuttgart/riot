@@ -45,7 +45,7 @@ public class ThingPropertyBinding<T> extends SimpleObjectProperty<T> {
      *            The thing property to bind to.
      */
     public ThingPropertyBinding(WritableProperty<T> thingProperty) {
-        super(thingProperty.getValue());
+        super(thingProperty.get());
         this.thingProperty = thingProperty;
 
         this.changeListener = (observable, oldValue, newValue) -> {

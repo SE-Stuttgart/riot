@@ -26,10 +26,10 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
-import de.uni_stuttgart.riot.thing.commons.ShareRequest;
-import de.uni_stuttgart.riot.thing.commons.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
+import de.uni_stuttgart.riot.thing.rest.ShareRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
 /**

@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -19,8 +20,12 @@ import org.mockito.Mockito;
 import de.uni_stuttgart.riot.clientlibrary.BaseClientTest;
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.client.UsermanagementClient;
+import de.uni_stuttgart.riot.clientlibrary.thing.test.Fridge.FiredDeliveryGuyEventInstance;
 import de.uni_stuttgart.riot.clientlibrary.thing.test.Fridge.OutOfFoodEventInstance;
+import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.client.DeviceBehavior;
@@ -106,6 +111,75 @@ public class ThingTest extends BaseClientTest {
     }
 
     @Test
+    public void scenarioDeliveryGuy() throws RequestException, IOException, NotFoundException, ResolveReferenceException {
+
+        // As in the previous scenario, we have a fridge and an observer.
+        Fridge.FridgeBehavior fridgeBehavior = Fridge.create(getLoggedInThingClient(), "Peter");
+        Fridge fridge = fridgeBehavior.getFridge();
+        Observer.ObserverBehavior observerBehavior = Observer.create(getLoggedInThingClient(), "Olli");
+        Fridge mirroredFridge = observerBehavior.observe(fridge.getId(), Fridge.class);
+
+        // Since we will hire and fire delivery guys (which fill the fridge with new food), we need to reference those. We use the regular
+        // RIOT users as possible employees, so we need to resolve User instances.
+        UsermanagementClient umClient = new UsermanagementClient(getLoggedInConnector());
+        fridgeBehavior.getDelegatingResolver().addResolver(User.class, umClient);
+        observerBehavior.getDelegatingResolver().addResolver(User.class, umClient);
+
+        // Retrieve test users.
+        User yoda = umClient.getUser(1);
+        User vader = umClient.getUser(3);
+
+        // Register an event listener, so we see who got fired.
+        @SuppressWarnings("unchecked")
+        EventListener<FiredDeliveryGuyEventInstance> listener = mock(EventListener.class);
+        mirroredFridge.getFiredDeliveryGuyEvent().register(listener);
+        observerBehavior.startMonitoring(mirroredFridge);
+
+        // Now we make Yoda the delivery guy, this is executed directly at the fridge client.
+        assertThat(fridge.getDeliveryGuy(), is(nullValue()));
+        assertThat(fridge.getDeliveryGuyId(), is(nullValue()));
+        fridge.hireDeliveryGuy(yoda);
+        assertThat(fridge.getDeliveryGuy(), is(yoda));
+        assertThat(fridge.getDeliveryGuyId(), is(yoda.getId()));
+
+        // This should not have fired anyone since there was no employee at the beginning.
+        assertThat(mirroredFridge.getDeliveryGuy(), is(nullValue()));
+        assertThat(mirroredFridge.getDeliveryGuyId(), is(nullValue()));
+        observerBehavior.fetchUpdates();
+        assertThat(mirroredFridge.getDeliveryGuy(), is(yoda));
+        assertThat(mirroredFridge.getDeliveryGuyId(), is(yoda.getId()));
+        verify(listener, never()).onFired(any(), any());
+
+        // Now we fire Yoda by employing Vader. We request this from the observer's side.
+        mirroredFridge.hireDeliveryGuy(vader);
+        assertThat(mirroredFridge.getDeliveryGuy(), is(yoda));
+        assertThat(mirroredFridge.getDeliveryGuyId(), is(yoda.getId()));
+
+        // As usual, we need to propagate this to the executing client until it gets executed.
+        fridgeBehavior.fetchUpdates();
+        assertThat(fridge.getDeliveryGuy(), is(vader));
+        assertThat(fridge.getDeliveryGuyId(), is(3L));
+
+        // And we need to propagate it back to see the event being fired.
+        assertThat(mirroredFridge.getDeliveryGuy(), is(yoda));
+        assertThat(mirroredFridge.getDeliveryGuyId(), is(yoda.getId()));
+        verify(listener, never()).onFired(any(), any());
+        observerBehavior.fetchUpdates();
+        assertThat(mirroredFridge.getDeliveryGuy(), is(vader));
+        assertThat(mirroredFridge.getDeliveryGuyId(), is(vader.getId()));
+
+        // Check that we really fired Yoda.
+        ArgumentCaptor<FiredDeliveryGuyEventInstance> eventCaptor = ArgumentCaptor.forClass(FiredDeliveryGuyEventInstance.class);
+        verify(listener, times(1)).onFired(Mockito.same(mirroredFridge.getFiredDeliveryGuyEvent()), eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getPoorGuy().getId(), is(yoda.getId()));
+
+        // Shutdown
+        observerBehavior.unregisterAndShutdown();
+        fridgeBehavior.unregisterAndShutdown();
+
+    }
+
+    @Test
     public void scenarioExistingTestThing() throws RequestException, IOException, NotFoundException {
         // Login as the existing test thing with ID 1.
         ThingClient thingClient = getLoggedInThingClient();
@@ -139,9 +213,9 @@ public class ThingTest extends BaseClientTest {
         realThing.setInt(43);
 
         // Checking if the mirror in our andriod is able to see the change
-        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
         andriod.updateThingState(andriod.getThingByDiscription(testDesc));
-        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
         assertThat(pre, is(42));
         assertThat(post, is(43));
     }

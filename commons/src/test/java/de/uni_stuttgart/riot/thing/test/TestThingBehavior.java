@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -48,6 +49,11 @@ public class TestThingBehavior extends ThingBehavior {
     @Override
     public <E extends EventInstance> void notifyListeners(Event<E> event, E eventInstance) {
         super.notifyListeners(event, eventInstance);
+    }
+
+    @Override
+    protected DelegatingReferenceResolver getDelegatingResolver() {
+        return super.getDelegatingResolver();
     }
 
     @SuppressWarnings("unchecked")

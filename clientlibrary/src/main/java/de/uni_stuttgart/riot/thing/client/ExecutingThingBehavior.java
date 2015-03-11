@@ -53,7 +53,7 @@ public abstract class ExecutingThingBehavior extends MirroringThingBehavior {
      */
     protected <V> void changePropertyValue(Property<V> property, V newValue) {
         // Note that the property itself will take care of setting the new value immediately before firing the event.
-        executeEvent(new PropertyChangeEvent.Instance<V>(property.getChangeEvent(), property.getValue(), newValue));
+        executeEvent(new PropertyChangeEvent.Instance<V>(property.getChangeEvent(), property.get(), newValue));
     }
 
     @Override

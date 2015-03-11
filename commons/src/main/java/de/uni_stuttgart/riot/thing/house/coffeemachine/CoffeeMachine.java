@@ -117,7 +117,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public boolean isPowerOn() {
-        return powerSwitch.getValue();
+        return powerSwitch.get();
     }
 
     public void setPowerSwitch(boolean newValue) { // NOCS
@@ -125,7 +125,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public double getWaterTank() {
-        return waterTank.getValue();
+        return waterTank.get();
     }
 
     public Property<Double> getWaterTankProperty() {
@@ -148,7 +148,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public int getBeanTank() {
-        return beanTank.getValue();
+        return beanTank.get();
     }
 
     public Property<Integer> getBeanTankProperty() {
@@ -174,7 +174,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public double getDripTray() {
-        return dripTray.getValue();
+        return dripTray.get();
     }
 
     public Property<Double> getDripTrayProperty() {
@@ -193,7 +193,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public double getBrewStrength() {
-        return brewStrength.getValue();
+        return brewStrength.get();
     }
 
     public void setBrewStrength(double newValue) { // NOCS
@@ -205,7 +205,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public CupSize getCupSize() {
-        return cupSize.getValue();
+        return cupSize.get();
     }
 
     public void setCupSize(CupSize newValue) { // NOCS
@@ -217,7 +217,7 @@ public class CoffeeMachine extends Thing {
     }
 
     public boolean isBusy() {
-        return busy.getValue();
+        return busy.get();
     }
 
     public Property<Boolean> getBusyProperty() {

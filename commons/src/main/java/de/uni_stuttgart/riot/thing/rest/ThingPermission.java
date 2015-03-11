@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.thing.commons;
+package de.uni_stuttgart.riot.thing.rest;
 
 /**
  * The Enum ThingPermission.

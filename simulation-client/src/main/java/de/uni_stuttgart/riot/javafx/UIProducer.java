@@ -20,7 +20,7 @@ import javafx.scene.control.TextField;
 import de.uni_stuttgart.riot.simulation_client.SimulatedThingBehavior;
 import de.uni_stuttgart.riot.simulation_client.ThingPropertyInternalBinding;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
-import de.uni_stuttgart.riot.thing.ui.UIHint.DropDown;
+import de.uni_stuttgart.riot.thing.ui.UIHint.EnumDropDown;
 import de.uni_stuttgart.riot.thing.ui.UIHint.EditNumber;
 import de.uni_stuttgart.riot.thing.ui.UIHint.EditText;
 import de.uni_stuttgart.riot.thing.ui.UIHint.FractionalSlider;
@@ -121,7 +121,7 @@ public abstract class UIProducer {
             }
             return produceNumberSpinner((ObservableValue<Number>) property);
 
-        } else if (hint instanceof DropDown) {
+        } else if (hint instanceof EnumDropDown) {
             if (!Enum.class.isAssignableFrom(valueType)) {
                 throw new IllegalArgumentException("DropDown can only be used for enums, not for " + valueType);
             }

@@ -13,6 +13,7 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
 public class PropertyDescription {
 
     private final String name;
+    private final boolean isReference;
     private final Class<?> valueType;
     private final UIHint uiHint;
     private final boolean writable;
@@ -28,8 +29,9 @@ public class PropertyDescription {
      *            Whether the property is writable.
      */
     @JsonCreator
-    private PropertyDescription(@JsonProperty("name") String name, @JsonProperty("valueType") Class<?> valueType, @JsonProperty("uiHint") UIHint uiHint, @JsonProperty("writable") boolean writable) {
+    private PropertyDescription(@JsonProperty("name") String name, @JsonProperty("isReference") boolean isReference, @JsonProperty("valueType") Class<?> valueType, @JsonProperty("uiHint") UIHint uiHint, @JsonProperty("writable") boolean writable) {
         this.name = name;
+        this.isReference = isReference;
         this.valueType = valueType;
         this.uiHint = uiHint;
         this.writable = writable;
@@ -42,6 +44,17 @@ public class PropertyDescription {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets a flag that indicates whether the property is actually a reference. In that case, the value is a Long, which is the ID of the
+     * referenced entity, and {@link #getValueType()} is the type of the referenced entity.
+     * 
+     * @return True if the property is a reference.
+     */
+    @JsonProperty("isReference")
+    public boolean isReference() {
+        return isReference;
     }
 
     /**
@@ -79,7 +92,13 @@ public class PropertyDescription {
      * @return The property description.
      */
     public static PropertyDescription create(Property<?> property) {
-        return new PropertyDescription(property.getName(), property.getValueType(), property.getUiHint(), property instanceof WritableProperty);
+        if (property instanceof ReferenceProperty) {
+            return new PropertyDescription(property.getName(), true, ((ReferenceProperty<?>) property).getTargetType(), property.getUiHint(), false);
+        } else if (property instanceof WritableReferenceProperty) {
+            return new PropertyDescription(property.getName(), true, ((WritableReferenceProperty<?>) property).getTargetType(), property.getUiHint(), true);
+        } else {
+            return new PropertyDescription(property.getName(), false, property.getValueType(), property.getUiHint(), property instanceof WritableProperty);
+        }
     }
 
 }
