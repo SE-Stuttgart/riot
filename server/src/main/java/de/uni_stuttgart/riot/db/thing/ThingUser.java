@@ -3,7 +3,7 @@ package de.uni_stuttgart.riot.db.thing;
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.commons.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 
 /**
  * {@link ThingUser} represents the n:m multi-relation between {@link Thing} and {@link User}. If a relation entry is present, this means
