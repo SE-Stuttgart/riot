@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.references.Referenceable;
 
 /**
  * The User class holds all basic information regarding to a user.
@@ -13,7 +14,7 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
  *
  */
 @JsonIgnoreProperties({ "hashedPassword", "passwordSalt", "hashIterations", "loginAttemptCount" })
-public class User extends Storable {
+public class User extends Storable implements Referenceable<User> {
 
     protected String username;
     protected String email;
@@ -49,7 +50,7 @@ public class User extends Storable {
      * @param roles
      *            The roles of the user
      * @param email
-     *            The email of the user 
+     *            The email of the user
      */
     public User(String username, String email, Collection<Role> roles) {
         super(-1L);
@@ -66,7 +67,7 @@ public class User extends Storable {
      * @param username
      *            The name of the user
      * @param email
-     *            The email of the user 
+     *            The email of the user
      */
     public User(long id, String username, String email) {
         super(id);
@@ -95,6 +96,7 @@ public class User extends Storable {
 
     /**
      * Returns the email.
+     * 
      * @return the email
      */
     public String getEmail() {
@@ -102,8 +104,10 @@ public class User extends Storable {
     }
 
     /**
-     *  Sets the user email.
-     * @param email the email to set
+     * Sets the user email.
+     * 
+     * @param email
+     *            the email to set
      */
     public void setEmail(String email) {
         this.email = email;
@@ -121,7 +125,7 @@ public class User extends Storable {
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
-    
+
     /**
      * Checks for valid id.
      *
@@ -131,7 +135,9 @@ public class User extends Storable {
         return this.getId() >= 0 ? true : false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -143,7 +149,9 @@ public class User extends Storable {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -175,5 +183,4 @@ public class User extends Storable {
         return true;
     }
 
-    
 }

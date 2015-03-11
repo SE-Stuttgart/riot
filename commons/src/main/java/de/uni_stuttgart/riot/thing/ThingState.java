@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.uni_stuttgart.riot.references.Referenceable;
+
 /**
  * Represents the current state of a thing, i.e., the values of its properties.
  * 
@@ -153,6 +155,50 @@ public class ThingState {
             property.setValueSilently(typedValue);
         } else {
             throw new IllegalArgumentException("The type of the value " + value + " does not match the expected type " + property.getValueType());
+        }
+    }
+
+    /**
+     * Silently (without raising any events) sets the value of the given property. Use with care!
+     * 
+     * @param <R>
+     *            The type of the entities referenced by the property.
+     * @param property
+     *            The property to be set.
+     * @param value
+     *            The new referenced entity value for the property.
+     */
+    public static <R extends Referenceable<R>> void silentSetThingProperty(ReferenceProperty<R> property, Object value) {
+        if (value == null) {
+            property.setValueSilently(null);
+        } else if (value instanceof Long) {
+            property.setValueSilently((Long) value);
+        } else if (property.getTargetType().isInstance(value)) {
+            property.setValueSilently(((Referenceable<?>) value).getId());
+        } else {
+            throw new IllegalArgumentException("The type of the value " + value + " does not match the expected type " + property.getTargetType());
+        }
+    }
+
+    /**
+     * Silently (without raising any events) sets the value of the given property. Use with care!
+     * 
+     * @param <R>
+     *            The type of the entities referenced by the property.
+     * @param property
+     *            The property to be set.
+     * @param value
+     *            The new referenced entity value for the property.
+     */
+    public static <R extends Referenceable<R>> void silentSetThingProperty(WritableReferenceProperty<R> property, Object value) {
+        if (value == null) {
+            property.setValueSilently(null);
+        } else if (value instanceof Long) {
+            property.setValueSilently((Long) value);
+        } else if (property.getTargetType().isInstance(value)) {
+            property.setValueSilently(((Referenceable<?>) value).getId());
+        } else {
+            throw new IllegalArgumentException("The type of the value " + value + " does not match the expected type " + property.getTargetType());
         }
     }
 

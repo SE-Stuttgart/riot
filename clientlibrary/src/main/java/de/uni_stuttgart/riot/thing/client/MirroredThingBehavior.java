@@ -51,7 +51,7 @@ public class MirroredThingBehavior extends ClientThingBehavior {
      *            The mirroring behavior that mirrors the new mirrored behavior.
      */
     public MirroredThingBehavior(MirroringThingBehavior mirroringBehavior) {
-        super(mirroringBehavior.getClient());
+        super(mirroringBehavior.getDelegatingResolver(), mirroringBehavior.getClient());
         this.mirroringBehavior = mirroringBehavior;
     }
 

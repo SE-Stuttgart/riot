@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -44,6 +45,13 @@ public class ServerThingBehavior extends ThingBehavior {
             occuredEvents.add(eventInstance);
         }
     };
+
+    /**
+     * Creates a new instance and registers it with the {@link ServerReferenceResolver}.
+     */
+    public ServerThingBehavior() {
+        super(ServerReferenceResolver.getInstance());
+    }
 
     @Override
     protected <A extends ActionInstance> void userFiredAction(A actionInstance) {

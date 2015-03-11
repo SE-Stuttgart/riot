@@ -31,7 +31,7 @@ import de.uni_stuttgart.riot.javafx.ConstantObservable;
 import de.uni_stuttgart.riot.javafx.UIProducer;
 import de.uni_stuttgart.riot.thing.BaseInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
-import de.uni_stuttgart.riot.thing.InstanceParameterDescription;
+import de.uni_stuttgart.riot.thing.ParameterDescription;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -90,7 +90,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
     private BaseInstanceWindow(BaseInstanceDescription description, I instance) {
         this.description = description;
         this.mayCreateNewWritableProperties = false;
-        for (InstanceParameterDescription parameter : description.getParameters()) {
+        for (ParameterDescription parameter : description.getParameters()) {
             parameterProperties.put(parameter.getName(), getConstantParameterValue(description.getInstanceType(), instance, parameter.getName(), parameter.getValueType()));
         }
         setScene(new Scene(produceContent()));
@@ -121,7 +121,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
         while (clazz != BaseInstance.class) {
             try {
                 Field field = clazz.getDeclaredField(parameterName);
-                if (InstanceParameterDescription.getBoxedType(field.getType()) != valueType) {
+                if (ParameterDescription.getBoxedType(field.getType()) != valueType) {
                     throw new IllegalArgumentException("The paramter " + parameterName + " in " + instanceType + " is of type " + field.getType() + ", but expected type is " + valueType);
                 }
                 field.setAccessible(true);
@@ -148,7 +148,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
         container.setHgap(INNER_SPACING);
         container.setVgap(INNER_SPACING);
         int i = 0;
-        for (InstanceParameterDescription parameter : description.getParameters()) {
+        for (ParameterDescription parameter : description.getParameters()) {
             Label label = new Label(parameter.getName());
             Control valueControl;
             if (parameterProperties.containsKey(parameter.getName())) {

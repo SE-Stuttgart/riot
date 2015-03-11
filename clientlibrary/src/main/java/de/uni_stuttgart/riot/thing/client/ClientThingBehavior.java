@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.thing.client;
 import java.io.IOException;
 
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
@@ -25,6 +26,19 @@ public abstract class ClientThingBehavior extends ThingBehavior {
      *            The {@link ThingClient} responsible for this behavior.
      */
     public ClientThingBehavior(ThingClient thingClient) {
+        this.thingClient = thingClient;
+    }
+
+    /**
+     * Creates a new behavior instance.
+     * 
+     * @param resolver
+     *            The reference resolver used by this behavior.
+     * @param thingClient
+     *            The {@link ThingClient} responsible for this behavior.
+     */
+    public ClientThingBehavior(DelegatingReferenceResolver resolver, ThingClient thingClient) {
+        super(resolver);
         this.thingClient = thingClient;
     }
 

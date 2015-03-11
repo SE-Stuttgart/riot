@@ -3,6 +3,11 @@ package de.uni_stuttgart.riot.thing;
 import java.beans.PropertyChangeEvent;
 import java.util.Map;
 
+import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
+import de.uni_stuttgart.riot.references.Reference;
+import de.uni_stuttgart.riot.references.ReferenceResolver;
+import de.uni_stuttgart.riot.references.Referenceable;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -11,13 +16,34 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  * 
  * @author Philipp Keck
  */
-public abstract class ThingBehavior {
+public abstract class ThingBehavior implements ReferenceResolver {
 
     /*
      * -------------------------- General fields and methods
      */
 
     private Thing thing;
+    private final DelegatingReferenceResolver resolver;
+
+    /**
+     * Creates a new ThingBehavior. Uses an empty {@link 
+     */
+    public ThingBehavior() {
+        this.resolver = new DelegatingReferenceResolver();
+    }
+
+    /**
+     * Creates a new ThingBehavior.
+     * 
+     * @param resolver
+     *            The reference resolver to be used by this behavior.
+     */
+    public ThingBehavior(DelegatingReferenceResolver resolver) {
+        if (resolver == null) {
+            throw new IllegalArgumentException("resolver must not be null!");
+        }
+        this.resolver = resolver;
+    }
 
     /**
      * Registers the behavior with its thing. This method may only be called once!
@@ -152,6 +178,40 @@ public abstract class ThingBehavior {
         property.setValueSilently(value);
     }
 
+    /**
+     * Gets the reference resolver used by this behavior.
+     * 
+     * @return The resolver.
+     */
+    protected DelegatingReferenceResolver getDelegatingResolver() {
+        return resolver;
+    }
+
+    /**
+     * Resolves an entity reference. Note that calling this method is usually expensive and might involve a number of server and/or database
+     * queries.
+     * 
+     * @param <R>
+     *            The expected type of the target entity.
+     * @param reference
+     *            The reference to be resolved.
+     * @param targetType
+     *            The expected type of the target entity.
+     * @return The resolved reference. This method returns <tt>null</tt> if and only if <tt>reference.</tt>{@link Reference#getId()} was
+     *         <tt>null</tt>.
+     * @throws ResolveReferenceException
+     *             When resolving the reference fails. See the subclasses of {@link ResolveReferenceException} for details on possible
+     *             causes.
+     */
+    public <R extends Referenceable<? super R>> R resolve(Reference<R> reference, Class<R> targetType) throws ResolveReferenceException {
+        return resolve(reference.getId(), targetType);
+    }
+
+    @Override
+    public <R extends Referenceable<? super R>> R resolve(Long targetId, Class<R> targetType) throws ResolveReferenceException {
+        return resolver.resolve(targetId, targetType);
+    }
+
     /*
      * -------------------------- Behavioral methods (Called by the Thing, by the User)
      */
@@ -278,7 +338,7 @@ public abstract class ThingBehavior {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Should check for uniqueness.
+     *            The name of the property. Should check for uniqueness.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -288,24 +348,8 @@ public abstract class ThingBehavior {
      * @return The newly created property.
      */
     protected <V> Property<V> newProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
-        if (propertyName == null || propertyName.isEmpty()) {
-            throw new IllegalArgumentException("propertyName must not be empty!");
-        } else if (thing.properties.containsKey(propertyName)) {
-            throw new IllegalArgumentException("Duplicate property " + propertyName);
-        }
-        if (valueType == null) {
-            throw new IllegalArgumentException("valueType must not be null!");
-        }
-
-        Property<V> property = new Property<V>(thing, propertyName, valueType, initialValue, uiHint);
-
-        if (thing.events.containsKey(property.getChangeEvent().getName())) {
-            throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
-        }
-
-        thing.properties.put(propertyName, property);
-        thing.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
-        return property;
+        checkPropertyArguments(propertyName, valueType);
+        return addPropertyInternal(new Property<V>(thing, propertyName, valueType, initialValue, uiHint));
     }
 
     /**
@@ -314,7 +358,7 @@ public abstract class ThingBehavior {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Should check for uniqueness.
+     *            The name of the property. Should check for uniqueness.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -324,6 +368,55 @@ public abstract class ThingBehavior {
      * @return The newly created property.
      */
     protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
+        checkPropertyArguments(propertyName, valueType);
+        return addPropertyInternal(new WritableProperty<V>(thing, propertyName, valueType, initialValue, uiHint));
+    }
+
+    /**
+     * Creates a new reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property. Should check for uniqueness.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @param uiHint
+     *            The UI hint for the property (may be null).
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> ReferenceProperty<R> newReferenceProperty(String propertyName, Class<R> targetType, UIHint uiHint) {
+        checkPropertyArguments(propertyName, targetType);
+        return addPropertyInternal(new ReferenceProperty<R>(thing, propertyName, targetType, uiHint));
+    }
+
+    /**
+     * Creates a new writable reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property. Should check for uniqueness.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @param uiHint
+     *            The UI hint for the property (may be null).
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> WritableReferenceProperty<R> newWritableReferenceProperty(String propertyName, Class<R> targetType, UIHint uiHint) {
+        checkPropertyArguments(propertyName, targetType);
+        return addPropertyInternal(new WritableReferenceProperty<R>(thing, propertyName, targetType, uiHint));
+    }
+
+    /**
+     * Helper method to check arguments for property creators.
+     * 
+     * @param propertyName
+     *            The name of the property.
+     * @param valueType
+     *            The type of the property's values.
+     */
+    private <V> void checkPropertyArguments(String propertyName, Class<V> valueType) {
         if (propertyName == null || propertyName.isEmpty()) {
             throw new IllegalArgumentException("propertyName must not be empty!");
         } else if (thing.properties.containsKey(propertyName)) {
@@ -332,19 +425,34 @@ public abstract class ThingBehavior {
         if (valueType == null) {
             throw new IllegalArgumentException("valueType must not be null!");
         }
+    }
 
-        WritableProperty<V> property = new WritableProperty<V>(thing, propertyName, valueType, initialValue, uiHint);
-
+    /**
+     * A helper method to add a newly created property.
+     * 
+     * @param <V>
+     *            The type of the property's values.
+     * @param <P>
+     *            The type of the {@link Property} object itself.
+     * @param property
+     *            The property to be added.
+     */
+    private <V, P extends Property<V>> P addPropertyInternal(P property) {
         if (thing.events.containsKey(property.getChangeEvent().getName())) {
             throw new IllegalArgumentException("Duplicate property change event " + property.getChangeEvent().getName());
         }
-        if (thing.actions.containsKey(property.getSetAction().getName())) {
-            throw new IllegalArgumentException("Duplicate property set action " + property.getSetAction().getName());
+
+        if (property instanceof WritableProperty) {
+            WritableProperty<V> writableProperty = (WritableProperty<V>) property;
+            if (thing.actions.containsKey(writableProperty.getSetAction().getName())) {
+                throw new IllegalArgumentException("Duplicate property set action " + writableProperty.getName());
+            }
+            thing.actions.put(writableProperty.getSetAction().getName(), writableProperty.getSetAction());
         }
 
-        thing.properties.put(propertyName, property);
+        thing.properties.put(property.getName(), property);
         thing.events.put(property.getChangeEvent().getName(), property.getChangeEvent());
-        thing.actions.put(property.getSetAction().getName(), property.getSetAction());
+
         return property;
     }
 

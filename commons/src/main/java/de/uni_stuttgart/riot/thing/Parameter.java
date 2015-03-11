@@ -15,7 +15,7 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InstanceParameter {
+public @interface Parameter {
 
     /**
      * The type of UI to be used.
@@ -33,7 +33,7 @@ public @interface InstanceParameter {
     double max() default Double.MAX_VALUE;
 
     /**
-     * Dummy class for the default value of {@link InstanceParameter#ui()}.
+     * Dummy class for the default value of {@link Parameter#ui()}.
      */
     public static class NoHint extends UIHint {
     }

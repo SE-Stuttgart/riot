@@ -21,7 +21,7 @@ CREATE TABLE propertyvalues
 (
 thingID bigint unsigned NOT NULL,
 name varchar(128) NOT NULL,
-val varchar(256) NOT NULL,
+val varchar(256),
 FOREIGN KEY (thingID) REFERENCES things(id) ON DELETE CASCADE,
 PRIMARY KEY (thingID, name)
 );

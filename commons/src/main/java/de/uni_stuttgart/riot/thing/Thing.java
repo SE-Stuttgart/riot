@@ -6,12 +6,13 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s.
  */
-public class Thing extends Storable {
+public class Thing extends Storable implements Referenceable<Thing> {
 
     final Map<String, Property<?>> properties = new HashMap<String, Property<?>>();
     final Map<String, Event<?>> events = new HashMap<String, Event<?>>();
@@ -92,7 +93,7 @@ public class Thing extends Storable {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -100,7 +101,7 @@ public class Thing extends Storable {
      * @return The newly created property.
      */
     protected <V> Property<V> newProperty(String propertyName, Class<V> valueType, V initialValue) {
-        return getBehavior().newProperty(propertyName, valueType, initialValue, null);
+        return newProperty(propertyName, valueType, initialValue, null);
     }
 
     /**
@@ -109,7 +110,7 @@ public class Thing extends Storable {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -128,7 +129,7 @@ public class Thing extends Storable {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -136,7 +137,7 @@ public class Thing extends Storable {
      * @return The newly created property.
      */
     protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue) {
-        return getBehavior().newWritableProperty(propertyName, valueType, initialValue, null);
+        return newWritableProperty(propertyName, valueType, initialValue, null);
     }
 
     /**
@@ -145,7 +146,7 @@ public class Thing extends Storable {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -156,6 +157,70 @@ public class Thing extends Storable {
      */
     protected <V> WritableProperty<V> newWritableProperty(String propertyName, Class<V> valueType, V initialValue, UIHint uiHint) {
         return getBehavior().newWritableProperty(propertyName, valueType, initialValue, uiHint);
+    }
+
+    /**
+     * Creates a new reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> ReferenceProperty<R> newReferenceProperty(String propertyName, Class<R> targetType) {
+        return newReferenceProperty(propertyName, targetType, null);
+    }
+
+    /**
+     * Creates a new reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @param uiHint
+     *            The UI hint for the property. See {@link UIHint} for static factory methods.
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> ReferenceProperty<R> newReferenceProperty(String propertyName, Class<R> targetType, UIHint uiHint) {
+        return getBehavior().newReferenceProperty(propertyName, targetType, uiHint);
+    }
+
+    /**
+     * Creates a new writable reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> WritableReferenceProperty<R> newWritableReferenceProperty(String propertyName, Class<R> targetType) {
+        return newWritableReferenceProperty(propertyName, targetType, null);
+    }
+
+    /**
+     * Creates a new writable reference property for the thing.
+     * 
+     * @param <R>
+     *            The type of the referenced entities.
+     * @param propertyName
+     *            The name of the property.
+     * @param targetType
+     *            The type of the referenced entities.
+     * @param uiHint
+     *            The UI hint for the property. See {@link UIHint} for static factory methods.
+     * @return The newly created property.
+     */
+    protected <R extends Referenceable<? super R>> WritableReferenceProperty<R> newWritableReferenceProperty(String propertyName, Class<R> targetType, UIHint uiHint) {
+        return getBehavior().newWritableReferenceProperty(propertyName, targetType, uiHint);
     }
 
     /**

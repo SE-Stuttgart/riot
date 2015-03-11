@@ -6,6 +6,10 @@ import java.util.Map;
 
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.references.TargetNotFoundException;
+import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -21,7 +25,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
  * 
  * @author Philipp Keck
  */
-public abstract class MirroringThingBehavior extends ClientThingBehavior {
+public abstract class MirroringThingBehavior extends ClientThingBehavior implements TypedReferenceResolver<Thing> {
 
     /**
      * This behavior factory will create instances of {@link MirroredThingBehavior} that are attached to this {@link MirroringThingBehavior}
@@ -54,6 +58,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
      */
     public MirroringThingBehavior(ThingClient thingClient) {
         super(thingClient);
+        super.getDelegatingResolver().addResolver(Thing.class, this);
     }
 
     /**
@@ -224,6 +229,27 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior {
         if (lastException != null) {
             throw new Exception("At least one shutdown failed, last exception was", lastException);
         }
+    }
+
+    @Override
+    public Thing resolve(long targetId) throws ResolveReferenceException {
+        if (targetId == getThing().getId()) {
+            return getThing();
+        } else {
+            try {
+                return getOtherThing(targetId);
+            } catch (NotFoundException e) {
+                throw new TargetNotFoundException("The thing with ID " + targetId + " does not exist", e);
+            } catch (IOException e) {
+                throw new ResolveReferenceException(e);
+            }
+        }
+    }
+
+    // This method is here to expose it to the MirroredThingBehavior.
+    @Override
+    protected DelegatingReferenceResolver getDelegatingResolver() {
+        return super.getDelegatingResolver();
     }
 
 }

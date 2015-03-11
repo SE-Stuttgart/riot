@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
-import de.uni_stuttgart.riot.thing.InstanceParameter;
+import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -15,7 +15,7 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class OutOfBeans extends EventInstance {
 
-    @InstanceParameter(ui = UIHint.IntegralSlider.class, min = 0, max = CoffeeMachine.BEAN_TANK_SIZE)
+    @Parameter(ui = UIHint.IntegralSlider.class, min = 0, max = CoffeeMachine.BEAN_TANK_SIZE)
     private final int remainingBeans;
 
     /**
