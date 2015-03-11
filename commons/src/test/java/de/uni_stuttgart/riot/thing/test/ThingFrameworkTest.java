@@ -57,7 +57,7 @@ public class ThingFrameworkTest {
         assertThat(thing.getProperty("int") == thing.getIntProperty(), is(true));
 
         assertThat(thing.getReadonlyStringProperty(), sameInstance(thing.getProperty("readonlyString", String.class)));
-        assertThat(thing.getReadonlyString(), is(thing.getProperty("readonlyString", String.class).getValue()));
+        assertThat(thing.getReadonlyString(), is(thing.getProperty("readonlyString", String.class).get()));
 
         assertThat(thing.getSimpleAction(), sameInstance(thing.getAction("simpleAction", ActionInstance.class)));
         assertThat(thing.getSimpleAction() == thing.getAction("simpleAction"), is(true));

@@ -52,7 +52,7 @@ public class ThingPropertyObservable<T> extends ObservableValueBase<T> {
 
     @Override
     public T getValue() {
-        return thingProperty.getValue();
+        return thingProperty.get();
     }
 
 }

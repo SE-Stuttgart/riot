@@ -112,7 +112,7 @@ public abstract class Simulator<T extends Thing> {
     protected final void linearChange(Property<Integer> property, float end, long stepTime, int stepCount) {
         AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
         AtomicInteger step = new AtomicInteger(0);
-        float start = property.getValue();
+        float start = property.get();
         future.set(scheduler.scheduleAtFixedRate(() -> {
             float currentStep = step.getAndIncrement();
             Platform.runLater(() -> {
@@ -139,7 +139,7 @@ public abstract class Simulator<T extends Thing> {
     protected final void linearChange(Property<Double> property, double end, long stepTime, int stepCount) {
         AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
         AtomicInteger step = new AtomicInteger(0);
-        double start = property.getValue();
+        double start = property.get();
         future.set(scheduler.scheduleAtFixedRate(() -> {
             double currentStep = step.getAndIncrement();
             changePropertyValue(property, start + (end - start) * (currentStep / stepCount));

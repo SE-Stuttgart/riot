@@ -47,7 +47,7 @@ public class ThingPropertyInternalBinding<T> extends SimpleObjectProperty<T> {
      *            The thing behavior, which is used to change the property's values.
      */
     public ThingPropertyInternalBinding(Property<T> thingProperty, SimulatedThingBehavior behavior) {
-        super(thingProperty.getValue());
+        super(thingProperty.get());
         this.thingProperty = thingProperty;
 
         this.changeListener = (observable, oldValue, newValue) -> {

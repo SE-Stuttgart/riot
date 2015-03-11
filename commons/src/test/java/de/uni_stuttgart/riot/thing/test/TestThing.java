@@ -33,7 +33,7 @@ public class TestThing extends Thing {
     }
 
     public int getInt() {
-        return intProperty.getValue();
+        return intProperty.get();
     }
 
     public void setInt(int newValue) {
@@ -41,7 +41,7 @@ public class TestThing extends Thing {
     }
 
     public long getLong() {
-        return longProperty.getValue();
+        return longProperty.get();
     }
 
     public void setLong(long newValue) {
@@ -49,7 +49,7 @@ public class TestThing extends Thing {
     }
 
     public double getPercent() {
-        return percentProperty.getValue();
+        return percentProperty.get();
     }
 
     public void setPercent(double newValue) {
@@ -57,7 +57,7 @@ public class TestThing extends Thing {
     }
 
     public String getReadonlyString() {
-        return readonlyStringProperty.getValue();
+        return readonlyStringProperty.get();
     }
 
     public WritableProperty<Integer> getIntProperty() {

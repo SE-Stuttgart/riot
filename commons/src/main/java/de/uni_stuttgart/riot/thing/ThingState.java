@@ -166,7 +166,7 @@ public class ThingState {
     public static ThingState create(Thing thing) {
         Map<String, Object> propertyValues = new HashMap<String, Object>();
         for (Property<?> property : thing.properties.values()) {
-            propertyValues.put(property.getName(), property.getValue());
+            propertyValues.put(property.getName(), property.get());
         }
         return new ThingState(propertyValues);
     }

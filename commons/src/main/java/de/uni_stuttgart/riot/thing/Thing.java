@@ -366,7 +366,7 @@ public class Thing extends Storable {
             output.append(", ");
             output.append(property.getName());
             output.append("=");
-            output.append(property.getValue());
+            output.append(property.get());
         }
         output.append("]");
         return output.toString();

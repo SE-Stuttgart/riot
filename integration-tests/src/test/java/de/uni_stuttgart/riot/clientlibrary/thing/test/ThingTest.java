@@ -139,9 +139,9 @@ public class ThingTest extends BaseClientTest {
         realThing.setInt(43);
 
         // Checking if the mirror in our andriod is able to see the change
-        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        Integer pre = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
         andriod.updateThingState(andriod.getThingByDiscription(testDesc));
-        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").getValue();
+        Integer post = (Integer) andriod.getThingByDiscription(testDesc).getProperty("int").get();
         assertThat(pre, is(42));
         assertThat(post, is(43));
     }

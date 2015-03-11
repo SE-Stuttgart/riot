@@ -49,7 +49,7 @@ public class Fridge extends Thing {
     }
 
     public boolean getState() {
-        return state.getValue();
+        return state.get();
     }
 
     public void setState(boolean state) {
@@ -61,7 +61,7 @@ public class Fridge extends Thing {
     }
 
     public int getTemp() {
-        return temp.getValue();
+        return temp.get();
     }
 
     public Property<Integer> getTempProperty() {
