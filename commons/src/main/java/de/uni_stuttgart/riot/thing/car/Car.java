@@ -1,5 +1,8 @@
 package de.uni_stuttgart.riot.thing.car;
 
+import de.uni_stuttgart.riot.thing.Action;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
@@ -147,6 +150,10 @@ public class Car extends Thing {
      */
     private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_HEATING_TEMP, UIHint.toggleButton());
 
+    private final Action<ActionInstance> refuel = newAction("refuel");
+
+    private final Event<OutOfGasoline> outOfGasoline = newEvent("outOfGasoline", OutOfGasoline.class);
+
     /**
      * Constructor for a car thing.
      * 
@@ -159,4 +166,117 @@ public class Car extends Thing {
         super(name, behavior);
     }
 
+    /**
+     * Getter for the state of the heating (true=heating is switched on, false otherwise).
+     * 
+     * @return true if the heating is switched on, false otherwise.
+     */
+    public boolean isHeatingOn() {
+        return heating.getValue();
+    }
+
+    /**
+     * Getter for the engine state (true=heating is switched on, false otherwise).
+     * 
+     * @return true if the engine is switched on, false otherwise.
+     */
+    public boolean isEngineStarted() {
+        return engineState.getValue();
+    }
+
+    /**
+     * Getter for the tire pressure of the front right tire.
+     * @return pressure in bar.
+     */
+    public Double getTirePressureFrontRight() {
+        return tirePressureFrontRight.getValue();
+    }
+
+    /**
+     * Getter for the tire pressure of the back left tire.
+     * @return pressure in bar.
+     */
+    public Double getTirePressureBackLeft() {
+        return tirePressureBackLeft.getValue();
+    }
+
+    /**
+     * Getter for the tire pressure of the back right tire.
+     * @return pressure in bar.
+     */
+    public Double getTirePressureBackRight() {
+        return tirePressureBackRight.getValue();
+    }
+
+    /**
+     * Getter for the tire pressure of the front left tire.
+     * @return pressure in bar.
+     */
+    public Double getTirePressureFrontLeft() {
+        return tirePressureFrontLeft.getValue();
+    }
+    
+    /**
+     * Getter for the tank fill level.
+     * @return fill level in liter.
+     */
+    public Double getTankFillLevel(){
+        return tankFillLevel.getValue();
+    }
+    
+    /**
+     * Getter for the actual interior temperature.
+     * @return actual interior temperature in degree celsius.
+     */
+    public Double getInteriorTemperature(){
+        return temp.getValue();
+    }
+    
+    /**
+     * Getter for the configured Temperature of the heating
+     * @return configured temperature in degree celsius.
+     */
+    public Double getConfiguredTemperature(){
+        return heatingTemp.getValue();
+    }
+    
+    /**
+     * True if the car is locked, false otherwise.
+     * @return state of the car lock.
+     */
+    public boolean isLocked(){
+        return lock.getValue();
+    }
+    
+    /**
+     * Getter for the milage.
+     * @return milage in KM.
+     */
+    public Double getMilage(){
+        return milage.getValue();
+    }
+    
+    /**
+     * Getter for the battery state
+     */
+    public BatteryState getBatteryState(){
+        return batteryState.getValue();
+    }
+    
+    /**
+     * Getter for position as GPS DATA.
+     * @return  
+     */
+    public GPSPosition getPosition(){
+        return new GPSPosition(longitude.getValue(), latitude.getValue());
+    }
+    
+    /**
+     * Refuel the car.
+     * @param amount amount in liter
+     */
+    public void refuel(Double amount){
+        refuel.fire(new ActionInstance(refuel));
+    }
+    
 }
