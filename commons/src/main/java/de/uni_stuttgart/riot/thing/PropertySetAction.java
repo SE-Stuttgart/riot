@@ -1,15 +1,12 @@
 package de.uni_stuttgart.riot.thing;
 
-import java.io.IOException;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 /**
  * Action for setting a property.
@@ -58,7 +55,6 @@ public class PropertySetAction<V> extends Action<PropertySetAction.Instance<V>> 
      * @param <V>
      *            The type of the property's values.
      */
-    @JsonDeserialize(using = InstanceDeserializer.class)
     public static class Instance<V> extends ActionInstance {
 
         private final V newValue;
@@ -88,7 +84,8 @@ public class PropertySetAction<V> extends Action<PropertySetAction.Instance<V>> 
          * @param newValue
          *            The new value for the property.
          */
-        Instance(long thingId, String name, Date time, V newValue) {
+        @JsonCreator
+        Instance(@JsonProperty("thingId") long thingId, @JsonProperty("name") String name, @JsonProperty("time") Date time, @JsonProperty("newValue") V newValue) {
             super(thingId, name, time);
             this.newValue = newValue;
         }
@@ -98,38 +95,9 @@ public class PropertySetAction<V> extends Action<PropertySetAction.Instance<V>> 
          * 
          * @return The new value for the property.
          */
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
         public V getNewValue() {
             return newValue;
-        }
-
-        /**
-         * Gets the actual type of the new value. This is needed by the {@link InstanceDeserializer} to reconstruct the value.
-         * 
-         * @return The type of {@link #getNewValue()}.
-         */
-        @JsonProperty("newValueType")
-        public Class<?> geNewValueType() {
-            return newValue == null ? null : newValue.getClass();
-        }
-
-    }
-
-    /**
-     * A deserializier for PropertySetAction Instances that uses the type information provided by {@link #getOldValueType()} and
-     * {@link #getNewValue()}.
-     */
-    public static class InstanceDeserializer extends JsonDeserializer<Instance<?>> {
-
-        @Override
-        public Instance<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode node = jp.getCodec().readTree(jp);
-            long thingId = node.get("thingId").asLong();
-            String name = node.get("name").asText();
-            Date time = new Date(node.get("time").asLong());
-            Object newValue = ThingState.deserializeValueOfType(node.get("newValue"), node.get("newValueType").asText(), jp.getCodec());
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Instance result = new Instance(thingId, name, time, newValue);
-            return result;
         }
 
     }

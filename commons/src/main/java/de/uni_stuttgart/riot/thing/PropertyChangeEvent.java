@@ -1,15 +1,12 @@
 package de.uni_stuttgart.riot.thing;
 
-import java.io.IOException;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
 /**
  * An Event fired when a {@link Property} changed.
@@ -55,7 +52,6 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
      * @param <V>
      *            The type of the property's values.
      */
-    @JsonDeserialize(using = InstanceDeserializer.class)
     public static class Instance<V> extends EventInstance {
 
         private final V oldValue;
@@ -91,7 +87,8 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
          * @param newValue
          *            The new value of the property.
          */
-        public Instance(long thingId, String name, Date time, V oldValue, V newValue) {
+        @JsonCreator
+        public Instance(@JsonProperty("thingId") long thingId, @JsonProperty("name") String name, @JsonProperty("time") Date time, @JsonProperty("oldValue") V oldValue, @JsonProperty("newValue") V newValue) {
             super(thingId, name, time);
             this.oldValue = oldValue;
             this.newValue = newValue;
@@ -102,18 +99,9 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
          * 
          * @return The old value of the property.
          */
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
         public V getOldValue() {
             return oldValue;
-        }
-
-        /**
-         * Gets the actual type of the old value. This is needed by the {@link InstanceDeserializer} to reconstruct the value.
-         * 
-         * @return The type of {@link #getOldValue()}.
-         */
-        @JsonProperty("oldValueType")
-        public Class<?> getOldValueType() {
-            return oldValue == null ? null : oldValue.getClass();
         }
 
         /**
@@ -121,39 +109,9 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
          * 
          * @return The new value of the property.
          */
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
         public V getNewValue() {
             return newValue;
-        }
-
-        /**
-         * Gets the actual type of the new value. This is needed by the {@link InstanceDeserializer} to reconstruct the value.
-         * 
-         * @return The type of {@link #getNewValue()}.
-         */
-        @JsonProperty("newValueType")
-        public Class<?> geNewValueType() {
-            return newValue == null ? null : newValue.getClass();
-        }
-
-    }
-
-    /**
-     * A deserializier for PropertyChangeEvent Instances that uses the type information provided by {@link #getOldValueType()} and
-     * {@link #getNewValue()}.
-     */
-    public static class InstanceDeserializer extends JsonDeserializer<Instance<?>> {
-
-        @Override
-        public Instance<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            JsonNode node = jp.getCodec().readTree(jp);
-            long thingId = node.get("thingId").asLong();
-            String name = node.get("name").asText();
-            Date time = new Date(node.get("time").asLong());
-            Object oldValue = ThingState.deserializeValueOfType(node.get("oldValue"), node.get("oldValueType").asText(), jp.getCodec());
-            Object newValue = ThingState.deserializeValueOfType(node.get("newValue"), node.get("newValueType").asText(), jp.getCodec());
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Instance result = new Instance(thingId, name, time, oldValue, newValue);
-            return result;
         }
 
     }
