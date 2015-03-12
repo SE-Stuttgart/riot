@@ -53,7 +53,7 @@ public class ActionDescription {
      * @return The description of the action.
      */
     public static ActionDescription create(Action<?> action) {
-        return new ActionDescription(action.getName(), BaseInstanceDescription.create(action.getInstanceType()));
+        return new ActionDescription(action.getName(), BaseInstanceDescriptions.get(action.getInstanceType()));
     }
 
 }

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.ClassUtils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -31,6 +33,7 @@ import de.uni_stuttgart.riot.javafx.ConstantObservable;
 import de.uni_stuttgart.riot.javafx.UIProducer;
 import de.uni_stuttgart.riot.thing.BaseInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescriptions;
 import de.uni_stuttgart.riot.thing.ParameterDescription;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
@@ -121,7 +124,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
         while (clazz != BaseInstance.class) {
             try {
                 Field field = clazz.getDeclaredField(parameterName);
-                if (ParameterDescription.getBoxedType(field.getType()) != valueType) {
+                if (ClassUtils.primitiveToWrapper(field.getType()) != valueType) {
                     throw new IllegalArgumentException("The paramter " + parameterName + " in " + instanceType + " is of type " + field.getType() + ", but expected type is " + valueType);
                 }
                 field.setAccessible(true);
@@ -233,7 +236,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
      */
     public static <I extends BaseInstance> BaseInstanceWindow<I> displayInstance(Class<? extends BaseInstance> instanceType, I instance) {
         // Prepare the window.
-        BaseInstanceDescription description = BaseInstanceDescription.create(instanceType);
+        BaseInstanceDescription description = BaseInstanceDescriptions.get(instanceType);
         if (description.getParameters().isEmpty()) {
             return null;
         }
@@ -272,7 +275,7 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
         node.put("name", name);
 
         // Only show the window if there are any parameters.
-        BaseInstanceDescription description = BaseInstanceDescription.create(instanceType);
+        BaseInstanceDescription description = BaseInstanceDescriptions.get(instanceType);
         if (!description.getParameters().isEmpty()) {
 
             // Prepare the window.

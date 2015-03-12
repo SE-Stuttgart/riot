@@ -53,7 +53,7 @@ public class EventDescription {
      * @return The description of the event.
      */
     public static EventDescription create(Event<?> event) {
-        return new EventDescription(event.getName(), BaseInstanceDescription.create(event.getInstanceType()));
+        return new EventDescription(event.getName(), BaseInstanceDescriptions.get(event.getInstanceType()));
     }
 
 }

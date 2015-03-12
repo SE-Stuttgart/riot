@@ -1,9 +1,11 @@
 package de.uni_stuttgart.riot.thing;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -92,11 +94,12 @@ public class ParameterDescription {
      * 
      * @param field
      *            The field (should be in a subclass of {@link BaseInstance}, this is not checked, however).
+     * @param fieldType
+     *            The type of the field (possibly pre-processed).
      * @return The parameter description.
      */
-    public static ParameterDescription create(Field field) {
+    public static ParameterDescription create(Field field, Type fieldType) {
         UIHint uiHint = null;
-        Type fieldType = field.getGenericType();
         if (field.isAnnotationPresent(Parameter.class)) {
             try {
                 uiHint = UIHint.fromAnnotation(field.getAnnotation(Parameter.class), fieldType);
@@ -105,67 +108,28 @@ public class ParameterDescription {
             }
         }
 
-        Class<?> valueType;
+        // fieldType could be anything. Here we resolve "Reference<X>" to "X".
+        Type genericValueType;
         boolean isReference = false;
-        if (fieldType instanceof Class) {
-            valueType = getBoxedType((Class<?>) fieldType);
-        } else if (fieldType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) fieldType;
-            if (!(parameterizedType.getRawType() instanceof Class)) {
-                throw new IllegalArgumentException("Unsupported field type " + fieldType + " of field " + field);
-            }
-
-            Class<?> rawType = (Class<?>) parameterizedType.getRawType();
-            if (rawType == Reference.class) {
-                Type[] typeArguments = parameterizedType.getActualTypeArguments();
-                if (typeArguments.length != 1 || !(typeArguments[0] instanceof Class)) {
-                    throw new IllegalArgumentException("Illegal type argument(s) for reference field " + field);
-                }
-                valueType = (Class<?>) typeArguments[0];
-                isReference = true;
-            } else if (Reference.class.isAssignableFrom(rawType)) {
-                throw new IllegalArgumentException("Reference parameters need to be defined with 'Reference' and no sub-class or sub-interface of it. See " + field);
-            } else if (Collection.class.isAssignableFrom(rawType)) {
-                throw new IllegalArgumentException("Collections as parameters are not (yet) supported. See " + field);
-            } else {
-                throw new IllegalArgumentException("Unsupported parameter type " + rawType + " of field " + field);
-            }
+        if (ClassUtils.isAssignable(field.getType(), Reference.class)) {
+            isReference = true;
+            genericValueType = TypeUtils.getTypeArguments(fieldType, Reference.class).get(Reference.class.getTypeParameters()[0]);
         } else {
-            throw new IllegalArgumentException("Unsupported field type " + fieldType + " of field " + field);
+            genericValueType = fieldType;
         }
+
+        // Here we only allow plain classes, i.e. "YClass<Y>" is kicked out.
+        Class<?> valueType;
+        if (genericValueType instanceof Class) {
+            // If it is a plain class, we convert int -> java.lang.Integer and so on, if necessary.
+            valueType = ClassUtils.primitiveToWrapper((Class<?>) genericValueType);
+        } else if (TypeUtils.isAssignable(genericValueType, Collection.class)) {
+            throw new IllegalArgumentException("Collections as parameters are not (yet) supported. See " + field);
+        } else {
+            throw new IllegalArgumentException("Generic types are not allowed. Please only use Reference<X> where X is a plain class and do not use any other generic types! See " + field);
+        }
+
         return new ParameterDescription(field.getName(), isReference, valueType, uiHint);
-    }
-
-    /**
-     * For primitive types (like <tt>int</tt>), this method returns the corresponding boxing type (like <tt>java.lang.Integer</tt>), all
-     * other types remain unchanged.
-     * 
-     * @param type
-     *            The (possibly primitive) type.
-     * @return The certainly non-primitive type.
-     */
-    public static Class<?> getBoxedType(Class<?> type) {
-        if (!type.isPrimitive()) {
-            return type;
-        } else if (type == Integer.TYPE) {
-            return Integer.class;
-        } else if (type == Long.TYPE) {
-            return Long.class;
-        } else if (type == Float.TYPE) {
-            return Float.class;
-        } else if (type == Double.TYPE) {
-            return Double.class;
-        } else if (type == Boolean.TYPE) {
-            return Boolean.class;
-        } else if (type == Byte.TYPE) {
-            return Byte.class;
-        } else if (type == Character.TYPE) {
-            return Character.class;
-        } else if (type == Short.TYPE) {
-            return Short.class;
-        } else {
-            return type;
-        }
     }
 
 }

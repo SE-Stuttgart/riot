@@ -98,6 +98,26 @@ public class Property<V> {
     }
 
     /**
+     * Registers a property listener that will be notified of changes to the property.
+     * 
+     * @param listener
+     *            The property listener.
+     */
+    public void register(PropertyListener<V> listener) {
+        changeEvent.register(listener);
+    }
+
+    /**
+     * Unregisters a property listener.
+     * 
+     * @param listener
+     *            The property listener to unregister.
+     */
+    public void unregister(PropertyListener<V> listener) {
+        changeEvent.unregister(listener);
+    }
+
+    /**
      * Gets the UIHint.
      * 
      * @return The UI hint for this property.

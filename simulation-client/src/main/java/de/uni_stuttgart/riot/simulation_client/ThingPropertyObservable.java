@@ -2,9 +2,8 @@ package de.uni_stuttgart.riot.simulation_client;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValueBase;
-import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Property;
-import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
+import de.uni_stuttgart.riot.thing.PropertyListener;
 
 /**
  * A binding from Thing properties to JavaFX observables. The observable will be updated when the Thing property changes, so this is
@@ -25,7 +24,7 @@ public class ThingPropertyObservable<T> extends ObservableValueBase<T> {
     /**
      * Reacts to changes in the Thing property.
      */
-    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener;
+    private final PropertyListener<T> thingListener;
 
     /**
      * Creates a new binding.

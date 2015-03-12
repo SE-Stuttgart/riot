@@ -142,13 +142,7 @@ public class ThingState {
      *            The new value for the property.
      */
     public static <V> void silentSetThingProperty(Property<V> property, Object value) {
-        if (value == null || property.getValueType().isInstance(value)) {
-            @SuppressWarnings("unchecked")
-            V typedValue = (V) value;
-            property.setValueSilently(typedValue);
-        } else {
-            throw new IllegalArgumentException("The type of the value " + value + " does not match the expected type " + property.getValueType());
-        }
+        property.setValueSilently(property.getValueType().cast(value));
     }
 
     /**

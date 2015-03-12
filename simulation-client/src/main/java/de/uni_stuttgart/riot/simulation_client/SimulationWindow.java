@@ -7,7 +7,7 @@ import java.util.Map;
 import de.uni_stuttgart.riot.javafx.UIProducer;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.BaseInstance;
-import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescriptions;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
@@ -191,7 +191,7 @@ public class SimulationWindow extends Stage {
         builder.append(instance.getName());
 
         if (instance.getClass() != ActionInstance.class && instance.getClass() != EventInstance.class) {
-            Map<String, Object> parameters = BaseInstanceDescription.getParameterValues(instance);
+            Map<String, Object> parameters = BaseInstanceDescriptions.getParameterValues(instance);
             if (!parameters.isEmpty()) {
                 builder.append(" (");
                 boolean isFirst = true;

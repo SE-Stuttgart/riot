@@ -60,8 +60,6 @@ public class UserLogic {
      * @return The added user.
      * @throws AddUserException
      *             When adding the user failed.
-     * 
-     * 
      */
     public UMUser addUser(String username, String email, String clearTextPassword) throws AddUserException {
         try {
@@ -324,8 +322,9 @@ public class UserLogic {
      * @param permission
      *            the permission
      * @throws DatasourceInsertException
+     *             When inserting the new permission-user-relation failed.
      * @throws GetPermissionException
-     * @throws AddPermissionException
+     *             When retrieving the permission failed.
      */
     public void addNewPermissionToUser(Long userId, Permission permission) throws DatasourceInsertException, GetPermissionException {
         PermissionLogic pl = new PermissionLogic();

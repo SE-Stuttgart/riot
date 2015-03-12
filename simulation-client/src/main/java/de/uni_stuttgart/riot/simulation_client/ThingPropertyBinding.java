@@ -3,8 +3,7 @@ package de.uni_stuttgart.riot.simulation_client;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import de.uni_stuttgart.riot.thing.EventListener;
-import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
+import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.WritableProperty;
 
 /**
@@ -36,7 +35,7 @@ public class ThingPropertyBinding<T> extends SimpleObjectProperty<T> {
     /**
      * Reacts to changes in the Thing property.
      */
-    private final EventListener<PropertyChangeEvent.Instance<T>> thingListener;
+    private final PropertyListener<T> thingListener;
 
     /**
      * Creates a new binding.
