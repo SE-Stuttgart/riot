@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
@@ -39,7 +39,8 @@ public class RoleLogic {
      * 
      * @param role
      *            The role to add
-     * @throws AddRoleException When adding the role fails.
+     * @throws AddRoleException
+     *             When adding the role fails.
      */
     public void addRole(Role role) throws AddRoleException {
         try {
@@ -58,7 +59,8 @@ public class RoleLogic {
      * 
      * @param id
      *            The id of the role to delete
-     * @throws DeleteRoleException When deleting the role fails.
+     * @throws DeleteRoleException
+     *             When deleting the role fails.
      */
     public void deleteRole(Long id) throws DeleteRoleException {
         try {
@@ -73,7 +75,8 @@ public class RoleLogic {
      * 
      * @param role
      *            The content of the role to update
-     * @throws UpdateRoleException When updating the role fails.
+     * @throws UpdateRoleException
+     *             When updating the role fails.
      */
     public void updateRole(Role role) throws UpdateRoleException {
         try {
@@ -93,7 +96,8 @@ public class RoleLogic {
      * @param id
      *            The id of the role to retrieve
      * @return Retrieved role
-     * @throws GetRoleException When getting the role fails.
+     * @throws GetRoleException
+     *             When getting the role fails.
      */
     public Role getRole(Long id) throws GetRoleException {
         try {
@@ -107,7 +111,8 @@ public class RoleLogic {
      * Retrieve all existing roles.
      * 
      * @return Collection with all roles
-     * @throws GetAllRolesException When getting the roles fails.
+     * @throws GetAllRolesException
+     *             When getting the roles fails.
      */
     public Collection<Role> getAllRoles() throws GetAllRolesException {
         try {
@@ -123,11 +128,12 @@ public class RoleLogic {
      * @param roleId
      *            The id of the role.
      * @return Collection with permissions.
-     * @throws GetPermissionsFromRoleException When getting the permissions fails.
+     * @throws GetPermissionsFromRoleException
+     *             When getting the permissions fails.
      */
     public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
         if (roleId == null) {
-           throw new GetPermissionsFromRoleException("roleId must not be null!");
+            throw new GetPermissionsFromRoleException("roleId must not be null!");
         }
         try {
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
@@ -158,7 +164,8 @@ public class RoleLogic {
      *            The id of the role
      * @param permissionId
      *            The id of the permission
-     * @throws AddPermissionToRoleException When adding the permissions fails.
+     * @throws AddPermissionToRoleException
+     *             When adding the permissions fails.
      */
     public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
         try {
@@ -177,7 +184,8 @@ public class RoleLogic {
      *            The id of the role.
      * @param permissionId
      *            The id of the permission.
-     * @throws RemovePermissionFromRoleException When removing the permission fails.
+     * @throws RemovePermissionFromRoleException
+     *             When removing the permission fails.
      */
     public void removePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
         try {

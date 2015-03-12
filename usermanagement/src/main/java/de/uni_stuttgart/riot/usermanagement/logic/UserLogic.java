@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
@@ -55,7 +55,7 @@ public class UserLogic {
      *            The new user.
      * @param clearTextPassword
      *            The password of the user as clear text.
-    * @param email
+     * @param email
      *            The mail of the user
      * @return The added user.
      * @throws AddUserException
@@ -323,21 +323,21 @@ public class UserLogic {
      *            the user id
      * @param permission
      *            the permission
-     * @throws DatasourceInsertException 
-     * @throws GetPermissionException 
-     * @throws AddPermissionException 
+     * @throws DatasourceInsertException
+     * @throws GetPermissionException
+     * @throws AddPermissionException
      */
     public void addNewPermissionToUser(Long userId, Permission permission) throws DatasourceInsertException, GetPermissionException {
-       PermissionLogic pl = new PermissionLogic();
-       try {
+        PermissionLogic pl = new PermissionLogic();
+        try {
             pl.addPermission(permission);
         } catch (AddPermissionException e) {
-            //permission is already created. 
+            // permission is already created.
             if (permission.getId() < 0) {
                 permission.setId(pl.getPermission(permission.getPermissionValue()).getId());
             }
         }
-       
+
         DAO<UserPermission> upDao = new UserPermissionSqlQueryDAO();
         upDao.insert(new UserPermission(userId, permission.getId()));
     }

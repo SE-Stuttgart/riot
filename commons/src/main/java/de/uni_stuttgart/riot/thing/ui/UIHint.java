@@ -210,7 +210,7 @@ public abstract class UIHint {
 
     /**
      * The value is a String. The UI could use a simple text field to allow the user to enter arbitrary values for the string. <tt>null</tt>
-     * should be avoided, use the empty string inst)ead. In readonly mode, this could be displayed either as a disabled text field or as a
+     * should be avoided, use the empty string instead. In readonly mode, this could be displayed either as a disabled text field or as a
      * simple label.
      */
     public static class EditText extends UIHint {

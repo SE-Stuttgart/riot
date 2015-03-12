@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.uni_stuttgart.riot.clientlibrary.BaseClient;
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;

@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.security;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
 import de.uni_stuttgart.riot.server.commons.config.Configuration;
