@@ -4,25 +4,22 @@
       <a ui-sref="app.dashboard"><i class="fa fa-dashboard"></i> Dashboard</a>
     </li>
     <li ui-sref-active="active">
-      <a ui-sref="app.things.list"><i class="fa fa-cloud"></i> {{ 'thing.things' | i18n }}</a>
+      <a ui-sref="app.things.list"><i class="fa fa-cloud"></i> {{'thing.things' | i18n}}</a>
     </li>
     <li ui-sref-active="active">
-      <a ui-sref="app.devices"><i class="fa fa-tablet"></i> {{ 'thing.devices' | i18n }}</a>
+      <a ui-sref="app.devices"><i class="fa fa-tablet"></i> {{'thing.devices' | i18n}}</a>
     </li>
     <li ui-sref-active="active">
-      <a ui-sref="app.calendar.list"><i class="fa fa-edit"></i> {{ 'calendar.calendar' | i18n }}</a>
+      <a ui-sref="app.calendar.list"><i class="fa fa-edit"></i> {{'calendar.calendar' | i18n}}</a>
     </li>
     <li>
-      <a ui-sref="admin.status"><i class="fa fa-cogs"></i> Administration</a>
+      <a ui-sref="admin.configuration"><i class="fa fa-cogs"></i> {{'administration.administration' | i18n}}</a>
       <ul class="nav nav-second-level">
         <li ui-sref-active="active">
-          <a ui-sref="admin.status">Status</a>
+          <a ui-sref="admin.configuration">{{'common.resource_configuration' | i18n}}</a>
         </li>
         <li ui-sref-active="active">
-          <a ui-sref="admin.configuration" i18n="common.resource_configuration"></a>
-        </li>
-        <li ui-sref-active="active">
-          <a ui-sref="admin.users.list">{{ 'user.users' | i18n }}</a>
+          <a ui-sref="admin.users.list">{{'user.users' | i18n}}</a>
         </li>
         <li ui-sref-active="active">
           <a ui-sref="admin.things.list">Things</a>

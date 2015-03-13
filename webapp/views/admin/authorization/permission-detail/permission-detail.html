@@ -2,16 +2,16 @@
   <div class="col-lg-7">
 
     <!-- Administration -->
-    <div ng-if="permissionDetail.id !== undefined">
-      <div class="detail-group">Administration</div>
+    <div class="detail-group" ng-if="permissionDetail.id !== undefined">
+      <div class="detail-group-header">{{'administration.administration' | i18n}}</div>
       <form class="form-horizontal">
         <!-- delete permission -->
         <div class="form-group">
-          <label class="control-label col-md-2">Delete Permission</label>
+          <label class="control-label col-md-2">{{'common.delete' | i18n}} {{'user.permission' | i18n}}</label>
           <div class="col-md-8">
-            <button type="button" class="btn btn-danger" ng-click="removePermission()">
+            <button type="button" class="btn btn-danger" confirm-dialog title="'common.delete' | i18n" text="'user.deletePermissionDialog' | i18n" confirm="removePermission()">
               <span class="fa fa-times"></span>
-              Remove
+              {{'common.delete' | i18n}}
             </button>
           </div>
         </div>
@@ -20,7 +20,7 @@
 
     <!-- Permission Data -->
     <div class="detail-group">
-      <div class="detail-group-header">Permission Data</div>
+      <div class="detail-group-header">{{'user.permission' | i18n}}</div>
       <form name="formPermissionDetail" class="form-horizontal" novalidate ng-submit="formPermissionDetail.$valid">
         <!-- permissionid -->
         <div class="form-group">

@@ -1,11 +1,9 @@
 <div class="row" ng-controller="AuthorizationListCtrl">
 
-  <div class="col-md-12">
-    <h3><strong>{{ 'user.roles' | i18n }}</strong></h3>
-  </div>
-
   <!-- table -->
-  <div class="col-lg-7">
+  <div class="detail-group col-md-7">
+    <div class="detail-group-header">{{ 'user.roles' | i18n }}</div>
+
     <button class="btn btn-default list-collapse-button" type="button" data-toggle="collapse" data-target=".list-options" aria-expanded="false">
       <span class="fa fa-bars"></span>
     </button>
@@ -40,7 +38,7 @@
         <span class="pull-right">
           <button type="button" class="btn btn-success" ui-sref="admin.authorization.role">
             <span class="fa fa-plus"></span>
-            Add
+            {{'common.add' | i18n}}
           </button>
         </span>
       </div>
@@ -49,13 +47,10 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-5"></div>
 
-  <div class="col-md-12">
-    <h3><strong>{{ 'user.permissions' | i18n }}</strong></h3>
-  </div>
+  <div class="detail-group col-md-7">
+     <div class="detail-group-header">{{ 'user.roles' | i18n }}</div>
 
-  <div class="col-lg-7">
     <button class="btn btn-default list-collapse-button" type="button" data-toggle="collapse" data-target=".list-options" aria-expanded="false">
       <span class="fa fa-bars"></span>
     </button>
@@ -89,7 +84,7 @@
         <span class="pull-right">
           <button type="button" class="btn btn-success" ui-sref="admin.authorization.permission">
             <span class="fa fa-plus"></span>
-            Add
+            {{'common.add' | i18n}}
           </button>
         </span>
       </div>

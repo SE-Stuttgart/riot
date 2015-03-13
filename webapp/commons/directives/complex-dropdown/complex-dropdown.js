@@ -48,7 +48,19 @@ angular.module('riot').directive('complexDropdown', function() {
       init();
     },
     link: function(scope, element, attrs, fn) {
+      var container = element.children().first();
+      var button = container.find('.dropdown-toggle').first();
+      var list = container.find('ul').first();
 
+      var calculateDropDirection = function() {
+        var w = $(window);
+        var buttonTop = button.offset().top + button.height() - w.scrollTop();
+        var buttonBottom = w.height() - buttonTop - list.height() - 20;
+        container.toggleClass('dropup', buttonBottom < 0);
+      };
+
+      $(window).on('scroll', calculateDropDirection);
+      container.on('shown.bs.dropdown hidden.bs.dropdown', calculateDropDirection);
     }
   };
 });

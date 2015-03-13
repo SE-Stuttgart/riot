@@ -3,15 +3,15 @@
 
     <!-- Administration -->
     <div class="detail-group" ng-if="roleDetail.id !== undefined">
-      <div class="detail-group-header">Administration</div>
+      <div class="detail-group-header">{{'administration.administration' | i18n}}</div>
       <form class="form-horizontal">
         <!-- delete role -->
         <div class="form-group">
-          <label class="control-label col-md-2">Delete Role</label>
+          <label class="control-label col-md-2">{{'common.delete' | i18n}} {{'user.role' | i18n}}</label>
           <div class="col-md-8">
-            <button type="button" class="btn btn-danger" ng-click="removeRole()">
+            <button type="button" class="btn btn-danger" confirm-dialog title="'common.delete' | i18n" text="'user.deleteRoleDialog' | i18n" confirm="removeRole()">
               <span class="fa fa-times"></span>
-              Remove
+              {{'common.delete' | i18n}}
             </button>
           </div>
         </div>
@@ -20,7 +20,7 @@
 
     <!-- Role Data -->
     <div class="detail-group">
-      <div class="detail-group-header">Role Data</div>
+      <div class="detail-group-header">{{'user.role' | i18n}}</div>
       <form name="formRoleDetail" class="form-horizontal" novalidate ng-submit="formRoleDetail.$valid">
         <!-- roleid -->
         <div class="form-group">

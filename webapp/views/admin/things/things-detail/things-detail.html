@@ -2,15 +2,15 @@
   <div class="col-lg-7">
     <!-- Administration -->
     <div class="detail-group" ng-if="thingDetail.id !== undefined">
-      <div class="detail-group-header">Administration</div>
+      <div class="detail-group-header">{{'administration.administration' | i18n}}</div>
       <form class="form-horizontal">
         <!-- delete thing -->
         <div class="form-group">
-          <label class="control-label col-md-2">Delete Thing</label>
+          <label class="control-label col-md-2">{{'common.delete' | i18n}} {{'thing.thing' | i18n}}</label>
           <div class="col-md-8">
-            <button type="button" class="btn btn-danger" ng-click="removeThing()">
+            <button type="button" class="btn btn-danger" confirm-dialog title="'common.delete' | i18n" text="'thing.deleteThingDialog' | i18n" confirm="removeThing()">
               <span class="fa fa-times"></span>
-              Remove
+              {{'common.delete' | i18n}}
             </button>
           </div>
         </div>
@@ -18,11 +18,11 @@
     </div>
 
     <div class="detail-group">
-      <div class="detail-group-header">Thing Data</div>
+      <div class="detail-group-header">{{'thing.thing' | i18n}}</div>
       <form name="formThingDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formThingDetail.$valid">
         <!-- thingid -->
         <div class="form-group">
-          <label class="control-label col-md-2" for="thingid">Thing ID</label>
+          <label class="control-label col-md-2" for="thingid">{{'thing.thingId' | i18n}}</label>
           <div class="col-md-8">
             <input id="thingid" name="thingid" type="text" placeholder="" class="form-control" ng-model="thingDetail.id" disabled>
           </div>
@@ -30,7 +30,7 @@
 
         <!-- name -->
         <div class="form-group">
-          <label class="control-label col-md-2" for="name">Name</label>
+          <label class="control-label col-md-2" for="name">{{'thing.name' | i18n}}</label>
           <div class="col-md-8">
             <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.name" disabled>
           </div>
@@ -38,7 +38,7 @@
 
         <!-- type -->
         <div class="form-group">
-          <label class="control-label col-md-2" for="type">Type</label>
+          <label class="control-label col-md-2" for="type">{{'thing.type' | i18n}}</label>
           <div class="col-md-8">
             <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="thingDetail.type" disabled>
           </div>
@@ -48,7 +48,7 @@
 
     <!-- Properties -->
     <div class="detail-group">
-      <div class="detail-group-header">Properties</div>
+      <div class="detail-group-header">{{'thing.properties' | i18n}}</div>
       <form class="form-horizontal">
         <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingDetail[property.name]" description="property" things-value></div>
       </form>
@@ -56,7 +56,7 @@
 
     <!-- Events -->
     <div class="detail-group">
-      <div class="detail-group-header">Events</div>
+      <div class="detail-group-header">{{'thing.events' | i18n}}</div>
       <form class="form-horizontal">
         <div class="list-group-item margin-top-10" ng-repeat="event in thingDescription.events">
           <h4 class="list-group-item-heading">{{event.name}}</h4>
@@ -69,7 +69,7 @@
 
     <!-- Actions -->
     <div class="detail-group">
-      <div class="detail-group-header">Actions</div>
+      <div class="detail-group-header">{{'thing.actions' | i18n}}</div>
       <form class="form-horizontal">
         <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
           <h4 class="list-group-item-heading">{{action.name}}</h4>
@@ -118,7 +118,7 @@
               <td>{{ userPerm.user.username }}</td>
               <td>{{ 'thing.' + userPerm.permission | lowercase | i18n }}</td>
               <td>
-                <div confirm-dialog title="'common.delete' | i18n" text="'thing.deleteShare' | i18n" confirm="unshare(userPerm.user.id, userPerm.permission)">
+                <div confirm-dialog title="'common.delete' | i18n" text="'thing.deleteShareDialog' | i18n" confirm="unshare(userPerm.user.id, userPerm.permission)">
                   <button class="btn btn-danger btn-xs" style="margin-left: 9px;">
                     <span class="fa fa-times"></span>
                   </button>

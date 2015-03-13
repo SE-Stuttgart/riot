@@ -11,7 +11,7 @@ angular.module('riot').config(function($stateProvider, $urlRouterProvider) {
       }
     }
   });
-  $urlRouterProvider.when('/admin', '/admin/status');
+  $urlRouterProvider.when('/admin', '/admin/config');
 });
 
 angular.module('riot').controller('AdminCtrl',function($scope){

@@ -1,8 +1,5 @@
 .rest-filter {
   position: relative;
-  .dropdown-menu {
-    width: auto !important;
-  }
   .popup {
     display: none;
     position: absolute;
@@ -34,6 +31,24 @@
     }
     td:last-of-type {
       padding-right: 0px !important;
+    }
+    > .dropdown-menu {
+      width: 500px;
+    }
+    .form-group {
+      width: 100%;
+    }
+    .filter {
+      margin-bottom: 10px;
+      .property {
+        width: 120px;
+      }
+      .operator {
+        width: 100px;
+      }
+      .value {
+        width: 100%;
+      }
     }
   }
 }
