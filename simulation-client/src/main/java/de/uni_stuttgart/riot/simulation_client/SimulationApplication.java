@@ -92,16 +92,8 @@ public class SimulationApplication extends Application {
         }
         Class<? extends Thing> thingType;
         try {
-            Class<?> thingClass = Class.forName(className);
-            if (!Thing.class.isAssignableFrom(thingClass)) {
-                throw new IllegalArgumentException("The class " + className + " is not a subclass of Thing!");
-            }
-
-            // Now that we checked it above, we can safely cast.
-            @SuppressWarnings("unchecked")
-            Class<? extends Thing> casted = (Class<? extends Thing>) thingClass;
-            thingType = casted;
-        } catch (IllegalArgumentException | ClassNotFoundException e) {
+            thingType = Class.forName(className).asSubclass(Thing.class);
+        } catch (ClassCastException | ClassNotFoundException e) {
             logger.error("Invalid thing type {}", className, e);
             System.exit(1);
             return;
@@ -226,28 +218,17 @@ public class SimulationApplication extends Application {
         Simulator<?> simulator = null;
         if (settings.containsKey("simulator")) {
             String simulatorClassName = settings.getProperty("simulator");
-            Class<? extends Simulator<?>> simulatorType;
             try {
-                Class<?> simulatorClass = Class.forName(simulatorClassName);
-                if (!Simulator.class.isAssignableFrom(simulatorClass)) {
-                    throw new IllegalArgumentException("The simulator class " + simulatorClassName + " is not a subclass of Simulator!");
-                }
-
-                // Now that we checked it above, we can safely cast.
                 @SuppressWarnings("unchecked")
-                Class<? extends Simulator<?>> casted = (Class<? extends Simulator<?>>) simulatorClass;
-                simulatorType = casted;
-            } catch (IllegalArgumentException | ClassNotFoundException e) {
+                Class<? extends Simulator<?>> simulatorType = (Class<? extends Simulator<?>>) Class.forName(simulatorClassName).asSubclass(Simulator.class);
+                Constructor<? extends Simulator<?>> constructor = simulatorType.getConstructor(thingType, ScheduledThreadPoolExecutor.class);
+                simulator = constructor.newInstance(thingType.cast(behavior.getThing()), scheduler);
+            } catch (ClassCastException | ClassNotFoundException e) {
                 logger.error("Invalid simulator type {}", simulatorClassName, e);
                 System.exit(1);
                 return;
-            }
-
-            try {
-                Constructor<? extends Simulator<?>> constructor = simulatorType.getConstructor(thingType, ScheduledThreadPoolExecutor.class);
-                simulator = constructor.newInstance(thingType.cast(behavior.getThing()), scheduler);
             } catch (NoSuchMethodException e) {
-                logger.error("{} must have a constructor with argument types {} and ScheduledThreadPoolExecutor", simulatorType, thingType, e);
+                logger.error("{} must have a constructor with argument types {} and ScheduledThreadPoolExecutor", simulatorClassName, thingType, e);
                 System.exit(1);
                 return;
             }

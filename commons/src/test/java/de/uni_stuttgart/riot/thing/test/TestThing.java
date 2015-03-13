@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing.test;
 
+import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;

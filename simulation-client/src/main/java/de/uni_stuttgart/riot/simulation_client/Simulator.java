@@ -88,12 +88,12 @@ public abstract class Simulator<T extends Thing> {
     /**
      * Convenience method for {@link ScheduledExecutorService#schedule(Runnable, long, java.util.concurrent.TimeUnit)}.
      * 
-     * @param runnable
-     *            The action to be run.
      * @param milliseconds
      *            The delay in milliseconds.
+     * @param runnable
+     *            The action to be run.
      */
-    protected final void delay(Runnable runnable, long milliseconds) {
+    protected final void delay(long milliseconds, Runnable runnable) {
         scheduler.schedule(runnable, milliseconds, TimeUnit.MILLISECONDS);
     }
 

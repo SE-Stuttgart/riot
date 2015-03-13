@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;

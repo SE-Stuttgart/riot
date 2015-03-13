@@ -81,15 +81,15 @@ public class CoffeeMachineSimulator extends Simulator<CoffeeMachine> {
         // In the middle two quarters of the time, we consume water and produce waste water.
         int steps = 5;
         long stepDuration = CLEANING_DURATION / 2 / steps;
-        delay(() -> {
+        delay(CLEANING_DURATION / 4, () -> {
             linearChange(getThing().getWaterTankProperty(), Math.max(0, getThing().getWaterTank() - CLEANING_WATER_CONSUMPTION), stepDuration, steps);
             linearChange(getThing().getDripTrayProperty(), getThing().getDripTray() + CLEANING_WATER_CONSUMPTION, stepDuration, steps);
-        }, CLEANING_DURATION / 4);
+        });
 
         // After the total time, we're done.
-        delay(() -> {
+        delay(CLEANING_DURATION, () -> {
             changePropertyValue(getThing().getBusyProperty(), false);
-        }, CLEANING_DURATION);
+        });
     }
 
     /**
@@ -125,26 +125,26 @@ public class CoffeeMachineSimulator extends Simulator<CoffeeMachine> {
         linearChange(getThing().getWaterTankProperty(), getThing().getWaterTank() - waterConsumption, waterStepDuration, waterSteps);
 
         // After half of the time, quickly use the beans.
-        delay(() -> {
+        delay(COFFEE_MAKING_DURATION / 2, () -> {
             int beanSteps = 5;
             long beanStepDuration = COFFEE_MAKING_DURATION / 4 / beanSteps;
             linearChange(getThing().getBeanTankProperty(), getThing().getBeanTank() - beanConsumption, beanStepDuration, beanSteps);
-        }, COFFEE_MAKING_DURATION / 2);
+        });
 
         // At the end of the time, the coffee is finished
-        delay(() -> {
+        delay(COFFEE_MAKING_DURATION, () -> {
             // Notify the user about his coffee.
-            executeEvent(getThing().getCoffeeFinishedEvent());
+                executeEvent(getThing().getCoffeeFinishedEvent());
 
-            if (randomDecision(0.5)) {
-                // Assume that a random amount was spilled and went into the drip tray.
+                if (randomDecision(0.5)) {
+                    // Assume that a random amount was spilled and went into the drip tray.
                 double spilledWater = random(0, waterConsumption);
                 changePropertyValue(getThing().getDripTrayProperty(), getThing().getDripTray() + spilledWater);
             }
 
             // We're done.
             changePropertyValue(getThing().getBusyProperty(), false);
-        }, COFFEE_MAKING_DURATION);
+        });
 
     }
 

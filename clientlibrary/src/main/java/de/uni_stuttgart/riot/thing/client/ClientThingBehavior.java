@@ -72,9 +72,13 @@ public abstract class ClientThingBehavior extends ThingBehavior {
      * 
      * @param actionInstance
      *            The action instance.
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When sending to the server failed.
      */
-    protected void sendToServer(ActionInstance actionInstance) {
-        throw new UnsupportedOperationException();
+    protected void sendToServer(ActionInstance actionInstance) throws RequestException, IOException {
+        thingClient.submitAction(actionInstance);
     }
 
     /**

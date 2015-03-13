@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.references.Reference;
 import de.uni_stuttgart.riot.references.StaticReference;
+import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Parameter;

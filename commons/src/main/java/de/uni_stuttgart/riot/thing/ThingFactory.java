@@ -25,20 +25,13 @@ public final class ThingFactory {
         if (typeName == null || typeName.isEmpty()) {
             throw new IllegalArgumentException("typeName must not be empty!");
         }
-
-        Class<?> thingClass;
         try {
-            thingClass = Class.forName(typeName);
+            return Class.forName(typeName).asSubclass(Thing.class);
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException("The specified Thing type " + typeName + " was not found!");
-        }
-        if (!Thing.class.isAssignableFrom(thingClass)) {
+        } catch (ClassCastException e) {
             throw new IllegalArgumentException("The specified type " + typeName + " is not a subclass of Thing!");
         }
-
-        @SuppressWarnings("unchecked")
-        Class<? extends Thing> result = (Class<? extends Thing>) thingClass;
-        return result;
     }
 
     /**

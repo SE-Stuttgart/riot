@@ -1,6 +1,4 @@
-package de.uni_stuttgart.riot.thing.test;
-
-import de.uni_stuttgart.riot.references.Referenceable;
+package de.uni_stuttgart.riot.references;
 
 /**
  * A test class for testing references.
