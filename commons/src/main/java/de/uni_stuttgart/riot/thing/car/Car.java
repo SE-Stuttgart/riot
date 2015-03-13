@@ -138,19 +138,21 @@ public class Car extends Thing {
     /**
      * Changeable Property for the heating switch.
      */
-    private final WritableProperty<Boolean> heating = newWritableProperty("heating", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton());
+    private final Property<Boolean> heating = newProperty("heating", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton());
 
     /**
      * Changeable Property for the configured heating temperature in degree Celsius.
      */
-    private final WritableProperty<Double> heatingTemp = newWritableProperty("heatingTemp", Double.class, DEFAULT_HEATING_TEMP, UIHint.toggleButton());
+    private final WritableProperty<Double> heatingTemp = newWritableProperty("heatingTemp", Double.class, DEFAULT_HEATING_TEMP, UIHint.editNumber());
 
     /**
      * Property of the actual interior temperature in degree Celsius.
      */
-    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_HEATING_TEMP, UIHint.toggleButton());
+    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_HEATING_TEMP, UIHint.editNumber());
 
-    private final Action<ActionInstance> refuel = newAction("refuel");
+    private final Action<Refuel> refuel = newAction("refuel", Refuel.class);
+    
+    private final Action<ActionInstance> heatingAction = newAction("heatingAction");
 
     private final Event<OutOfGasoline> outOfGasoline = newEvent("outOfGasoline", OutOfGasoline.class);
 
@@ -276,7 +278,35 @@ public class Car extends Thing {
      * @param amount amount in liter
      */
     public void refuel(Double amount){
-        refuel.fire(new ActionInstance(refuel));
+        refuel.fire(new Refuel(refuel, amount));
+    }
+
+    /**
+     * Getter for the {@link OutOfGasoline} event.
+     * @return the event
+     */
+    public Event<OutOfGasoline> getOutOfGasoline() {
+        return outOfGasoline;
+    }
+    
+    /**
+     * Getter for the Refuel action.
+     * @return the action
+     */
+    public Action<Refuel> getRefuelAction(){
+        return refuel;
+    }
+    
+    /**
+     * Getter for the tank property.
+     * @return tank property.
+     */
+    public Property<Double> getTankProperty(){
+        return tankFillLevel;
+    }
+
+    public Action<ActionInstance> getHeatingAction() {
+        return heatingAction;
     }
     
 }
