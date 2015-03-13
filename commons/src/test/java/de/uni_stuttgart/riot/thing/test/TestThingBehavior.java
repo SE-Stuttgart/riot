@@ -11,8 +11,10 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.WritableProperty;
 
 /**
  * A behavior for testing things. This behavior exposes most of the capabilities of a behavior so that unit tests can access these features.
@@ -27,10 +29,20 @@ public class TestThingBehavior extends ThingBehavior {
     }
 
     public ActionInterceptor actionInterceptor = Mockito.mock(ActionInterceptor.class);
+    public boolean executePropertyChangesDirectly = false;
 
     @Override
     protected <A extends ActionInstance> void userFiredAction(A actionInstance) {
         actionInterceptor.fired(actionInstance);
+    }
+
+    @Override
+    protected <V> void userModifiedProperty(WritableProperty<V> property, V newValue) {
+        if (executePropertyChangesDirectly) {
+            notifyListeners(property.getChangeEvent(), new PropertyChangeEvent.Instance<V>(property.getChangeEvent(), property.get(), newValue));
+        } else {
+            super.userModifiedProperty(property, newValue);
+        }
     }
 
     public <V> void setThingProperty(Property<V> property, V value) {
