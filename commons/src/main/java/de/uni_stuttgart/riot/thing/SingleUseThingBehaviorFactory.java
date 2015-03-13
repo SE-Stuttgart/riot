@@ -7,17 +7,17 @@ package de.uni_stuttgart.riot.thing;
  * @param <B>
  *            The type of the thing behavior created by this factory.
  */
-public class SingletonThingBehaviorFactory<B extends ThingBehavior> implements ThingBehaviorFactory<B> {
+public class SingleUseThingBehaviorFactory<B extends ThingBehavior> implements ThingBehaviorFactory<B> {
 
     private B behavior;
 
     /**
-     * Creates a new singleton behavior factory.
+     * Creates a new single-use behavior factory.
      * 
      * @param behavior
      *            The behavior to be returned.
      */
-    public SingletonThingBehaviorFactory(B behavior) {
+    public SingleUseThingBehaviorFactory(B behavior) {
         this.behavior = behavior;
     }
 

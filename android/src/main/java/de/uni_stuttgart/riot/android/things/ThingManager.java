@@ -19,7 +19,7 @@ import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.thing.Device;
-import de.uni_stuttgart.riot.thing.SingletonThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.SingleUseThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
@@ -160,7 +160,7 @@ public class ThingManager {
         }
 
         final ThingClient thingClient = new ThingClient(AndroidConnectionProvider.getConnector(context));
-        ThingBehaviorFactory<AndroidDeviceBehavior> behaviorFactory = new SingletonThingBehaviorFactory<AndroidDeviceBehavior>(new AndroidDeviceBehavior(thingClient));
+        ThingBehaviorFactory<AndroidDeviceBehavior> behaviorFactory = new SingleUseThingBehaviorFactory<AndroidDeviceBehavior>(new AndroidDeviceBehavior(thingClient));
 
         SharedPreferences prefs = context.getSharedPreferences(THINGMANAGER_PREFERENCES, 0);
         long deviceID = prefs.getLong(PREFS_KEY_DEVICE_ID, 0);
