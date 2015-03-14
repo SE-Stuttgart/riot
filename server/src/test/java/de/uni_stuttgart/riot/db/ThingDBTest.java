@@ -22,7 +22,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
-import de.uni_stuttgart.riot.thing.remote.ServerThingBehavior;
+import de.uni_stuttgart.riot.thing.server.ServerThingBehavior;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 

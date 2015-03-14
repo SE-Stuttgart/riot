@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.logic.thing;
+package de.uni_stuttgart.riot.thing.server;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,7 +27,6 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertExcepti
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.remote.ThingLogic;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;

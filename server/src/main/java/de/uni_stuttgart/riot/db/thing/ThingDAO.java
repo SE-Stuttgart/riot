@@ -27,7 +27,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
-import de.uni_stuttgart.riot.thing.remote.ServerThingBehavior;
+import de.uni_stuttgart.riot.thing.server.ServerThingBehavior;
 
 /**
  * A DAO for {@link Thing}s. Note that this DAO works differently than the usual SqlQueryDAOs because it handles all types of things at once

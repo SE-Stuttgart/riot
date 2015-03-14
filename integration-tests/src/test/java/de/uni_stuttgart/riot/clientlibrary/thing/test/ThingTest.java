@@ -28,7 +28,7 @@ import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
-import de.uni_stuttgart.riot.thing.remote.ThingLogic;
+import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })

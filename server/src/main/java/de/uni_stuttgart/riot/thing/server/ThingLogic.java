@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.thing.remote;
+package de.uni_stuttgart.riot.thing.server;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

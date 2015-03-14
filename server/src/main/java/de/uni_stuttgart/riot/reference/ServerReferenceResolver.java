@@ -6,7 +6,7 @@ import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.references.TargetNotFoundException;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.remote.ThingLogic;
+import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
