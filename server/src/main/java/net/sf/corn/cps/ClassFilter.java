@@ -11,6 +11,7 @@ import java.util.Set;
  * such as class types, class name and so on.
  * 
  * @author serhat.dirik
+ * CHECKSTYLE:OFF
  */
 public class ClassFilter extends ResourceFilter{
 	private Set<Class<? extends Annotation>> annotations = new HashSet<Class<? extends Annotation>>();

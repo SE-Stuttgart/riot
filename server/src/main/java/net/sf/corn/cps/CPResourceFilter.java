@@ -1,9 +1,9 @@
 package net.sf.corn.cps;
 
 /**
- * This interface is designed to apply to resource scanner as a filter 
+ * This interface is designed to apply to resource scanner as a filter.
  * @author serhat.dirik
- *
+ * CHECKSTYLE:OFF
  */
 public interface CPResourceFilter  {
 	/**

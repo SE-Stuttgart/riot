@@ -3,6 +3,7 @@ package net.sf.corn.cps;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// CHECKSTYLE:OFF
 class NamePattern {
 
 	static final Integer NAME_TYPE_PACKAGE = 1;

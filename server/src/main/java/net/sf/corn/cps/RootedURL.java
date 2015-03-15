@@ -9,6 +9,7 @@ import java.net.URL;
  * sends resource URL addresses to filters as RootedURL classes instead of single URL's. Thus filters 
  * can find out package name and file names.
  * @author serhat.dirik
+ * CHECKSTYLE:OFF
  */
 public class RootedURL implements Serializable {
  

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * This is the main class of this package. Resource scanner as it named, scans
@@ -28,6 +29,8 @@ import java.util.jar.JarFile;
  * filters to its scan methods.
  * 
  * @author serhat.dirik
+ * @see http://sourceforge.net/projects/corn-cps.corn.p/
+ * CHECKSTYLE:OFF
  */
 public class CPScanner {
 
@@ -94,7 +97,19 @@ public class CPScanner {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+			
+			// This was inserted by Philipp Keck as workaround for https://sourceforge.net/p/corn/corn-cps/tickets/2/
+			if (url.toExternalForm().contains("surefirebooter") && url.toExternalForm().startsWith("file:/")) {
+			    try {
+                    Manifest manifest = new Manifest(new URL("jar:" + url.toExternalForm() + "!/META-INF/MANIFEST.MF").openStream());
+                    String[] referencedFiles = manifest.getMainAttributes().getValue("Class-Path").split(" ");
+                    for (String referencedFile : referencedFiles) {
+                        derivedUrls.add(new URL(referencedFile));
+                    }
+                } catch (Exception e) {
+                    // Ignore
+                }
+			}
 		}
 		urls.removeAll(replaceURLs.keySet());
 		urls.addAll(replaceURLs.values());

@@ -9,6 +9,7 @@ import java.util.Set;
 /**
  * A Generic filter that applicable to any kind of resources.  
  * @author Serhat Dirik
+ * CHECKSTYLE:OFF
  */
 public class ResourceFilter implements CPResourceFilter {
 	private static final Integer NAME_TYPE_PACKAGE = 1;

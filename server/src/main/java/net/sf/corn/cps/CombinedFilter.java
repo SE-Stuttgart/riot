@@ -8,7 +8,7 @@ import java.util.Set;
  * filters as parameters, its default joins those filters with 'and' logical operator. This filter
  * is required for such cases that you need multiple filter to be joined with logical 'or' operator. 
  * @author serhat.dirik
- *
+ * CHECKSTYLE:OFF
  */
 public class CombinedFilter implements CPResourceFilter {
 
