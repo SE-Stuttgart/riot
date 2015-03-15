@@ -4,8 +4,10 @@ import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.rule.ReferenceParameter;
 import de.uni_stuttgart.riot.rule.Rule;
 import de.uni_stuttgart.riot.rule.RuleParameter;
+import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.test.TestThing;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A test rule that operates on {@link TestThing}s. It observes the value of the {@link TestThing#getIntProperty()} of a given input thing
@@ -15,6 +17,7 @@ import de.uni_stuttgart.riot.thing.test.TestThing;
  */
 public class TestAdditionRule extends Rule {
 
+    @Parameter(ui = UIHint.EditNumber.class)
     private final RuleParameter<Integer> intAdd = newParameter("intAdd", Integer.class);
     private final ReferenceParameter<TestThing> inputThing = newReferenceParameter("inputThing", TestThing.class);
     private final ReferenceParameter<TestThing> outputThing = newReferenceParameter("outputThing", TestThing.class);
@@ -42,7 +45,7 @@ public class TestAdditionRule extends Rule {
      *             When resolving the target fails.
      */
     private void recalculate(int inputValue) throws ResolveReferenceException {
-        outputThing.getTarget().setInt(inputThing.getTarget().getInt() + intAdd.get());
+        outputThing.getTarget().setInt(inputValue + intAdd.get());
     }
 
 }

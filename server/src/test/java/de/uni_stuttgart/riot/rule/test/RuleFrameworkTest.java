@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -17,6 +19,8 @@ import de.uni_stuttgart.riot.references.TargetNotFoundException;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.rule.Rule;
 import de.uni_stuttgart.riot.rule.RuleConfiguration;
+import de.uni_stuttgart.riot.rule.RuleDescription;
+import de.uni_stuttgart.riot.rule.RuleDescriptions;
 import de.uni_stuttgart.riot.rule.RuleStatus;
 import de.uni_stuttgart.riot.test.commons.DeactivateLoggingRule;
 import de.uni_stuttgart.riot.thing.PropertyListener;
@@ -24,6 +28,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * Tests the Java-only part of the rule framework.
@@ -197,6 +202,23 @@ public class RuleFrameworkTest {
         TestSchedulingRule rule = new TestSchedulingRule();
         rule.setConfiguration(configuration);
         rule.startExecution();
+    }
+
+    @Test
+    public void testDescription() throws ClassNotFoundException {
+        RuleDescription description = RuleDescriptions.get(TestAdditionRule.class.getName());
+        assertThat(description.getType(), is(TestAdditionRule.class.getName()));
+        assertThat(description.getParameters(), hasSize(3));
+        assertThat(description.getParameterByName("intAdd").getName(), is("intAdd"));
+        assertThat(description.getParameterByName("intAdd").getValueType(), isClass(Integer.class));
+        assertThat(description.getParameterByName("intAdd").getInternalValueType(), isClass(Integer.class));
+        assertThat(description.getParameterByName("intAdd").getUiHint(), instanceOf(UIHint.EditNumber.class));
+        assertThat(description.getParameterByName("inputThing").getValueType(), isClass(TestThing.class));
+        assertThat(description.getParameterByName("inputThing").getInternalValueType(), isClass(Long.class));
+    }
+
+    private static Matcher<Class<?>> isClass(Class<?> clazz) {
+        return CoreMatchers.<Class<?>> sameInstance(clazz);
     }
 
 }
