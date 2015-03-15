@@ -270,12 +270,11 @@ public class ThingLogic {
      */
     public synchronized Thing registerThing(String thingType, String thingName, long ownerId) throws DatasourceInsertException {
         try {
-            // Note that the thing will be added to the things list by the behaviorFactory.
             ServerThingBehavior behavior = ThingFactory.create(thingType, 0, thingName, behaviorFactory);
             Thing thing = behavior.getThing();
             thing.setOwnerId(ownerId);
             thingDAO.insert(thing);
-            things.put(thing.getId(), behavior);
+            things.put(thing.getId(), behavior); // The behaviorFactory didn't add it because the ID was missing.
             behavior.markLastConnection();
             return thing;
         } catch (Exception e) {

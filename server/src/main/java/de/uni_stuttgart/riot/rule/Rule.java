@@ -94,7 +94,9 @@ public abstract class Rule {
         }
         boolean wasRunning = this.running;
         stopExecution();
-        this.configuration = configuration;
+
+        // We create a copy of the new configuration so that nobody is able to modify it during runtime from the outside.
+        this.configuration = configuration.copy();
         if (wasRunning) {
             startExecution();
         }
