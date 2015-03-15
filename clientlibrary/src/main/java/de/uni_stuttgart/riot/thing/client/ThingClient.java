@@ -120,11 +120,11 @@ public class ThingClient extends BaseClient {
     }
 
     /**
-     * Returns all Things that are assigned to the logged in user.
+     * Returns all Things that are assigned to the logged-in user.
      * 
      * @param behaviorFactory
      *            The behavior factory for the thing.
-     * @return The Thing
+     * @return The Things
      * @throws RequestException
      *             When the request to the server failed.
      * @throws IOException

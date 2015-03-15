@@ -78,6 +78,13 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.server</artifactId>
+			<version>${project.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.usermanagement</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
