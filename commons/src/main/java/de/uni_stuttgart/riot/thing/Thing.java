@@ -407,7 +407,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @return The property, <tt>null</tt> if a property with this name does not exist or a {@link IllegalArgumentException} if the property
      *         is not writable.
      */
-    public Property<?> getWritableProperty(String propertyName) {
+    public WritableProperty<?> getWritableProperty(String propertyName) {
         Property<?> property = getProperty(propertyName);
         if (property instanceof WritableProperty) {
             return (WritableProperty<?>) property;
@@ -428,7 +428,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @return The property, <tt>null</tt> if a property with this name does not exist or an {@link IllegalArgumentException} if the
      *         property exists but has a different value type or if it is not writable.
      */
-    public <V> Property<V> getWritableProperty(String propertyName, Class<V> valueType) {
+    public <V> WritableProperty<V> getWritableProperty(String propertyName, Class<V> valueType) {
         Property<V> property = getProperty(propertyName, valueType);
         if (property instanceof WritableProperty) {
             return (WritableProperty<V>) property;

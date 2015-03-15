@@ -58,7 +58,7 @@ public class RuleFrameworkTest {
         // Create a configuration for the rule.
         RuleConfiguration configuration = new RuleConfiguration(TestAdditionRule.class.getName());
         configuration.setName("Test Rule");
-        configuration.setRuleId(100L);
+        configuration.setId(100L);
         configuration.setStatus(RuleStatus.ACTIVE);
         configuration.set("intAdd", 42);
         configuration.set("inputThing", 1L);
@@ -109,7 +109,7 @@ public class RuleFrameworkTest {
         // Create a configuration for the rule.
         RuleConfiguration configuration = new RuleConfiguration(TestSchedulingRule.class.getName());
         configuration.setName("Test Rule 2");
-        configuration.setRuleId(101L);
+        configuration.setId(101L);
         configuration.setStatus(RuleStatus.ACTIVE);
         configuration.set("thing", 1L);
 
@@ -150,7 +150,7 @@ public class RuleFrameworkTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldDetectMismatchingConfiguration() {
         RuleConfiguration configuration = new RuleConfiguration(TestAdditionRule.class.getName());
-        configuration.setRuleId(20L);
+        configuration.setId(20L);
         TestSchedulingRule rule = new TestSchedulingRule();
         rule.setConfiguration(configuration);
     }
@@ -166,7 +166,7 @@ public class RuleFrameworkTest {
         // Create a configuration for the rule.
         RuleConfiguration configuration = new RuleConfiguration(TestSchedulingRule.class.getName());
         configuration.setName("Test Rule With Nonexisting Thing Reference");
-        configuration.setRuleId(102L);
+        configuration.setId(102L);
         configuration.setStatus(RuleStatus.ACTIVE);
         configuration.set("thing", 15L);
 
@@ -189,7 +189,7 @@ public class RuleFrameworkTest {
         // Create a configuration for the rule.
         RuleConfiguration configuration = new RuleConfiguration(TestSchedulingRule.class.getName());
         configuration.setName("Test Rule With Nonexisting Thing Reference");
-        configuration.setRuleId(102L);
+        configuration.setId(102L);
         configuration.setStatus(RuleStatus.ACTIVE);
         configuration.set("thing", 16L);
 

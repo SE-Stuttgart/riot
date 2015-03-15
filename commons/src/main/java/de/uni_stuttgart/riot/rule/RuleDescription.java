@@ -25,8 +25,11 @@ public class RuleDescription {
 
     /**
      * Creates a new description instance.
-     * @param type The type of the rule (as a fully qualified Java class name).
-     * @param parameters The parameter descriptions.
+     * 
+     * @param type
+     *            The type of the rule (as a fully qualified Java class name).
+     * @param parameters
+     *            The parameter descriptions.
      */
     @JsonCreator
     RuleDescription(@JsonProperty("type") String type, @JsonProperty("parameters") List<ParameterDescription> parameters) {
@@ -36,6 +39,7 @@ public class RuleDescription {
 
     /**
      * Gets the type of the rule (as a fully qualified Java class name).
+     * 
      * @return The rule type.
      */
     public String getType() {

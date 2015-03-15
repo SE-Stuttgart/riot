@@ -47,7 +47,7 @@ public abstract class Rule {
             builder.append("No config, ");
             builder.append(running ? "Running" : "Not running");
         } else {
-            builder.append(configuration.getRuleId());
+            builder.append(configuration.getId());
             builder.append(", ");
             builder.append(configuration.getName());
             builder.append(", ");
@@ -87,7 +87,7 @@ public abstract class Rule {
     public void setConfiguration(RuleConfiguration configuration) {
         if (configuration == null) {
             throw new IllegalArgumentException("configuration must not be null!");
-        } else if (configuration.getRuleId() == null || configuration.getRuleId().equals(0)) {
+        } else if (configuration.getId() == null || configuration.getId().equals(0)) {
             throw new IllegalArgumentException("Cannot run rule with empty ID!");
         } else if (!getClass().getName().equals(configuration.getType())) {
             throw new IllegalArgumentException("The configuration is for " + configuration.getType() + " instead of " + getClass());

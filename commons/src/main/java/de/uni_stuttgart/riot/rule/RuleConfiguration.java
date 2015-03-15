@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingState;
 
@@ -19,10 +20,9 @@ import de.uni_stuttgart.riot.thing.ThingState;
  * 
  * @author Philipp Keck
  */
-public class RuleConfiguration {
+public class RuleConfiguration extends Storable {
 
     private final String type;
-    private Long ruleId;
     private RuleStatus status;
     private String name;
     private long ownerId;
@@ -31,40 +31,30 @@ public class RuleConfiguration {
     /**
      * Creates a new instance (also from JSON).
      * 
+     * @param id
+     *            The ID of the rule (configuration) or <tt>null</tt> if the rule has not been created yet.
      * @param type
      *            The type of the rule (as a fully qualified Java class name).
-     *
-     * @param ruleId
-     *            The ID of the rule or <tt>null</tt> if the rule has not been created yet.
      * @param status
      *            The status of the rule.
+     * @param name
+     *            The name of the rule.
+     * @param ownerId
+     *            The ID of the user owning the rule.
      * @param parameterValues
      *            The values of the rule's parameters.
      */
     @JsonCreator
-    public RuleConfiguration(@JsonProperty("type") String type, @JsonProperty("ruleId") Long ruleId, @JsonProperty("status") RuleStatus status, @JsonProperty("parameterValues") Map<String, Object> parameterValues) {
-        if (parameterValues == null) {
-            throw new IllegalArgumentException("parameterValues must not be null!");
-        }
+    public RuleConfiguration(@JsonProperty("id") Long id, @JsonProperty("type") String type, @JsonProperty("status") RuleStatus status, @JsonProperty("name") String name, @JsonProperty("ownerId") Long ownerId, @JsonProperty("parameterValues") Map<String, Object> parameterValues) {
+        super(id);
         if (type == null) {
             throw new IllegalArgumentException("type must not be null!");
         }
         this.type = type;
-        this.ruleId = ruleId;
         this.status = status;
-        this.parameterValues = parameterValues;
-    }
-
-    /**
-     * Creates a new instance.
-     * 
-     * @param type
-     *            The type of the rule (as a fully qualified Java class name).
-     * @param parameterValues
-     *            The values of the rule's parameters.
-     */
-    public RuleConfiguration(String type, Map<String, Object> parameterValues) {
-        this(type, null, RuleStatus.DEACTIVATED, parameterValues);
+        this.name = name;
+        this.ownerId = (ownerId == null) ? 0 : ownerId;
+        this.parameterValues = (parameterValues == null) ? new HashMap<String, Object>() : parameterValues;
     }
 
     /**
@@ -74,7 +64,7 @@ public class RuleConfiguration {
      *            The type of the rule (as a fully qualified Java class name).
      */
     public RuleConfiguration(String type) {
-        this(type, new HashMap<String, Object>());
+        this(null, type, null, null, null, null);
     }
 
     /**
@@ -84,28 +74,6 @@ public class RuleConfiguration {
      */
     public String getType() {
         return type;
-    }
-
-    /**
-     * Gets the ID of the rule that this configuration is for.
-     * 
-     * @return The ID of the rule or <tt>null</tt> if the rule has not been created yet.
-     */
-    public Long getRuleId() {
-        return ruleId;
-    }
-
-    /**
-     * Sets the ID of the rule that this configuration is for.
-     * 
-     * @param ruleId
-     *            The ID of the rule, never <tt>null</tt>.
-     */
-    public void setRuleId(Long ruleId) {
-        if (ruleId == null) {
-            throw new IllegalArgumentException("ruleId must not be null!");
-        }
-        this.ruleId = ruleId;
     }
 
     /**
@@ -211,6 +179,59 @@ public class RuleConfiguration {
      */
     public void set(String parameterName, Object parameterValue) {
         parameterValues.put(parameterName, parameterValue);
+    }
+
+    /**
+     * Creates a shallow copy of the rule configuration.
+     * 
+     * @return The cloned instance.
+     */
+    public RuleConfiguration copy() {
+        return new RuleConfiguration(getId(), type, status, name, ownerId, new HashMap<String, Object>(parameterValues));
+    }
+
+    // CHECKSTYLE:OFF
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (int) (ownerId ^ (ownerId >>> 32));
+        result = prime * result + ((parameterValues == null) ? 0 : parameterValues.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RuleConfiguration other = (RuleConfiguration) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (ownerId != other.ownerId)
+            return false;
+        if (parameterValues == null) {
+            if (other.parameterValues != null)
+                return false;
+        } else if (!parameterValues.equals(other.parameterValues))
+            return false;
+        if (status != other.status)
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
     }
 
 }

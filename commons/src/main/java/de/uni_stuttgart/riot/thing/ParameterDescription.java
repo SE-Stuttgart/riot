@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.uni_stuttgart.riot.references.Reference;
@@ -69,12 +70,23 @@ public class ParameterDescription {
     }
 
     /**
-     * Gets the value type.
+     * Gets the value type that is visible to the outside (i.e. the value that can be accessed and is used by the rule and specified by the
+     * user, etc.).
      * 
      * @return The value type of this parameter.
      */
     public Class<?> getValueType() {
         return valueType;
+    }
+
+    /**
+     * Gets the value type that is used internally to store the parameter value.
+     * 
+     * @return The internal value type of this parameter.
+     */
+    @JsonIgnore
+    public Class<?> getInternalValueType() {
+        return isReference ? Long.class : valueType;
     }
 
     /**
@@ -99,6 +111,10 @@ public class ParameterDescription {
      * @return The parameter description.
      */
     public static ParameterDescription create(Field field, Type fieldType) {
+        if (fieldType == null) {
+            throw new IllegalArgumentException("fieldType must not be null!");
+        }
+
         UIHint uiHint = null;
         if (field.isAnnotationPresent(Parameter.class)) {
             try {
@@ -110,9 +126,8 @@ public class ParameterDescription {
 
         // fieldType could be anything. Here we resolve "Reference<X>" to "X".
         Type genericValueType;
-        boolean isReference = false;
-        if (ClassUtils.isAssignable(field.getType(), Reference.class)) {
-            isReference = true;
+        boolean isReference = ClassUtils.isAssignable(field.getType(), Reference.class);
+        if (isReference && field.getGenericType().equals(fieldType)) {
             genericValueType = TypeUtils.getTypeArguments(fieldType, Reference.class).get(Reference.class.getTypeParameters()[0]);
         } else {
             genericValueType = fieldType;

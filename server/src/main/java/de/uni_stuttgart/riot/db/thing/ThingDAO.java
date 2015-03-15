@@ -11,6 +11,7 @@ import org.sql2o.Query;
 import org.sql2o.ResultSetHandler;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.db.DBUtils;
 import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.QueryBuilder;
@@ -169,47 +170,10 @@ public class ThingDAO implements DAO<Thing> {
             for (Map.Entry<String, Object> propertyValue : state.getPropertyValues().entrySet()) {
                 stmt.addParameter("thingID", thingID);
                 stmt.addParameter("name", propertyValue.getKey());
-                stmt.addParameter("val", valueToString(propertyValue.getValue()));
+                stmt.addParameter("val", DBUtils.valueToString(propertyValue.getValue()));
                 stmt.addToBatch();
             }
             stmt.executeBatch();
-        }
-    }
-
-    /**
-     * Transforms a value to a String representation for storage in the database.
-     * 
-     * @param value
-     *            The value to be transformed.
-     * @return The string representation.
-     */
-    private static String valueToString(Object value) {
-        return value == null ? null : value.toString();
-    }
-
-    /**
-     * Calls the <tt>valueOf</tt> method of the given class <tt>valueType</tt> to convert the given <tt>value</tt>.
-     * 
-     * @param value
-     *            The value.
-     * @param valueType
-     *            The value type.
-     * @return The converted value.
-     */
-    private static <T> T stringToValue(String value, Class<T> valueType) {
-        if (value == null) {
-            return null;
-        } else if (valueType == String.class) {
-            return valueType.cast(value);
-        }
-        try {
-            @SuppressWarnings("unchecked")
-            T result = (T) valueType.getMethod("valueOf", String.class).invoke(null, value);
-            return result;
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The type " + valueType + " is not supported!");
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Exception when calling " + valueType + "#valueOf(" + value + ")");
         }
     }
 
@@ -339,7 +303,7 @@ public class ThingDAO implements DAO<Thing> {
                         if (property == null) {
                             throw new SQLException("Database contains value for unknown property " + value.name);
                         }
-                        ThingState.silentSetThingProperty(property, stringToValue(value.val, property.getValueType()));
+                        ThingState.silentSetThingProperty(property, DBUtils.stringToValue(value.val, property.getValueType()));
                     }
                 }
 
