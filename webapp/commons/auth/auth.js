@@ -1,4 +1,4 @@
-angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStorageService, User) {
+angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStorageService, User, PermissionHelper) {
   var user = null;
   var accessToken = null;
   var refreshToken = null;
@@ -32,12 +32,34 @@ angular.module('riot').factory('Auth', function($q, $rootScope, $http, localStor
       return accessToken != null && refreshToken != null;
     },
     hasRole: function(role) {
-      console.error("TODO check role");
-      return true;
+		if (service.getUser() == null) {
+			return false;
+		}
+		var roles = service.getUser().roles;
+		var rolesLength = roles.length;
+		for (var i = 0; i < rolesLength; i++) {
+			if (role === roles[i].roleName) {
+				return true;
+			}
+		}
+		return false;
     },
     hasPermission: function(permission) {
-      console.error("TODO check permission");
-      return true;
+		if (service.getUser() == null) {
+			return false;
+		}
+		var roles =service.getUser().roles;
+		var rolesLength = roles.length;
+		for (var z = 0; z < rolesLength; z++) {
+			var permissions = roles[z].permissions;
+			var permissionsLength = permissions.length;
+			for (var i = 0; i < permissionsLength; i++) {
+				if (PermissionHelper.checkPermission(permissions[i].permissionValue, permission)) {
+					return true;
+				}
+			}
+		}
+		return false;
     },
     reset: function() {
       user = null;

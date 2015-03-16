@@ -12,7 +12,7 @@
     <li ui-sref-active="active">
       <a ui-sref="app.calendar.list"><i class="fa fa-edit"></i> {{'calendar.calendar' | i18n}}</a>
     </li>
-    <li>
+    <li ng-if="hasRole('admin')">
       <a ui-sref="admin.configuration"><i class="fa fa-cogs"></i> {{'administration.administration' | i18n}}</a>
       <ul class="nav nav-second-level">
         <li ui-sref-active="active">

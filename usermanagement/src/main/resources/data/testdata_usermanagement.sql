@@ -16,7 +16,8 @@ INSERT INTO roles(id, rolename)
     VALUES (1, 'Master'),
      (2, 'Robot'),
      (3, 'Good'),
-     (4, 'Dark');
+     (4, 'Dark'),
+	 (5, 'admin');
 
 INSERT INTO permissions(id, permissionvalue)
     VALUES (1, 'thing:1:*'),
@@ -48,7 +49,8 @@ INSERT INTO tokens_roles(tokenid, roleid)
 INSERT INTO users_roles(userid, roleid)
     VALUES (1, 1),
      (3, 1),
-     (2,2);
+     (2,2),
+	 (1,5);
 
 
 
