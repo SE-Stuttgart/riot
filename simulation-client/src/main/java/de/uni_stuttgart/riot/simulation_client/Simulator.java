@@ -136,7 +136,7 @@ public abstract class Simulator<T extends Thing> {
      * @param stepCount
      *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
      */
-    protected final void linearChange(Property<Double> property, double end, long stepTime, int stepCount) {
+    protected final AtomicReference<ScheduledFuture<?>> linearChange(Property<Double> property, double end, long stepTime, int stepCount) {
         AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
         AtomicInteger step = new AtomicInteger(0);
         double start = property.get();
@@ -147,6 +147,7 @@ public abstract class Simulator<T extends Thing> {
                 future.get().cancel(false);
             }
         }, 0, stepTime, TimeUnit.MILLISECONDS));
+        return future;
     }
 
     /**

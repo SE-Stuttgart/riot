@@ -28,32 +28,32 @@ public class Car extends Thing {
     /**
      * Default tire pressure in bar.
      */
-    private final Double DEFAULT_TIRE_PRESSURE = 3.0;
+    private static final Double DEFAULT_TIRE_PRESSURE = 3.0;
 
     /**
      * Default longitude (in front of the university building).
      */
-    private final Double DEFAULT_LONGITUDE = 9.106539487838745;
+    private static final Double DEFAULT_LONGITUDE = 9.106539487838745;
 
     /**
      * Default latitude (in front of the university building).
      */
-    private final Double DEFAULT_LATITUDE = 48.74473604096915;
+    private static final Double DEFAULT_LATITUDE = 48.74473604096915;
 
     /**
      * By default the heating is switched off.
      */
-    private final Boolean DEFAULT_HEATING = false;
+    private static final Boolean DEFAULT_HEATING = false;
 
     /**
      * The default interior temperature configuration in degree Celsius.
      */
-    private final Double DEFAULT_HEATING_TEMP = 22.0;
+    static final Double DEFAULT_HEATING_TEMP = 22.0;
 
     /**
      * Default tank fill level in liter
      */
-    private final Double DEFAULT_TANK_FILL_LEVEL = 40.0;
+    private static final Double DEFAULT_TANK_FILL_LEVEL = 40.0;
 
     /**
      * Tank max fill level in liter
@@ -63,22 +63,22 @@ public class Car extends Thing {
     /**
      * Default lock state (true=locked)
      */
-    private final Boolean DEFAULT_LOCK_STATE = true;
+    private static final Boolean DEFAULT_LOCK_STATE = true;
 
     /**
      * Default engine state (true = car is started)
      */
-    private final Boolean DEFAULT_ENGINE_STATE = false;
+    private static final Boolean DEFAULT_ENGINE_STATE = false;
 
     /**
      * Default milage in KM
      */
-    private final Double DEFAULT_MILAGE = 42000.0;
+    private static final Double DEFAULT_MILAGE = 42000.0;
 
     /**
      * Default battery state
      */
-    private final BatteryState DEFAULT_BATTERY_STATE = BatteryState.FULL;
+    private static final BatteryState DEFAULT_BATTERY_STATE = BatteryState.FULL;
 
     /**
      * Property for the tank fill level.
@@ -235,6 +235,14 @@ public class Car extends Thing {
     }
     
     /**
+     * Getter for the actual interior temperature {@link Property}.
+     * @return actual interior temperature in degree celsius.
+     */
+    public Property<Double> getInteriorTemperatureProperty(){
+        return temp;
+    }
+    
+    /**
      * Getter for the configured Temperature of the heating
      * @return configured temperature in degree celsius.
      */
@@ -307,6 +315,10 @@ public class Car extends Thing {
 
     public Action<ActionInstance> getHeatingAction() {
         return heatingAction;
+    }
+    
+    public Property<Boolean> getHeatingProperty(){
+        return heating;
     }
     
 }

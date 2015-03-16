@@ -1,6 +1,8 @@
 package de.uni_stuttgart.riot.thing.car;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicReference;
 
 import de.uni_stuttgart.riot.simulation_client.Simulator;
 import de.uni_stuttgart.riot.thing.Action;
@@ -33,18 +35,29 @@ public class CarSimulator extends Simulator<Car> {
         }
     }
 
+    private AtomicReference<ScheduledFuture<?>> future;
+
     private <A extends ActionInstance> void doHeating(A actionInstance) {
+        int stepCount = (int) Math.abs(getThing().getInteriorTemperature() - getThing().getConfiguredTemperature());
+        long stepTime = 5000;
         if (getThing().isHeatingOn()) {
-            // TODO
+            if (future != null)
+                future.get().cancel(false);
+            changePropertyValue(getThing().getHeatingProperty(), false);
+            future = linearChange(getThing().getInteriorTemperatureProperty(), Car.DEFAULT_HEATING_TEMP, stepTime, stepCount);
         } else {
-            // TODO
+            if (future != null)
+                future.get().cancel(false);
+            changePropertyValue(getThing().getHeatingProperty(), true);
+            future = linearChange(getThing().getInteriorTemperatureProperty(), getThing().getConfiguredTemperature(), stepTime, stepCount);
         }
     }
 
-    
     /**
      * Refuels the car. If the amount of gasoline is grater than the space left in the tank a RuntimeException is thrown.
-     * @param actionInstance the Refuel actioninstance
+     * 
+     * @param actionInstance
+     *            the Refuel actioninstance
      */
     private <A extends ActionInstance> void doRefuel(A actionInstance) {
         double refuelAmount = ((Refuel) actionInstance).getAmount();
