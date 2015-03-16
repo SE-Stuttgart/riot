@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+import de.uni_stuttgart.riot.db.thing.NotificationDAO;
+import de.uni_stuttgart.riot.db.thing.Notification;
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
@@ -17,6 +19,7 @@ import de.uni_stuttgart.riot.thing.AuthenticatingThingBehavior;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
+import de.uni_stuttgart.riot.thing.NotificationEvent;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
@@ -37,6 +40,7 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
     private final Queue<ActionInstance> outstandingActions = new LinkedList<>();
     private final Queue<EventInstance> occuredEvents = new LinkedList<>();
     private final Map<Long, ThingShare> shares = new HashMap<>();
+    private final DAO<Notification> notificationDao = new NotificationDAO();
     private Date lastConnection;
 
     /**
@@ -217,6 +221,25 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
         response.setOutstandingActions(moveQueue(outstandingActions));
         markLastConnection();
         return response;
+    }
+
+    @Override
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
+        NotificationEvent<E> notification = super.newNotification(notificationName, instanceType);
+
+        notification.register(new EventListener<EventInstance>() {
+
+            @Override
+            public void onFired(Event<? extends EventInstance> event, EventInstance eventInstance) {
+                try {
+                    notificationDao.insert(new Notification(ServerThingBehavior.this.getThing().getId(), event.getName(), eventInstance.getTime()));
+                } catch (DatasourceInsertException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        return notification;
     }
 
     /**

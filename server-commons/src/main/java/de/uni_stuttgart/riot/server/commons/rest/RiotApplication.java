@@ -44,6 +44,11 @@ public class RiotApplication extends ResourceConfig {
     protected static final String[] REST_PROVIDERS = { "de.uni_stuttgart.riot.server.commons.rest.provider" };
 
     /**
+     * List of packages that contain web socket providers.
+     */
+    protected static final String[] WEB_SOCKET_PROVIDERS = { "de.uni_stuttgart.riot.websocket" };
+
+    /**
      * Configures the application.
      */
     public RiotApplication() {
@@ -58,6 +63,7 @@ public class RiotApplication extends ResourceConfig {
     protected void registerProviders() {
         packages(REST_PROVIDERS);
         packages(REST_SECUTRITY_PROVIDERS);
+        packages(WEB_SOCKET_PROVIDERS);
     }
 
     /**

@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,6 +89,32 @@ public class Thing extends Storable implements Referenceable<Thing> {
      */
     protected Event<EventInstance> newEvent(String eventName) {
         return getBehavior().newEvent(eventName, EventInstance.class);
+    }
+
+    /**
+     * Creates a new notification without parameters for the thing.
+     * 
+     * @param <E>
+     *            The type of instances of the notification.
+     * @param notificationName
+     *            The name of the notification. Must be unique, i.e,. this method can only be called once for each name.
+     * @param instanceType
+     *            The type of instances of the event.
+     * @return The newly created notification.
+     */
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
+        return getBehavior().newNotification(notificationName, instanceType);
+    }
+
+    /**
+     * Creates a new notification without parameters for the thing.
+     *
+     * @param notificationName
+     *            The name of the notification. Must be unique, i.e,. this method can only be called once for each name.
+     * @return The newly created notification.
+     */
+    protected NotificationEvent<EventInstance> newNotification(String notificationName) {
+        return getBehavior().newNotification(notificationName, EventInstance.class);
     }
 
     /**
@@ -412,6 +439,21 @@ public class Thing extends Storable implements Referenceable<Thing> {
      */
     public Collection<Event<?>> getEvents() {
         return Collections.unmodifiableCollection(events.values());
+    }
+
+    /**
+     * Returns a non-editable collection of all notifications that this thing has.
+     * 
+     * @return The notifications of this thing.
+     */
+    public Collection<NotificationEvent<?>> getNotifcations() {
+        Collection<NotificationEvent<?>> notifications = new ArrayList<NotificationEvent<?>>();
+        for (Event<?> event : events.values()) {
+            if (event instanceof NotificationEvent<?>) {
+                notifications.add((NotificationEvent<?>) event);
+            }
+        }
+        return Collections.unmodifiableCollection(notifications);
     }
 
     /**

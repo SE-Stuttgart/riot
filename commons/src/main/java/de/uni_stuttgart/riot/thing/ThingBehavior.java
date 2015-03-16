@@ -318,18 +318,30 @@ public abstract class ThingBehavior implements ReferenceResolver {
      * @return The newly created event.
      */
     protected <E extends EventInstance> Event<E> newEvent(String eventName, Class<E> instanceType) {
-        if (eventName == null || eventName.isEmpty()) {
-            throw new IllegalArgumentException("eventName must not be empty!");
-        } else if (thing.events.containsKey(eventName)) {
-            throw new IllegalArgumentException("Duplicate event " + eventName);
-        }
-        if (instanceType == null) {
-            throw new IllegalArgumentException("instanceType must not be null!");
-        }
+        checkEventArguments(eventName, instanceType);
 
         Event<E> event = new Event<E>(thing, eventName, instanceType);
         thing.events.put(eventName, event);
         return event;
+    }
+
+    /**
+     * New a new notification for the thing.
+     *
+     * @param <E>
+     *            The type of instances of the event.
+     * @param notificationName
+     *            The name of the event. Should check for uniqueness.
+     * @param instanceType
+     *            The name of the event. Should check for uniqueness.
+     * @return The newly created notification.
+     */
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
+        checkEventArguments(notificationName, instanceType);
+
+        NotificationEvent<E> notification = new NotificationEvent<E>(thing, notificationName, instanceType);
+        thing.events.put(notificationName, notification);
+        return notification;
     }
 
     /**
@@ -424,6 +436,17 @@ public abstract class ThingBehavior implements ReferenceResolver {
         }
         if (valueType == null) {
             throw new IllegalArgumentException("valueType must not be null!");
+        }
+    }
+
+    private <E> void checkEventArguments(String eventName, Class<E> instanceType) {
+        if (eventName == null || eventName.isEmpty()) {
+            throw new IllegalArgumentException("eventName must not be empty!");
+        } else if (thing.events.containsKey(eventName)) {
+            throw new IllegalArgumentException("Duplicate event " + eventName);
+        }
+        if (instanceType == null) {
+            throw new IllegalArgumentException("instanceType must not be null!");
         }
     }
 
