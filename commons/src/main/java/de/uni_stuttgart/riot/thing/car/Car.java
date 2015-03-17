@@ -3,10 +3,12 @@ package de.uni_stuttgart.riot.thing.car;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
+import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.commons.GPSPosition;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -48,7 +50,7 @@ public class Car extends Thing {
     /**
      * The default interior temperature configuration in degree Celsius.
      */
-    static final Double DEFAULT_HEATING_TEMP = 22.0;
+    static final Double DEFAULT_TEMP = 18.0;
 
     /**
      * Default tank fill level in liter
@@ -138,24 +140,43 @@ public class Car extends Thing {
     /**
      * Changeable Property for the heating switch.
      */
-    private final Property<Boolean> heating = newProperty("heating", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton());
+    private final Property<Boolean> airCondition = newProperty("airCondition", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton());
 
     /**
      * Changeable Property for the configured heating temperature in degree Celsius.
      */
-    private final WritableProperty<Double> heatingTemp = newWritableProperty("heatingTemp", Double.class, DEFAULT_HEATING_TEMP, UIHint.editNumber());
+    private final WritableProperty<Double> airConditionTemp = newWritableProperty("airConditionTemp", Double.class, DEFAULT_TEMP, UIHint.editNumber());
 
     /**
      * Property of the actual interior temperature in degree Celsius.
      */
-    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_HEATING_TEMP, UIHint.editNumber());
+    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_TEMP, UIHint.editNumber());
 
+    /**
+     * Action to refuel the car.
+     */
     private final Action<Refuel> refuel = newAction("refuel", Refuel.class);
     
-    private final Action<ActionInstance> heatingAction = newAction("heatingAction");
+    /**
+     * Action to switch the heating on and off.
+     */
+    private final Action<ActionInstance> airConditionAction = newAction("airConditionAction");
 
+    /**
+     * Action to switch the engine on and off.
+     */
+    private final Action<ActionInstance> engineAction = newAction("engineAction");
+
+    /**
+     * Event that can be fired if the tank is almost empty;
+     */
     private final Event<OutOfGasoline> outOfGasoline = newEvent("outOfGasoline", OutOfGasoline.class);
 
+    /**
+     * Event that is fired if refueling had lead to an tank overflow.
+     */
+    private final Event<EventInstance> tankOverflow = newEvent("tankOverflow");
+    
     /**
      * Constructor for a car thing.
      * 
@@ -173,8 +194,8 @@ public class Car extends Thing {
      * 
      * @return true if the heating is switched on, false otherwise.
      */
-    public boolean isHeatingOn() {
-        return heating.getValue();
+    public boolean isAirConditionOn() {
+        return airCondition.get();
     }
 
     /**
@@ -183,7 +204,7 @@ public class Car extends Thing {
      * @return true if the engine is switched on, false otherwise.
      */
     public boolean isEngineStarted() {
-        return engineState.getValue();
+        return engineState.get();
     }
 
     /**
@@ -191,7 +212,7 @@ public class Car extends Thing {
      * @return pressure in bar.
      */
     public Double getTirePressureFrontRight() {
-        return tirePressureFrontRight.getValue();
+        return tirePressureFrontRight.get();
     }
 
     /**
@@ -199,7 +220,7 @@ public class Car extends Thing {
      * @return pressure in bar.
      */
     public Double getTirePressureBackLeft() {
-        return tirePressureBackLeft.getValue();
+        return tirePressureBackLeft.get();
     }
 
     /**
@@ -207,7 +228,7 @@ public class Car extends Thing {
      * @return pressure in bar.
      */
     public Double getTirePressureBackRight() {
-        return tirePressureBackRight.getValue();
+        return tirePressureBackRight.get();
     }
 
     /**
@@ -215,7 +236,7 @@ public class Car extends Thing {
      * @return pressure in bar.
      */
     public Double getTirePressureFrontLeft() {
-        return tirePressureFrontLeft.getValue();
+        return tirePressureFrontLeft.get();
     }
     
     /**
@@ -223,7 +244,7 @@ public class Car extends Thing {
      * @return fill level in liter.
      */
     public Double getTankFillLevel(){
-        return tankFillLevel.getValue();
+        return tankFillLevel.get();
     }
     
     /**
@@ -231,7 +252,7 @@ public class Car extends Thing {
      * @return actual interior temperature in degree celsius.
      */
     public Double getInteriorTemperature(){
-        return temp.getValue();
+        return temp.get();
     }
     
     /**
@@ -247,7 +268,7 @@ public class Car extends Thing {
      * @return configured temperature in degree celsius.
      */
     public Double getConfiguredTemperature(){
-        return heatingTemp.getValue();
+        return airConditionTemp.get();
     }
     
     /**
@@ -255,7 +276,7 @@ public class Car extends Thing {
      * @return state of the car lock.
      */
     public boolean isLocked(){
-        return lock.getValue();
+        return lock.get();
     }
     
     /**
@@ -263,14 +284,14 @@ public class Car extends Thing {
      * @return milage in KM.
      */
     public Double getMilage(){
-        return milage.getValue();
+        return milage.get();
     }
     
     /**
      * Getter for the battery state
      */
     public BatteryState getBatteryState(){
-        return batteryState.getValue();
+        return batteryState.get();
     }
     
     /**
@@ -278,7 +299,7 @@ public class Car extends Thing {
      * @return  
      */
     public GPSPosition getPosition(){
-        return new GPSPosition(longitude.getValue(), latitude.getValue());
+        return new GPSPosition(longitude.get(), latitude.get());
     }
     
     /**
@@ -312,13 +333,45 @@ public class Car extends Thing {
     public Property<Double> getTankProperty(){
         return tankFillLevel;
     }
+    
+    /**
+     * Getter for the engine property.
+     * @return engine property.
+     */
+    public Property<Boolean> getEngineProperty(){
+        return engineState;
+    }
 
-    public Action<ActionInstance> getHeatingAction() {
-        return heatingAction;
+    /**
+     * Getter for the Heating action (is used to turn the heating on and off)
+     * @return the action
+     */
+    public Action<ActionInstance> getAirConditionAction() {
+        return airConditionAction;
     }
     
-    public Property<Boolean> getHeatingProperty(){
-        return heating;
+    /**
+     * Getter for the heating property that is the heating state (on or off).
+     * @return the property
+     */
+    public Property<Boolean> getAirConditionProperty(){
+        return airCondition;
+    }
+
+    /**
+     * Getter for the tankOverflow event.
+     * @return the event
+     */
+    public Event<EventInstance> getTankOverflow() {
+        return tankOverflow;
+    }
+    
+    /**
+     * Getter for the engineAction.
+     * @return the action
+     */
+    public Action<ActionInstance> getEngineAction() {
+        return engineAction;
     }
     
 }

@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
-import de.uni_stuttgart.riot.thing.InstanceParameter;
+import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 public class OutOfGasoline extends EventInstance {
 
-    @InstanceParameter(ui = UIHint.IntegralSlider.class, min = 0, max = Car.TANK_MAX_FILL_LEVEL)
+    @Parameter(ui = UIHint.IntegralSlider.class, min = 0, max = Car.TANK_MAX_FILL_LEVEL)
     private final double remainingGasoline;
 
     /**
@@ -21,7 +21,7 @@ public class OutOfGasoline extends EventInstance {
      * @param remainingGasoline
      *            The amount of remaining gasoline in liter.
      */
-    public OutOfGasoline(Event<? extends EventInstance> event, int remainingGasoline) {
+    public OutOfGasoline(Event<? extends EventInstance> event, double remainingGasoline) {
         super(event);
         this.remainingGasoline = remainingGasoline;
     }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
-import de.uni_stuttgart.riot.thing.InstanceParameter;
+import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -17,7 +17,7 @@ public class Refuel extends ActionInstance {
     /**
      * The gasoline amount in liter
      */
-    @InstanceParameter(ui = UIHint.FractionalSlider.class, min = 0, max = Car.TANK_MAX_FILL_LEVEL)
+    @Parameter(ui = UIHint.FractionalSlider.class, min = 0, max = Car.TANK_MAX_FILL_LEVEL)
     private final Double amount;
 
     /**

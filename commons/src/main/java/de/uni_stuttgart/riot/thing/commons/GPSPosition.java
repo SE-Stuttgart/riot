@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.thing.car;
+package de.uni_stuttgart.riot.thing.commons;
 
 public class GPSPosition {
     
