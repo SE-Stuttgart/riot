@@ -1,38 +1,10 @@
 package de.uni_stuttgart.riot.android.management;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ImageView;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
-import de.uni_stuttgart.riot.android.messages.IM;
->>>>>>> RIOT-87:Android:Get things from the server
-import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
-
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
-=======
 import android.graphics.drawable.Drawable;
 
->>>>>>> RIOT-87:Android:Add management action menu
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
 /**
  * Activity that displays all details of an user.
  * It also provides to edit this information.

@@ -4,20 +4,7 @@ import android.view.View;
 
 import java.util.List;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
 import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
-import de.uni_stuttgart.riot.android.messages.IM;
->>>>>>> RIOT-87:Android:Get things from the server
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
-import de.enpro.android.riot.R;
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 

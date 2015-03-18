@@ -10,24 +10,10 @@ import android.view.MenuItem;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:All changes of the last commits
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
-=======
->>>>>>> RIOT-87:Android:Get things from the server
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
-import de.uni_stuttgart.riot.thing.ui.UIHint;
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 
 /**
  * Is the main abstract activity for all management classes.

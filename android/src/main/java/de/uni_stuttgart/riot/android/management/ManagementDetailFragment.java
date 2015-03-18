@@ -2,16 +2,7 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.os.Bundle;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
-=======
-import de.enpro.android.riot.R;
->>>>>>> RIOT-87:Android:Get things from the server
-=======
 import de.uni_stuttgart.riot.android.messages.IM;
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
 
 /**
  * This is an abstract activity for displaying more information about a list item from the ManagementListFragment.

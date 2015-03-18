@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.messages.IM;
->>>>>>> RIOT-87:Android:Get things from the server
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 

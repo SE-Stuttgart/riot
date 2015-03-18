@@ -23,24 +23,13 @@ import android.widget.ToggleButton;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.R;
-=======
 import de.enpro.android.riot.R;
 import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
 import de.uni_stuttgart.riot.android.messages.IM;
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:All changes of the last commits
-import de.uni_stuttgart.riot.commons.rest.data.Storable;
-=======
 import de.uni_stuttgart.riot.thing.PropertyDescription;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:Get things from the server
-=======
 import de.uni_stuttgart.riot.thing.WritableProperty;
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
