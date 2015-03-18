@@ -16,6 +16,7 @@ import de.uni_stuttgart.riot.server.commons.db.ConnectionMgr;
 import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.QueryBuilder;
 import de.uni_stuttgart.riot.server.commons.db.QueryBuilderImpl;
+import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
@@ -282,6 +283,8 @@ public class ThingDAO implements DAO<Thing> {
      */
     private class ThingFetcher implements ResultSetHandler<Thing> {
 
+        private final ThingUserSqlQueryDAO sharesDAO = new ThingUserSqlQueryDAO();
+
         @Override
         public Thing handle(ResultSet resultSet) throws SQLException {
             long thingID = resultSet.getLong("id");
@@ -307,13 +310,15 @@ public class ThingDAO implements DAO<Thing> {
                     }
                 }
 
-                // The user permissions for the thing.
-                String query2 = "SELECT * FROM things_users WHERE thingID = :thingID";
-                try (Query stmt = connection.createQuery(query2)) {
-                    stmt.addParameter("thingID", thingID);
-                    for (ThingUser thingUser : stmt.executeAndFetch(ThingUser.class)) {
-                        behavior.addUserPermission(thingUser.getUserID(), thingUser.getPermission());
+                // Fetch the permissions/shares.
+                try {
+                    Collection<SearchParameter> searchParams = new ArrayList<>();
+                    searchParams.add(new SearchParameter(SearchFields.THINGID, thingID));
+                    for (ThingUser thingUser : sharesDAO.findBy(searchParams, false)) {
+                        behavior.addOrUpdateShare(thingUser.toShare());
                     }
+                } catch (DatasourceFindException e) {
+                    throw new SQLException("Unexpected read error", e);
                 }
             }
 

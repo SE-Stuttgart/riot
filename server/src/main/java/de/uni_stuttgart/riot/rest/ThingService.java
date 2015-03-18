@@ -3,9 +3,7 @@ package de.uni_stuttgart.riot.rest;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.EnumSet;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -27,7 +25,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
-import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -39,11 +36,11 @@ import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
-import de.uni_stuttgart.riot.thing.rest.ShareRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
+import de.uni_stuttgart.riot.thing.rest.UserThingShare;
 import de.uni_stuttgart.riot.thing.server.ThingLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -190,8 +187,8 @@ public class ThingService {
 
         // Give the owner full access.
         try {
-            this.logic.share(thing.getId(), ownerId, ThingPermission.FULL);
-        } catch (DatasourceFindException e) {
+            this.logic.addOrUpdateShare(thing.getId(), new ThingShare(ownerId, EnumSet.allOf(ThingPermission.class)));
+        } catch (DatasourceFindException | DatasourceDeleteException e) {
             throw new RuntimeException("The thing just inserted is not there!", e);
         }
 
@@ -320,85 +317,78 @@ public class ThingService {
     }
 
     /**
-     * Share a thing with another user.
-     *
+     * (Un)shares a thing with another user.
+     * 
      * @param thingId
-     *            The id of the thing to be shared.
-     * @param shareRequest
-     *            the share request
-     * @throws DatasourceFindException
-     *             the datasource find exception
+     *            The id of the thing to be (un)shared.
+     * @param share
+     *            The sharing information, containing the user's ID and the permission he/she gets. In particular, the thing will be
+     *            unshared if the permissions are empty.
      * @throws DatasourceInsertException
-     *             the datasource insert exception
-     */
-    @POST
-    @Path("{id}/share")
-    public void share(@PathParam("id") long thingId, ShareRequest shareRequest) throws DatasourceFindException, DatasourceInsertException {
-        if (shareRequest != null) {
-            assertPermitted(thingId, ThingPermission.SHARE);
-            this.logic.share(thingId, shareRequest.getUserId(), shareRequest.getPermission());
-        } else {
-            throw new BadRequestException("An empty request is not allowed");
-        }
-    }
-
-    /**
-     * Share a thing with another user.
-     *
-     * @param thingId
-     *            The id of the thing to be unshared.
-     * @param shareRequest
-     *            the share request
-     * @throws DatasourceFindException
-     *             the datasource find exception
+     *             When storing the information failed.
      * @throws DatasourceDeleteException
-     *             When deleting the entry failed.
+     *             When storing the information failed.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
      */
     @POST
-    @Path("{id}/unshare")
-    public void unshare(@PathParam("id") long thingId, ShareRequest shareRequest) throws DatasourceFindException, DatasourceDeleteException {
-        if (shareRequest != null) {
-            assertPermitted(thingId, ThingPermission.SHARE);
-            this.logic.unshare(thingId, shareRequest.getUserId(), shareRequest.getPermission());
-        } else {
-            throw new BadRequestException("An empty request is not allowed");
-        }
+    @Path("{id}/shares")
+    public void addOrUpdateShare(@PathParam("id") long thingId, ThingShare share) throws DatasourceFindException, DatasourceDeleteException, DatasourceInsertException {
+        assertPermitted(thingId, ThingPermission.SHARE);
+        this.logic.addOrUpdateShare(thingId, share);
     }
 
     /**
-     * Gets all the users and their permissions for a given thing. The result is a JSON object that contains the user IDs as keys and arrays
-     * of their permissions as values.
-     *
+     * Revokes all permissions from a user for a thing.
+     * 
      * @param thingId
-     *            The id to request the permissions for.
-     * @return The permissions of users for the thing.
+     *            The thing id.
+     * @param userId
+     *            The user id.
+     * @throws DatasourceDeleteException
+     *             When storing the information failed.
      * @throws DatasourceFindException
-     *             the datasource find exception
+     *             If the thing does not exist.
      */
-    @GET
-    @Path("{id}/sharedWith")
-    public Map<Long, Set<ThingPermission>> sharedWith(@PathParam("id") long thingId) throws DatasourceFindException {
+    @DELETE
+    @Path("{id}/shares/{userId}")
+    public void unshare(@PathParam("id") long thingId, @PathParam("userId") long userId) throws DatasourceDeleteException, DatasourceFindException {
         assertPermitted(thingId, ThingPermission.SHARE);
-        return this.logic.getThingUserPermissions(thingId);
+        this.logic.unshare(thingId, userId);
     }
 
     /**
-     * Gets all the users and their permissions for a given thing. The result is a JSON object that contains full users as keys and arrays
-     * of their permissions as values.
-     *
+     * Retrieves all shares for a thing, that is, all users that can access the thing and their permissions. The users are simply included
+     * as user IDs.
+     * 
      * @param thingId
-     *            The id to request the permissions for.
-     * @return The permissions of users for the thing.
+     *            The thing id.
+     * @return The shares for the thing.
      * @throws DatasourceFindException
-     *             the datasource find exception
-     * @throws GetUserException
-     *             the get user exception
+     *             If the thing does not exist.
      */
     @GET
-    @Path("{id}/sharedWithUsers")
-    public Collection<Entry<User, Set<ThingPermission>>> sharedWithUser(@PathParam("id") long thingId) throws DatasourceFindException, GetUserException {
+    @Path("{id}/shares")
+    public Collection<ThingShare> getThingShares(@PathParam("id") long thingId) throws DatasourceFindException {
         assertPermitted(thingId, ThingPermission.SHARE);
-        return this.logic.getThingUserPermissionsFullUser(thingId);
+        return this.logic.getThingShares(thingId);
+    }
+
+    /**
+     * Retrieves all shares for a thing, that is, all users that can access the thing and their permissions. The users are included as User
+     * objects.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @return The shares for the thing.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
+     */
+    @GET
+    @Path("{id}/sharesWithUsers")
+    public Collection<UserThingShare> getUserThingShares(@PathParam("id") long thingId) throws DatasourceFindException {
+        assertPermitted(thingId, ThingPermission.SHARE);
+        return this.logic.getUserThingShares(thingId);
     }
 
     /**

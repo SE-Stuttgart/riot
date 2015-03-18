@@ -18,9 +18,6 @@ public enum ThingPermission {
     DELETE,
 
     /** The right to share a thing with another user. */
-    SHARE,
-
-    /** The right to do everything with the thing. */
-    FULL;
+    SHARE
 
 }

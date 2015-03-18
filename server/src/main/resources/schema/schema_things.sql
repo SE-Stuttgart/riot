@@ -31,7 +31,11 @@ CREATE TABLE things_users
 id SERIAL,
 thingID bigint unsigned NOT NULL,
 userID bigint unsigned NOT NULL,
-permission varchar(10) NOT NULL,
+canRead boolean NOT NULL DEFAULT FALSE,
+canControl boolean NOT NULL DEFAULT FALSE,
+canExecute boolean NOT NULL DEFAULT FALSE,
+canDelete boolean NOT NULL DEFAULT FALSE,
+canShare boolean NOT NULL DEFAULT FALSE,
 FOREIGN KEY (thingID) REFERENCES things(id) ON DELETE CASCADE,
 FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
 );

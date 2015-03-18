@@ -11,7 +11,8 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
@@ -177,45 +179,50 @@ public class ThingLogicTest extends BaseDatabaseTest {
     public void shouldDoSharing() throws DatasourceFindException, DatasourceInsertException, DatasourceDeleteException {
         // For i={1,2}: User i has full access to thing i by testdata entries.
         assertThat(logic.canAccess(1L, 1L, ThingPermission.READ), is(true));
-        assertThat(logic.canAccess(1L, 1L, ThingPermission.FULL), is(true));
+        assertThat(logic.canAccess(1L, 1L, ThingPermission.EXECUTE), is(true));
         assertThat(logic.canAccess(2L, 2L, ThingPermission.READ), is(true));
-        assertThat(logic.canAccess(2L, 2L, ThingPermission.FULL), is(true));
+        assertThat(logic.canAccess(2L, 2L, ThingPermission.EXECUTE), is(true));
         assertThat(logic.canAccess(1L, 2L, ThingPermission.READ), is(false));
-        assertThat(logic.canAccess(1L, 2L, ThingPermission.FULL), is(false));
+        assertThat(logic.canAccess(1L, 2L, ThingPermission.EXECUTE), is(false));
         assertThat(logic.canAccess(2L, 1L, ThingPermission.READ), is(false));
-        assertThat(logic.canAccess(2L, 1L, ThingPermission.FULL), is(false));
+        assertThat(logic.canAccess(2L, 1L, ThingPermission.EXECUTE), is(false));
 
-        // Check the permissions map.
-        Map<Long, Set<ThingPermission>> permissions = logic.getThingUserPermissions(1);
-        assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));
-        assertThat(permissions.containsKey(2L), is(false));
+        // Check the shares.
+        Collection<ThingShare> shares = logic.getThingShares(1);
+        assertThat(shares, hasSize(1));
+        ThingShare share = shares.iterator().next();
+        assertThat(share.getUserId(), is(1L));
+        assertThat(share.getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
 
         // Share the thing 1 with user 2 additionally
-        logic.share(1, 2, ThingPermission.EXECUTE);
-        logic.share(1, 2, ThingPermission.READ);
+        logic.addOrUpdateShare(1, new ThingShare(2, EnumSet.of(ThingPermission.READ, ThingPermission.EXECUTE)));
         assertThat(logic.canAccess(1, 2L, ThingPermission.READ), is(true));
         assertThat(logic.canAccess(1, 2L, ThingPermission.EXECUTE), is(true));
-        assertThat(logic.canAccess(1, 2L, ThingPermission.FULL), is(false));
+        assertThat(logic.canAccess(1, 2L, ThingPermission.CONTROL), is(false));
 
-        // Check the permissions map again.
-        permissions = logic.getThingUserPermissions(1);
-        assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));
-        assertThat(permissions.get(2L), equalTo(EnumSet.of(ThingPermission.READ, ThingPermission.EXECUTE)));
+        // Check the shares again.
+        Map<Long, ThingShare> sharesMap = logic.getThingShares(1).stream().collect(Collectors.toMap(ThingShare::getUserId, Function.identity()));
+        assertThat(sharesMap.get(1L).getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
+        assertThat(sharesMap.get(2L).getPermissions(), equalTo(EnumSet.of(ThingPermission.READ, ThingPermission.EXECUTE)));
 
-        // Unshare.
-        logic.unshare(1, 2L, ThingPermission.EXECUTE);
+        // Change the share.
+        logic.addOrUpdateShare(1, new ThingShare(2, EnumSet.of(ThingPermission.READ, ThingPermission.CONTROL)));
         assertThat(logic.canAccess(1, 2L, ThingPermission.READ), is(true));
         assertThat(logic.canAccess(1, 2L, ThingPermission.EXECUTE), is(false));
-        assertThat(logic.canAccess(1, 2L, ThingPermission.FULL), is(false));
-        logic.unshare(1, 2L, ThingPermission.READ);
+        assertThat(logic.canAccess(1, 2L, ThingPermission.CONTROL), is(true));
+
+        // Unshare.
+        logic.unshare(1, 2);
         assertThat(logic.canAccess(1, 2L, ThingPermission.READ), is(false));
         assertThat(logic.canAccess(1, 2L, ThingPermission.EXECUTE), is(false));
-        assertThat(logic.canAccess(1, 2L, ThingPermission.FULL), is(false));
+        assertThat(logic.canAccess(1, 2L, ThingPermission.CONTROL), is(false));
 
         // Check the permissions map again.
-        permissions = logic.getThingUserPermissions(1);
-        assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));
-        assertThat(permissions.containsKey(2L), is(false));
+        shares = logic.getThingShares(1);
+        assertThat(shares, hasSize(1));
+        share = shares.iterator().next();
+        assertThat(share.getUserId(), is(1L));
+        assertThat(share.getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
 
     }
 

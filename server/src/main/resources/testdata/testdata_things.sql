@@ -9,6 +9,6 @@ INSERT INTO propertyvalues (thingID, name, val) VALUES
 (1, 'readonlyString', 'String from Database'),
 (1, 'ref', NULL);
 
-INSERT INTO things_users (id, thingID, userID, permission) VALUES
-(1, 1, 1, 'FULL'),
-(2, 2, 2, 'FULL');
+INSERT INTO things_users (id, thingID, userID, canRead, canControl, canExecute, canDelete, canShare) VALUES
+(1, 1, 1, true, true, true, true, true),
+(2, 2, 2, true, true, true, true, true);

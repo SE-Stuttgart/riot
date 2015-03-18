@@ -9,7 +9,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
@@ -175,17 +177,17 @@ public class ThingClientTest extends BaseClientTest {
         }
 
         // allow R2D2 to read the thing with the id 1
-        thingClientYoda.share(1, 2, ThingPermission.READ);
+        thingClientYoda.share(1, 2, EnumSet.of(ThingPermission.READ));
         Thing thing = thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
         assertThat(thing.getName(), is("My Test Thing"));
 
         // check the permissions reported by the server
-        Map<Long, Set<ThingPermission>> permissions = thingClientYoda.getThingUserPermissions(1);
-        assertThat(permissions.get(1L), equalTo(EnumSet.of(ThingPermission.FULL)));
-        assertThat(permissions.get(2L), equalTo(EnumSet.of(ThingPermission.READ)));
+        Map<Long, ThingShare> permissions = thingClientYoda.getThingShares(1).stream().collect(Collectors.toMap(ThingShare::getUserId, Function.identity()));
+        assertThat(permissions.get(1L).getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
+        assertThat(permissions.get(2L).getPermissions(), equalTo(EnumSet.of(ThingPermission.READ)));
 
         // and unshare again
-        thingClientYoda.unshare(1, 2, ThingPermission.READ);
+        thingClientYoda.unshare(1, 2);
         try {
             thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
             fail();

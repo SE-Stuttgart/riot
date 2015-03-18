@@ -1,12 +1,8 @@
 package de.uni_stuttgart.riot.thing.server;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,11 +12,7 @@ import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
-import de.uni_stuttgart.riot.db.thing.ThingUser;
 import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
-import de.uni_stuttgart.riot.server.commons.db.DAO;
-import de.uni_stuttgart.riot.server.commons.db.SearchFields;
-import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -32,8 +24,9 @@ import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
+import de.uni_stuttgart.riot.thing.rest.UserThingShare;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -54,7 +47,7 @@ public class ThingLogic {
     /**
      * The DAO for storing sharing information.
      */
-    private final DAO<ThingUser> thingUserDAO = new ThingUserSqlQueryDAO();
+    private final ThingUserSqlQueryDAO thingUserDAO = new ThingUserSqlQueryDAO();
 
     /**
      * Contains all known things. These need to be held in memory to allow for links like event listeners, etc. It is important to use a Map
@@ -398,47 +391,40 @@ public class ThingLogic {
     }
 
     /**
-     * Share a thing with a user.
-     *
+     * Adds or updates the permission on the thing for the user. If the permissions are empty, all permissions will be revoked and the share
+     * will be deleted. Existing permissions will be replaced.
+     * 
      * @param thingId
-     *            the thing id
-     * @param userId
-     *            the user id
-     * @param permission
-     *            the permission
+     *            The ID of the thing.
+     * @param share
+     *            The thing share containing the user and his/her permissions.
      * @throws DatasourceFindException
      *             If the given thing does not exist.
      * @throws DatasourceInsertException
-     *             When storing the new permission fails.
+     *             When storing the information fails.
+     * @throws DatasourceDeleteException
+     *             When storing the information fails.
      */
-    public void share(long thingId, long userId, ThingPermission permission) throws DatasourceFindException, DatasourceInsertException {
-        getBehavior(thingId).addUserPermission(userId, permission);
-        thingUserDAO.insert(new ThingUser(thingId, userId, permission));
+    public void addOrUpdateShare(long thingId, ThingShare share) throws DatasourceFindException, DatasourceDeleteException, DatasourceInsertException {
+        getBehavior(thingId).addOrUpdateShare(share);
+        thingUserDAO.saveThingShare(thingId, share);
     }
 
     /**
-     * Revokes a thing access permission from a user.
+     * Revokes all thing access permissions from a user for a certain thing.
      *
      * @param thingId
      *            the thing id
      * @param userId
      *            The user id.
-     * @param permission
-     *            The permission to be deleted.
-     * @throws DatasourceFindException
-     *             If the given thing does not exist.
      * @throws DatasourceDeleteException
-     *             When deleting the entry fails.
+     *             When storing the information fails.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
      */
-    public void unshare(long thingId, long userId, ThingPermission permission) throws DatasourceFindException, DatasourceDeleteException {
-        getBehavior(thingId).removeUserPermission(userId, permission);
-        Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
-        searchParams.add(new SearchParameter(SearchFields.THINGID, thingId));
-        searchParams.add(new SearchParameter(SearchFields.USERID, userId));
-        searchParams.add(new SearchParameter(SearchFields.THINGPERMISSION, permission));
-        for (ThingUser e : thingUserDAO.findBy(searchParams, false)) {
-            thingUserDAO.delete(e);
-        }
+    public void unshare(long thingId, long userId) throws DatasourceDeleteException, DatasourceFindException {
+        getBehavior(thingId).removeShare(userId);
+        thingUserDAO.deleteThingShare(thingId, userId);
     }
 
     /**
@@ -459,38 +445,36 @@ public class ThingLogic {
     }
 
     /**
-     * Gets the permissions of all users on the given thing.
+     * Gets the permissions of all users on the given thing (directly, excluding parent permissions).
      * 
      * @param thingId
      *            The thing id.
-     * @return A map where the keys are the user ids and the value is the set of permissions that the respective user has.
+     * @return A list of thing shares, each of which contains the user id and the permissions that the user has.
      * @throws DatasourceFindException
      *             If a thing with the given id does not exist.
      */
-    public Map<Long, Set<ThingPermission>> getThingUserPermissions(long thingId) throws DatasourceFindException {
-        return getBehavior(thingId).getUserPermissions();
+    public Collection<ThingShare> getThingShares(long thingId) throws DatasourceFindException {
+        return getBehavior(thingId).getShares();
     }
 
     /**
-     * Gets the permissions of all users on the given thing.
-     *
+     * Gets the permissions of all users on the given thing (directly, excluding parent permissions), where the users are resolved to full
+     * {@link User} objects.
+     * 
      * @param thingId
      *            The thing id.
-     * @return A map where the keys are the users and the value is the set of permissions that the respective user has.
+     * @return A list of thing shares, each of which contains the user and the permissions that the user has.
      * @throws DatasourceFindException
      *             If a thing with the given id does not exist.
-     * @throws GetUserException
-     *             the get user exception
      */
-    public Collection<Entry<User, Set<ThingPermission>>> getThingUserPermissionsFullUser(long thingId) throws DatasourceFindException, GetUserException {
-        Map<Long, Set<ThingPermission>> ups = getBehavior(thingId).getUserPermissions();
-        Collection<Entry<User, Set<ThingPermission>>> upsFull = new ArrayList<>();
-
-        for (Entry<Long, Set<ThingPermission>> upsEntry : ups.entrySet()) {
-            User user = umFacade.getUser(upsEntry.getKey());
-            upsFull.add(new AbstractMap.SimpleEntry<User, Set<ThingPermission>>(user, upsEntry.getValue()));
-        }
-
-        return upsFull;
+    public Collection<UserThingShare> getUserThingShares(long thingId) throws DatasourceFindException {
+        return getBehavior(thingId).getShares().stream().map((share) -> {
+            try {
+                return new UserThingShare(umFacade.getUser(share.getUserId()), share.getPermissions());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
+
 }

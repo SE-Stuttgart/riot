@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +27,7 @@ import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
-import de.uni_stuttgart.riot.thing.rest.ShareRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
@@ -56,9 +54,7 @@ public class ThingClient extends BaseClient {
 
     private static final String GET_LAST_ONLINE_SUFFIX = "/online";
 
-    private static final String POST_SHARE_SUFFIX = "/share";
-    private static final String POST_UNSHARE_SUFFIX = "/unshare";
-    private static final String GET_PERMISSIONS_SUFFIX = "/sharedWith";
+    private static final String SHARES_PATH = "/shares/";
 
     private static final long TEN_MIN = 1000 * 60 * 10;
     private static final long FIVE_MIN = 1000 * 60 * 5;
@@ -362,21 +358,37 @@ public class ThingClient extends BaseClient {
     }
 
     /**
-     * Share a thing with another user.
+     * Share a thing with another user. Note that this will unshare the thing if <tt>permissions</tt> is epmty.
      *
      * @param thingID
      *            the id of the thing to be shared
      * @param userID
      *            the id of the user to share with
-     * @param permission
-     *            the permission
+     * @param permissions
+     *            the permissions
      * @throws RequestException
      *             the request exception
      * @throws IOException
      *             When a network error occured.
      */
-    public void share(long thingID, long userID, ThingPermission permission) throws RequestException, IOException {
-        getConnector().doPOST(THINGS_PREFIX + thingID + POST_SHARE_SUFFIX, new ShareRequest(userID, permission));
+    public void share(long thingID, long userID, Set<ThingPermission> permissions) throws RequestException, IOException {
+        share(thingID, new ThingShare(userID, permissions));
+    }
+
+    /**
+     * Share a thing with another user.
+     *
+     * @param thingID
+     *            the id of the thing to be shared
+     * @param share
+     *            The sharing data.
+     * @throws RequestException
+     *             the request exception
+     * @throws IOException
+     *             When a network error occured.
+     */
+    public void share(long thingID, ThingShare share) throws RequestException, IOException {
+        getConnector().doPOST(THINGS_PREFIX + thingID + SHARES_PATH, share);
     }
 
     /**
@@ -386,15 +398,13 @@ public class ThingClient extends BaseClient {
      *            the id of the thing to be shared
      * @param userID
      *            the id of the user to share with
-     * @param permission
-     *            the permission
      * @throws RequestException
      *             the request exception
      * @throws IOException
      *             When a network error occured.
      */
-    public void unshare(long thingID, long userID, ThingPermission permission) throws RequestException, IOException {
-        getConnector().doPOST(THINGS_PREFIX + thingID + POST_UNSHARE_SUFFIX, new ShareRequest(userID, permission));
+    public void unshare(long thingID, long userID) throws RequestException, IOException {
+        getConnector().doDELETE(THINGS_PREFIX + thingID + SHARES_PATH + userID);
     }
 
     /**
@@ -402,7 +412,7 @@ public class ThingClient extends BaseClient {
      * 
      * @param thingID
      *            The id of the thing.
-     * @return A map where the keys are the users' ids and the values are sets of permissions that the respective user has.
+     * @return A collection of all shares of the thing.
      * @throws RequestException
      *             the request exception
      * @throws NotFoundException
@@ -410,9 +420,8 @@ public class ThingClient extends BaseClient {
      * @throws IOException
      *             When a network error occured.
      */
-    public Map<Long, Set<ThingPermission>> getThingUserPermissions(long thingID) throws RequestException, IOException, NotFoundException {
-        return getConnector().doGET(THINGS_PREFIX + thingID + GET_PERMISSIONS_SUFFIX, new TypeReference<Map<Long, Set<ThingPermission>>>() {
-        });
+    public Collection<ThingShare> getThingShares(long thingID) throws RequestException, IOException, NotFoundException {
+        return getConnector().doGETCollection(THINGS_PREFIX + thingID + SHARES_PATH, ThingShare.class);
     }
 
     /**

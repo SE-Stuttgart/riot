@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
@@ -18,6 +16,7 @@ import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 
 /**
@@ -34,7 +33,7 @@ public class ServerThingBehavior extends ThingBehavior {
 
     private final Queue<ActionInstance> outstandingActions = new LinkedList<>();
     private final Queue<EventInstance> occuredEvents = new LinkedList<>();
-    private final Map<Long, Set<ThingPermission>> userPermissions = new HashMap<>();
+    private final Map<Long, ThingShare> shares = new HashMap<>();
     private Date lastConnection;
 
     /**
@@ -61,38 +60,32 @@ public class ServerThingBehavior extends ThingBehavior {
     }
 
     /**
-     * Adds the permission for the user. If it already exists, this will be ignored.
+     * Adds or updates the permission for the user. If the permissions are empty, all permissions will be revoked. Existing permissions will
+     * be replaced.
      * 
-     * @param userId
-     *            The user id.
-     * @param permission
-     *            The permission.
+     * @param share
+     *            The thing share containing the user and his/her permissions.
      */
-    public void addUserPermission(Long userId, ThingPermission permission) {
-        Set<ThingPermission> permissions = userPermissions.get(userId);
-        if (permissions == null) {
-            permissions = new HashSet<>();
-            userPermissions.put(userId, permissions);
+    public void addOrUpdateShare(ThingShare share) {
+        if (share == null) {
+            throw new IllegalArgumentException("share must not be null!");
+        } else if (share.isEmpty()) {
+            shares.remove(share.getUserId());
+        } else if (share.getUserId() < 1) {
+            throw new IllegalArgumentException("userID must be set!");
+        } else {
+            shares.put(share.getUserId(), share);
         }
-        permissions.add(permission);
     }
 
     /**
-     * Removes the permission for the user. If it does not exist, it will be ignored.
+     * Removes all permissions for the given user. If it does not exist, it will be ignored.
      * 
      * @param userId
      *            The user id.
-     * @param permission
-     *            The permission.
      */
-    public void removeUserPermission(Long userId, ThingPermission permission) {
-        Set<ThingPermission> permissions = userPermissions.get(userId);
-        if (permissions != null) {
-            permissions.remove(permission);
-            if (permissions.isEmpty()) {
-                userPermissions.remove(userId);
-            }
-        }
+    public void removeShare(long userId) {
+        shares.remove(userId);
     }
 
     /**
@@ -105,17 +98,17 @@ public class ServerThingBehavior extends ThingBehavior {
      * @return True if the user has the permission (or the FULL permission), false otherwise.
      */
     public boolean canAccess(Long userId, ThingPermission permission) {
-        Set<ThingPermission> permissions = userPermissions.get(userId);
-        return (permissions == null) ? false : (permissions.contains(permission) || permissions.contains(ThingPermission.FULL));
+        ThingShare share = shares.get(userId);
+        return (share == null) ? false : share.permits(permission);
     }
 
     /**
-     * Gets all current permissions on this thing.
+     * Gets all current shares of this thing.
      * 
      * @return The permissions.
      */
-    public Map<Long, Set<ThingPermission>> getUserPermissions() {
-        return userPermissions;
+    public Collection<ThingShare> getShares() {
+        return shares.values();
     }
 
     /**
