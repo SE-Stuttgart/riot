@@ -9,6 +9,6 @@ package de.uni_stuttgart.riot.thing;
  * @param <V>
  *            The type of the property.
  */
-public interface PropertyListener<V> extends EventListener<PropertyChangeEvent.Instance<V>> {
+public interface PropertyListener<V> extends EventListener<PropertyChangeEvent.Instance<? extends V>> {
 
 }

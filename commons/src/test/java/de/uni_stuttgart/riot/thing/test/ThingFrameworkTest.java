@@ -27,6 +27,7 @@ import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.BasePropertyListener;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.PropertySetAction;
@@ -159,6 +160,27 @@ public class ThingFrameworkTest {
         assertThat(setActionInstance.getName(), is("int_set"));
         assertThat(setActionInstance.getThingId(), is(42L));
         assertThat(setActionInstance.getNewValue(), is(1001));
+    }
+
+    @Test
+    public void testPropertyListeners() {
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        behavior.executePropertyChangesDirectly = true;
+        thing.setInt(100);
+        thing.setLong(200);
+
+        // Register a property listener (which is for Objects on purpose, to be generic).
+        @SuppressWarnings("unchecked")
+        BasePropertyListener<Object> listener = mock(BasePropertyListener.class);
+        thing.getIntProperty().register(listener);
+        thing.getLongProperty().register(listener);
+
+        // Check that it works.
+        thing.setInt(101);
+        verify(listener, times(1)).onChange(thing.getIntProperty(), 100, 101);
+        thing.setLong(201);
+        verify(listener, times(1)).onChange(thing.getLongProperty(), 200L, 201L);
     }
 
     @Test

@@ -103,7 +103,7 @@ public class Property<V> {
      * @param listener
      *            The property listener.
      */
-    public void register(PropertyListener<V> listener) {
+    public void register(PropertyListener<? super V> listener) {
         changeEvent.register(listener);
     }
 
@@ -113,7 +113,7 @@ public class Property<V> {
      * @param listener
      *            The property listener to unregister.
      */
-    public void unregister(PropertyListener<V> listener) {
+    public void unregister(PropertyListener<? super V> listener) {
         changeEvent.unregister(listener);
     }
 
