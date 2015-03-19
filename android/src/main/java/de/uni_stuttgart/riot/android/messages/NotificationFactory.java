@@ -10,7 +10,8 @@ import android.graphics.BitmapFactory;
 import java.util.HashMap;
 import java.util.Vector;
 
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
+
 
 /**
  * This class provides building notifications and show them in the android system.

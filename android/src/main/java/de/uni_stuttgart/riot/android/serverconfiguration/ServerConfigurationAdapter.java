@@ -1,13 +1,14 @@
 package de.uni_stuttgart.riot.android.serverconfiguration;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationEntry;
 import de.uni_stuttgart.riot.commons.rest.data.config.ConfigurationKey;
@@ -48,7 +49,7 @@ public class ServerConfigurationAdapter extends ArrayAdapter<ConfigurationEntry>
     /*
      * (non-Javadoc)
      * 
-     * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+     * @see android.widget.ArrayAdapter#getThingProperty(int, android.view.View, android.view.ViewGroup)
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

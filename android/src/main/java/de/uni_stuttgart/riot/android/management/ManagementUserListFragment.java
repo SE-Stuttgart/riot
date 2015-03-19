@@ -1,10 +1,8 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.view.View;
-
 import java.util.List;
 
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
@@ -18,6 +16,11 @@ public class ManagementUserListFragment extends ManagementListFragment {
 
     @Override
     protected List<Object> getData() {
+        return null;
+    }
+
+    @Override
+    protected List<Object> getListData() {
         return null;
     }
 
@@ -82,7 +85,13 @@ public class ManagementUserListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected void getOnlineState(Object item, View view) {
+    protected OnlineState getOnlineState(Object item) {
+        return null;
+    }
+
+    @Override
+    protected String getDetailPageTitle(Object item) {
+        return null;
     }
 
     @Override

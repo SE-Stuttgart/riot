@@ -17,9 +17,6 @@ public enum IM {
     private NotificationFactory notificationFactory = null;
     private MessageHandler messageHandler = null;
 
-    // TODO for testing reasons
-    private boolean isDummyThing = true;
-
     /**
      * Constructor.
      *
@@ -29,24 +26,6 @@ public enum IM {
     IM(NotificationFactory notificationFactory, MessageHandler messageHandler) {
         this.notificationFactory = notificationFactory;
         this.messageHandler = messageHandler;
-    }
-
-    /**
-     * .
-     *
-     * @param isDummyThing .
-     */
-    public void setDummyThing(boolean isDummyThing) {
-        this.isDummyThing = isDummyThing;
-    }
-
-    /**
-     * .
-     *
-     * @return .
-     */
-    public boolean getDummyThing() {
-        return this.isDummyThing;
     }
 
     /**

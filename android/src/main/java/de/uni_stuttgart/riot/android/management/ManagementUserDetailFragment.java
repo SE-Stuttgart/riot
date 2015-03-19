@@ -2,7 +2,7 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.graphics.drawable.Drawable;
 
-import de.enpro.android.riot.R;
+import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
@@ -29,7 +29,7 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     }
 
     @Override
-    protected void displayDetailData() {
+    protected void displayDetailData(Object data) {
 //        // Save the default values
 //        Long defaultId = getDefaultId();
 //        String defaultUsername = getDefaultUsername();
@@ -110,6 +110,11 @@ public class ManagementUserDetailFragment extends ManagementDetailFragment {
     @Override
     protected String getPageTitle() {
         return getString(R.string.user_detail);
+    }
+
+    @Override
+    protected String getDefaultPageTitle() {
+        return null;
     }
 
     @Override

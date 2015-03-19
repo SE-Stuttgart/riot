@@ -17,4 +17,7 @@
     <dimen name="group_padding">10px</dimen>
     <dimen name="slider_edit_text_width">400px</dimen>
     <dimen name="management_menu_item_size">28dp</dimen>
+
+    <item name="low_weight" format="float" type="dimen">0.2</item>
+    <item name="high_weight" format="float" type="dimen">0.8</item>
 </resources>

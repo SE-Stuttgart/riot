@@ -13,14 +13,10 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.account.LoginActivity;
-=======
 import java.util.ArrayList;
 import java.util.List;
 
-import de.enpro.android.riot.R;
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+import de.uni_stuttgart.riot.android.account.LoginActivity;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
@@ -270,25 +266,26 @@ public class HomeScreenCanvas extends View {
                     coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(coffeeIntent);
 <<<<<<< HEAD
+<<<<<<< HEAD
                 } else if (selectedButton.getButtonDescription().equals("Rules")) { // Special intent for the rules management
                     Intent rulesIntent = new Intent(homeScreen, RuleListActivity.class);
                     homeScreen.startActivity(rulesIntent);
 =======
 <<<<<<< HEAD
 >>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+=======
+>>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
                 } else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
                     Intent logoutIntend = new Intent(homeScreen, LoginActivity.class);
                     //TODO should we send an logout request or just show the loginWindow?
                     //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
                     homeScreen.startActivity(logoutIntend);
-=======
                 } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_THINGS)) { // Special intent for the management
                     Intent management = new Intent(homeScreen, ManagementThingListFragment.class);
                     homeScreen.startActivity(management);
                 } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_USER)) { // Special intent for the management
                     Intent management = new Intent(homeScreen, ManagementUserListFragment.class);
                     homeScreen.startActivity(management);
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
                 } else {
                     Intent newNotificationScreen = new Intent(homeScreen, NotificationActivity.class);
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());

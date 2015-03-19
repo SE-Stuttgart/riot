@@ -1,16 +1,15 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.view.View;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.R;
+import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
 import de.uni_stuttgart.riot.android.messages.IM;
+import de.uni_stuttgart.riot.android.things.ThingManager;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
-import de.uni_stuttgart.riot.thing.ThingDescription;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.client.ThingClient;
 
 /**
  * Activity that displays all things in a list.
@@ -25,11 +24,11 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected List<Object> getData() {
+    protected List<Object> getListData() {
         try {
-            // Get all thing descriptions and return them
-            Collection<ThingDescription> thingDescriptions = RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions();
-            return new ArrayList<Object>(thingDescriptions);
+            // Get all things and return them
+            return new ArrayList<Object>(ThingManager.getInstance().getAllThings(this));
+            // ToDo I want to get an ArrayList instead of a Collection
         } catch (Exception e) {
             // FIXME output message!!
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
@@ -49,12 +48,12 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected boolean isInstanceOf(Object item) {
-        return (item instanceof ThingDescription);
+        return (item instanceof Thing);
     }
 
     @Override
     protected long getId(Object item) {
-        return ((ThingDescription) item).getThingId();
+        return ((Thing) item).getId();
     }
 
     @Override
@@ -64,15 +63,8 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getSubject(Object item) {
-        try {
-            // Get the name of the thing
-            return RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription((ThingDescription) item).getName();
-            // ToDo maybe extend that!! deviceBehavior.getThingById(getId(item));
-        } catch (Exception e) {
-            // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by displaying data: " + e.getMessage());
-        }
-        return null;
+        // Get the name of the thing
+        return ((Thing) item).getName();
     }
 
     @Override
@@ -82,7 +74,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getDescription(Object item) {
-        return "This is the description: " + String.valueOf(getId(item));
+        return "Description of the thing with the id: " + String.valueOf(getId(item));
     }
 
     @Override
@@ -92,7 +84,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected String getImageUri(Object item) {
-        return null; // ((ThingDescription) item).getImageUri();  // ToDo loading images asynchronous?
+        return null; // ((Thing) item).getImageUri(); // ToDo
     }
 
     @Override
@@ -102,7 +94,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
 
     @Override
     protected int getImageId(Object item) {
-        return 0; // ((ThingDescription) item).getImageId(); // ToDo
+        return 0; // ((Thing) item).getImageId(); // ToDo
     }
 
     @Override
@@ -111,22 +103,24 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected void getOnlineState(final Object item, final View view) {
-        if (item == null) {
-            return;
-        }
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    doUpdateOnlineState(view, null);
-                    // FIXME - .getOnlineState() NULL POINTER!! doUpdateOnlineState(view, RIOTApiClient.getInstance().getThingClient().getOnlineState(((ThingDescription) item).getThingId()));
-                } catch (Exception e) {
-                    // FIXME output message!!
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: " + e.getMessage());
-                }
+    protected OnlineState getOnlineState(final Object item) {
+        if (item != null) {
+            try {
+                return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(((Thing) item).getId());
+            } catch (Exception e) {
+                // FIXME output message!!
+                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: " + e.getMessage());
             }
-        }.start();
+        }
+        return null;
+    }
+
+    @Override
+    protected String getDetailPageTitle(Object item) {
+        // Get the name of the item as title
+        if (isInstanceOf(item)) {
+            return ((Thing) item).getName();
+        }
+        return null;
     }
 }

@@ -1,35 +1,27 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Collections;
 
-import de.enpro.android.riot.R;
-import de.uni_stuttgart.riot.android.communication.RIOTApiClient;
+import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.messages.IM;
-import de.uni_stuttgart.riot.thing.PropertyDescription;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyEditNumber;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyEditText;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyEnumDropDown;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyFractionalSlider;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyIntegralSlider;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyPercentageSlider;
+import de.uni_stuttgart.riot.android.thingproperty.ThingPropertyToggleButton;
+import de.uni_stuttgart.riot.android.things.ThingManager;
+import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.ThingDescription;
-import de.uni_stuttgart.riot.thing.WritableProperty;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -40,9 +32,6 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
-    private String viewTitle = "";
-    private Thing theThing;
-
     @Override
     protected int getLayoutResource() {
         return R.layout.management_detail;
@@ -50,54 +39,39 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
     @Override
     protected Drawable getHomeIcon() {
-        return null; // ToDo load images
+        return null; // ToDo
     }
 
     @Override
     protected int getHomeLogo() {
-        return R.drawable.ic_drawer;
+        return R.drawable.ic_drawer; // ToDo
     }
 
     @Override
-    protected String getPageTitle() {
-        if (this.viewTitle == null || this.viewTitle.isEmpty()) {
-            // Use default page title if there is not a saved one yet
-            return getString(R.string.thing_detail);
-        }
-        return viewTitle;
+    protected String getDefaultPageTitle() {
+        return getString(R.string.thing_detail);
     }
 
     @Override
     protected boolean isInstanceOf(Object item) {
-        return (item instanceof ThingDescription);
+        return (item instanceof Thing);
     }
 
     @Override
-    protected void displayDetailData() {
-        if (isInstanceOf(data)) {
-            // Save the thing
-            if (!doGetThing((ThingDescription) data)) {
-                // Set a default title if it was not successful
-                this.viewTitle = getString(R.string.thing_detail);
-                return;
-            }
+    protected void displayDetailData(Object data) {
+        // Check if there is the needed main linear layout
+        if (findViewById(R.id.thing_linear_layout) == null) {
+            return;
+        }
 
-            // Save the view title
-            this.viewTitle = this.theThing.getName();
+        // Clear all children
+        ((LinearLayout) findViewById(R.id.thing_linear_layout)).removeAllViews();
 
-            if(findViewById(R.id.thing_linear_layout) == null) {
-                return;
-            }
-
-            // Clear all children
-            ((LinearLayout) findViewById(R.id.thing_linear_layout)).removeAllViews();
-
-            // Add items to the main layout
-            for (PropertyDescription propertyDescription : ((ThingDescription) data).getProperties()) {
-                View preparedItem = prepareItem(propertyDescription);
-                if (preparedItem != null) {
-                    ((LinearLayout) findViewById(R.id.thing_linear_layout)).addView(preparedItem);
-                }
+        // Add items to the main layout
+        for (Property<?> property : ((Thing) data).getProperties()) {
+            View preparedItem = prepareItem(property);
+            if (preparedItem != null) {
+                ((LinearLayout) findViewById(R.id.thing_linear_layout)).addView(preparedItem);
             }
         }
     }
@@ -105,12 +79,8 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     @Override
     protected Object getData() {
         try {
-            // Get the thing description with the given id
-            for (ThingDescription thingDescription : RIOTApiClient.getInstance().getDeviceBehavior().getDescriptions()) {
-                if (this.itemId == thingDescription.getThingId()) {
-                    return thingDescription; // FIXME is there a better method to do this?
-                }
-            }
+            // Get the thing with the given id
+            return ThingManager.getInstance().getThing(this, this.itemId);
         } catch (Exception e) {
             // FIXME output message!!
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
@@ -119,70 +89,19 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     }
 
     /**
-     * Tires to save the thing of this ThingDescription.
-     *
-     * @param thingDescription the description of the thing
-     * @return true if it was successful - false if not
-     */
-    private boolean doGetThing(ThingDescription thingDescription) {
-        try {
-            this.theThing = RIOTApiClient.getInstance().getDeviceBehavior().getThingByDiscription(thingDescription);
-            return true;
-        } catch (Exception e) {
-            // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by saving thing: " + e.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Update the changed property.
-     *
-     * @param propertyDescription is the unchanged property
-     * @param value               is the new value
-     */
-    private void updateProperty(final PropertyDescription propertyDescription, final Object value) {
-        new Thread() {
-
-            @Override
-            public void run() {
-                if (propertyDescription.isWritable()) {
-                    setProperty(theThing.getWritableProperty(propertyDescription.getName()), value);
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Helper method to update the value of a property.
-     *
-     * @param property the property that will get another value
-     * @param value    is the new value
-     * @param <E>      the unknown type
-     */
-    private static <E> void setProperty(WritableProperty<E> property, Object value) {
-        try {
-            property.set(property.getValueType().cast(value));
-        } catch (Exception e) { // FIXME choose the right one
-            // Show a message that there was an failure (ToDo output)
-            IM.INSTANCES.getMH().writeErrorMessage("Error in updating property: " + e.getMessage());
-        }
-    }
-
-    /**
      * Prepare an item for the appropriate property type.
      *
-     * @param propertyDescription for that item the view will be prepared
+     * @param property for that item the view will be prepared
      * @return the prepared view
      */
-    private View prepareItem(PropertyDescription propertyDescription) {
+    private View prepareItem(Property<?> property) {
         // Create new layout element
         LinearLayout linearLayoutItem = new LinearLayout(getApplicationContext());
         LinearLayout.LayoutParams linearLayoutItemParams;
 
-        // Add name of the propertyDescription
-        if (!(propertyDescription.getUiHint() instanceof UIHint.ToggleButton)) {
-            View preparedTextView = prepareTextView(propertyDescription.getName());
+        // Add name of the property
+        if (!(property.getUiHint() instanceof UIHint.ToggleButton)) {
+            View preparedTextView = prepareTextView(property.getName());
             if (preparedTextView != null) {
                 linearLayoutItem.addView(preparedTextView);
             }
@@ -205,11 +124,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         // Set layout params
         linearLayoutItem.setLayoutParams(linearLayoutItemParams);
 
-        // Prepare the propertyDescription items
-        preparePropertyItems(propertyDescription, linearLayoutItem);
+        // Prepare the property items
+        preparePropertyItems(property, linearLayoutItem);
 
 //        // Change top padding of the first element in the group TODO add group property
-//        if (isPropertyType(propertyDescription, PropertyType.GROUP)) {
+//        if (isPropertyType(property, PropertyType.GROUP)) {
 //            ((ViewGroup) linearLayoutItem.getChildAt(1)).getChildAt(0).setPadding(0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2);
 //        }
 
@@ -220,18 +139,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     /**
      * Prepare the property items.
      *
-     * @param propertyDescription includes the value
-     * @param linearLayoutItem    the layout around the property
+     * @param property         includes the value
+     * @param linearLayoutItem the layout around the property
      */
-    private void preparePropertyItems(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
-        // Split method into sub methods because it is to complex for maven
-        if (preparePropertyItems1(propertyDescription, linearLayoutItem)) {
-            return;
-        }
-        if (preparePropertyItems2(propertyDescription, linearLayoutItem)) {
-            return;
-        }
-
+    @SuppressWarnings("unchecked")
+    private void preparePropertyItems(Property<?> property, LinearLayout linearLayoutItem) {
         /**
          * Note for UIHint - value types:
          *
@@ -244,96 +156,44 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
          * DropDown = Enum<?>
          **/
 
-        // Show a quick message that this type is unknown (ToDo log this?)
-        IM.INSTANCES.getMH().showQuickMessage("Unknown type in preparePropertyItems(): " + propertyDescription.getValueType().toString());
-    }
-
-    /**
-     * Prepare the property items.
-     *
-     * @param propertyDescription includes the value
-     * @param linearLayoutItem    the layout around the property
-     * @return true if a item was prepared | false if no item was prepared
-     */
-    private boolean preparePropertyItems1(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
 //        // If property is a group element get the sub list and prepare this items TODO add group property
-//        if (propertyDescription.getUiHint() instanceof UIHint.GROUP)) {
+//        if (property.getUiHint() instanceof UIHint.GROUP)) {
 //            // Prepare and add property group
-//            View preparedView = preparePropertyGroup(propertyDescription);
+//            View preparedView = preparePropertyGroup(property);
 //            if (preparedView != null) {
 //                linearLayoutItem.addView(preparedView);
 //            }
 //        } else
-        if (propertyDescription.getUiHint() instanceof UIHint.EditText) {
+        if (property.getUiHint() instanceof UIHint.EditText) {
             // Prepare and add edit text property
-            View preparedView = prepareTextProperty(propertyDescription, false, false);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else if (propertyDescription.getUiHint() instanceof UIHint.EditNumber) {
+            addThingProperty(new ThingPropertyEditText((Property<String>) property, getApplicationContext()), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.EditNumber) {
             // Prepare and add edit number property
-            View preparedView = prepareTextProperty(propertyDescription, true, false);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else if (propertyDescription.getUiHint() instanceof UIHint.ToggleButton) {
+            addThingProperty(new ThingPropertyEditNumber((Property<Number>) property, getApplicationContext()), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.ToggleButton) {
             // Prepare and add toggle button property
-            View preparedView = prepareToggleButtonProperty(propertyDescription);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Prepare the property items.
-     *
-     * @param propertyDescription includes the value
-     * @param linearLayoutItem    the layout around the property
-     * @return true if a item was prepared | false if no item was prepared
-     */
-    private boolean preparePropertyItems2(PropertyDescription propertyDescription, LinearLayout linearLayoutItem) {
-        // If property is a group element get the sub list and prepare this items
-        if (propertyDescription.getUiHint() instanceof UIHint.FractionalSlider) {
+            addThingProperty(new ThingPropertyToggleButton((Property<Boolean>) property, getApplicationContext()), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.FractionalSlider) {
             // Prepare and add scale value property
-            UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) propertyDescription.getUiHint();
-            View preparedView = prepareDoubleSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeCelsius);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else if (propertyDescription.getUiHint() instanceof UIHint.IntegralSlider) {
+            UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) property.getUiHint();
+            addThingProperty(new ThingPropertyFractionalSlider((Property<Double>) property, getApplicationContext(), (float) uiHint.min, (float) uiHint.max), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.IntegralSlider) {
             // Prepare and add scale value property
-            UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) propertyDescription.getUiHint();
-            View preparedView = prepareIntegerSliderProperty(propertyDescription, uiHint.min, uiHint.max, R.string.degreeFahrenheit);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else if (propertyDescription.getUiHint() instanceof UIHint.PercentageSlider) {
+            UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) property.getUiHint();
+            addThingProperty(new ThingPropertyIntegralSlider((Property<Integer>) property, getApplicationContext(), (int) uiHint.min, (int) uiHint.max), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.PercentageSlider) {
             // Prepare and add scale percent property
-            final double min = 0.0;
-            final double max = 1.0;
-            View preparedView = prepareDoubleSliderProperty(propertyDescription, min, max, R.string.percent);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
-        } else if (propertyDescription.getUiHint() instanceof UIHint.DropDown) {
+            addThingProperty(new ThingPropertyPercentageSlider((Property<Double>) property, getApplicationContext()), linearLayoutItem);
+        } else if (property.getUiHint() instanceof UIHint.EnumDropDown) {
             // Prepare and add scale percent property
-            UIHint.DropDown uiHint = (UIHint.DropDown) propertyDescription.getUiHint();
+            UIHint.EnumDropDown uiHint = (UIHint.EnumDropDown) property.getUiHint();
             ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
-            for (Enum<?> singleEnum : uiHint.possibleValues) { // TODO maybe save this as ArrayList - is easier to work with
-                possibleValues.add(singleEnum);
-            }
-            View preparedView = prepareDropDownProperty(propertyDescription, possibleValues);
-            if (preparedView != null) {
-                linearLayoutItem.addView(preparedView);
-            }
+            Collections.addAll(possibleValues, uiHint.possibleValues);
+            addThingProperty(new ThingPropertyEnumDropDown((Property<Enum<?>>) property, getApplicationContext(), possibleValues), linearLayoutItem);
         } else {
-            return false;
+            // Show a quick message that this type is unknown (ToDo log this?)
+            IM.INSTANCES.getMH().showQuickMessage("Unknown type in preparePropertyItems(): " + property.getValueType().toString());
         }
-        return true;
     }
 
     /**
@@ -366,12 +226,12 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
     /**
      * Prepare the property group.
      *
-     * @param propertyDescription the root element of the group
+     * @param property the root element of the group
      * @return the prepared property group
      */
-    private View preparePropertyGroup(PropertyDescription propertyDescription) {
+    private View preparePropertyGroup(Property<?> property) {
         // Save sub list
-        ArrayList<PropertyDescription> subList = null; //propertyDescription.getSubList();
+        ArrayList<Property> subList = null; //property.getSubList();
         // TODO Handle propertyType group!!
 
         // Create new layout element
@@ -405,7 +265,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
 
         // Add sub items to group
         if (subList != null) {
-            for (PropertyDescription subItem : subList) {
+            for (Property subItem : subList) {
                 View preparedItem = prepareItem(subItem);
 
                 // Add an id to the view
@@ -472,459 +332,6 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
                     usedWidth = itemWidth;
                 }
             }
-        }
-    }
-
-    /**
-     * Prepare a text property field.
-     *
-     * @param propertyDescription  includes the value
-     * @param onlyNumbers          is true if the input allows just numbers
-     * @param allowNegativeNumbers is true if the input of negative numbers is allowed
-     * @return the prepared view
-     */
-    private View prepareTextProperty(final PropertyDescription propertyDescription, final boolean onlyNumbers, boolean allowNegativeNumbers) {
-        // Create new layout elements
-        final EditText editText = new EditText(getApplicationContext());
-
-        // Get layout params
-        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        // Set layout params
-        editText.setLayoutParams(editTextParams);
-
-        // Set the current value
-        Object value = getValue(propertyDescription);
-        if (value != null) {
-            if (value instanceof String) {
-                editText.setText((String) value);
-            } else if (value instanceof Double) {
-                editText.setText(String.valueOf(value));
-            } else {
-                // Set default values
-                editText.setText("");
-            }
-        } else {
-            // Set default values
-            editText.setText("");
-        }
-
-        // Set text edit attributes
-        if (onlyNumbers) {
-            if (allowNegativeNumbers) {
-                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
-            } else {
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            }
-        }
-        if (propertyDescription.isWritable()) {
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    String text = editText.getText().toString();
-                    if (onlyNumbers && !text.isEmpty()) {
-                        updateProperty(propertyDescription, Double.parseDouble(text));
-                    } else {
-                        updateProperty(propertyDescription, text);
-                    }
-                }
-            });
-        }
-        editText.setEnabled(propertyDescription.isWritable());
-
-        return editText;
-    }
-
-    /**
-     * Prepare a toggle button property field.
-     *
-     * @param propertyDescription includes the value
-     * @return the prepared view
-     */
-    private View prepareToggleButtonProperty(final PropertyDescription propertyDescription) {
-        // Create new layout elements
-        ToggleButton toggleButton = new ToggleButton(getApplicationContext());
-
-        // Get layout params
-        LinearLayout.LayoutParams toggleButtonParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        // Set layout params
-        toggleButton.setLayoutParams(toggleButtonParams);
-
-        // Set the current value
-        Object value = getValue(propertyDescription);
-        if (value != null && value instanceof Boolean) {
-            toggleButton.setChecked((Boolean) value);
-        } else {
-            // Set default values
-            toggleButton.setChecked(false);
-        }
-
-        // Set toggleButton attributes
-        toggleButton.setTextOff(String.format("%s %s", propertyDescription.getName(), getString(R.string.off)));
-        toggleButton.setTextOn(String.format("%s %s", propertyDescription.getName(), getString(R.string.on)));
-
-        if (propertyDescription.isWritable()) {
-            toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    updateProperty(propertyDescription, isChecked);
-                }
-            });
-        }
-        toggleButton.setEnabled(propertyDescription.isWritable());
-
-        return toggleButton;
-    }
-
-    /**
-     * Prepare a slider property field with long values.
-     *
-     * @param propertyDescription includes the value
-     * @param min                 is the minimum value that can be selected
-     * @param max                 is the maximum value that can be selected
-     * @param identifier          is the identifier behind the value (e.g. %, °C,...)
-     * @return the prepared view
-     */
-    private View prepareIntegerSliderProperty(final PropertyDescription propertyDescription, long min, long max, int identifier) {
-        // FIXME maybe a long value is too big for the slider?
-        return prepareSliderProperty(propertyDescription, (int) min, (int) max, identifier, 1);
-
-    }
-
-    /**
-     * Prepare a slider property field with double values.
-     *
-     * @param propertyDescription includes the value
-     * @param min                 is the minimum value that can be selected
-     * @param max                 is the maximum value that can be selected
-     * @param identifier          is the identifier behind the value (e.g. %, °C,...)
-     * @return the prepared view
-     */
-    private View prepareDoubleSliderProperty(final PropertyDescription propertyDescription, double min, double max, int identifier) {
-
-        // Get number of decimal places
-        final int ten = 10;
-        int minFactor = 0;
-        int maxFactor = 0;
-        int factor;
-        String decimalSeparator = getString(R.string.backslash) + String.valueOf(DecimalFormatSymbols.getInstance().getDecimalSeparator());
-
-        String[] minSplit = Double.toString(min).split(decimalSeparator);
-        if (minSplit.length > 1) {
-            minFactor = (int) Math.pow(ten, minSplit[1].length());
-        }
-
-        String[] maxSplit = Double.toString(max).split(decimalSeparator);
-        if (maxSplit.length > 1) {
-            maxFactor = (int) Math.pow(ten, maxSplit[1].length());
-        }
-
-        factor = Math.max(minFactor, maxFactor);
-
-        return prepareSliderProperty(propertyDescription, (int) (min * factor), (int) (max * factor), identifier, factor);
-    }
-
-    /**
-     * Prepare a slider property field.
-     *
-     * @param propertyDescription includes the value
-     * @param min                 is the minimum value that can be selected
-     * @param max                 is the maximum value that can be selected
-     * @param identifier          is the identifier behind the value (e.g. %, °C,...)
-     * @param factor              is the factor that is used for the output value
-     * @return the prepared view
-     */
-    private View prepareSliderProperty(final PropertyDescription propertyDescription, final int min, final int max, final int identifier, int factor) {
-        final float tTMPlowWeight = (float) 0.2;
-        final float tTMPhighWeight = (float) 0.8;
-
-        // Calculate the real max value for the seek bar
-        final int realMax = max - min;
-
-        // Create new layout elements
-        LinearLayout linearLayoutRow = new LinearLayout(getApplicationContext());
-        final SeekBar seekBar = new SeekBar(getApplicationContext());
-        LinearLayout linearLayoutText = new LinearLayout(getApplicationContext());
-        final EditText editText = new EditText(getApplicationContext());
-        TextView textView = new TextView(getApplicationContext());
-
-        // Link the layout elements
-        linearLayoutText.addView(editText);
-        linearLayoutText.addView(textView);
-        linearLayoutRow.addView(seekBar);
-        linearLayoutRow.addView(linearLayoutText);
-
-        // Get layout params
-        LinearLayout.LayoutParams linearLayoutRowParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams seekBarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams linearLayoutTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        // int editTextWidth = (int) getDimension(R.dimen.slider_edit_text_width); // ToDo use factor? for dynamic size
-        LinearLayout.LayoutParams editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        // Set layout params
-        linearLayoutRow.setLayoutParams(linearLayoutRowParams);
-        seekBar.setLayoutParams(seekBarParams);
-        linearLayoutText.setLayoutParams(linearLayoutTextParams);
-        editText.setLayoutParams(editTextParams);
-        textView.setLayoutParams(textViewParams);
-
-        // Set linearLayoutRow attributes
-        linearLayoutRow.setOrientation(LinearLayout.HORIZONTAL);
-
-        // Set the current value
-        setCurrentSliderValue(seekBar, editText, propertyDescription, min, factor);
-
-        // Set seekBar attributes
-        seekBarParams.weight = tTMPlowWeight;
-        seekBarParams.gravity = Gravity.CENTER;
-
-        seekBar.setMax(realMax);
-        setChangeListenerTo(seekBar, editText, propertyDescription, min, factor);
-
-        // Set linearLayoutText attributes
-        linearLayoutTextParams.weight = tTMPhighWeight;
-        linearLayoutTextParams.gravity = Gravity.CENTER;
-        linearLayoutText.setOrientation(LinearLayout.HORIZONTAL);
-
-        // Set editText attributes
-        if (min < 0) {
-            editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
-        } else {
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }
-        setActionListenerTo(editText, seekBar, propertyDescription, min, max, factor);
-
-        // Set textView attributes
-        textView.setText(identifier);
-
-        // En-/Disable this view
-        enableChildItems(linearLayoutRow, propertyDescription.isWritable());
-
-        return linearLayoutRow;
-    }
-
-    /**
-     * Set the start value of the slider.
-     *
-     * @param seekBar             is the element that will get the change listener
-     * @param editText            is the text view behind the seek bar that includes the value
-     * @param propertyDescription includes the value
-     * @param factor              is the factor that is used for the output value
-     */
-    private void setCurrentSliderValue(SeekBar seekBar, EditText editText, PropertyDescription propertyDescription, int min, int factor) {
-        // ToDo optimize this method
-        Object value = getValue(propertyDescription);
-        if (value != null && value instanceof Number) {
-            double val = 0;
-            // Check if value is '0'
-            if (!value.equals(0)) {
-                try {
-                    if (value instanceof Integer) {
-                        val = ((Integer) value).doubleValue();
-                    } else if (value instanceof Long) {
-                        val = (Long) value;
-                    } else if (value instanceof Float) {
-                        val = (Float) value;
-                    } else if (value instanceof Double) {
-                        val = (Double) value;
-                    } else {
-                        // Show a quick message that there was an error
-                        IM.INSTANCES.getMH().showQuickMessage("Unknown number type in setCurrentSliderValue()!");
-                    }
-                } catch (ClassCastException e) {
-                    // Show a quick message that there was an error (ToDo log this?)
-                    IM.INSTANCES.getMH().showQuickMessage("ERROR while casting: " + e.getMessage());
-                }
-            }
-            seekBar.setProgress((int) (val * factor) - min);
-            setSliderEditText(editText, val, factor);
-        } else {
-            // Set default values
-            seekBar.setProgress(min);
-            setSliderEditText(editText, (double) (min / factor), factor);
-        }
-    }
-
-    /**
-     * Set the text of the view next to the slider.
-     *
-     * @param editText is the text view behind the seek bar that includes the value
-     * @param value    is the value for that text view
-     * @param factor   is the factor that is used for the output value
-     */
-    private void setSliderEditText(EditText editText, double value, int factor) {
-        if (factor == 1) {
-            editText.setText(String.valueOf((int) value));
-        } else {
-            editText.setText(String.valueOf(value));
-        }
-    }
-
-    /**
-     * Set the action listener to the edit view.
-     *
-     * @param editText            is the text view behind the seek bar that includes the value
-     * @param seekBar             is the element that will get the change listener
-     * @param propertyDescription is the unchanged property
-     * @param min                 is the minimum value that can be selected
-     * @param max                 is the maximum value that can be selected
-     * @param factor              is the factor that is used for the output value
-     */
-    private void setActionListenerTo(final EditText editText, final SeekBar seekBar, final PropertyDescription propertyDescription, final int min, final int max, final int factor) {
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                try {
-                    int value = (int) (Double.valueOf(String.valueOf(editText.getText())) * factor);
-                    if (value > max || value < min) {
-                        // Show a quick message that there was an error
-                        IM.INSTANCES.getMH().showQuickMessage("Value is not in valuation!");
-
-                        // Reset displayed text
-                        setSliderEditText(editText, (double) (seekBar.getProgress() + min) / factor, factor);
-                    } else {
-                        seekBar.setProgress(value - min);
-                        if (propertyDescription.isWritable()) {
-                            Double newVal = (double) value / factor;
-                            if (factor == 1) {
-                                updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
-                            } else {
-                                updateProperty(propertyDescription, newVal);//, Double.class);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    // Show a quick message that there was an error (ToDo log this?)
-                    IM.INSTANCES.getMH().showQuickMessage("Value is not a number!");
-                }
-                return false;
-            }
-        });
-    }
-
-    /**
-     * Set the change listener to the seek bar.
-     *
-     * @param seekBar             is the element that will get the change listener
-     * @param editText            is the text view behind the seek bar that includes the value
-     * @param propertyDescription is the unchanged property
-     * @param min                 is the minimum value that can be selected
-     * @param factor              is the factor that is used for the output value
-     */
-    private void setChangeListenerTo(SeekBar seekBar, final EditText editText, final PropertyDescription propertyDescription, final int min, final int factor) {
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    setSliderEditText(editText, (double) (progress + min) / factor, factor);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (propertyDescription.isWritable()) {
-                    Double newVal = (double) (seekBar.getProgress() + min) / factor;
-                    if (factor == 1) {
-                        updateProperty(propertyDescription, newVal.intValue());//, Integer.class);
-                    } else {
-                        updateProperty(propertyDescription, newVal);//, Double.class);
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * Prepare a drop down field.
-     *
-     * @param propertyDescription includes the value
-     * @param enums               .
-     * @return the prepared view
-     */
-    private View prepareDropDownProperty(final PropertyDescription propertyDescription, final ArrayList<Enum<?>> enums) {
-        // Create new layout elements
-        final Spinner spinner = new Spinner(getApplicationContext());
-
-        // Get layout params
-        LinearLayout.LayoutParams spinnerParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        // Set layout params
-        spinner.setLayoutParams(spinnerParams);
-
-        // Set the current value
-        Object value = getValue(propertyDescription);
-        if (value != null && value instanceof Enum<?>) {
-            int index = enums.indexOf(value);
-            if (index != -1) {
-                spinner.setSelection(index);
-            }
-        }
-
-        // Convert the enum array list to a string array
-        int enumLength = enums.size();
-        String[] itemsAsArray = new String[enumLength];
-        for (int i = 0; i < enumLength; i++) {
-            itemsAsArray[i] = enums.get(i).toString();
-        }
-
-        // Set spinner attributes
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, itemsAsArray);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        if (propertyDescription.isWritable()) {
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    updateProperty(propertyDescription, enums.get(position));//, Enum<E>.class);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-        }
-        enableChildItems(spinner, propertyDescription.isWritable());
-
-        return spinner;
-    }
-
-    /**
-     * Return the value of this property.
-     *
-     * @param propertyDescription the description of this property
-     * @return the value of this property
-     */
-    private Object getValue(PropertyDescription propertyDescription) {
-        return theThing.getProperty(propertyDescription.getName()).getValue();
-    }
-
-    /**
-     * En-/disables all child items of the given view.
-     *
-     * @param view  the item that sub items should be disabled
-     * @param value is an boolean value to en-/disable this items
-     */
-    private void enableChildItems(ViewGroup view, boolean value) {
-        for (int i = 0; i < view.getChildCount(); i++) {
-            View subView = view.getChildAt(i);
-            if (subView instanceof ViewGroup) {
-                enableChildItems((ViewGroup) subView, value);
-            }
-            subView.setEnabled(value);
         }
     }
 }

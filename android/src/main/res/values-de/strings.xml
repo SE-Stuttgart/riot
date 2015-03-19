@@ -109,12 +109,8 @@
     <string name="default_item_title">Item without a title</string>
     <string name="loading">Loading</string>
     <string name="prepareData">Data are preparing</string>
-<<<<<<< HEAD
-</resources>
-=======
-    <string name="thing_default">\"This is a Thing\"</string>
+    <string name="thing_default">This is a Thing</string>
     <string name="default_user">This is a user</string>
     <string name="default_thing_description">This is the description of the thing</string>
     <string name="default_user_description">This is the description of the user</string>
 </resources>
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and

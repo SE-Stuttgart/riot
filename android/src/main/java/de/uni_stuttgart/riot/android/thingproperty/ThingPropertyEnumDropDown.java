@@ -1,0 +1,95 @@
+package de.uni_stuttgart.riot.android.thingproperty;
+
+import android.content.Context;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+
+import de.uni_stuttgart.riot.thing.Property;
+
+/**
+ * Created by Benny on 19.03.2015.
+ * This class provides a Spinner ui element as enum drop down.
+ */
+public class ThingPropertyEnumDropDown extends ThingProperty<Spinner, Enum<?>> {
+
+    private Spinner spinner;
+    private ArrayList<Enum<?>> enumList;
+
+    /**
+     * Constructor.
+     *
+     * @param property for that the element will be implemented
+     * @param context  is the application context
+     * @param enumList includes the possible enum values
+     */
+    public ThingPropertyEnumDropDown(Property<Enum<?>> property, Context context, ArrayList<Enum<?>> enumList) {
+        super(property);
+        this.enumList = enumList;
+        buildElement(context);
+    }
+
+    @Override
+    public Spinner getUiElement() {
+        return this.spinner;
+    }
+
+    @Override
+    protected void initElement(Context context) {
+        this.spinner = new Spinner(context);
+
+        // Get layout params
+        LinearLayout.LayoutParams spinnerParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        // Set layout params
+        this.spinner.setLayoutParams(spinnerParams);
+
+        // Set the current value
+        setValue(this.property.get());
+
+        // Convert the enum array list to a string array
+        int enumLength = this.enumList.size();
+        String[] itemsAsArray = new String[enumLength];
+        for (int i = 0; i < enumLength; i++) {
+            itemsAsArray[i] = this.enumList.get(i).toString();
+        }
+
+        // Set spinner attributes
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, itemsAsArray);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        this.spinner.setAdapter(spinnerAdapter);
+    }
+
+    @Override
+    protected void setChangeListenerAndUpdateProperty() {
+        this.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateProperty(enumList.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    @Override
+    protected void enableView(boolean value) {
+        enableChildItems(this.spinner, value);
+    }
+
+    @Override
+    protected void setValue(Enum<?> value) {
+        if (value != null) {
+            int index = enumList.indexOf(value);
+            if (index != -1) {
+                spinner.setSelection(index);
+            }
+        }
+    }
+}
