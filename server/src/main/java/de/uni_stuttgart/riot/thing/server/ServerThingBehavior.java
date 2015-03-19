@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -99,7 +100,17 @@ public class ServerThingBehavior extends ThingBehavior {
      */
     public boolean canAccess(Long userId, ThingPermission permission) {
         ThingShare share = shares.get(userId);
-        return (share == null) ? false : share.permits(permission);
+        if (share != null && share.permits(permission)) {
+            return true;
+        } else if (getThing().hasParent()) {
+            try {
+                return ThingLogic.getThingLogic().canAccess(getThing().getParentId(), userId, permission);
+            } catch (DatasourceFindException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.references.SimpleResolver;
 import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
@@ -31,6 +33,7 @@ import de.uni_stuttgart.riot.thing.BasePropertyListener;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.PropertySetAction;
+import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.PropertySetAction.Instance;
@@ -47,7 +50,7 @@ public class ThingFrameworkTest {
     @Test
     public void testBehaviorRegistration() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         assertThat(thing, sameInstance(behavior.getThing()));
         assertThat(behavior, sameInstance(thing.getBehavior()));
     }
@@ -55,7 +58,7 @@ public class ThingFrameworkTest {
     @Test
     public void testSpecialGetters() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         assertThat(thing.getIntProperty(), sameInstance(thing.getWritableProperty("int", Integer.class)));
         assertThat(thing.getIntProperty(), sameInstance(thing.getProperty("int", Integer.class)));
         assertThat(thing.getWritableProperty("int") == thing.getIntProperty(), is(true));
@@ -82,8 +85,8 @@ public class ThingFrameworkTest {
         // Identically created things should be equal
         TestThingBehavior behavior1 = new TestThingBehavior();
         TestThingBehavior behavior2 = new TestThingBehavior();
-        TestThing thing1 = ThingFactory.create(TestThing.class, 100, "Thing", behavior1);
-        TestThing thing2 = ThingFactory.create(TestThing.class, 100, "Thing", behavior2);
+        TestThing thing1 = ThingFactory.create(TestThing.class, 100, behavior1);
+        TestThing thing2 = ThingFactory.create(TestThing.class, 100, behavior2);
         assertThat(thing1.equals(thing2), is(true));
         assertThat(thing2.equals(thing1), is(true));
         assertThat(thing1.hashCode(), is(thing2.hashCode()));
@@ -119,7 +122,7 @@ public class ThingFrameworkTest {
     @Test
     public void testEvents() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
 
         // Register a listener.
         EventListener<EventInstance> listener = (EventListener<EventInstance>) mock(EventListener.class);
@@ -141,7 +144,7 @@ public class ThingFrameworkTest {
     @Test
     public void testActions() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
 
         // Fire an action, check that is transported to the behavior.
         ActionInstance actionInstance = new ActionInstance(thing.getSimpleAction());
@@ -165,7 +168,7 @@ public class ThingFrameworkTest {
     @Test
     public void testPropertyListeners() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         behavior.executePropertyChangesDirectly = true;
         thing.setInt(100);
         thing.setLong(200);
@@ -187,7 +190,7 @@ public class ThingFrameworkTest {
     public void testReferences() throws ResolveReferenceException {
 
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         TestReferenceable referenceable = new TestReferenceable(10L);
 
         // Check the types reported by the property.
@@ -219,7 +222,7 @@ public class ThingFrameworkTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailForUnpersistedReferences() {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         new TestRefActionInstance(thing.getRefAction(), new TestReferenceable(null));
     }
 
@@ -227,7 +230,7 @@ public class ThingFrameworkTest {
     @Test(expected = ResolveReferenceException.class)
     public void shouldFailForUnresolvableReference() throws ResolveReferenceException {
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         TypedReferenceResolver<TestReferenceable> testResolver = mock(TypedReferenceResolver.class);
         when(testResolver.resolve(10L)).thenThrow(ResolveReferenceException.class);
         behavior.getDelegatingResolver().addResolver(TestReferenceable.class, testResolver);
@@ -240,7 +243,7 @@ public class ThingFrameworkTest {
 
         // Create a TestThing that will hold its initial state.
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
 
         // Check that ThingState reports this initial state correctly.
         ThingState state = ThingState.create(thing);
@@ -279,7 +282,7 @@ public class ThingFrameworkTest {
 
         // Create a TestThing that we will describe.
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 42, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
 
         // Check the main Thing description.
         ThingDescription description = ThingDescription.create(thing);
@@ -343,6 +346,71 @@ public class ThingFrameworkTest {
         assertThat(refHint.targetType, isClass(TestReferenceable.class));
         UIHint.ReferenceDropDown refActionHint = (UIHint.ReferenceDropDown) refActionInstance.getParameters().get(0).getUiHint();
         assertThat(refActionHint.targetType, isClass(TestReferenceable.class));
+    }
+
+    @Test
+    public void testParentHierarchy() throws ResolveReferenceException {
+
+        // Create test things.
+        final TestThingBehavior behavior1 = new TestThingBehavior();
+        final TestThing grandpa = ThingFactory.create(TestThing.class, 52, behavior1);
+        final TestThingBehavior behavior2 = new TestThingBehavior();
+        final TestThing dad = ThingFactory.create(TestThing.class, 53, behavior2);
+        final TestThingBehavior behavior3 = new TestThingBehavior();
+        final TestThing son = ThingFactory.create(TestThing.class, 54, behavior3);
+
+        // Register them with their resolvers.
+        TypedReferenceResolver<Thing> thingResolver = SimpleResolver.create(grandpa, dad, son);
+        behavior1.getDelegatingResolver().addResolver(Thing.class, thingResolver);
+        behavior2.getDelegatingResolver().addResolver(Thing.class, thingResolver);
+        behavior3.getDelegatingResolver().addResolver(Thing.class, thingResolver);
+
+        // Establish reasonable relations.
+        son.setParent(dad);
+        dad.setParent(grandpa);
+        assertThat(son.getParent(), sameInstance((Thing) dad));
+        assertThat(dad.getParent(), sameInstance((Thing) grandpa));
+        assertThat(son.hasAncestor(son), is(false));
+        assertThat(son.hasAncestor(dad), is(true));
+        assertThat(son.hasAncestor(grandpa), is(true));
+        assertThat(dad.hasAncestor(son), is(false));
+        assertThat(dad.hasAncestor(dad), is(false));
+        assertThat(dad.hasAncestor(grandpa), is(true));
+        assertThat(grandpa.hasAncestor(son), is(false));
+        assertThat(grandpa.hasAncestor(dad), is(false));
+        assertThat(grandpa.hasAncestor(grandpa), is(false));
+
+        // Try to introduce a loop.
+        try {
+            grandpa.setParent(son);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected.
+        }
+        try {
+            grandpa.setParent(dad);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected.
+        }
+        try {
+            grandpa.setParent(grandpa);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected.
+        }
+        try {
+            son.setParent(son);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected.
+        }
+
+        // Undo one of the relations.
+        dad.setParent(null);
+        assertThat(dad.hasAncestor(grandpa), is(false));
+        assertThat(son.hasAncestor(grandpa), is(false));
+        assertThat(son.hasAncestor(dad), is(true));
     }
 
     private static Matcher<Class<?>> isClass(Class<?> clazz) {

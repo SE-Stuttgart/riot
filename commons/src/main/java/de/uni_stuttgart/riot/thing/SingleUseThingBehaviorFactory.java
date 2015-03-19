@@ -22,7 +22,7 @@ public class SingleUseThingBehaviorFactory<B extends ThingBehavior> implements T
     }
 
     @Override
-    public synchronized B newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+    public synchronized B newBehavior(Class<? extends Thing> thingType) {
         if (behavior == null) {
             throw new IllegalStateException("This factory can only be called once!");
         }

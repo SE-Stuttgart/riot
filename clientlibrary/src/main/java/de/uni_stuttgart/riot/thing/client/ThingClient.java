@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.EnumSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.clientlibrary.BaseClient;
@@ -19,14 +16,15 @@ import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
-import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
-import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
+import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
@@ -44,7 +42,6 @@ public class ThingClient extends BaseClient {
 
     private static final String GET_THING = THINGS_PREFIX;
     private static final String GET_UPDATES_SUFFIX = "/updates";
-    private static final String GET_STATE_SUFFIX = "/state";
 
     private static final String DELETE_THING = THINGS_PREFIX;
 
@@ -52,7 +49,7 @@ public class ThingClient extends BaseClient {
     private static final String POST_REGISTER_EVENT_SUFFIX = "/register";
     private static final String POST_MULTIPLE_EVENTS_SUFFIX = "/multipleEvents";
 
-    private static final String GET_LAST_ONLINE_SUFFIX = "/online";
+    private static final String GET_LAST_ONLINE_SUFFIX = "/lastconnection";
 
     private static final String SHARES_PATH = "/shares/";
 
@@ -87,12 +84,15 @@ public class ThingClient extends BaseClient {
      *             When a network error occured or the result format could not be read.
      */
     public Thing registerNewThing(String name, String thingType, ThingState initialState, ThingBehaviorFactory<?> behaviorFactory) throws RequestException, IOException {
-        RegisterThingRequest request = new RegisterThingRequest();
-        request.setName(name);
-        request.setType(thingType);
-        request.setInitialState(initialState);
-        JsonNode node = getConnector().doPOST(POST_ADD_THING, request, JsonNode.class);
-        return readThing(node, behaviorFactory);
+        ThingMetainfo metainfo = new ThingMetainfo();
+        metainfo.setName(name);
+        ThingInformation info = new ThingInformation();
+        info.setMetainfo(metainfo);
+        info.setType(thingType);
+        info.setState(initialState);
+
+        ThingInformation resultInfo = getConnector().doPOST(POST_ADD_THING, info, ThingInformation.class);
+        return ThingFactory.create(resultInfo, behaviorFactory).getThing();
     }
 
     /**
@@ -111,8 +111,8 @@ public class ThingClient extends BaseClient {
      *             When a network error occured or the result format could not be read.
      */
     public Thing getExistingThing(long id, ThingBehaviorFactory<?> behaviorFactory) throws RequestException, IOException, NotFoundException {
-        JsonNode node = getConnector().doGET(GET_THING + id, JsonNode.class);
-        return readThing(node, behaviorFactory);
+        ThingInformation info = getThingInformation(id, EnumSet.of(Field.METAINFO, Field.STATE));
+        return ThingFactory.create(info, behaviorFactory).getThing();
     }
 
     /**
@@ -127,66 +127,71 @@ public class ThingClient extends BaseClient {
      *             When a network error occured or the result format could not be read.
      */
     public Collection<Thing> getThings(ThingBehaviorFactory<?> behaviorFactory) throws RequestException, IOException {
+        Collection<ThingInformation> infos = getThingInformations(EnumSet.of(Field.METAINFO, Field.STATE));
+        ArrayList<Thing> result = new ArrayList<Thing>(infos.size());
+        for (ThingInformation info : infos) {
+            result.add(ThingFactory.create(info, behaviorFactory).getThing());
+        }
+        return result;
+    }
+
+    /**
+     * Gets the information of a thing.
+     * 
+     * @param id
+     *            The id of the thing.
+     * @param fields
+     *            The fields of {@link ThingInformation} to be returned.
+     * @return The thing information.
+     * @throws RequestException
+     *             When the request to the server failed.
+     * @throws IOException
+     *             When a network error occured or the result format could not be read.
+     * @throws NotFoundException
+     *             If the thing does not exist.
+     */
+    public ThingInformation getThingInformation(long id, Set<Field> fields) throws RequestException, IOException, NotFoundException {
+        String uri = GET_THING + id + "?" + fieldsToQueryString(fields);
+        return getConnector().doGET(uri, ThingInformation.class);
+    }
+
+    /**
+     * Gets the informations of all things accessible to the user.
+     * 
+     * @param fields
+     *            The fields of {@link ThingInformation} to be returned.
+     * @return The things that the user can access.
+     * @throws RequestException
+     *             When the request to the server failed.
+     * @throws IOException
+     *             When a network error occured or the result format could not be read.
+     */
+    public Collection<ThingInformation> getThingInformations(Set<Field> fields) throws RequestException, IOException {
         try {
-            JsonNode node = getConnector().doGET(THINGS_PREFIX, JsonNode.class);
-            return readThings(node, behaviorFactory);
+            String uri = THINGS_PREFIX + "?" + fieldsToQueryString(fields);
+            return getConnector().doGETCollection(uri, ThingInformation.class);
         } catch (NotFoundException e) {
             throw new RequestException(e);
         }
     }
 
     /**
-     * Reads all of the things just like {@link #readThing(JsonNode, ThingBehaviorFactory)} does.
+     * Concatenates the fields to a query string.
      * 
-     * @param node
-     *            The JSON node to read from.
-     * @param behaviorFactory
-     *            The behavior factory.
-     * @return A list of the things that were read.
-     * @throws JsonProcessingException
+     * @param fields
+     *            The fields.
+     * @return The query string.
      */
-    private Collection<Thing> readThings(JsonNode node, ThingBehaviorFactory<?> behaviorFactory) throws JsonProcessingException {
-        ArrayList<Thing> result = new ArrayList<Thing>();
-        Iterator<JsonNode> i = node.elements();
-        while (i.hasNext()) {
-            result.add(this.readThing(i.next(), behaviorFactory));
-        }
-        return result;
-    }
-
-    /**
-     * Reads a thing in the JSON format created by the ThingConverter on the server and instantiates it locally using the given behavior
-     * factory.
-     * 
-     * @param node
-     *            The JSON node to read from.
-     * @param behaviorFactory
-     *            The behavior factory.
-     * @return The thing.
-     * @throws JsonProcessingException
-     *             When parsing the JSON fails.
-     */
-    private Thing readThing(JsonNode node, ThingBehaviorFactory<?> behaviorFactory) throws JsonProcessingException {
-        if (!node.isObject()) {
-            throw new JsonMappingException("Expected a JSON node!");
-        }
-
-        // Create the thing itself.
-        Thing thing = ThingFactory.create(node.get("type").asText(), node.get("id").asLong(), node.get("name").asText(), behaviorFactory).getThing();
-
-        // Restore its state from the JSON object.
-        // TODO We should be able to remove this part and replace it by ThingState?
-        Iterator<String> fieldNames = node.fieldNames();
-        while (fieldNames.hasNext()) {
-            String propertyName = fieldNames.next();
-            Property<?> property = thing.getProperty(propertyName);
-            if (property != null) {
-                Object value = getJsonMapper().treeToValue(node.get(propertyName), property.getValueType());
-                ThingState.silentSetThingProperty(property, value);
+    private static String fieldsToQueryString(Set<Field> fields) {
+        StringBuilder builder = new StringBuilder();
+        for (Field field : fields) {
+            if (builder.length() > 0) {
+                builder.append("&");
             }
+            builder.append("return=");
+            builder.append(field.name());
         }
-
-        return thing;
+        return builder.toString();
     }
 
     /**
@@ -204,7 +209,7 @@ public class ThingClient extends BaseClient {
     }
 
     /**
-     * Reads the state of the thing as returned by the ThingConverter.
+     * Reads the state of the thing.
      * 
      * @param id
      *            The ID of the thing.
@@ -217,7 +222,7 @@ public class ThingClient extends BaseClient {
      *             When a network error occured.
      */
     public ThingState getThingState(long id) throws RequestException, IOException, NotFoundException {
-        return getConnector().doGET(THINGS_PREFIX + id + GET_STATE_SUFFIX, ThingState.class);
+        return getThingInformation(id, EnumSet.of(Field.STATE)).getState();
     }
 
     /**

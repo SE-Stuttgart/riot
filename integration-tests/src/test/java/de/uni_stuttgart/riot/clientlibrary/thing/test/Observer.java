@@ -1,8 +1,6 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,13 +26,11 @@ public class Observer extends Thing {
     /**
      * Creates a new Observer.
      * 
-     * @param name
-     *            The name of the observer.
      * @param behavior
      *            The behavior of the observer. For testing purposes, just use {@link ObserverBehavior}.
      */
-    public Observer(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public Observer(ThingBehavior behavior) {
+        super(behavior);
     }
 
     /**
@@ -53,7 +49,7 @@ public class Observer extends Thing {
     public static ObserverBehavior create(ThingClient client, String name) throws RequestException, IOException {
         @SuppressWarnings("unchecked")
         ThingBehaviorFactory<ObserverBehavior> behaviorFactory = mock(ThingBehaviorFactory.class);
-        when(behaviorFactory.newBehavior(anyLong(), anyString(), any())).thenReturn(new ObserverBehavior(client));
+        when(behaviorFactory.newBehavior(any())).thenReturn(new ObserverBehavior(client));
         return ExecutingThingBehavior.launchNewThing(Observer.class, client, name, behaviorFactory);
     }
 

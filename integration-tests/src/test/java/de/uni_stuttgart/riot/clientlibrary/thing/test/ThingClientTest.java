@@ -26,6 +26,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
@@ -194,6 +195,30 @@ public class ThingClientTest extends BaseClientTest {
         } catch (RequestException e) {
             // exception expected, because R2D2 has not the right to read thing/1
         }
+    }
+
+    @Test
+    public void getThingInformationsTest() throws RequestException, IOException, NotFoundException {
+
+        ThingClient thingClient = this.getLoggedInThingClient();
+        ThingInformation info = thingClient.getThingInformation(1, EnumSet.of(ThingInformation.Field.METAINFO));
+        assertThat(info.getId(), is(1L));
+        assertThat(info.getType(), is(TestThing.class.getName()));
+        assertThat(info.getDescription(), is(nullValue()));
+        assertThat(info.getState(), is(nullValue()));
+        assertThat(info.getShares(), is(nullValue()));
+        assertThat(info.getLastConnection(), is(nullValue()));
+        assertThat(info.getMetainfo().getName(), is("My Test Thing"));
+        assertThat(info.getMetainfo().getOwnerId(), is(0L));
+        assertThat(info.getMetainfo().getParentId(), is(nullValue()));
+
+        info = thingClient.getThingInformation(1, EnumSet.allOf(ThingInformation.Field.class));
+        assertThat(info.getId(), is(1L));
+        assertThat(info.getType(), is(TestThing.class.getName()));
+        assertThat(info.getDescription(), not(nullValue()));
+        assertThat(info.getState(), not(nullValue()));
+        assertThat(info.getShares(), not(nullValue()));
+        assertThat(info.getMetainfo(), not(nullValue()));
     }
 
 }

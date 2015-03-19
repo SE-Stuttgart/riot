@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+
 /**
  * Contains methods for creating new things.
  * 
@@ -43,14 +45,12 @@ public final class ThingFactory {
      *            The type of the thing.
      * @param thingID
      *            The ID of the new Thing.
-     * @param thingName
-     *            The name of the new Thing.
      * @param behavior
      *            The behavior of the new thing.
      * @return The new thing.
      */
-    public static <T extends Thing> T create(Class<T> thingType, long thingID, String thingName, ThingBehavior behavior) {
-        return thingType.cast(create(thingType.getName(), thingID, thingName, behavior));
+    public static <T extends Thing> T create(Class<T> thingType, long thingID, ThingBehavior behavior) {
+        return thingType.cast(create(thingType.getName(), thingID, behavior));
     }
 
     /**
@@ -61,19 +61,17 @@ public final class ThingFactory {
      *            class that inherits Thing or if there is a problem with the Thing constructors.
      * @param thingID
      *            The ID of the new Thing.
-     * @param thingName
-     *            The name of the new Thing.
      * @param behavior
      *            The behavior of the new thing.
      * @return The new thing.
      */
-    public static Thing create(String typeName, long thingID, String thingName, ThingBehavior behavior) {
+    public static Thing create(String typeName, long thingID, ThingBehavior behavior) {
         Class<? extends Thing> thingClass = resolveType(typeName);
         Thing thing;
         try {
-            thing = thingClass.getConstructor(String.class, ThingBehavior.class).newInstance(thingName, behavior);
+            thing = thingClass.getConstructor(ThingBehavior.class).newInstance(behavior);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's name and behavior as the only two parameters.");
+            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's behavior as the only parameter.");
         } catch (Exception e) {
             throw new RuntimeException("Could not call the constructor of " + typeName, e);
         }
@@ -93,14 +91,12 @@ public final class ThingFactory {
      *            The type of the thing.
      * @param thingID
      *            The ID of the new Thing.
-     * @param thingName
-     *            The name of the new Thing.
      * @param behaviorFactory
      *            A factory that will produce the behavior for the new thing and that will be notified of the new thing.
      * @return The new thing.
      */
-    public static <B extends ThingBehavior, T extends Thing> T create(Class<T> thingType, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
-        return thingType.cast(create(thingType.getName(), thingID, thingName, behaviorFactory).getThing());
+    public static <B extends ThingBehavior, T extends Thing> T create(Class<T> thingType, long thingID, ThingBehaviorFactory<B> behaviorFactory) {
+        return thingType.cast(create(thingType.getName(), thingID, behaviorFactory).getThing());
     }
 
     /**
@@ -114,13 +110,11 @@ public final class ThingFactory {
      *            class that inherits Thing or if there is a problem with the Thing constructors.
      * @param thingID
      *            The ID of the new Thing.
-     * @param thingName
-     *            The name of the new Thing.
      * @param behaviorFactory
      *            A factory that will produce the behavior for the new thing and that will be notified of the new thing.
      * @return The new thing.
      */
-    public static <B extends ThingBehavior> B create(String typeName, long thingID, String thingName, ThingBehaviorFactory<B> behaviorFactory) {
+    public static <B extends ThingBehavior> B create(String typeName, long thingID, ThingBehaviorFactory<B> behaviorFactory) {
         Class<? extends Thing> thingClass = resolveType(typeName);
         if (thingID > 0) {
             B oldBehavior = behaviorFactory.existingBehavior(thingID);
@@ -128,17 +122,16 @@ public final class ThingFactory {
                 if (!thingClass.isInstance(oldBehavior.getThing())) {
                     throw new IllegalStateException("The existing thing " + thingID + " is of type " + oldBehavior.getThing().getClass() + " instead of " + thingClass);
                 }
-                oldBehavior.getThing().setName(thingName);
                 return oldBehavior;
             }
         }
 
-        B behavior = behaviorFactory.newBehavior(thingID, thingName, thingClass);
+        B behavior = behaviorFactory.newBehavior(thingClass);
         Thing thing;
         try {
-            thing = thingClass.getConstructor(String.class, ThingBehavior.class).newInstance(thingName, behavior);
+            thing = thingClass.getConstructor(ThingBehavior.class).newInstance(behavior);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's name and behavior as the only two parameters.");
+            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's behavior as the only parameter.");
         } catch (Exception e) {
             throw new RuntimeException("Could not call the constructor of " + typeName, e);
         }
@@ -147,4 +140,23 @@ public final class ThingFactory {
         behaviorFactory.onThingCreated(thing, behavior);
         return behavior;
     }
+
+    /**
+     * Constructs a thing from the given information. If {@link ThingBehaviorFactory#existingBehavior(long)} returns an existing behavior,
+     * this one will be used and the according thing will be returned.
+     * 
+     * @param <B>
+     *            The type of the thing's behavior.
+     * @param info
+     *            Contains all necessary information about the thing.
+     * @param behaviorFactory
+     *            A factory that will produce the behavior for the new thing and that will be notified of the new thing.
+     * @return The new thing.
+     */
+    public static <B extends ThingBehavior> B create(ThingInformation info, ThingBehaviorFactory<B> behaviorFactory) {
+        B behavior = create(info.getType(), info.getId(), behaviorFactory);
+        info.apply(behavior.getThing());
+        return behavior;
+    }
+
 }

@@ -1,8 +1,6 @@
 package de.uni_stuttgart.riot.clientlibrary.thing.test;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,13 +47,11 @@ public class Fridge extends Thing {
     /**
      * Creates a new fridge.
      * 
-     * @param name
-     *            The name of the fridge.
      * @param behavior
      *            The behavior of the fridge. For testing purposes, just use {@link FridgeBehavior}.
      */
-    public Fridge(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public Fridge(ThingBehavior behavior) {
+        super(behavior);
     }
 
     public boolean getState() {
@@ -138,7 +134,7 @@ public class Fridge extends Thing {
     public static FridgeBehavior create(ThingClient client, String name) throws RequestException, IOException {
         @SuppressWarnings("unchecked")
         ThingBehaviorFactory<FridgeBehavior> behaviorFactory = mock(ThingBehaviorFactory.class);
-        when(behaviorFactory.newBehavior(anyLong(), anyString(), any())).thenReturn(new FridgeBehavior(client));
+        when(behaviorFactory.newBehavior(any())).thenReturn(new FridgeBehavior(client));
         return ExecutingThingBehavior.launchNewThing(Fridge.class, client, name, behaviorFactory);
     }
 

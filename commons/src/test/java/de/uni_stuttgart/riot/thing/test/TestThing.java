@@ -32,8 +32,8 @@ public class TestThing extends Thing {
     private final Action<TestActionInstance> parameterizedAction = newAction("parameterizedAction", TestActionInstance.class);
     private final Action<TestRefActionInstance> refAction = newAction("refAction", TestRefActionInstance.class);
 
-    public TestThing(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public TestThing(ThingBehavior behavior) {
+        super(behavior);
     }
 
     public int getInt() {

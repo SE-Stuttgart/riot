@@ -84,11 +84,16 @@ public enum SearchFields {
      * Search field for:.
      */
     THINGPERMISSION("permission"),
-    
+
     /**
      * Search field for:.
      */
     RULESTATUS("status"),
+
+    /**
+     * Search field for:.
+     */
+    PARENTID("parentID"),
 
     /**
      * Search field for:.

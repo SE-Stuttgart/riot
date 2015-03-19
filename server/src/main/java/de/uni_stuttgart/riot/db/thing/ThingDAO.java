@@ -93,15 +93,16 @@ public class ThingDAO implements DAO<Thing> {
             boolean hasId = t.getId() != null && t.getId() != 0;
             String query;
             if (hasId) {
-                query = "INSERT INTO things (id, type, ownerID, name) VALUES (:id, :type, :ownerID, :name)";
+                query = "INSERT INTO things (id, type, parentID, ownerID, name) VALUES (:id, :type, :parentID, :ownerID, :name)";
             } else {
-                query = "INSERT INTO things (type, ownerID, name) VALUES (:type, :ownerID, :name)";
+                query = "INSERT INTO things (type, parentID, ownerID, name) VALUES (:type, :parentID, :ownerID, :name)";
             }
             try (Query stmt = connection.createQuery(query)) {
                 if (hasId) {
                     stmt.addParameter("id", t.getId());
                 }
                 stmt.addParameter("type", t.getClass().getName());
+                stmt.addParameter("parentID", t.getParentId());
                 stmt.addParameter("ownerID", t.getOwnerId());
                 stmt.addParameter("name", t.getName());
 
@@ -133,9 +134,10 @@ public class ThingDAO implements DAO<Thing> {
 
         try (Connection connection = getConnection()) {
 
-            String query = "UPDATE things SET name = :name, ownerID = :ownerID WHERE id = :id";
+            String query = "UPDATE things SET parentID = :parentID, name = :name, ownerID = :ownerID WHERE id = :id";
             try (Query stmt = connection.createQuery(query)) {
                 stmt.addParameter("id", t.getId());
+                stmt.addParameter("parentID", t.getParentId());
                 stmt.addParameter("name", t.getName());
                 stmt.addParameter("ownerID", t.getOwnerId());
                 int res = stmt.executeUpdate().getResult();
@@ -288,11 +290,23 @@ public class ThingDAO implements DAO<Thing> {
         @Override
         public Thing handle(ResultSet resultSet) throws SQLException {
             long thingID = resultSet.getLong("id");
+
+            // We return existing things immediately, since we consider the in-memory information to be more up-to-date than what's in the
+            // database.
+            ServerThingBehavior existingBehavior = behaviorFactory.existingBehavior(thingID);
+            if (existingBehavior != null) {
+                // No need to use the rest of the data that the database returns, it's probably the same or outdated.
+                return existingBehavior.getThing();
+            }
+
             String typeName = resultSet.getString("type");
-            String thingName = resultSet.getString("name");
-            ServerThingBehavior behavior = ThingFactory.create(typeName, thingID, thingName, behaviorFactory);
+            ServerThingBehavior behavior = ThingFactory.create(typeName, thingID, behaviorFactory);
             Thing thing = behavior.getThing();
+
+            thing.setName(resultSet.getString("name"));
             thing.setOwnerId(resultSet.getLong("ownerID"));
+            long parentID = resultSet.getLong("parentID");
+            thing.setParentId(parentID == 0 ? null : parentID);
 
             // Fetch more information about the thing.
             try (Connection connection = getConnection()) {

@@ -46,8 +46,8 @@ public class RuleFrameworkTest {
         // Setup test things for the rule.
         TestThingBehavior behavior1 = new TestThingBehavior();
         TestThingBehavior behavior2 = new TestThingBehavior();
-        TestThing thing1 = ThingFactory.create(TestThing.class, 100, "Thing", behavior1);
-        TestThing thing2 = ThingFactory.create(TestThing.class, 100, "Thing", behavior2);
+        TestThing thing1 = ThingFactory.create(TestThing.class, 100, behavior1);
+        TestThing thing2 = ThingFactory.create(TestThing.class, 100, behavior2);
         behavior1.executePropertyChangesDirectly = true;
         behavior2.executePropertyChangesDirectly = true;
         thing1.setInt(100);
@@ -100,7 +100,7 @@ public class RuleFrameworkTest {
 
         // Setup test thing for the rule.
         TestThingBehavior behavior = new TestThingBehavior();
-        TestThing thing = ThingFactory.create(TestThing.class, 100, "Thing", behavior);
+        TestThing thing = ThingFactory.create(TestThing.class, 100, behavior);
         behavior.executePropertyChangesDirectly = true;
         thing.setInt(22);
         thing.setLong(44);

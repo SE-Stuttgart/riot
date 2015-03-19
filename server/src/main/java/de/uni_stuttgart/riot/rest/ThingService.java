@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -12,6 +15,7 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,6 +32,7 @@ import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -35,7 +40,9 @@ import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
-import de.uni_stuttgart.riot.thing.rest.RegisterThingRequest;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
@@ -61,35 +68,115 @@ public class ThingService {
     private UriInfo uriInfo;
 
     /**
+     * Maps a thing with the given fields.
+     * 
+     * @param thing
+     *            The thing to be mapped.
+     * @param fields
+     *            The fields to include. May be empty or null.
+     * @param defaultFields
+     *            This parameter replaces <tt>fields</tt>, if <tt>fields</tt> is empty.
+     * @return The mapped thing information.
+     */
+    private ThingInformation mapThing(Thing thing, Collection<Field> fields, Collection<Field> defaultFields) {
+        return logic.map(null, thing, (fields == null || fields.isEmpty()) ? defaultFields : fields);
+    }
+
+    /**
+     * Creates a mapper function for {@link #mapThing(Thing, Collection, Collection)}.
+     * 
+     * @param fields
+     *            The fields to include. May be empty or null.
+     * @param defaultFields
+     *            This parameter replaces <tt>fields</tt>, if <tt>fields</tt> is empty.
+     * @return A mapper that does the same as {@link #mapThing(Thing, Collection, Collection)}.
+     */
+    private Function<Thing, ThingInformation> thingMapper(Collection<Field> fields, Collection<Field> defaultFields) {
+        Collection<Field> effectiveFields = (fields == null || fields.isEmpty()) ? defaultFields : fields;
+        return (thing) -> logic.map(null, thing, effectiveFields);
+    }
+
+    /**
      * Gets information about a thing. This is a JSON object containing the thing's type, name, id and state.
      *
      * @param id
      *            The id of the thing.
+     * @param fields
+     *            Note that the actual parameter name is <tt>return</tt>. You may specify this parameter multiple times. It determines the
+     *            fields to be returned, see {@link ThingInformation}. The default is to only return the meta-info.
      * @return The thing if it exists, HTTP 404 otherwise
      */
     @GET
     @Path("{id}")
-    public Thing getExistingThing(@PathParam("id") long id) {
+    public ThingInformation getThingInformation(@PathParam("id") long id, @QueryParam("return") List<Field> fields) {
         assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
-            return thing;
+            return mapThing(thing, fields, EnumSet.of(Field.METAINFO));
         }
     }
 
     /**
-     * Gets the current state of a thing. The JSON format is an array of objects, where each objects represents a property and specifies its
-     * <tt>name</tt>, <tt>valueType</tt> and <tt>value</tt>.
-     *
+     * Returns the meta-info of the thing, that is, the values of the base fields in {@link Thing}.
+     * 
      * @param id
      *            The id of the thing.
-     * @return The thing's state (or 404 if the thing does not exist).
+     * @return The state.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
+     */
+    @GET
+    @Path("{id}/metainfo")
+    public ThingMetainfo getThingMetainfo(@PathParam("id") long id) throws DatasourceFindException {
+        assertPermitted(id, ThingPermission.READ);
+        Thing thing = logic.getThing(id);
+        if (thing == null) {
+            throw new NotFoundException();
+        } else {
+            return ThingMetainfo.create(thing);
+        }
+    }
+
+    /**
+     * Changes the meta-info of the thing. Note that the caller needs to be the owner of the thing in order to change the anything.
+     * 
+     * @param id
+     *            The id of the thing.
+     * @param metainfo
+     *            The new meta-info.
+     * @return The new meta-info (some parts may have been ignored).
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
+     * @throws DatasourceUpdateException
+     *             When storing the information fails.
+     */
+    @PUT
+    @Path("{id}/metainfo")
+    public ThingMetainfo setThingMetainfo(@PathParam("id") long id, ThingMetainfo metainfo) throws DatasourceFindException, DatasourceUpdateException {
+        assertOwner(id);
+        Thing thing = logic.getThing(id);
+        if (thing == null) {
+            throw new NotFoundException();
+        } else {
+            logic.setMetainfo(thing, metainfo);
+            return ThingMetainfo.create(thing);
+        }
+    }
+
+    /**
+     * Returns the state of the thing, that is, the value of its properties.
+     * 
+     * @param id
+     *            The id of the thing.
+     * @return The state.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
      */
     @GET
     @Path("{id}/state")
-    public ThingState getThingState(@PathParam("id") long id) {
+    public ThingState getThingState(@PathParam("id") long id) throws DatasourceFindException {
         assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
@@ -100,15 +187,41 @@ public class ThingService {
     }
 
     /**
-     * Gets a description of a thing. See {@link ThingDescription} for details about the JSON format.
-     *
+     * Changes the state of the thing, that is, the value of its properties. Note that this does not fire any events!!
+     * 
+     * @param state
+     *            The state to be set.
      * @param id
      *            The id of the thing.
-     * @return A description of the thing's structure (or 404 if the thing does not exist).
+     * @return The new overall state.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
+     */
+    @PUT
+    @Path("{id}/state")
+    public ThingState getThingState(@PathParam("id") long id, ThingState state) throws DatasourceFindException {
+        assertPermitted(id, ThingPermission.EXECUTE);
+        Thing thing = logic.getThing(id);
+        if (thing == null) {
+            throw new NotFoundException();
+        } else {
+            state.apply(thing);
+            return ThingState.create(thing);
+        }
+    }
+
+    /**
+     * Returns the structural description of the thing.
+     * 
+     * @param id
+     *            The id of the thing.
+     * @return The description.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
      */
     @GET
     @Path("{id}/description")
-    public ThingDescription getThingDescription(@PathParam("id") long id) {
+    public ThingDescription getThingDescription(@PathParam("id") long id) throws DatasourceFindException {
         assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
@@ -119,29 +232,46 @@ public class ThingService {
     }
 
     /**
+     * Returns the last time at which the thing connected to the server.
+     * 
+     * @param id
+     *            The id of the thing.
+     * @return The time.
+     * @throws DatasourceFindException
+     *             If the thing does not exist.
+     */
+    @GET
+    @Path("{id}/lastconnection")
+    public Date lastConnection(@PathParam("id") long id) throws DatasourceFindException {
+        assertPermitted(id, ThingPermission.READ);
+        return this.logic.getLastConnection(id);
+    }
+
+    /**
      * Gets the collection for resources.
      *
      * @param offset
      *            the beginning item number
      * @param limit
      *            maximum number of items to return
+     * @param fields
+     *            Note that the actual parameter name is <tt>return</tt>. You may specify this parameter multiple times. It determines the
+     *            fields to be returned, see {@link ThingInformation}. The default is to only return the meta-info.
      * @return the collection. If the both parameters are 0, it returns at maximum 20 elements.
      * 
      * @throws DatasourceFindException
      *             Exception on initialization of things.
      */
     @GET
-    public Collection<Thing> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
+    public Collection<ThingInformation> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit, @QueryParam("return") List<Field> fields) throws DatasourceFindException {
         if (limit < 0 || offset < 0) {
             throw new BadRequestException("please provide valid parameter values");
         }
 
         // Fetch the results
-        if (limit == 0) {
-            return logic.findThings(offset, DEFAULT_PAGE_SIZE, null, ThingPermission.READ);
-        } else {
-            return logic.findThings(offset, limit, null, ThingPermission.READ);
-        }
+        return logic.findThings(offset, limit == 0 ? DEFAULT_PAGE_SIZE : limit, null, ThingPermission.READ) //
+                .map(thingMapper(fields, EnumSet.of(Field.METAINFO))) //
+                .collect(Collectors.toList());
     }
 
     /**
@@ -149,55 +279,76 @@ public class ThingService {
      *
      * @param request
      *            object specifying the filter attributes (pagination also possible)
+     * @param fields
+     *            Note that the actual parameter name is <tt>return</tt>. You may specify this parameter multiple times. It determines the
+     *            fields to be returned, see {@link ThingInformation}. The default is to only return the meta-info.
      * @return collection containing elements that applied to filter
      * @throws DatasourceFindException
      *             when retrieving the data fails
      */
     @POST
     @Path("/filter")
-    public Collection<Thing> getBy(FilteredRequest request) throws DatasourceFindException {
+    public Collection<ThingInformation> getBy(FilteredRequest request, @QueryParam("return") List<Field> fields) throws DatasourceFindException {
         if (request == null) {
             throw new BadRequestException("please provide an entity in the request body.");
         }
-        return logic.findThings(request, null, ThingPermission.READ);
+        return logic.findThings(request, null, ThingPermission.READ) //
+                .map(thingMapper(fields, EnumSet.of(Field.METAINFO))) //
+                .collect(Collectors.toList());
     }
 
     /**
      * Registers a new thing and returns the created thing.
      *
      * @param request
-     *            The request data for creating the thing.
+     *            The request data for creating the thing. Only some of the meta-info and the state will be used!
+     * @param fields
+     *            Note that the actual parameter name is <tt>return</tt>. You may specify this parameter multiple times. It determines the
+     *            fields to be returned, see {@link ThingInformation}. The default is to only return the meta-info.
      * @return An HTTP created (201) response if successful
      * @throws DatasourceInsertException
      *             When insertion failed
      */
     @POST
     @RequiresPermissions("thing:create")
-    public Response registerNewThing(RegisterThingRequest request) throws DatasourceInsertException {
+    public Response registerNewThing(ThingInformation request, @QueryParam("return") List<Field> fields) throws DatasourceInsertException {
         if (request == null) {
             throw new BadRequestException("Please provide an entity in the request body.");
+        } else if (request.getMetainfo() == null) {
+            throw new BadRequestException("The request must contain a metainfo field!");
+        }
+
+        // Check the metainfo.
+        ThingMetainfo metainfo = request.getMetainfo();
+        if (metainfo.getParentId() != null) {
+            if (metainfo.getParentId() == 0) {
+                metainfo.setParentId(null);
+            } else {
+                assertPermitted(metainfo.getParentId(), ThingPermission.READ);
+            }
         }
 
         // Find out the owner (which is the current user).
         UserManagementFacade umFacade = UserManagementFacade.getInstance();
-        long ownerId = umFacade.getCurrentUserId();
+        metainfo.setOwnerId(umFacade.getCurrentUserId());
 
         // Register the thing.
-        Thing thing = this.logic.registerThing(request.getType(), request.getName(), ownerId);
+        Thing thing = this.logic.registerThing(request.getType(), metainfo);
 
         // Give the owner full access.
         try {
-            this.logic.addOrUpdateShare(thing.getId(), new ThingShare(ownerId, EnumSet.allOf(ThingPermission.class)));
+            this.logic.addOrUpdateShare(thing.getId(), new ThingShare(metainfo.getOwnerId(), EnumSet.allOf(ThingPermission.class)));
         } catch (DatasourceFindException | DatasourceDeleteException e) {
             throw new RuntimeException("The thing just inserted is not there!", e);
         }
 
         // Fill with initial values provided by the client.
-        if (request.getInitialState() != null) {
-            request.getInitialState().apply(thing);
+        if (request.getState() != null) {
+            request.getState().apply(thing);
         }
 
-        return Response.created(getUriForThing(thing)).entity(thing).build();
+        ThingInformation info = mapThing(thing, fields, EnumSet.of(Field.METAINFO, Field.STATE));
+        return Response.created(getUriForThing(thing)).entity(info).build();
     }
 
     /**
@@ -229,22 +380,6 @@ public class ThingService {
      */
     protected URI getUriForThing(Thing thing) {
         return uriInfo.getBaseUriBuilder().path(this.getClass()).path(Long.toString(thing.getId())).build();
-    }
-
-    /**
-     * Returns the last time at which the thing connected to the server.
-     * 
-     * @param id
-     *            The id of the thing.
-     * @return The time.
-     * @throws DatasourceFindException
-     *             If the thing does not exist.
-     */
-    @GET
-    @Path("{id}/online")
-    public Date lastConnection(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.READ);
-        return this.logic.getLastConnection(id);
     }
 
     /**
@@ -455,7 +590,23 @@ public class ThingService {
     private void assertPermitted(long id, ThingPermission permission) {
         try {
             if (!logic.canAccess(id, null, permission)) {
-                throw new ForbiddenException("The user is not permitted to do the desired action");
+                throw new ForbiddenException("The user is not permitted to perform the desired action");
+            }
+        } catch (DatasourceFindException e) {
+            throw new NotFoundException(e);
+        }
+    }
+
+    /**
+     * Checks if the user is the owner of the given thing. Throws a {@link ForbiddenException} if not.
+     * 
+     * @param id
+     *            The id of the thing.
+     */
+    private void assertOwner(long id) {
+        try {
+            if (!logic.isOwner(id, null)) {
+                throw new ForbiddenException("The user is not permitted to perform the desired action");
             }
         } catch (DatasourceFindException e) {
             throw new NotFoundException(e);

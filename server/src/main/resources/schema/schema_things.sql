@@ -13,7 +13,9 @@ CREATE TABLE things
 id SERIAL,
 type varchar(256) NOT NULL,
 ownerID bigint,
-name varchar(256) NOT NULL,
+name varchar(256),
+parentID bigint unsigned,
+FOREIGN KEY (parentID) REFERENCES things(id) ON DELETE SET NULL,
 PRIMARY KEY (id)
 );
 

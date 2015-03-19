@@ -71,9 +71,7 @@ public class TestThingBehavior extends ThingBehavior {
     @SuppressWarnings("unchecked")
     public static ThingBehaviorFactory<TestThingBehavior> getMockFactory() {
         ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = mock(ThingBehaviorFactory.class);
-        when(mockBehaviorFactory.newBehavior(anyLong(), anyString(), any(Class.class))).thenAnswer(new Answer<TestThingBehavior>() {
-
-            @Override
+        when(mockBehaviorFactory.newBehavior(any(Class.class))).thenAnswer(new Answer<TestThingBehavior>() {
             public TestThingBehavior answer(InvocationOnMock invocation) throws Throwable {
                 return new TestThingBehavior();
             }

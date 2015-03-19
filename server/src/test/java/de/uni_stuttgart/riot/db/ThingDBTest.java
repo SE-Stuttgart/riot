@@ -38,7 +38,7 @@ public class ThingDBTest extends BaseDatabaseTest {
         }
 
         @Override
-        public ServerThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+        public ServerThingBehavior newBehavior(Class<? extends Thing> thingType) {
             return new ServerThingBehavior(); // Could also use a Mock here.
         }
 
@@ -57,7 +57,7 @@ public class ThingDBTest extends BaseDatabaseTest {
     public void shouldInsertThing() throws DatasourceInsertException, DatasourceFindException {
 
         // Insert a new thing.
-        TestThing thing = ThingFactory.create(TestThing.class, 11, "Inserted Thing", new ServerThingBehavior());
+        TestThing thing = ThingFactory.create(TestThing.class, 11, new ServerThingBehavior());
         dao.insert(thing);
 
         // When there was an ID already, it must be reused.
@@ -68,7 +68,7 @@ public class ThingDBTest extends BaseDatabaseTest {
         assertThat(restoredThing, equalTo(thing));
 
         // Insert another thing without ID. The ID must be created.
-        TestThing thing2 = ThingFactory.create(TestThing.class, 0, "Inserted Thing 2", new ServerThingBehavior());
+        TestThing thing2 = ThingFactory.create(TestThing.class, 0, new ServerThingBehavior());
         dao.insert(thing2);
         assertThat(thing2.getId(), notNullValue());
         assertThat(thing2.getId(), not(0));
@@ -122,9 +122,12 @@ public class ThingDBTest extends BaseDatabaseTest {
     @Test
     public void shouldFindByName() throws DatasourceInsertException, DatasourceFindException, DatasourceDeleteException {
 
-        TestThing thing1 = ThingFactory.create(TestThing.class, 11, "TestThing1", new TestThingBehavior());
-        TestThing thing2 = ThingFactory.create(TestThing.class, 12, "TestThing2", new TestThingBehavior());
-        TestThing thing3 = ThingFactory.create(TestThing.class, 13, "TestThing3", new TestThingBehavior());
+        TestThing thing1 = ThingFactory.create(TestThing.class, 11, new TestThingBehavior());
+        TestThing thing2 = ThingFactory.create(TestThing.class, 12, new TestThingBehavior());
+        TestThing thing3 = ThingFactory.create(TestThing.class, 13, new TestThingBehavior());
+        thing1.setName("TestThing1");
+        thing2.setName("TestThing2");
+        thing3.setName("TestThing3");
         dao.insert(thing1);
         dao.insert(thing2);
         dao.insert(thing3);

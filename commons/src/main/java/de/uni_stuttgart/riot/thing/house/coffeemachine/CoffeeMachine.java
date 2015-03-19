@@ -107,13 +107,11 @@ public class CoffeeMachine extends Thing {
     /**
      * Creates a new coffee machine.
      * 
-     * @param name
-     *            The name of the coffee machine.
      * @param behavior
      *            The thing behavior.
      */
-    public CoffeeMachine(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public CoffeeMachine(ThingBehavior behavior) {
+        super(behavior);
     }
 
     public boolean isPowerOn() {

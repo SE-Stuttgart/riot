@@ -12,15 +12,11 @@ public interface ThingBehaviorFactory<B extends ThingBehavior> {
     /**
      * Called to produce a new behavior instance.
      * 
-     * @param thingID
-     *            The thing's ID (if known already, 0 otherwise).
-     * @param thingName
-     *            The name of the thing (if already known, <tt>null</tt> otherwise).
      * @param thingType
      *            The type of the thing.
      * @return The new instance.
      */
-    B newBehavior(long thingID, String thingName, Class<? extends Thing> thingType);
+    B newBehavior(Class<? extends Thing> thingType);
 
     /**
      * To avoid duplicate instantiation of the same thing, this method retrieves an existing behavior for a thing by its ID.

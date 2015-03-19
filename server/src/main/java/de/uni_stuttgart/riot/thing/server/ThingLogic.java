@@ -1,8 +1,14 @@
 package de.uni_stuttgart.riot.thing.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,17 +22,23 @@ import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.ThingState;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 import de.uni_stuttgart.riot.thing.rest.UserThingShare;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -60,7 +72,7 @@ public class ThingLogic {
      * will add every new thing to {@link #things}.
      */
     private final ThingBehaviorFactory<ServerThingBehavior> behaviorFactory = new ThingBehaviorFactory<ServerThingBehavior>() {
-        public ServerThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+        public ServerThingBehavior newBehavior(Class<? extends Thing> thingType) {
             return new ServerThingBehavior();
         }
 
@@ -177,7 +189,7 @@ public class ThingLogic {
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The things that match the filter.
      */
-    public Collection<Thing> findThings(FilteredRequest filter, Long userId, ThingPermission requirePermission) {
+    public Stream<Thing> findThings(FilteredRequest filter, Long userId, ThingPermission requirePermission) {
         Stream<Thing> stream = getThingStream(userId, requirePermission);
 
         if (!filter.getFilterAttributes().isEmpty()) {
@@ -209,8 +221,7 @@ public class ThingLogic {
         if (filter.getLimit() > 0) {
             stream = stream.limit(filter.getLimit());
         }
-
-        return stream.collect(Collectors.toList());
+        return stream;
     }
 
     /**
@@ -226,12 +237,12 @@ public class ThingLogic {
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return The matching collection of things.
      */
-    public Collection<Thing> findThings(int offset, int limit, Long userId, ThingPermission requirePermission) {
+    public Stream<Thing> findThings(int offset, int limit, Long userId, ThingPermission requirePermission) {
         Stream<Thing> stream = getThingStream(userId, requirePermission).skip(offset);
         if (limit > 0) {
             stream = stream.limit(limit);
         }
-        return stream.collect(Collectors.toList());
+        return stream;
     }
 
     /**
@@ -243,8 +254,8 @@ public class ThingLogic {
      *            May be null. If set, only the things will be considered that the current user has the given permission for.
      * @return All things.
      */
-    public Collection<Thing> getAllThings(Long userId, ThingPermission requirePermission) {
-        return getThingStream(userId, requirePermission).collect(Collectors.toList());
+    public Stream<Thing> getAllThings(Long userId, ThingPermission requirePermission) {
+        return getThingStream(userId, requirePermission);
     }
 
     /**
@@ -253,19 +264,19 @@ public class ThingLogic {
      * 
      * @param thingType
      *            The type of the thing to be registered.
-     * @param thingName
-     *            The name of the thing to be registerd.
-     * @param ownerId
-     *            The User ID of the user who owns the thing.
+     * @param metainfo
+     *            The metainfo of the thing. This must be well-checked for security vulnerabilities, etc.! Or it may be <tt>null</tt>.
      * @return The newly registered Thing.
      * @throws DatasourceInsertException
      *             Exception during creation of the thing or during insertion of the thing into the datasource
      */
-    public synchronized Thing registerThing(String thingType, String thingName, long ownerId) throws DatasourceInsertException {
+    public synchronized Thing registerThing(String thingType, ThingMetainfo metainfo) throws DatasourceInsertException {
         try {
-            ServerThingBehavior behavior = ThingFactory.create(thingType, 0, thingName, behaviorFactory);
+            ServerThingBehavior behavior = ThingFactory.create(thingType, 0, behaviorFactory);
             Thing thing = behavior.getThing();
-            thing.setOwnerId(ownerId);
+            if (metainfo != null) {
+                metainfo.apply(thing);
+            }
             thingDAO.insert(thing);
             things.put(thing.getId(), behavior); // The behaviorFactory didn't add it because the ID was missing.
             behavior.markLastConnection();
@@ -445,6 +456,22 @@ public class ThingLogic {
     }
 
     /**
+     * Checks whether the given user is the owner of the given thing.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @param userId
+     *            The user id. If this is <tt>null</tt>, it will be replaced with the current user's id.
+     * @return True if the user is the owner, false otherwise.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     */
+    public boolean isOwner(long thingId, Long userId) throws DatasourceFindException {
+        Long actualOwner = getBehavior(thingId).getThing().getOwnerId();
+        return actualOwner.equals(userId == null ? umFacade.getCurrentUserId() : userId);
+    }
+
+    /**
      * Gets the permissions of all users on the given thing (directly, excluding parent permissions).
      * 
      * @param thingId
@@ -475,6 +502,158 @@ public class ThingLogic {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets all children of a thing (according to their {@link Thing#getParentReference()}). Note that permissions are inherited, so that
+     * any user can access the things if he/she can access the parent.
+     * 
+     * @param parent
+     *            The parent thing.
+     * @return A collection of all things, never <tt>null</tt>.
+     */
+    public Collection<Thing> getChildren(Thing parent) {
+        Objects.requireNonNull(parent, "parent must not be null");
+        return getChildren(parent.getId());
+    }
+
+    /**
+     * Gets all children of a thing (according to their {@link Thing#getParentReference()}). Note that permissions are inherited, so that
+     * any user can access the things if he/she can access the parent.
+     * 
+     * @param parentId
+     *            The id of the parent thing.
+     * @return A collection of all things, never <tt>null</tt>.
+     */
+    public Collection<Thing> getChildren(Long parentId) {
+        if (parentId == null) {
+            return Collections.emptyList();
+        }
+        return things.values().stream().map(ThingBehavior::getThing).filter((thing) -> {
+            return parentId.equals(thing.getParentId());
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * Sets the parent reference of the <tt>child</tt> thing to the <tt>parent</tt> thing and persists the change in the database.
+     * 
+     * @param child
+     *            The child thing, must not be <tt>null</tt>.
+     * @param parent
+     *            The parent thing, may be <tt>null</tt> to unset the parent.
+     * @throws DatasourceUpdateException
+     *             When storing the information fails.
+     */
+    public void setParent(Thing child, Thing parent) throws DatasourceUpdateException {
+        Objects.requireNonNull(child, "child must not be null");
+        child.setParent(parent);
+        thingDAO.update(child);
+    }
+
+    /**
+     * Sets the metainfo of the <tt>thing</tt> and persists the changes in the database. This way, it is possible to change the owner,
+     * parent and/or name of a Thing.
+     * 
+     * @param thing
+     *            The thing to write to.
+     * @param metainfo
+     *            The metainfo to read from.
+     * @throws DatasourceUpdateException
+     *             When storing the information fails.
+     */
+    public void setMetainfo(Thing thing, ThingMetainfo metainfo) throws DatasourceUpdateException {
+        if (metainfo.getName() == null || metainfo.getName().isEmpty()) {
+            throw new IllegalArgumentException("name must not be empty!");
+        } else if (metainfo.getOwnerId() == null || metainfo.getOwnerId() < 1) {
+            throw new IllegalArgumentException("ownerId must not be empty!");
+        } else if (metainfo.getParentId() == null || metainfo.getParentId() < 1) {
+            metainfo.setParentId(null);
+        }
+
+        Objects.requireNonNull(thing, "thing must not be null");
+        metainfo.apply(thing);
+        thingDAO.update(thing);
+    }
+
+    /**
+     * Maps the given Thing to a ThingInformation representation containing the given fields (the rest of the fields will be <tt>null</tt>).
+     * 
+     * @param userId
+     *            The user to get the information for (will be replaced by current user, if <tt>null</tt>). Information that the user must
+     *            not read will be excluded. Please check first that the user can access the <tt>thing</tt> itself.
+     * @param thing
+     *            The thing to be mapped.
+     * @param fields
+     *            The fields to include.
+     * @return The mapped thing.
+     */
+    public ThingInformation map(Long userId, Thing thing, Collection<Field> fields) { // NOCS
+        if (thing == null) {
+            return null;
+        } else if (fields == null || fields.isEmpty()) {
+            return new ThingInformation();
+        }
+
+        ThingInformation result = new ThingInformation();
+        result.setId(thing.getId());
+        result.setType(thing.getClass().getName());
+
+        Long eUserId = userId;
+
+        for (Field field : fields) {
+            switch (field) {
+            case METAINFO:
+                result.setMetainfo(ThingMetainfo.create(thing));
+                break;
+
+            case STATE:
+                result.setState(ThingState.create(thing));
+                break;
+
+            case DESCRIPTION:
+                result.setDescription(ThingDescription.create(thing));
+                break;
+
+            case DIRECTCHILDREN:
+                if (fields.contains(Field.ALLCHILDREN)) {
+                    continue;
+                }
+                // Fall through
+            case ALLCHILDREN:
+                Set<Field> newFields = new HashSet<>(fields);
+                newFields.remove(Field.DIRECTCHILDREN);
+                List<ThingInformation> childInfos = new ArrayList<>();
+                for (Thing child : getChildren(thing)) {
+                    childInfos.add(map(eUserId, child, newFields));
+                }
+                result.setChildren(childInfos);
+                break;
+
+            case SHARES:
+                if (eUserId == null || eUserId.equals(0)) {
+                    eUserId = umFacade.getCurrentUserId();
+                }
+                try {
+                    if (canAccess(thing.getId(), eUserId, ThingPermission.SHARE)) {
+                        result.setShares(getThingShares(thing.getId()));
+                    }
+                } catch (DatasourceFindException e) {
+                    // Ignore.
+                }
+                break;
+
+            case LASTCONNECTION:
+                try {
+                    result.setLastConnection(getLastConnection(thing.getId()));
+                } catch (DatasourceFindException e) {
+                    // Ignore.
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported field type " + field);
+            }
+        }
+        return result;
     }
 
 }

@@ -37,7 +37,7 @@ public abstract class MirroringThingBehavior extends ClientThingBehavior impleme
      * and add them to the list of {@link #knownOtherThings}.
      */
     protected final ThingBehaviorFactory<MirroredThingBehavior> behaviorFactory = new ThingBehaviorFactory<MirroredThingBehavior>() {
-        public MirroredThingBehavior newBehavior(long thingID, String thingName, Class<? extends Thing> thingType) {
+        public MirroredThingBehavior newBehavior(Class<? extends Thing> thingType) {
             return new MirroredThingBehavior(MirroringThingBehavior.this);
         }
 

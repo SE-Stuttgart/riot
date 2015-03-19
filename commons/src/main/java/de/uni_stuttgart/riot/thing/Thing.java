@@ -8,31 +8,32 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.references.ParentReference;
 import de.uni_stuttgart.riot.references.Referenceable;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
- * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s.
+ * A {@link Thing} (e.g. Car, House, ...) contains Properties, supported {@link Action}s and {@link Event}s. Apart from this, each thing
+ * contains a reference to its {@link ThingBehavior} and some meta-information like its name, owner and parent.
  */
 public class Thing extends Storable implements Referenceable<Thing> {
 
     final Map<String, Property<?>> properties = new HashMap<String, Property<?>>();
     final Map<String, Event<?>> events = new HashMap<String, Event<?>>();
     final Map<String, Action<?>> actions = new HashMap<String, Action<?>>();
-    private String name;
-    private long ownerId;
     private final transient ThingBehavior behavior;
+    private final ParentReference parent = new ParentReference(this);
+    private long ownerId;
+    private String name;
 
     /**
      * Creates a new thing.
      * 
-     * @param name
-     *            The name of the thing.
      * @param behavior
      *            The behavior for this thing.
      */
-    public Thing(String name, ThingBehavior behavior) {
-        this.name = name;
+    public Thing(ThingBehavior behavior) {
         this.behavior = behavior;
         this.behavior.register(this);
     }
@@ -223,6 +224,101 @@ public class Thing extends Storable implements Referenceable<Thing> {
      */
     protected <R extends Referenceable<? super R>> WritableReferenceProperty<R> newWritableReferenceProperty(String propertyName, Class<R> targetType, UIHint uiHint) {
         return getBehavior().newWritableReferenceProperty(propertyName, targetType, uiHint);
+    }
+
+    /**
+     * Gets the {@link ParentReference} of this Thing.
+     * 
+     * @return The parent reference. Note: Use this with care. Especially, it can be harmful to set this property without checking for
+     *         cycles first!
+     */
+    public ParentReference getParentReference() {
+        return parent;
+    }
+
+    /**
+     * Gets the ID of the parent thing.
+     * 
+     * @return The parent's ID or <tt>null</tt> if there is no parent.
+     */
+    public Long getParentId() {
+        return parent.getId();
+    }
+
+    /**
+     * Sets the parent ID. Note: Use with care. This method might lead to an inconsistent thing hierarchy! Always prefer
+     * {@link #setParent(Thing)}.
+     * 
+     * @param parentId
+     *            The new parent ID or <tt>null</tt> for no parent.
+     */
+    public void setParentId(Long parentId) {
+        parent.setId(parentId);
+    }
+
+    /**
+     * Gets the parent of this Thing.
+     * 
+     * @return The thing's parent or <tt>null</tt> if it does not have a parent.
+     * @throws ResolveReferenceException
+     *             When the parent should be present but could not be resolved.
+     */
+    public Thing getParent() throws ResolveReferenceException {
+        return parent.getTarget();
+    }
+
+    /**
+     * Checks if this thing has a parent. This does not mean that the parent still exists or is resolvable!
+     * 
+     * @return True if this thing has a parent (and possibly more ancestors).
+     */
+    public boolean hasParent() {
+        return parent.getId() != null;
+    }
+
+    /**
+     * Checks if the given <tt>otherThing</tt> is somewhere up the parent hierarchy of this thing. In particular, this method returns
+     * <tt>true</tt> if making the given <tt>otherThing</tt> the parent of <tt>this</tt> thing would lead to a circle in the parent
+     * hierarchy. This method is recursive, but it will always terminate if there is not already a cycle in the parent hierarchy.
+     * 
+     * @param otherThing
+     *            The potential ancestor.
+     * @return True if <tt>otherThing</tt> is an ancestor of this thing.
+     * @throws ResolveReferenceException
+     *             If the parent hierarchy contains an error because a parent reference cannot be resolved.
+     */
+    public boolean hasAncestor(Thing otherThing) throws ResolveReferenceException {
+        Thing ownParent = parent.getTarget();
+        if (ownParent == null) {
+            return false;
+        } else if (ownParent == otherThing) {
+            return true;
+        } else {
+            return ownParent.hasAncestor(otherThing);
+        }
+    }
+
+    /**
+     * Sets a new parent for the thing. Note that this method will throw an {@link IllegalArgumentException} if the new thing-parent
+     * relation would cause a cycle in the parent hierarchy.
+     * 
+     * @param parent
+     *            The new parent, may be <tt>null</tt> for no parent.
+     */
+    public void setParent(Thing parent) {
+        try {
+            if (parent == null) {
+                this.parent.setTarget(null);
+            } else if (parent == this) {
+                throw new IllegalArgumentException("A thing cannot be its own parent.");
+            } else if (parent.hasAncestor(this)) {
+                throw new IllegalArgumentException(this + " is already an ancestor of " + parent + ", so that the call would result in a cycle.");
+            } else {
+                this.parent.setTarget(parent);
+            }
+        } catch (ResolveReferenceException e) {
+            throw new IllegalStateException("Incomplete ancestor hierarchy", e);
+        }
     }
 
     /**

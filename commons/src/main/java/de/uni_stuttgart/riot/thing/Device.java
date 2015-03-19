@@ -11,13 +11,11 @@ public class Device extends Thing {
     /**
      * Creates a new device.
      * 
-     * @param name
-     *            The name of the device.
      * @param behavior
      *            Its behavior.
      */
-    public Device(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public Device(ThingBehavior behavior) {
+        super(behavior);
     }
 
 }

@@ -2,9 +2,9 @@ package de.uni_stuttgart.riot.thing.server;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.hamcrest.CustomMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,12 +23,18 @@ import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.references.SimpleResolver;
+import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
@@ -39,16 +46,16 @@ public class ThingLogicTest extends BaseDatabaseTest {
     ThingLogic logic;
 
     @Before
-    public void initializeThingLogic() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        // We don't use the static instance because we need a fresh one every time.
-        Constructor<ThingLogic> constructor = ThingLogic.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        logic = constructor.newInstance();
+    public void resetThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Field instanceField = ThingLogic.class.getDeclaredField("instance");
+        instanceField.setAccessible(true);
+        instanceField.set(null, null);
+        logic = ThingLogic.getThingLogic();
     }
 
     @Test
     public void shouldLoadExistingThingFromDatabase() {
-        assertThat(logic.getAllThings(null, null), hasSize(2));
+        assertThat(logic.getAllThings(null, null).collect(Collectors.toList()), hasSize(2));
         TestThing thing = (TestThing) logic.getThing(1);
         assertThat(thing.getInt(), is(42));
         assertThat(thing.getReadonlyString(), is("String from Database"));
@@ -58,34 +65,34 @@ public class ThingLogicTest extends BaseDatabaseTest {
 
     @Test
     public void shouldRegisterAndUnregister() throws DatasourceInsertException, DatasourceDeleteException {
-        TestThing thing1 = (TestThing) logic.getThing(1);
-        TestThing thing2 = (TestThing) logic.getThing(2);
+        Thing thing1 = logic.getThing(1);
+        Thing thing2 = logic.getThing(2);
 
-        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), null);
         assertThat(thing3.getId(), notNullValue());
         assertThat(thing3.getId(), not(0));
 
-        Collection<Thing> things = logic.getAllThings(null, null);
+        Collection<Thing> things = logic.getAllThings(null, null).collect(Collectors.toList());
         assertThat(things, containsInAnyOrder(thing1, thing2, thing3));
 
         logic.unregisterThing(thing3.getId());
-        things = logic.getAllThings(null, null);
+        things = logic.getAllThings(null, null).collect(Collectors.toList());
         assertThat(things, containsInAnyOrder(thing1, thing2));
     }
 
     @Test
     public void shouldFilterCorrectly() throws DatasourceInsertException {
-        TestThing thing1 = (TestThing) logic.getThing(1);
-        TestThing thing2 = (TestThing) logic.getThing(2);
-        TestThing thing3 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
-        TestThing thing4 = (TestThing) logic.registerThing(TestThing.class.getName(), "Third Test Thing", 0);
-        TestThing thing5 = (TestThing) logic.registerThing(TestThing.class.getName(), "Fourth Test Thing", 0);
+        Thing thing1 = logic.getThing(1);
+        Thing thing2 = logic.getThing(2);
+        Thing thing3 = logic.registerThing(TestThing.class.getName(), null);
+        Thing thing4 = logic.registerThing(TestThing.class.getName(), null);
+        Thing thing5 = logic.registerThing(TestThing.class.getName(), null);
 
         // Note: ThingLogic internally sorts by ID.
-        assertThat(logic.getAllThings(null, null), contains(thing1, thing2, thing3, thing4, thing5));
-        assertThat(logic.findThings(0, 10, null, null), contains(thing1, thing2, thing3, thing4, thing5));
-        assertThat(logic.findThings(0, 2, null, null), contains(thing1, thing2));
-        assertThat(logic.findThings(2, 2, null, null), contains(thing3, thing4));
+        assertThat(logic.getAllThings(null, null).collect(Collectors.toList()), contains(thing1, thing2, thing3, thing4, thing5));
+        assertThat(logic.findThings(0, 10, null, null).collect(Collectors.toList()), contains(thing1, thing2, thing3, thing4, thing5));
+        assertThat(logic.findThings(0, 2, null, null).collect(Collectors.toList()), contains(thing1, thing2));
+        assertThat(logic.findThings(2, 2, null, null).collect(Collectors.toList()), contains(thing3, thing4));
 
         // id > thing1 (OR id == thing3)
         FilteredRequest request = new FilteredRequest();
@@ -94,33 +101,32 @@ public class ThingLogicTest extends BaseDatabaseTest {
         filterAttributes.add(new FilterAttribute("id", FilterOperator.GT, thing1.getId()));
         filterAttributes.add(new FilterAttribute("thingID", FilterOperator.EQ, thing4.getId()));
         request.setFilterAttributes(filterAttributes);
-        assertThat(logic.findThings(request, null, null), contains(thing2, thing3, thing4, thing5));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing2, thing3, thing4, thing5));
 
         // id == thing3 (AND id > thing1)
         request.setOrMode(false);
-        assertThat(logic.findThings(request, null, null), contains(thing4));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing4));
 
         // id == thing3 (AND id > thing1 AND type == TestThing)
         filterAttributes.add(new FilterAttribute("type", FilterOperator.EQ, TestThing.class.getName()));
-        assertThat(logic.findThings(request, null, null), contains(thing4));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing4));
 
         // type = TestThing (OR id == thing3 OR id > thing1)
         request.setOrMode(true);
-        assertThat(logic.findThings(request, null, null), contains(thing1, thing2, thing3, thing4, thing5));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing1, thing2, thing3, thing4, thing5));
 
         // Select all, but paginated
         request.setLimit(2);
-        assertThat(logic.findThings(request, null, null), contains(thing1, thing2));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing1, thing2));
         request.setOffset(2);
-        assertThat(logic.findThings(request, null, null), contains(thing3, thing4));
+        assertThat(logic.findThings(request, null, null).collect(Collectors.toList()), contains(thing3, thing4));
     }
 
     @Test
     public void shouldPropagateEvents() throws DatasourceInsertException, DatasourceFindException {
-
         // thing1 registers to the parameterizedEvent of thing2
         TestThing thing1 = (TestThing) logic.getThing(1);
-        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), "Second Test Thing", 0);
+        TestThing thing2 = (TestThing) logic.registerThing(TestThing.class.getName(), null);
         logic.registerToEvent(thing1.getId(), thing2.getId(), "parameterizedEvent");
 
         // So far, there should be no instances
@@ -224,6 +230,87 @@ public class ThingLogicTest extends BaseDatabaseTest {
         assertThat(share.getUserId(), is(1L));
         assertThat(share.getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
 
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCreateParentHierarchies() throws DatasourceInsertException, DatasourceUpdateException, ResolveReferenceException, DatasourceFindException {
+        Thing thing1 = logic.getThing(1);
+        Thing thing2 = logic.getThing(2);
+        Thing thing3 = logic.registerThing(TestThing.class.getName(), null);
+        Thing thing4 = logic.registerThing(TestThing.class.getName(), null);
+        Thing thing5 = logic.registerThing(TestThing.class.getName(), null);
+        TypedReferenceResolver<Thing> resolver = SimpleResolver.create(thing1, thing2, thing3, thing4, thing5);
+        ServerReferenceResolver.getInstance().addResolver(Thing.class, resolver);
+
+        // Hierarchy: thing1 ( thing2 (thing3, thing4), thing5 )
+        logic.setParent(thing2, thing1);
+        logic.setParent(thing3, thing2);
+        logic.setParent(thing4, thing2);
+        logic.setParent(thing5, thing1);
+
+        // Check that loops fail.
+        try {
+            logic.setParent(thing1, thing2);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected.
+        }
+        assertThat(thing1.hasParent(), is(false));
+        assertThat(thing2.hasParent(), is(true));
+        assertThat(thing2.hasAncestor(thing1), is(true));
+        assertThat(thing4.hasAncestor(thing1), is(true));
+        assertThat(thing4.hasAncestor(thing2), is(true));
+        assertThat(thing4.hasAncestor(thing5), is(false));
+        assertThat(thing5.hasAncestor(thing4), is(false));
+        assertThat(thing5.hasAncestor(thing1), is(true));
+
+        // Check that permissions are inherited (user i can access thing i by default).
+        assertThat(logic.canAccess(thing1.getId(), 1L, ThingPermission.READ), is(true)); // Normal.
+        assertThat(logic.canAccess(thing1.getId(), 2L, ThingPermission.READ), is(false)); // User 2 cannot access thing 1.
+        assertThat(logic.canAccess(thing2.getId(), 1L, ThingPermission.READ), is(true)); // But this is inherited.
+        assertThat(logic.canAccess(thing3.getId(), 1L, ThingPermission.READ), is(true)); // And these, too.
+        assertThat(logic.canAccess(thing3.getId(), 2L, ThingPermission.READ), is(true));
+        assertThat(logic.canAccess(thing5.getId(), 1L, ThingPermission.READ), is(true));
+        assertThat(logic.canAccess(thing5.getId(), 2L, ThingPermission.READ), is(false)); // User 2 cannot access thing 5.
+
+        // Check the childrens collections.
+        assertThat(logic.getChildren(thing1), containsInAnyOrder(thing2, thing5));
+        assertThat(logic.getChildren(thing2), containsInAnyOrder(thing3, thing4));
+        assertThat(logic.getChildren(thing3), is(empty()));
+        assertThat(logic.getChildren(thing4), is(empty()));
+        assertThat(logic.getChildren(thing5), is(empty()));
+
+        // Check the hierarchy in the ThingInformation
+        ThingInformation info = logic.map(1L, thing1, EnumSet.of(ThingInformation.Field.ALLCHILDREN));
+        assertThat(info.getChildren(), hasSize(2));
+        assertThat(info.getChildren(), contains(new CustomMatcher<ThingInformation>("thing2 info") {
+            @Override
+            public boolean matches(Object item) {
+                ThingInformation info = (ThingInformation) item;
+                if (info.getId() != 2) {
+                    return false;
+                }
+                assertThat(info.getChildren(), hasSize(2));
+                return true;
+            }
+        }, new CustomMatcher<ThingInformation>("thing5 info") {
+            @Override
+            public boolean matches(Object item) {
+                ThingInformation info = (ThingInformation) item;
+                if (info.getId() != 5) {
+                    return false;
+                }
+                assertThat(info.getChildren(), is(empty()));
+                return true;
+            }
+        }));
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldFailOnNullChild() throws DatasourceUpdateException {
+        logic.setParent(null, logic.getThing(1));
     }
 
 }
