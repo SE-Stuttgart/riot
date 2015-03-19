@@ -24,7 +24,7 @@ public class RoleRestTest extends BaseResourceTest<RoleService, Role> {
 
     @Override
     public FilterAttribute getFilter() {
-        return new FilterAttribute("rolename", FilterOperator.EQ, "Dark");
+        return new FilterAttribute("rolename", FilterOperator.EQ, "admin");
     }
 
     @Override

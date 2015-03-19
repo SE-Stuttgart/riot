@@ -325,7 +325,7 @@ public class UserLogicTest extends LogicTestBase {
 
     @Test
     public void testRemoveRoleFromUserValid() throws Exception {
-        ul.removeRoleFromUser(1L, 1L);
+        ul.removeRoleFromUser(1L, 4L);
         Collection<Role> allRolesFromUser = ul.getAllRolesFromUser(1L);
         assertEquals(0, allRolesFromUser.size());
     }
