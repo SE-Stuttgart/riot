@@ -1,10 +1,13 @@
 package de.uni_stuttgart.riot.rule.test;
 
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
-import de.uni_stuttgart.riot.rule.ReferenceParameter;
 import de.uni_stuttgart.riot.rule.Rule;
+import de.uni_stuttgart.riot.rule.ThingParameter;
+import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.PropertyListener;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.test.TestThing;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * A test rule that operates on a {@link TestThing}. It ensures that the {@link TestThing#getPercentProperty()} reflects the percentage of
@@ -16,7 +19,9 @@ public class TestSchedulingRule extends Rule {
 
     private static final long DELAY_MILLIS = 10;
 
-    ReferenceParameter<TestThing> thing = newReferenceParameter("thing", TestThing.class);
+    @Parameter(ui = UIHint.ThingDropDown.class, requires = { ThingPermission.READ, ThingPermission.CONTROL })
+    private ThingParameter<TestThing> thing;
+
     private final PropertyListener<Integer> intListener = onPropertyChange(this::recalculate);
     private final PropertyListener<Long> longListener = onPropertyChange(this::recalculate);
 

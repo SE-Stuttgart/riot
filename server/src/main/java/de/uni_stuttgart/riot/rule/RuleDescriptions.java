@@ -81,9 +81,13 @@ public abstract class RuleDescriptions {
                 if (Modifier.isStatic(field.getModifiers())) {
                     continue;
                 }
+
+                // The parameter types need to be unwrapped, i.e. RuleParameter<X> becomes X.
                 Type fieldType = field.getGenericType();
                 if (!TypeUtils.isAssignable(fieldType, RuleParameter.class)) {
                     continue;
+                } else if (TypeUtils.isAssignable(fieldType, ThingParameter.class)) {
+                    fieldType = TypeUtils.getTypeArguments(fieldType, ThingParameter.class).get(ThingParameter.class.getTypeParameters()[0]);
                 } else if (TypeUtils.isAssignable(fieldType, ReferenceParameter.class)) {
                     fieldType = TypeUtils.getTypeArguments(fieldType, ReferenceParameter.class).get(ReferenceParameter.class.getTypeParameters()[0]);
                 } else {

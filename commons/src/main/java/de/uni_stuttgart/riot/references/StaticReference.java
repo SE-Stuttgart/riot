@@ -73,7 +73,7 @@ public class StaticReference<R> implements Reference<R> {
      * @return A static reference.
      */
     @SuppressWarnings("unchecked")
-    public static <R extends Referenceable<R>> Reference<R> create(R target) {
+    public static <R extends Referenceable<? super R>> Reference<R> create(R target) {
         if (target == null) {
             return NULL_REFERENCE;
         } else if (target.getId() == null || target.getId() == 0) {

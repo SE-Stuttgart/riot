@@ -1,16 +1,15 @@
 package de.uni_stuttgart.riot.thing.ui;
 
-import java.lang.reflect.ParameterizedType;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-import de.uni_stuttgart.riot.references.Reference;
 import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.thing.Parameter;
+import de.uni_stuttgart.riot.thing.Thing;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 
 /**
  * A UIHint is assigned to a property or a field of an action/event instance and provides information to UIs about how to display the value
@@ -29,6 +28,7 @@ import de.uni_stuttgart.riot.thing.Parameter;
         @Type(value = UIHint.EditNumber.class, name = "EditNumber"), //
         @Type(value = UIHint.EnumDropDown.class, name = "EnumDropDown"), //
         @Type(value = UIHint.ReferenceDropDown.class, name = "ReferenceDropDown"), //
+        @Type(value = UIHint.ThingDropDown.class, name = "ThingReferenceDropDown"), //
 })
 public abstract class UIHint {
 
@@ -38,10 +38,12 @@ public abstract class UIHint {
      * @param annotation
      *            The annotation to read from.
      * @param fieldType
-     *            The value type of the field that the annotation was used on.
+     *            The Java type of the field that the annotation was used on. For references, this is Referenc&lt;X&gt;
+     * @param valueType
+     *            The value type of the field that the annotation was used on. For references, this is the inner type of the reference (X).
      * @return A corresponding {@link UIHint} or <tt>null</tt> if none was set.
      */
-    public static UIHint fromAnnotation(Parameter annotation, java.lang.reflect.Type fieldType) { // NOCS
+    public static UIHint fromAnnotation(Parameter annotation, java.lang.reflect.Type fieldType, java.lang.reflect.Type valueType) { // NOCS
         if (annotation.ui() == Parameter.NoHint.class) {
             return null;
 
@@ -78,18 +80,22 @@ public abstract class UIHint {
                 throw new IllegalArgumentException("UIHint.EnumDropDown can only be used with Enum fields!");
             }
 
-        } else if (annotation.ui() == ReferenceDropDown.class) {
-            if (fieldType instanceof ParameterizedType && ((ParameterizedType) fieldType).getRawType() == Reference.class) {
-                java.lang.reflect.Type[] typeArguments = ((ParameterizedType) fieldType).getActualTypeArguments();
-                if (typeArguments.length == 1 && typeArguments[0] instanceof Class) {
-                    @SuppressWarnings("unchecked")
-                    ReferenceDropDown result = referenceDropDown((Class<? extends Referenceable<?>>) typeArguments[0]);
-                    return result;
-                } else {
-                    throw new IllegalArgumentException("The Reference field defines an unexpected type parameter!");
+        } else if (annotation.ui() == ReferenceDropDown.class || annotation.ui() == ThingDropDown.class) {
+
+            @SuppressWarnings("unchecked")
+            Class<? extends Referenceable<?>> targetType = (Class<? extends Referenceable<?>>) valueType;
+            if (annotation.ui() == ReferenceDropDown.class) {
+                if (Thing.class.isAssignableFrom(targetType)) {
+                    throw new IllegalArgumentException("UIHint.ReferenceDropDown cannot be used for things, use UIHint.ThingReferenceDropDown instead!");
                 }
+                return referenceDropDown(targetType);
             } else {
-                throw new IllegalArgumentException("UIHint.ReferenceDropDown can only be used with Reference fields!");
+                if (!Thing.class.isAssignableFrom(targetType)) {
+                    throw new IllegalArgumentException("UIHint.ThingReferenceDropDown can only be used with Reference fields that reference a Thing!");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends Thing> thingType = (Class<? extends Thing>) targetType;
+                return thingDropDown(thingType, annotation.requires());
             }
 
         } else {
@@ -288,6 +294,38 @@ public abstract class UIHint {
          * The type of the referenced entity.
          */
         public Class<? extends Referenceable<?>> targetType;
+    }
+
+    /**
+     * Returns a ThingReferenceDropDown.
+     * 
+     * @param <T>
+     *            The type of the referenced things.
+     * @param targetType
+     *            The type of the referenced things.
+     * @param requiredPermissions
+     *            The permissions that the user needs on the things that can be chosen.
+     * @return The ThingReferenceDropDown.
+     */
+    public static <T extends Thing> ThingDropDown thingDropDown(Class<T> targetType, ThingPermission... requiredPermissions) {
+        ThingDropDown result = new ThingDropDown();
+        result.targetType = targetType;
+        result.requiredPermissions = requiredPermissions;
+        return result;
+    }
+
+    /**
+     * The value is a reference to a {@link Thing} (or a special subtype of {@link Thing}). The UI needs to retrieve all possible values and
+     * could display them in a dropdown list. In readonly mode, this could be displayed either as a disabled dropdown or as a simple label.
+     * The possible values can be limited by the given {@link ThingDropDown#requiredPermissions}. A thing may only be displayed as a
+     * possible value if the user has all of the given privileges on the thing.
+     */
+    public static class ThingDropDown extends ReferenceDropDown {
+
+        /**
+         * The permissions that the user needs on the things that can be chosen.
+         */
+        public ThingPermission[] requiredPermissions;
     }
 
 }

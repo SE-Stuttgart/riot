@@ -1,23 +1,27 @@
 package de.uni_stuttgart.riot.rule;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.references.ReferenceResolver;
-import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.references.TargetNotFoundException;
+import de.uni_stuttgart.riot.references.ThingPermissionDeniedException;
 import de.uni_stuttgart.riot.thing.BaseInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.PropertyListener;
-import de.uni_stuttgart.riot.thing.ui.UIHint;
+import de.uni_stuttgart.riot.thing.Thing;
 
 /**
  * A {@link Rule} gets a set of {@link RuleParameter}s and uses those together with other surrounding infrastructure to execute its
@@ -37,6 +41,17 @@ public abstract class Rule {
     private final Logger logger = LoggerFactory.getLogger(Rule.class);
     private RuleConfiguration configuration;
     private boolean running;
+
+    /**
+     * Creates a new rule instance. This will initialize all fields annotated with {@link Parameter}.
+     */
+    public Rule() {
+        try {
+            initializeParameterFields();
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public String toString() {
@@ -91,6 +106,8 @@ public abstract class Rule {
             throw new IllegalArgumentException("Cannot run rule with empty ID!");
         } else if (!getClass().getName().equals(configuration.getType())) {
             throw new IllegalArgumentException("The configuration is for " + configuration.getType() + " instead of " + getClass());
+        } else if (configuration.getOwnerId() == 0) {
+            throw new IllegalArgumentException("configuration must specify the owner ID!");
         }
         boolean wasRunning = this.running;
         stopExecution();
@@ -100,6 +117,19 @@ public abstract class Rule {
         if (wasRunning) {
             startExecution();
         }
+    }
+
+    /**
+     * Gets the owner of the rule. Throws an exception if the owner is not set!
+     * 
+     * @return The owner's user ID.
+     */
+    protected long getOwnerId() {
+        long ownerId = getConfiguration().getOwnerId();
+        if (ownerId == 0) {
+            throw new IllegalStateException("The owner ID of a rule must not be empty!");
+        }
+        return ownerId;
     }
 
     /**
@@ -130,38 +160,56 @@ public abstract class Rule {
     }
 
     /**
-     * Creates a new rule parameter. <b>Important:</b> You must absolutely make sure that the <tt>parameterName</tt> matches the field that
-     * you are assigning this parameter to. A {@link UIHint} for the parameter can be specified using the {@link Parameter} annotation.
+     * Initializes all fields annotated with {@link Parameter} and fills them with helper objects that provide the parameter values.
      * 
-     * @param <V>
-     *            The type of the parameter's values.
-     * @param parameterName
-     *            The name of the parameter. <b>Important:</b> You must absolutely make sure that the <tt>parameterName</tt> matches the
-     *            field that you are assigning this parameter to.
-     * @param valueType
-     *            The type of the parameter's values.
-     * @return The rule parameter instance.
+     * @throws IllegalAccessException
+     *             When a field could not be accessed.
+     * @throws IllegalArgumentException
+     *             When something went wrong when setting a parameter instance to a parameter field.
      */
-    protected <V> RuleParameter<V> newParameter(String parameterName, Class<V> valueType) {
-        return new RuleParameter<V>(this, parameterName, valueType);
-    }
+    private void initializeParameterFields() throws IllegalArgumentException, IllegalAccessException {
+        Class<?> clazz = getClass();
+        while (clazz != Rule.class) {
+            // We detect the "parameters" by checking which RuleParameter fields are declared in the class.
+            for (Field field : clazz.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
 
-    /**
-     * Creates a new reference rule parameter. <b>Important:</b> You must absolutely make sure that the <tt>parameterName</tt> matches the
-     * field that you are assigning this parameter to. A {@link UIHint} for the parameter can be specified using the {@link Parameter}
-     * annotation.
-     * 
-     * @param <R>
-     *            The type of the entites referenced by the parameter.
-     * @param parameterName
-     *            The name of the parameter. <b>Important:</b> You must absolutely make sure that the <tt>parameterName</tt> matches the
-     *            field that you are assigning this parameter to.
-     * @param targetType
-     *            The type of the entites referenced by the parameter.
-     * @return The rule parameter instance.
-     */
-    protected <R extends Referenceable<? super R>> ReferenceParameter<R> newReferenceParameter(String parameterName, Class<R> targetType) {
-        return new ReferenceParameter<R>(this, parameterName, targetType);
+                // Only use RuleParameter-Fields.
+                Type fieldType = field.getGenericType();
+                if (!TypeUtils.isAssignable(fieldType, RuleParameter.class)) {
+                    continue;
+                }
+
+                // Get common information.
+                field.setAccessible(true);
+                Parameter annotation = field.getAnnotation(Parameter.class);
+                String parameterName = field.getName();
+
+                // Create instance based on field type.
+                if (TypeUtils.isAssignable(fieldType, ThingParameter.class)) {
+                    @SuppressWarnings("unchecked")
+                    Class<? extends Thing> thingType = (Class<? extends Thing>) TypeUtils.getTypeArguments(fieldType, ThingParameter.class).get(ThingParameter.class.getTypeParameters()[0]);
+                    field.set(this, new ThingParameter<>(this, parameterName, thingType, annotation == null ? null : annotation.requires()));
+
+                } else if (TypeUtils.isAssignable(fieldType, ReferenceParameter.class)) {
+                    @SuppressWarnings("rawtypes")
+                    Class targetType = (Class) TypeUtils.getTypeArguments(fieldType, ReferenceParameter.class).get(ReferenceParameter.class.getTypeParameters()[0]);
+                    if (Thing.class.isAssignableFrom(targetType)) {
+                        throw new IllegalArgumentException("ReferenceParameters for Things are not permitted, please use ThingParameter!");
+                    }
+                    @SuppressWarnings("unchecked")
+                    ReferenceParameter<?> paramObject = new ReferenceParameter<>(this, parameterName, targetType);
+                    field.set(this, paramObject);
+
+                } else {
+                    Class<?> valueType = (Class<?>) TypeUtils.getTypeArguments(fieldType, RuleParameter.class).get(RuleParameter.class.getTypeParameters()[0]);
+                    field.set(this, new RuleParameter<>(this, parameterName, valueType));
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
     }
 
     /**
@@ -207,7 +255,15 @@ public abstract class Rule {
      */
     public void errorOccured(Exception e) {
         logger.error("Error during initializion/execution of " + toString(), e);
-        shutdownFailure(e instanceof TargetNotFoundException ? RuleStatus.FAILED_REFERENCES : RuleStatus.FAILED);
+        RuleStatus errorStatus;
+        if (e instanceof TargetNotFoundException) {
+            errorStatus = RuleStatus.FAILED_REFERENCES;
+        } else if (e instanceof ThingPermissionDeniedException) {
+            errorStatus = RuleStatus.FAILED_PERMISSIONS;
+        } else {
+            errorStatus = RuleStatus.FAILED;
+        }
+        shutdownFailure(errorStatus);
     }
 
     /**

@@ -1,11 +1,12 @@
 package de.uni_stuttgart.riot.rule.test;
 
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
-import de.uni_stuttgart.riot.rule.ReferenceParameter;
 import de.uni_stuttgart.riot.rule.Rule;
 import de.uni_stuttgart.riot.rule.RuleParameter;
+import de.uni_stuttgart.riot.rule.ThingParameter;
 import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.PropertyListener;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
@@ -18,9 +19,13 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
 public class TestAdditionRule extends Rule {
 
     @Parameter(ui = UIHint.EditNumber.class)
-    private final RuleParameter<Integer> intAdd = newParameter("intAdd", Integer.class);
-    private final ReferenceParameter<TestThing> inputThing = newReferenceParameter("inputThing", TestThing.class);
-    private final ReferenceParameter<TestThing> outputThing = newReferenceParameter("outputThing", TestThing.class);
+    private RuleParameter<Integer> intAdd;
+
+    @Parameter(ui = UIHint.ThingDropDown.class, requires = ThingPermission.READ)
+    private ThingParameter<TestThing> inputThing;
+
+    @Parameter(ui = UIHint.ThingDropDown.class, requires = ThingPermission.CONTROL)
+    private ThingParameter<TestThing> outputThing;
 
     private final PropertyListener<Integer> listener = onPropertyChange(this::recalculate);
 

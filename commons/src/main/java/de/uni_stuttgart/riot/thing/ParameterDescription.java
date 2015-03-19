@@ -115,15 +115,6 @@ public class ParameterDescription {
             throw new IllegalArgumentException("fieldType must not be null!");
         }
 
-        UIHint uiHint = null;
-        if (field.isAnnotationPresent(Parameter.class)) {
-            try {
-                uiHint = UIHint.fromAnnotation(field.getAnnotation(Parameter.class), fieldType);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Error reading the UI hint for field " + field, e);
-            }
-        }
-
         // fieldType could be anything. Here we resolve "Reference<X>" to "X".
         Type genericValueType;
         boolean isReference = ClassUtils.isAssignable(field.getType(), Reference.class);
@@ -142,6 +133,16 @@ public class ParameterDescription {
             throw new IllegalArgumentException("Collections as parameters are not (yet) supported. See " + field);
         } else {
             throw new IllegalArgumentException("Generic types are not allowed. Please only use Reference<X> where X is a plain class and do not use any other generic types! See " + field);
+        }
+
+        // Create the UI hint.
+        UIHint uiHint = null;
+        if (field.isAnnotationPresent(Parameter.class)) {
+            try {
+                uiHint = UIHint.fromAnnotation(field.getAnnotation(Parameter.class), fieldType, genericValueType);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Error reading the UI hint for field " + field, e);
+            }
         }
 
         return new ParameterDescription(field.getName(), isReference, valueType, uiHint);

@@ -3,6 +3,8 @@ package de.uni_stuttgart.riot.rule.test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -64,6 +66,7 @@ public class RuleFrameworkTest {
         RuleConfiguration configuration = new RuleConfiguration(TestAdditionRule.class.getName());
         configuration.setName("Test Rule");
         configuration.setId(100L);
+        configuration.setOwnerId(1);
         configuration.setStatus(RuleStatus.ACTIVE);
         configuration.set("intAdd", 42);
         configuration.set("inputThing", 1L);
@@ -116,6 +119,7 @@ public class RuleFrameworkTest {
         configuration.setName("Test Rule 2");
         configuration.setId(101L);
         configuration.setStatus(RuleStatus.ACTIVE);
+        configuration.setOwnerId(1);
         configuration.set("thing", 1L);
 
         // Launch the rule.
@@ -160,6 +164,14 @@ public class RuleFrameworkTest {
         rule.setConfiguration(configuration);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldDetectMissingOwner() {
+        RuleConfiguration configuration = new RuleConfiguration(TestSchedulingRule.class.getName());
+        configuration.setId(20L);
+        TestSchedulingRule rule = new TestSchedulingRule();
+        rule.setConfiguration(configuration);
+    }
+
     @Test
     public void shouldFailSilentlyOnMissingReferences() throws ResolveReferenceException {
         // Use a resolver that does not actually have things, but always throws an exception.
@@ -173,6 +185,7 @@ public class RuleFrameworkTest {
         configuration.setName("Test Rule With Nonexisting Thing Reference");
         configuration.setId(102L);
         configuration.setStatus(RuleStatus.ACTIVE);
+        configuration.setOwnerId(1);
         configuration.set("thing", 15L);
 
         // Launch the rule.
@@ -181,6 +194,36 @@ public class RuleFrameworkTest {
         rule.startExecution();
         assertThat(rule.isRunning(), is(false));
         assertThat(rule.getConfiguration().getStatus(), is(RuleStatus.FAILED_REFERENCES));
+    }
+
+    @Test
+    public void shouldFailSilentlyOnMissingPermissions() throws ResolveReferenceException {
+
+        // Create a test thing that nobody has permissions on.
+        TestThingBehavior behavior = spy(new TestThingBehavior());
+        TestThing thing = ThingFactory.create(TestThing.class, 100, behavior);
+        stub(behavior.canAccess(Matchers.anyLong(), Matchers.any())).toReturn(false);
+
+        // Register it in the resolver. Since we don't use a DB for this test, this is done by mocking the resolver.
+        @SuppressWarnings("unchecked")
+        TypedReferenceResolver<Thing> resolver = mock(TypedReferenceResolver.class);
+        ServerReferenceResolver.getInstance().addResolver(Thing.class, resolver);
+        when(resolver.resolve(15L)).thenReturn(thing);
+
+        // Create a configuration for the rule.
+        RuleConfiguration configuration = new RuleConfiguration(TestSchedulingRule.class.getName());
+        configuration.setName("Test Rule With Nonexisting Thing Reference");
+        configuration.setId(102L);
+        configuration.setStatus(RuleStatus.ACTIVE);
+        configuration.setOwnerId(1);
+        configuration.set("thing", 15L);
+
+        // Launch the rule.
+        TestSchedulingRule rule = new TestSchedulingRule();
+        rule.setConfiguration(configuration);
+        rule.startExecution();
+        assertThat(rule.isRunning(), is(false));
+        assertThat(rule.getConfiguration().getStatus(), is(RuleStatus.FAILED_PERMISSIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -196,6 +239,7 @@ public class RuleFrameworkTest {
         configuration.setName("Test Rule With Nonexisting Thing Reference");
         configuration.setId(102L);
         configuration.setStatus(RuleStatus.ACTIVE);
+        configuration.setOwnerId(1);
         configuration.set("thing", 16L);
 
         // Launch the rule.

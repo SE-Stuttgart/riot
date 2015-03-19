@@ -12,6 +12,7 @@ import java.util.Queue;
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.AuthenticatingThingBehavior;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
@@ -30,7 +31,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
  * 
  * @author Philipp Keck
  */
-public class ServerThingBehavior extends ThingBehavior {
+public class ServerThingBehavior extends ThingBehavior implements AuthenticatingThingBehavior {
 
     private final Queue<ActionInstance> outstandingActions = new LinkedList<>();
     private final Queue<EventInstance> occuredEvents = new LinkedList<>();
@@ -89,15 +90,7 @@ public class ServerThingBehavior extends ThingBehavior {
         shares.remove(userId);
     }
 
-    /**
-     * Determines if the given user has the given permission on this thing.
-     * 
-     * @param userId
-     *            The user id.
-     * @param permission
-     *            The permission to check for.
-     * @return True if the user has the permission (or the FULL permission), false otherwise.
-     */
+    @Override
     public boolean canAccess(Long userId, ThingPermission permission) {
         ThingShare share = shares.get(userId);
         if (share != null && share.permits(permission)) {

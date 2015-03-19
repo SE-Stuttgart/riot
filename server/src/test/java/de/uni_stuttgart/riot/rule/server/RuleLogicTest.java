@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 
 import org.hamcrest.CustomMatcher;
@@ -35,6 +36,9 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertExcepti
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.ThingTestUtils;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
+import de.uni_stuttgart.riot.thing.rest.ThingShare;
+import de.uni_stuttgart.riot.thing.server.ServerThingBehavior;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_rules.sql", "/testdata/testdata_rules.sql" })
@@ -120,6 +124,11 @@ public class RuleLogicTest extends BaseDatabaseTest {
         thing1.setInt(-10);
         thing2.setInt(-20);
         ThingTestUtils.flushAllActions(thing1, thing2);
+        assertThat(thing1.getInt(), is(-10));
+        assertThat(thing2.getInt(), is(-20));
+
+        // The user will be Yoda, but he needs permissions on the Thing 2
+        ((ServerThingBehavior) thing2.getBehavior()).addOrUpdateShare(new ThingShare(1L, EnumSet.allOf(ThingPermission.class)));
 
         // We launch the rule.
         RuleConfiguration config = logic.getRuleConfiguration(1);
@@ -159,6 +168,7 @@ public class RuleLogicTest extends BaseDatabaseTest {
         config.set("intAdd", 42);
         config.setStatus(RuleStatus.DEACTIVATED);
         logic.updateRuleConfiguration(config);
+        ((ServerThingBehavior) thing2.getBehavior()).removeShare(1L);
 
     }
 

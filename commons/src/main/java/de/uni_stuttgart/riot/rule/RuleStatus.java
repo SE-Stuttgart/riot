@@ -23,6 +23,11 @@ public enum RuleStatus {
     FAILED_REFERENCES,
 
     /**
+     * The rule could not be executed due to insufficient permissions.
+     */
+    FAILED_PERMISSIONS,
+
+    /**
      * The rule has been deactivated on purpose (by the user).
      */
     DEACTIVATED

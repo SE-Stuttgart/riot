@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing.test;
 
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -32,12 +33,14 @@ import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
 import de.uni_stuttgart.riot.thing.BasePropertyListener;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
+import de.uni_stuttgart.riot.thing.ParameterDescription;
 import de.uni_stuttgart.riot.thing.PropertySetAction;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.PropertySetAction.Instance;
 import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -143,19 +146,19 @@ public class ThingFrameworkTest {
 
     @Test
     public void testActions() {
-        TestThingBehavior behavior = new TestThingBehavior();
+        TestThingBehavior behavior = spy(new TestThingBehavior());
         TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
 
         // Fire an action, check that is transported to the behavior.
         ActionInstance actionInstance = new ActionInstance(thing.getSimpleAction());
         thing.getSimpleAction().fire(actionInstance);
-        verify(behavior.actionInterceptor, times(1)).fired(actionInstance);
+        verify(behavior, times(1)).userFiredAction(actionInstance);
 
         // Do the same for PropertySetActions fired indirectly.
-        reset(behavior.actionInterceptor);
+        reset(behavior);
         thing.setInt(1001);
         ArgumentCaptor<ActionInstance> actionCaptor = ArgumentCaptor.forClass(ActionInstance.class);
-        verify(behavior.actionInterceptor, times(1)).fired(actionCaptor.capture());
+        verify(behavior, times(1)).userFiredAction(actionCaptor.capture());
         assertThat(actionCaptor.getValue(), instanceOf(PropertySetAction.Instance.class));
 
         @SuppressWarnings("unchecked")
@@ -189,7 +192,7 @@ public class ThingFrameworkTest {
     @Test
     public void testReferences() throws ResolveReferenceException {
 
-        TestThingBehavior behavior = new TestThingBehavior();
+        TestThingBehavior behavior = spy(new TestThingBehavior());
         TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
         TestReferenceable referenceable = new TestReferenceable(10L);
 
@@ -212,9 +215,9 @@ public class ThingFrameworkTest {
         verify(testResolver, times(1)).resolve(10L);
 
         // Fire an action with a referenced value inside.
-        TestRefActionInstance actionInstance = new TestRefActionInstance(thing.getRefAction(), referenceable);
+        TestRefActionInstance actionInstance = new TestRefActionInstance(thing.getRefAction(), referenceable, null);
         thing.getRefAction().fire(actionInstance);
-        verify(behavior.actionInterceptor, times(1)).fired(actionInstance);
+        verify(behavior, times(1)).userFiredAction(actionInstance);
         assertThat(actionInstance.getParameter().getId(), is(10L));
 
     }
@@ -223,7 +226,7 @@ public class ThingFrameworkTest {
     public void shouldFailForUnpersistedReferences() {
         TestThingBehavior behavior = new TestThingBehavior();
         TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
-        new TestRefActionInstance(thing.getRefAction(), new TestReferenceable(null));
+        new TestRefActionInstance(thing.getRefAction(), new TestReferenceable(null), null);
     }
 
     @SuppressWarnings("unchecked")
@@ -306,18 +309,26 @@ public class ThingFrameworkTest {
         assertThat(description.getActions(), hasSize(3));
         assertThat(description.getActionByName("simpleAction").getInstanceDescription().getInstanceType() == ActionInstance.class, is(true));
         assertThat(description.getActionByName("simpleAction").getInstanceDescription().getParameters().isEmpty(), is(true));
+
         BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
         assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
         assertThat(parActionInstance.getParameters().size(), is(1));
-        assertThat(parActionInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parActionInstance.getParameters().get(0).getValueType(), isClass(Integer.class));
-        assertThat(parActionInstance.getParameters().get(0).isReference(), is(false));
+        ParameterDescription actionParam = parActionInstance.getParameters().get(0);
+        assertThat(actionParam.getName(), is("parameter"));
+        assertThat(actionParam.getValueType(), isClass(Integer.class));
+        assertThat(actionParam.isReference(), is(false));
+
         BaseInstanceDescription refActionInstance = description.getActionByName("refAction").getInstanceDescription();
         assertThat(refActionInstance.getInstanceType(), isClass(TestRefActionInstance.class));
-        assertThat(refActionInstance.getParameters().size(), is(1));
-        assertThat(refActionInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(refActionInstance.getParameters().get(0).getValueType(), isClass(TestReferenceable.class));
-        assertThat(refActionInstance.getParameters().get(0).isReference(), is(true));
+        assertThat(refActionInstance.getParameters().size(), is(2));
+        ParameterDescription refActionParam = refActionInstance.getParameters().get(0);
+        assertThat(refActionParam.getName(), is("parameter"));
+        assertThat(refActionParam.getValueType(), isClass(TestReferenceable.class));
+        assertThat(refActionParam.isReference(), is(true));
+        ParameterDescription thingParam = refActionInstance.getParameters().get(1);
+        assertThat(thingParam.getName(), is("thingParameter"));
+        assertThat(thingParam.getValueType(), isClass(TestThing.class));
+        assertThat(thingParam.isReference(), is(true));
 
         // Check the properties.
         assertThat(description.getProperties(), hasSize(5));
@@ -346,6 +357,11 @@ public class ThingFrameworkTest {
         assertThat(refHint.targetType, isClass(TestReferenceable.class));
         UIHint.ReferenceDropDown refActionHint = (UIHint.ReferenceDropDown) refActionInstance.getParameters().get(0).getUiHint();
         assertThat(refActionHint.targetType, isClass(TestReferenceable.class));
+
+        assertThat(thingParam.getUiHint(), instanceOf(UIHint.ThingDropDown.class));
+        UIHint.ThingDropDown thingHint = (UIHint.ThingDropDown) thingParam.getUiHint();
+        assertThat(thingHint.targetType, isClass(TestThing.class));
+        assertThat(thingHint.requiredPermissions, arrayContaining(ThingPermission.SHARE, ThingPermission.READ));
     }
 
     @Test

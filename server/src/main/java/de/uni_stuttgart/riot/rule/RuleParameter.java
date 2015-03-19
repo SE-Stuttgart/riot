@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.rule;
 
+import java.util.Objects;
+
 /**
  * A {@link RuleParameter} is a piece of input data to a {@link Rule}. Its value is defined by the current {@link RuleConfiguration} and
  * used by the rule to execute its behavior. {@link RuleParameter}s are similar in structure to the properties of things, but they do not
@@ -29,9 +31,9 @@ public class RuleParameter<V> {
      *            The type of the parameter's values.
      */
     RuleParameter(Rule rule, String name, Class<V> valueType) {
-        this.rule = rule;
-        this.name = name;
-        this.valueType = valueType;
+        this.rule = Objects.requireNonNull(rule);
+        this.name = Objects.requireNonNull(name);
+        this.valueType = Objects.requireNonNull(valueType);
     }
 
     /**

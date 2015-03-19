@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.rule;
 
+import java.util.Objects;
+
 import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.references.ResolvableReference;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
@@ -26,12 +28,10 @@ public class ReferenceParameter<R extends Referenceable<? super R>> extends Rule
      *            The parameter name.
      * @param targetType
      *            The type of the entites referenced by the parameter.
-     * @param value
-     *            The initial parameter value.
      */
     ReferenceParameter(Rule rule, String name, Class<R> targetType) {
         super(rule, name, Long.class);
-        this.targetType = targetType;
+        this.targetType = Objects.requireNonNull(targetType);
     }
 
     @Override

@@ -2,12 +2,12 @@ package de.uni_stuttgart.riot.thing.test;
 
 import static org.mockito.Mockito.*;
 
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.AuthenticatingThingBehavior;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
@@ -15,6 +15,7 @@ import de.uni_stuttgart.riot.thing.PropertyChangeEvent;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 
 /**
  * A behavior for testing things. This behavior exposes most of the capabilities of a behavior so that unit tests can access these features.
@@ -22,18 +23,13 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
  * @author Philipp Keck
  *
  */
-public class TestThingBehavior extends ThingBehavior {
+public class TestThingBehavior extends ThingBehavior implements AuthenticatingThingBehavior {
 
-    public interface ActionInterceptor {
-        void fired(ActionInstance instance);
-    }
-
-    public ActionInterceptor actionInterceptor = Mockito.mock(ActionInterceptor.class);
     public boolean executePropertyChangesDirectly = false;
 
     @Override
     protected <A extends ActionInstance> void userFiredAction(A actionInstance) {
-        actionInterceptor.fired(actionInstance);
+        // Ignore.
     }
 
     @Override
@@ -77,6 +73,11 @@ public class TestThingBehavior extends ThingBehavior {
             }
         });
         return mockBehaviorFactory;
+    }
+
+    @Override
+    public boolean canAccess(Long userId, ThingPermission permission) {
+        return true; // Allow anything.
     }
 
 }
