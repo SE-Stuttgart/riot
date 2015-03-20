@@ -99,7 +99,7 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
          * 
          * @return The old value of the property.
          */
-        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_ARRAY)
         public V getOldValue() {
             return oldValue;
         }
@@ -109,7 +109,7 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
          * 
          * @return The new value of the property.
          */
-        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_ARRAY)
         public V getNewValue() {
             return newValue;
         }

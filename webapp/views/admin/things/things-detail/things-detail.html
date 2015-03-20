@@ -32,7 +32,7 @@
         <div class="form-group">
           <label class="control-label col-md-2" for="name">{{'thing.name' | i18n}}</label>
           <div class="col-md-8">
-            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.name" disabled>
+            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.metainfo.name" disabled>
           </div>
         </div>
 
@@ -50,7 +50,7 @@
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.properties' | i18n}}</div>
       <form class="form-horizontal">
-        <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingDetail[property.name]" description="property" things-value></div>
+        <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingState[property.name]" description="property" things-value></div>
       </form>
     </div>
 

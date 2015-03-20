@@ -44,6 +44,22 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $roo
     Thing.one($stateParams.thingid).get().then(function(thing) {
       $scope.thingDetail = thing;
       $scope.thingDescription = $scope.thingDetail.getDescription().$object;
+//      $scope.thingState = $scope.thingDetail.getState().$object;
+      
+      $scope.thingState = {};
+      $scope.thingDetail.getState().then(function(state) {
+        angular.forEach(state.propertyValues, function (propertyValueValue, propertyValueKey) {
+          if(angular.isArray(propertyValueValue)) {
+            console.log(propertyValueKey + " is array: " + propertyValueValue[1]);
+            this[propertyValueKey] = propertyValueValue[1];
+          } else {
+            console.log(propertyValueKey + " is no array");
+            this[propertyValueKey] = propertyValueValue;
+          }
+        }, $scope.thingState);
+      });
+      console.log($scope.thingState);
+
     });
   };
 

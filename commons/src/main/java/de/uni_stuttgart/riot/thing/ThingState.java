@@ -48,7 +48,7 @@ public class ThingState {
      * 
      * @return The values of the thing's properties.
      */
-    @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
+    @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_ARRAY)
     public Map<String, Object> getPropertyValues() {
         return propertyValues;
     }

@@ -95,7 +95,7 @@ public class PropertySetAction<V> extends Action<PropertySetAction.Instance<V>> 
          * 
          * @return The new value for the property.
          */
-        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
+        @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_ARRAY)
         public V getNewValue() {
             return newValue;
         }

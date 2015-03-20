@@ -138,7 +138,7 @@ public class RuleConfiguration extends Storable {
      * 
      * @return The values of the rule's parameters.
      */
-    @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_OBJECT)
+    @JsonTypeInfo(use = Id.CLASS, include = As.WRAPPER_ARRAY)
     public Map<String, Object> getParameterValues() {
         return parameterValues;
     }
