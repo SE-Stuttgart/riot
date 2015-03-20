@@ -69,15 +69,16 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $roo
   };
   
   $scope.getSharedUsers = function() {
-    Thing.one($stateParams.thingid).getList('sharedWithUsers').then(function(userPermissions) {
+    Thing.one($stateParams.thingid).getList('sharesWithUsers').then(function(userPermissions) {
       $scope.sharedUserPermissions = [];
       
-      angular.forEach(userPermissions, function(value) {
-        angular.forEach(value.value, function(permission) {
-          if(value.key.username !== $rootScope.user().username) {
+      angular.forEach(userPermissions, function(userPermission) {
+        angular.forEach(userPermission.permissions, function(permission) {
+          if(userPermission.user.username !== $rootScope.user().username) {
             $scope.sharedUserPermissions.push({
-              user: value.key,
-              permission: permission
+              user: userPermission.user,
+              permission: permission,
+              allPermissions: userPermission.permissions
             });
           }
         });
@@ -102,41 +103,70 @@ angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $roo
     });
   };
   
-  $scope.share = function(userId, right) {
-    if(!userId || !right) {
+  $scope.share = function(userId, permission) {
+    if(!userId || !permission) {
       return;
     }
     
-    if(right === locale.getString('thing.read')) {
-      right = 'READ';
-    } else if (right === locale.getString('thing.control')) {
-      right = 'CONTROL';
-    } else if (right === locale.getString('thing.execute')) {
-      right = 'EXECUTE';
-    } else if (right === locale.getString('thing.delete')) {
-      right = 'DELETE';
-    } else if (right === locale.getString('thing.share')) {
-      right = 'SHARE';
-    } else if (right === locale.getString('thing.full')) {
-      right = 'FULL';
-    }
-    
-    Thing.one($stateParams.thingid).post('share', {
-      userId: userId,
-      permission: right
-    }).then(function() {
-      $scope.getSharedUsers();
+    Thing.one($stateParams.thingid).one('shares').get().then(function(thingShares) {
+      
+      var permissions = [];
+      angular.forEach(thingShares, function(thingShare) {
+        if(thingShare.userId === userId) {
+          permissions = thingShare.permissions;
+        }
+      });
+      
+      if(permission === locale.getString('thing.read')) {
+        pushIfNotExistsInArray(permissions, 'READ');
+      } else if (permission === locale.getString('thing.control')) {
+        pushIfNotExistsInArray(permissions, 'CONTROL');
+      } else if (permission === locale.getString('thing.execute')) {
+        pushIfNotExistsInArray(permissions, 'EXECUTE');
+      } else if (permission === locale.getString('thing.delete')) {
+        pushIfNotExistsInArray(permissions, 'DELETE');
+      } else if (permission === locale.getString('thing.share')) {
+        pushIfNotExistsInArray(permissions, 'SHARE');
+      } else if (permission === locale.getString('thing.full')) {
+        pushIfNotExistsInArray(permissions, 'READ');
+        pushIfNotExistsInArray(permissions, 'CONTROL');
+        pushIfNotExistsInArray(permissions, 'EXECUTE');
+        pushIfNotExistsInArray(permissions, 'DELETE');
+        pushIfNotExistsInArray(permissions, 'SHARE');
+      }
+
+      
+      Thing.one($stateParams.thingid).post('shares', {
+        userId: userId,
+        permissions: permissions
+      }).then(function() {
+        $scope.getSharedUsers();
+      });
     });
+    
+
     
   };
   
-  $scope.unshare = function(userId, right) {
-    Thing.one($stateParams.thingid).post('unshare', {
-      userId: userId,
-      permission: right.toUpperCase()
-    }).then(function() {
-      $scope.getSharedUsers();
-    });
+  $scope.unshare = function(userPermissions, permission, userId) {
+  
+    permission = permission.toUpperCase();
+  
+    if(userPermissions.indexOf(permission) !== -1) {
+      userPermissions.splice(userPermissions.indexOf(permission), 1);
+      Thing.one($stateParams.thingid).post('shares', {
+        userId: userId,
+        permissions: userPermissions
+      }).then(function() {
+        $scope.getSharedUsers();
+      });
+    }
+  };
+  
+  var pushIfNotExistsInArray = function(array, value) {
+    if(array.indexOf(value) === -1) {
+      array.push(value);
+    }
   };
 
   init();
