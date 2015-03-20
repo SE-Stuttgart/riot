@@ -9,6 +9,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -17,8 +18,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentProducer;
 import org.apache.http.entity.EntityTemplate;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,12 +66,13 @@ public final class ServerConnector {
         this.connectionInformation = connectionInformation;
         this.baseURL = connectionInformation.getFullBaseURL();
         this.jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        RequestConfig config = RequestConfig.custom().setConnectTimeout(CONNECTION_TIMEOUT).setSocketTimeout(CONNECTION_TIMEOUT).build();
+        HttpClientBuilder builder = HttpClientBuilder.create().setDefaultRequestConfig(config);
         if (connectionInformation.getProtocol().equals("https")) {
-            this.client = new HttpsClient(connectionInformation.getPort());
-        } else {
-            this.client = new DefaultHttpClient();
+            builder = builder.setSSLSocketFactory(SSLHelper.createSLLSocketFactory());
         }
-        HttpConnectionParams.setConnectionTimeout(this.client.getParams(), CONNECTION_TIMEOUT);
+        this.client = builder.build();
     }
 
     /**
@@ -527,9 +528,6 @@ public final class ServerConnector {
         if (newInformation == null || newInformation.equals(connectionInformation)) {
             return false;
         } else {
-            if (newInformation.getPort() != connectionInformation.getPort()) {
-                this.client = new HttpsClient(newInformation.getPort());
-            }
             this.connectionInformation = newInformation;
             this.baseURL = newInformation.getFullBaseURL();
             return true;
@@ -674,7 +672,7 @@ public final class ServerConnector {
     private void consume(HttpResponse response) {
         if (response.getEntity() != null) {
             try {
-                response.getEntity().consumeContent();
+                EntityUtils.consume(response.getEntity());
             } catch (IOException e) {
                 // Ignore this
             }

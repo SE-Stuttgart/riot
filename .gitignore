@@ -6,3 +6,7 @@ target
 nb-configuration.xml
 .checkstyle
 .tern-project
+gitinspector
+generateGitreport.sh
+gitreport.html
+gitlog.txt
