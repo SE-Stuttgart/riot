@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import java.util.Comparator;
+
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -185,6 +187,23 @@ public class Property<V> {
             return false;
         }
         return true;
+    }
+    
+    private static Comparator<Property<?>> GROUP_COMPERATOR;
+    
+    /**
+     * Comparator for {@link ParameterDescription} according to the groupID.
+     * @return
+     */
+    public static Comparator<Property<?>> groupComp() {
+        if (GROUP_COMPERATOR == null){
+            GROUP_COMPERATOR = new Comparator<Property<?>>() {
+                public int compare(Property<?> o1, Property<?> o2) {
+                    return ((Integer)o1.getUiHint().getgroupAndOrderID()).compareTo(o2.getUiHint().getgroupAndOrderID());
+                }
+            };
+        }
+        return GROUP_COMPERATOR;
     }
 
 }

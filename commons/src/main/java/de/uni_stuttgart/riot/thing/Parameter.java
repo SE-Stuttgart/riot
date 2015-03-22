@@ -19,6 +19,12 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
 public @interface Parameter {
 
     /**
+     * The groupID.
+     * @return
+     */
+    int group() default -1;
+    
+    /**
      * The type of UI to be used.
      */
     Class<? extends UIHint> ui() default NoHint.class;

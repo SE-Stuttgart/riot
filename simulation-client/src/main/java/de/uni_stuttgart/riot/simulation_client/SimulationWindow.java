@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.simulation_client;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import de.uni_stuttgart.riot.javafx.UIProducer;
@@ -103,7 +105,9 @@ public class SimulationWindow extends Stage {
         container.setHgap(INNER_SPACING);
         container.setVgap(INNER_SPACING);
         int i = 0;
-        for (Property<?> property : thing.getProperties()) {
+        ArrayList<Property<?>> properties = new ArrayList<Property<?>>(thing.getProperties());
+        Collections.sort(properties,Property.groupComp());
+        for (Property<?> property : properties) {
             Label label = new Label(property.getName());
             Control valueControl = UIProducer.produceInternalControl(property, behavior);
             container.addRow(i, label, valueControl);

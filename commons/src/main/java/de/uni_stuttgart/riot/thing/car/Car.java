@@ -82,6 +82,8 @@ public class Car extends Thing {
      */
     private static final BatteryState DEFAULT_BATTERY_STATE = BatteryState.FULL;
 
+    private static final int TIRE_RESSURE_GRUOP = 1;
+
     /**
      * Property for the tank fill level.
      */
@@ -110,47 +112,47 @@ public class Car extends Thing {
     /**
      * Property for the tire pressure of the front left tire.
      */
-    private final Property<Double> tirePressureFrontLeft = newProperty("tirePressureFrontLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber());
+    private final Property<Double> tirePressureFrontLeft = newProperty("tirePressureFrontLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the front right tire.
      */
-    private final Property<Double> tirePressureFrontRight = newProperty("tirePressureFrontRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber());
+    private final Property<Double> tirePressureFrontRight = newProperty("tirePressureFrontRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the back left tire.
      */
-    private final Property<Double> tirePressureBackLeft = newProperty("tirePressureBackLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber());
+    private final Property<Double> tirePressureBackLeft = newProperty("tirePressureBackLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the back right tire.
      */
-    private final Property<Double> tirePressureBackRight = newProperty("tirePressureBackRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber());
+    private final Property<Double> tirePressureBackRight = newProperty("tirePressureBackRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
 
     /**
      * Property for the longitude as part of the gps data.
      */
-    private final Property<Double> longitude = newProperty("longitude", Double.class, DEFAULT_LONGITUDE, UIHint.editNumber());
+    private final Property<Double> longitude = newProperty("longitude", Double.class, DEFAULT_LONGITUDE, UIHint.editNumber(2));
 
     /**
      * Property for the latitude as part of the gps data.
      */
-    private final Property<Double> latitude = newProperty("latitude", Double.class, DEFAULT_LATITUDE, UIHint.editNumber());
+    private final Property<Double> latitude = newProperty("latitude", Double.class, DEFAULT_LATITUDE, UIHint.editNumber(2));
 
     /**
      * Changeable Property for the heating switch.
      */
-    private final Property<Boolean> airCondition = newProperty("airCondition", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton());
+    private final Property<Boolean> airCondition = newProperty("airCondition", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton(3));
 
     /**
      * Changeable Property for the configured heating temperature in degree Celsius.
      */
-    private final WritableProperty<Double> airConditionTemp = newWritableProperty("airConditionTemp", Double.class, DEFAULT_TEMP, UIHint.editNumber());
+    private final WritableProperty<Double> airConditionTemp = newWritableProperty("airConditionTemp", Double.class, DEFAULT_TEMP, UIHint.editNumber(3));
 
     /**
      * Property of the actual interior temperature in degree Celsius.
      */
-    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_TEMP, UIHint.editNumber());
+    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_TEMP, UIHint.editNumber(3));
 
     /**
      * Action to refuel the car.
@@ -185,8 +187,8 @@ public class Car extends Thing {
      * @param behavior
      *            behavior to be used.
      */
-    public Car(String name, ThingBehavior behavior) {
-        super(name, behavior);
+    public Car(ThingBehavior behavior) {
+        super(behavior);
     }
 
     /**
