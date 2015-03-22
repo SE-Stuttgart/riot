@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.commons.rest.data.TableName;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
@@ -15,6 +16,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingShare;
  * 
  * @author Philipp Keck
  */
+@TableName("things_users")
 public class ThingUser extends Storable {
 
     private Long thingID;
