@@ -19,6 +19,7 @@ public class User extends Storable implements Referenceable<User> {
     protected String username;
     protected String email;
     private transient Collection<Role> roles;
+    private transient Collection<Permission> permissions;
 
     /**
      * Constructs a new user.
@@ -49,14 +50,17 @@ public class User extends Storable implements Referenceable<User> {
      *            The name of the user
      * @param roles
      *            The roles of the user
+     * @param permissions
+     *            The permissions of the user
      * @param email
      *            The email of the user
      */
-    public User(String username, String email, Collection<Role> roles) {
+    public User(String username, String email, Collection<Role> roles, Collection<Permission> permissions) {
         super(-1L);
         this.username = username;
         this.email = email;
         this.setRoles(roles);
+        this.setPermissions(permissions);
     }
 
     /**
@@ -124,6 +128,14 @@ public class User extends Storable implements Referenceable<User> {
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    public Collection<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Collection<Permission> permissions) {
+        this.permissions = permissions;
     }
 
     /**

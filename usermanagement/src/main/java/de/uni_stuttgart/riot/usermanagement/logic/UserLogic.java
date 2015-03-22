@@ -16,6 +16,7 @@ import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
+import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserPermissionSqlQueryDAO;
@@ -200,26 +201,6 @@ public class UserLogic {
     }
 
     /**
-     * Add an existing role to an existing user.
-     * 
-     * @param userId
-     *            The id of the user.
-     * @param roleId
-     *            The id of the role.
-     * @throws AddRoleToUserException
-     *             When adding the user role failed.
-     */
-    public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
-        try {
-            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO();
-            UserRole ur = new UserRole(userId, roleId);
-            roleDao.insert(ur);
-        } catch (Exception e) {
-            throw new AddRoleToUserException(e);
-        }
-    }
-
-    /**
      * Retrieve all roles associated with a user.
      * 
      * @param id
@@ -257,6 +238,26 @@ public class UserLogic {
     }
 
     /**
+     * Add an existing role to an existing user.
+     * 
+     * @param userId
+     *            The id of the user.
+     * @param roleId
+     *            The id of the role.
+     * @throws AddRoleToUserException
+     *             When adding the user role failed.
+     */
+    public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
+        try {
+            DAO<UserRole> roleDao = new UserRoleSqlQueryDAO();
+            UserRole ur = new UserRole(userId, roleId);
+            roleDao.insert(ur);
+        } catch (Exception e) {
+            throw new AddRoleToUserException(e);
+        }
+    }
+
+    /**
      * Remove a role from a user.
      * 
      * @param userId
@@ -280,6 +281,93 @@ public class UserLogic {
                 userRoleDao.delete(i.next());
             } else {
                 throw new RemoveRoleFromUserException("User with the id " + userId + " has not the role with the id " + roleId);
+            }
+        } catch (Exception e) {
+            throw new RemoveRoleFromUserException(e);
+        }
+    }
+
+    /**
+     * Retrieve all directly assigned permissions associated with a user.
+     * 
+     * @param id
+     *            The id of the user
+     * @return Collection with permissions
+     * @throws GetRolesFromUserException
+     *             When getting the permissions failed.
+     */
+    public Collection<Permission> getAllPermissionsFromUser(Long id) throws GetRolesFromUserException {
+        if (id == null) {
+            throw new GetRolesFromUserException("The id must not be null");
+        }
+
+        try {
+            DAO<UserPermission> userPermissionDao = new UserPermissionSqlQueryDAO();
+            DAO<Permission> permissionDao = new PermissionSqlQueryDAO();
+
+            // get all permissions with the given user id
+            Collection<SearchParameter> searchParameter = new ArrayList<SearchParameter>();
+            searchParameter.add(new SearchParameter(SearchFields.USERID, id));
+            Collection<UserPermission> userPermissions = userPermissionDao.findBy(searchParameter, false);
+
+            // contains all associated permissions
+            Collection<Permission> permissions = new ArrayList<Permission>();
+
+            // get all associated permissions
+            for (UserPermission userPermission : userPermissions) {
+                permissions.add(permissionDao.findBy(userPermission.getPermissionID()));
+            }
+
+            return permissions;
+        } catch (Exception e) {
+            throw new GetRolesFromUserException(e);
+        }
+    }
+
+    /**
+     * Add an existing permission to an existing user.
+     * 
+     * @param userId
+     *            The id of the user.
+     * @param permissionId
+     *            The id of the permission.
+     * @throws AddRoleToUserException
+     *             When adding the user permission failed.
+     */
+    public void addPermissionToUser(Long userId, Long permissionId) throws AddRoleToUserException {
+        try {
+            DAO<UserPermission> userPermissionDao = new UserPermissionSqlQueryDAO();
+            UserPermission userPermission = new UserPermission(userId, permissionId);
+            userPermissionDao.insert(userPermission);
+        } catch (Exception e) {
+            throw new AddRoleToUserException(e);
+        }
+    }
+
+    /**
+     * Remove a permission from a user.
+     * 
+     * @param userId
+     *            The id of a user
+     * @param permissionId
+     *            The id of the permission
+     * @throws RemoveRoleFromUserException
+     *             When removing the permission failed.
+     */
+    public void removePermissionFromUser(Long userId, Long permissionId) throws RemoveRoleFromUserException {
+        try {
+            DAO<UserPermission> userPermissionDao = new UserPermissionSqlQueryDAO();
+
+            Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
+            searchParams.add(new SearchParameter(SearchFields.USERID, userId));
+            searchParams.add(new SearchParameter(SearchFields.PERMISSIONID, permissionId));
+            Collection<UserPermission> userPermissions = userPermissionDao.findBy(searchParams, false);
+
+            Iterator<UserPermission> i = userPermissions.iterator();
+            if (i.hasNext()) {
+                userPermissionDao.delete(i.next());
+            } else {
+                throw new RemoveRoleFromUserException("User with the id " + userId + " has not the permission with the id " + permissionId);
             }
         } catch (Exception e) {
             throw new RemoveRoleFromUserException(e);

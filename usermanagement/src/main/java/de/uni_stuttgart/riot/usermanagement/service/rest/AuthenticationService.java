@@ -1,7 +1,6 @@
 package de.uni_stuttgart.riot.usermanagement.service.rest;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -28,6 +27,7 @@ import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.Refre
 import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.WrongCredentialsException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -57,8 +57,7 @@ public class AuthenticationService {
     public Response login(LoginRequest request) throws LoginException {
         try {
             Token token = UserManagementFacade.getInstance().login(request.getUsername(), request.getPassword());
-            User u = UserManagementFacade.getInstance().getUser(token);
-            User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
+            User user = getUser(token);
             return Response.ok().entity(new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user)).build();
         } catch (WrongCredentialsException e) {
             return Response.status(Status.UNAUTHORIZED).build();
@@ -86,8 +85,7 @@ public class AuthenticationService {
     public Response refresh(RefreshRequest request) throws InvalidTokenException, RefreshException {
         try {
             Token token = UserManagementFacade.getInstance().refreshToken(request.getRefreshToken());
-            User u = UserManagementFacade.getInstance().getUser(token);
-            User user = new User(u.getUsername(), u.getEmail(), this.getUserRoles(u));
+            User user = getUser(token);
             return Response.ok().entity(new AuthenticationResponse(token.getTokenValue(), token.getRefreshtokenValue(), user)).build();
         } catch (InvalidTokenException e) {
             return Response.status(Status.UNAUTHORIZED).build();
@@ -113,24 +111,16 @@ public class AuthenticationService {
         return Response.ok().build();
     }
 
-    /*************/
-    // FIXME
-    private Collection<Role> getUserRoles(User user) throws GetRolesFromUserException, GetPermissionsFromRoleException {
-        Collection<Role> roles = UserManagementFacade.getInstance().getAllRolesFromUser(user.getId());
-        Collection<Role> rolesResult = new LinkedList<Role>();
+    private User getUser(Token token) throws GetUserException, GetRolesFromUserException, GetPermissionsFromRoleException {
+        UserManagementFacade facade = UserManagementFacade.getInstance();
+        User u = facade.getUser(token);
+        Collection<Permission> permissions = facade.getAllPermissionsFromUser(u.getId());
+        Collection<Role> roles = facade.getAllRolesFromUser(u.getId());
         for (Role role : roles) {
-            role.setPermissions(this.getRolePermissions(role));
-            rolesResult.add(role);
+            role.setPermissions(facade.getAllPermissionsOfRole(role.getId()));
         }
-        return rolesResult;
+
+        return new User(u.getUsername(), u.getEmail(), roles, permissions);
     }
 
-    private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
-        Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
-        Collection<Permission> permissionsResult = new LinkedList<Permission>();
-        for (Permission permission : permissions) {
-            permissionsResult.add(permission);
-        }
-        return permissionsResult;
-    }
 }

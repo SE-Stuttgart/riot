@@ -225,6 +225,19 @@ public class UserManagementFacade {
     }
 
     /**
+     * Get all roles from a specific user.
+     * 
+     * @param id
+     *            The id of the user to get roles from
+     * @return A list with all roles of the given user
+     * @throws GetRolesFromUserException
+     *             Thrown if any errors occur
+     */
+    public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
+        return userLogic.getAllRolesFromUser(id);
+    }
+
+    /**
      * Add a new role to an existing user.
      * 
      * @param userId
@@ -239,19 +252,6 @@ public class UserManagementFacade {
     }
 
     /**
-     * Get all roles from a specific user.
-     * 
-     * @param id
-     *            The id of the user to get roles from
-     * @return A list with all roles of the given user
-     * @throws GetRolesFromUserException
-     *             Thrown if any errors occur
-     */
-    public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
-        return userLogic.getAllRolesFromUser(id);
-    }
-
-    /**
      * Remove a role from a specific user.
      * 
      * @param idUser
@@ -263,6 +263,47 @@ public class UserManagementFacade {
      */
     public void removeRoleFromUser(Long idUser, Long idRole) throws RemoveRoleFromUserException {
         userLogic.removeRoleFromUser(idUser, idRole);
+    }
+
+    /**
+     * Get all directly assigned permissions from a specific user.
+     * 
+     * @param id
+     *            The id of the user to get permissions from
+     * @return A list with all permissions of the given user
+     * @throws GetRolesFromUserException
+     *             Thrown if any errors occur
+     */
+    public Collection<Permission> getAllPermissionsFromUser(Long id) throws GetRolesFromUserException {
+        return userLogic.getAllPermissionsFromUser(id);
+    }
+
+    /**
+     * Add a new directly assigned permission to an existing user.
+     * 
+     * @param userId
+     *            The id of the user.
+     * @param permissionId
+     *            The id of the permission.
+     * @throws AddRoleToUserException
+     *             Thrown if any errors occur
+     */
+    public void addPermissionToUser(Long userId, Long permissionId) throws AddRoleToUserException {
+        userLogic.addPermissionToUser(userId, permissionId);
+    }
+
+    /**
+     * Remove a directly assigned permission from a specific user.
+     * 
+     * @param idUser
+     *            The id of the user
+     * @param permissionId
+     *            The id of the permission to remove
+     * @throws RemoveRoleFromUserException
+     *             Thrown if any errors occur
+     */
+    public void removePermissionFromUser(Long idUser, Long permissionId) throws RemoveRoleFromUserException {
+        userLogic.removePermissionFromUser(idUser, permissionId);
     }
 
     /**
