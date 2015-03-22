@@ -234,7 +234,7 @@ public class ThingLogic {
      * @param userId
      *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
      * @param requirePermission
-     *            May be null. If set, only the things will be considered that the current user has the given permission for.
+     *            May be null. If set, only the things will be considered that the given user has the given permission for.
      * @return The matching collection of things.
      */
     public Stream<Thing> findThings(int offset, int limit, Long userId, ThingPermission requirePermission) {
@@ -243,6 +243,29 @@ public class ThingLogic {
             stream = stream.limit(limit);
         }
         return stream;
+    }
+
+    /**
+     * Returns a collection of matching things.
+     * 
+     * @param type
+     *            The type that the things need to have, or <tt>null</tt> to match any thing.
+     * @param userId
+     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
+     * @param requirePermissions
+     *            May be empty. If set, only the things will be considered that the given user has the contained permissions for.
+     * @return A stream of matching things.
+     */
+    public Stream<Thing> findThings(Class<? extends Thing> type, Long userId, Collection<ThingPermission> requirePermissions) {
+        Stream<ServerThingBehavior> stream = things.values().stream();
+        if (type != null) {
+            stream = stream.filter((behavior) -> type.isInstance(behavior.getThing()));
+        }
+        if (!requirePermissions.isEmpty()) {
+            long finalUserId = (userId == null) ? umFacade.getCurrentUserId() : userId;
+            stream = stream.filter((behavior) -> behavior.canAccess(finalUserId, requirePermissions));
+        }
+        return stream.map(ThingBehavior::getThing);
     }
 
     /**
@@ -453,6 +476,23 @@ public class ThingLogic {
      */
     public boolean canAccess(long thingId, Long userId, ThingPermission permission) throws DatasourceFindException {
         return getBehavior(thingId).canAccess(userId == null ? umFacade.getCurrentUserId() : userId, permission);
+    }
+
+    /**
+     * Determines if the given user has the right to access the given thing.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @param userId
+     *            The user id. If this is <tt>null</tt>, it will be replaced with the current user's id.
+     * @param permissions
+     *            The permissions to check for.
+     * @return True if the access is permitted, false otherwise.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     */
+    public boolean canAccess(long thingId, Long userId, Collection<ThingPermission> permissions) throws DatasourceFindException {
+        return getBehavior(thingId).canAccess(userId == null ? umFacade.getCurrentUserId() : userId, permissions);
     }
 
     /**

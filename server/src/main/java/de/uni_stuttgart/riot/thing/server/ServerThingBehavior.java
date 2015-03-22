@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -91,13 +92,54 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
     }
 
     @Override
-    public boolean canAccess(Long userId, ThingPermission permission) {
+    public boolean canAccess(long userId, ThingPermission permission) {
         ThingShare share = shares.get(userId);
         if (share != null && share.permits(permission)) {
             return true;
         } else if (getThing().hasParent()) {
             try {
                 return ThingLogic.getThingLogic().canAccess(getThing().getParentId(), userId, permission);
+            } catch (DatasourceFindException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean canAccess(long userId, Collection<ThingPermission> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            return true;
+        } else if (permissions instanceof EnumSet) {
+            return canAccess(userId, (EnumSet<ThingPermission>) permissions);
+        } else {
+            return canAccess(userId, EnumSet.copyOf(permissions));
+        }
+    }
+
+    /**
+     * Does what {@link AuthenticatingThingBehavior#canAccess(long, Collection)} does, but with an EnumSet for efficient recursive calls.
+     * 
+     * @param userId
+     *            The ID of the user.
+     * @param permissions
+     *            The required permissions.
+     * @return True if the user has all of the given permissions on this thing.
+     */
+    private boolean canAccess(long userId, EnumSet<ThingPermission> permissions) {
+        EnumSet<ThingPermission> remainingPermissions = permissions;
+
+        ThingShare share = shares.get(userId);
+        if (share != null && !share.isEmpty()) {
+            remainingPermissions = EnumSet.copyOf(permissions);
+            remainingPermissions.removeAll(share.getPermissions());
+        }
+        if (remainingPermissions.isEmpty()) {
+            return true;
+        } else if (getThing().hasParent()) {
+            try {
+                return ThingLogic.getThingLogic().canAccess(getThing().getParentId(), userId, remainingPermissions);
             } catch (DatasourceFindException e) {
                 return false;
             }

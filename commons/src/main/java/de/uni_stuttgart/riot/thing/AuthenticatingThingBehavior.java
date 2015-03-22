@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing;
 
+import java.util.Collection;
+
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 
 /**
@@ -16,8 +18,19 @@ public interface AuthenticatingThingBehavior {
      *            The user id.
      * @param permission
      *            The permission to check for.
-     * @return True if the user has the permission (or the FULL permission), false otherwise.
+     * @return True if the user has the permission, false otherwise.
      */
-    boolean canAccess(Long userId, ThingPermission permission);
+    boolean canAccess(long userId, ThingPermission permission);
+
+    /**
+     * Determines if the given user has the given permissions on the thing managed by this behavior.
+     * 
+     * @param userId
+     *            The user id.
+     * @param permissions
+     *            The permissions to check for.
+     * @return True if the user has all of the permissions, false otherwise.
+     */
+    boolean canAccess(long userId, Collection<ThingPermission> permissions);
 
 }

@@ -43,6 +43,7 @@ public class ThingClient extends BaseClient {
     private static final String POST_NOTIFY_EVENT = "/notify";
 
     private static final String GET_THING = THINGS_PREFIX;
+    private static final String GET_FIND = THINGS_PREFIX + "find";
     private static final String GET_UPDATES_SUFFIX = "/updates";
 
     private static final String DELETE_THING = THINGS_PREFIX;
@@ -135,6 +136,34 @@ public class ThingClient extends BaseClient {
             result.add(ThingFactory.create(info, behaviorFactory).getThing());
         }
         return result;
+    }
+
+    /**
+     * Gets all things of the given type that the current user has the given permissions on.
+     * 
+     * @param type
+     *            The type of the wanted things (fully qualified Java class name). If <tt>null</tt>, all types will be returned.
+     * @param requiredPermissions
+     *            Note that the actual paramter name is <tt>requiresPermission</tt>. The permissions that are (all) required on the returned
+     *            things. Note that the {@link ThingPermission#READ} permission is always required.
+     * @return The matching things (will only have the meta-info field set).
+     * @throws RequestException
+     *             When executing the request fails.
+     * @throws IOException
+     *             When a network error occurs.
+     */
+    public Collection<ThingInformation> findThings(String type, Collection<ThingPermission> requiredPermissions) throws IOException, RequestException {
+        URIBuilder parameters = new URIBuilder();
+        parameters.addParameter("type", type);
+        for (ThingPermission requiredPermission : requiredPermissions) {
+            parameters.addParameter("requiresPermission", requiredPermission.name());
+        }
+        parameters.addParameter("return", Field.METAINFO.name());
+        try {
+            return getConnector().doGETCollection(GET_FIND + parameters.toString(), ThingInformation.class);
+        } catch (NotFoundException e) {
+            throw new RequestException(e);
+        }
     }
 
     /**

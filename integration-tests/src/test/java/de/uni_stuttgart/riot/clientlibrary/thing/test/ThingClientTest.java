@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
+import de.uni_stuttgart.riot.thing.house.coffeemachine.CoffeeMachine;
 import de.uni_stuttgart.riot.thing.rest.ThingInformation;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
@@ -176,6 +178,12 @@ public class ThingClientTest extends BaseClientTest {
             // exception expected, because R2D2 has not the right to read thing/1
         }
 
+        // R2D2 only has access to Thing 2
+        Collection<ThingInformation> foundThings = thingClientR2D2.findThings(TestThing.class.getName(), EnumSet.of(ThingPermission.READ));
+        List<Long> foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(1));
+        assertThat(foundThingIDs, containsInAnyOrder(2L));
+
         // allow R2D2 to read the thing with the id 1
         thingClientYoda.share(1, 2, EnumSet.of(ThingPermission.READ));
         Thing thing = thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
@@ -186,7 +194,19 @@ public class ThingClientTest extends BaseClientTest {
         assertThat(permissions.get(1L).getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
         assertThat(permissions.get(2L).getPermissions(), equalTo(EnumSet.of(ThingPermission.READ)));
 
-        // and unshare again
+        // Should now be able to find the thing 1, too
+        foundThings = thingClientR2D2.findThings(TestThing.class.getName(), EnumSet.of(ThingPermission.READ));
+        foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(2));
+        assertThat(foundThingIDs, containsInAnyOrder(1L, 2L));
+
+        // Not with too greedy permissions, though
+        foundThings = thingClientR2D2.findThings(TestThing.class.getName(), EnumSet.of(ThingPermission.READ, ThingPermission.EXECUTE));
+        foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(1));
+        assertThat(foundThingIDs, containsInAnyOrder(2L));
+
+        // Unshare again
         thingClientYoda.unshare(1, 2);
         try {
             thingClientR2D2.getExistingThing(1L, TestThingBehavior.getMockFactory());
@@ -194,6 +214,30 @@ public class ThingClientTest extends BaseClientTest {
         } catch (RequestException e) {
             // exception expected, because R2D2 has not the right to read thing/1
         }
+    }
+
+    @Test
+    public void findByTypeTest() throws IOException, RequestException {
+        ThingClient thingClient = this.getLoggedInThingClient();
+        // Yoda has full access to Thing 1, nothing else.
+        Collection<ThingInformation> foundThings = thingClient.findThings(TestThing.class.getName(), EnumSet.of(ThingPermission.READ));
+        List<Long> foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(1));
+        assertThat(foundThingIDs, containsInAnyOrder(1L));
+
+        foundThings = thingClient.findThings(TestThing.class.getName(), EnumSet.allOf(ThingPermission.class));
+        foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(1));
+        assertThat(foundThingIDs, containsInAnyOrder(1L));
+
+        foundThings = thingClient.findThings(null, EnumSet.of(ThingPermission.READ));
+        foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, hasSize(1));
+        assertThat(foundThingIDs, containsInAnyOrder(1L));
+
+        foundThings = thingClient.findThings(CoffeeMachine.class.getName(), EnumSet.of(ThingPermission.READ));
+        foundThingIDs = foundThings.stream().map(ThingInformation::getId).collect(Collectors.toList());
+        assertThat(foundThingIDs, is(empty()));
     }
 
     @Test

@@ -58,10 +58,8 @@ public class ThingParameter<T extends Thing> extends ReferenceParameter<T> {
         // We need to check the permission!
         AuthenticatingThingBehavior behavior = (AuthenticatingThingBehavior) thing.getBehavior();
         long ownerId = getRule().getOwnerId();
-        for (ThingPermission permission : requiredPermissions) {
-            if (!behavior.canAccess(ownerId, permission)) {
-                throw new ThingPermissionDeniedException("The rule's owner " + ownerId + " cannot access thing " + getId() + " with permission " + permission);
-            }
+        if (!behavior.canAccess(ownerId, requiredPermissions)) {
+            throw new ThingPermissionDeniedException("The rule's owner " + ownerId + " cannot access thing " + getId() + " with permission " + requiredPermissions);
         }
         return thing;
     }

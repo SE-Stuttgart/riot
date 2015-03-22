@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -270,6 +271,40 @@ public class ThingService {
 
         // Fetch the results
         return logic.findThings(offset, limit == 0 ? DEFAULT_PAGE_SIZE : limit, null, ThingPermission.READ) //
+                .map(thingMapper(fields, EnumSet.of(Field.METAINFO))) //
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets all things of the given type that the current user has the given permissions on.
+     * 
+     * @param type
+     *            The type of the wanted things (fully qualified Java class name). If <tt>null</tt>, all types will be returned.
+     * @param requiredPermissions
+     *            Note that the actual paramter name is <tt>requiresPermission</tt>. The permissions that are (all) required on the returned
+     *            things. Note that the {@link ThingPermission#READ} permission is always required.
+     * @param fields
+     *            Note that the actual parameter name is <tt>return</tt>. You may specify this parameter multiple times. It determines the
+     *            fields to be returned, see {@link ThingInformation}. The default is to only return the meta-info.
+     * @return The matching things.
+     */
+    @GET
+    @Path("/find")
+    public Collection<ThingInformation> get(@QueryParam("type") String type, @QueryParam("requiresPermission") Set<ThingPermission> requiredPermissions, @QueryParam("return") List<Field> fields) {
+        Class<? extends Thing> classType = null;
+        if (type != null && !type.isEmpty()) {
+            try {
+                classType = Class.forName(type).asSubclass(Thing.class);
+            } catch (ClassNotFoundException e) {
+                throw new BadRequestException(type + " is not a class!");
+            } catch (ClassCastException e) {
+                throw new BadRequestException(type + " is not a subclass of Thing!");
+            }
+        }
+
+        EnumSet<ThingPermission> permissions = EnumSet.of(ThingPermission.READ);
+        permissions.addAll(requiredPermissions);
+        return logic.findThings(classType, null, permissions) //
                 .map(thingMapper(fields, EnumSet.of(Field.METAINFO))) //
                 .collect(Collectors.toList());
     }

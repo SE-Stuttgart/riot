@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.thing.test;
 
 import static org.mockito.Mockito.*;
 
+import java.util.Collection;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -76,7 +78,12 @@ public class TestThingBehavior extends ThingBehavior implements AuthenticatingTh
     }
 
     @Override
-    public boolean canAccess(Long userId, ThingPermission permission) {
+    public boolean canAccess(long userId, ThingPermission permission) {
+        return true; // Allow anything.
+    }
+
+    @Override
+    public boolean canAccess(long userId, Collection<ThingPermission> permissions) {
         return true; // Allow anything.
     }
 

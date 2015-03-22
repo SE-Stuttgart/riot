@@ -31,6 +31,7 @@ import de.uni_stuttgart.riot.test.commons.DeactivateLoggingRule;
 import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingFactory;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
@@ -215,7 +216,8 @@ public class RuleFrameworkTest {
         // Create a test thing that nobody has permissions on.
         TestThingBehavior behavior = spy(new TestThingBehavior());
         TestThing thing = ThingFactory.create(TestThing.class, 100, behavior);
-        stub(behavior.canAccess(Matchers.anyLong(), Matchers.any())).toReturn(false);
+        stub(behavior.canAccess(Matchers.anyLong(), Matchers.any(ThingPermission.class))).toReturn(false);
+        stub(behavior.canAccess(Matchers.anyLong(), Matchers.anyCollectionOf(ThingPermission.class))).toReturn(false);
 
         // Register it in the resolver. Since we don't use a DB for this test, this is done by mocking the resolver.
         @SuppressWarnings("unchecked")
