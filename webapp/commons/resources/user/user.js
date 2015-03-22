@@ -14,6 +14,14 @@ angular.module('riot').factory('User', function(Restangular) {
       return model.one('roles', roleID).remove();
     };
 
+    model.addPermission = function(permissionID) {
+      return model.one('permissions', permissionID).put();
+    };
+
+    model.removePermission = function(permissionID) {
+      return model.one('permissions', permissionID).remove();
+    };
+
     return model;
   });
 

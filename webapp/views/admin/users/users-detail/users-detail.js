@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $stateParams, User, Role){
+angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $stateParams, User, Role, Permission){
   var alertId = null;
 
   var init = function() {
@@ -24,7 +24,21 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
         return dataEntry['roleName'];
       }
     };
-    $scope.getRoles();
+    $scope.permissions = {
+      data: [],
+      selection: null,
+      pagination: {
+        current: 1,
+        limit: 10,
+        total: 0
+      },
+      filter: null,
+      disabled: [],
+      update: $scope.getPermissions,
+      toString: function(dataEntry) {
+        return dataEntry['permissionValue'];
+      }
+    };
     $scope.getUser();
   };
 
@@ -33,6 +47,14 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
       $scope.roles.pagination.limit = roles.pagination.limit;
       $scope.roles.pagination.total = roles.pagination.total;
       $scope.roles.data = roles;
+    });
+  };
+
+  $scope.getPermissions = function() {
+    Permission.getList({limit: $scope.permissions.pagination.limit, offset: ($scope.permissions.pagination.current - 1) * $scope.permissions.pagination.limit}).then(function(permissions) {
+      $scope.permissions.pagination.limit = permissions.pagination.limit;
+      $scope.permissions.pagination.total = permissions.pagination.total;
+      $scope.permissions.data = permissions;
     });
   };
 
@@ -48,6 +70,7 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
       user.password2 = '';
       $scope.userDetail = user;
       $scope.roles.disabled = user.roles;
+      $scope.permissions.disabled = user.permissions;
     });
   };
 
@@ -67,6 +90,32 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
 
   $scope.removeUserRole = function(user, role) {
     return $scope.userDetail.removeRole(role.id).then(function() {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showSuccess('Successfully updated user');
+        $scope.getUser();
+      }, function(response) {
+        $scope.alerts.close(alertId);
+        alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
+        $scope.getUser();
+      });
+  };
+
+  $scope.addUserPermission = function(user, permission) {
+    if (user && permission) {
+      return $scope.userDetail.addPermission(permission.id).then(function() {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showSuccess('Successfully updated user');
+          $scope.getUser();
+        }, function(response) {
+          $scope.alerts.close(alertId);
+          alertId = $scope.alerts.showError('Couldn\'t update user: ' + response.data);
+          $scope.getUser();
+        });
+    }
+  };
+
+  $scope.removeUserPermission = function(user, permission) {
+    return $scope.userDetail.removePermission(permission.id).then(function() {
         $scope.alerts.close(alertId);
         alertId = $scope.alerts.showSuccess('Successfully updated user');
         $scope.getUser();

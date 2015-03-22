@@ -88,8 +88,8 @@
       </form>
     </div>
 
+    <!-- Roles -->
     <div class="detail-group" ng-if="userDetail.id !== undefined">
-      <!-- Roles -->
       <div class="detail-group-header">{{ 'user.roles' | i18n }}</div>
       <div class="col-md-offset-2 col-md-8 form-padding-fix">
         <!-- add role to user -->
@@ -102,7 +102,7 @@
           </button>
         </div>
         <!-- roles list -->
-        <div class="list-group margin-top-10">
+        <div class="margin-top-10">
           <div class="panel panel-default" ng-repeat="role in userDetail.roles">
             <div class="panel-heading">
               <strong>{{role.roleName}}</strong>
@@ -119,6 +119,38 @@
                 {{permission.permissionValue}}
               </li>
             </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <!-- Permissions -->
+    <div class="detail-group" ng-if="userDetail.id !== undefined">
+      <div class="detail-group-header">{{ 'user.permissions' | i18n }}</div>
+      <div class="col-md-offset-2 col-md-8 form-padding-fix">
+        <!-- add permission to user -->
+        <div class="form-inline">
+          <div class="form-group">
+            <div style="width:300px;" complex-dropdown="permissions"></div>
+          </div>
+          <button type="button" class="btn btn-success" submit="addUserPermission(userDetail, permissions.selection); permissions.selection=null" loading-button>
+            <span class="fa fa-plus"></span>
+          </button>
+        </div>
+        <!-- permissions list -->
+        <div class="margin-top-10">
+          <div class="panel panel-default" style="border-bottom:0;" ng-repeat="permission in userDetail.permissions">
+            <div class="panel-heading">
+              <strong>{{permission.permissionValue}}</strong>
+              <span class="pull-right">
+                <button type="button" class="btn btn-xs btn-danger" confirm-dialog title="'common.delete' | i18n" text="'user.deletePermissionDialog' | i18n" confirm="removeUserPermission(userDetail, permission)">
+                  <span class="fa fa-times"></span>
+                  {{ 'common.remove' | i18n }}
+                </button>
+              </span>
+            </div>
           </div>
         </div>
       </div>
