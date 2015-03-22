@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -24,6 +26,7 @@ import de.uni_stuttgart.riot.rule.RuleConfiguration;
 import de.uni_stuttgart.riot.rule.RuleDescription;
 import de.uni_stuttgart.riot.rule.RuleDescriptions;
 import de.uni_stuttgart.riot.rule.RuleStatus;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
 import de.uni_stuttgart.riot.test.commons.DeactivateLoggingRule;
 import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -41,6 +44,16 @@ public class RuleFrameworkTest {
 
     @ClassRule
     public static DeactivateLoggingRule deactivateRuleLogging = new DeactivateLoggingRule(Rule.class);
+
+    @Before
+    public void resetResolver() {
+        ResetHelper.resetServerReferenceResolver();
+    }
+
+    @AfterClass
+    public static void tidyUpResolver() {
+        ResetHelper.resetServerReferenceResolver();
+    }
 
     @Test
     public void testAdditionRule() throws ResolveReferenceException {

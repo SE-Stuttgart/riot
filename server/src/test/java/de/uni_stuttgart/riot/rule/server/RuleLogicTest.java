@@ -8,7 +8,6 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.after;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -17,6 +16,7 @@ import java.util.Map;
 
 import org.hamcrest.CustomMatcher;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -34,6 +34,8 @@ import de.uni_stuttgart.riot.rule.test.TestSchedulingRule;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
+import de.uni_stuttgart.riot.test.commons.DeactivateLoggingRule;
 import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.ThingTestUtils;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
@@ -44,15 +46,16 @@ import de.uni_stuttgart.riot.thing.test.TestThing;
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_rules.sql", "/testdata/testdata_rules.sql" })
 public class RuleLogicTest extends BaseDatabaseTest {
 
+    @ClassRule
+    public static DeactivateLoggingRule deactivateRuleLogging = new DeactivateLoggingRule(Rule.class);
+
     RuleLogic logic;
 
     @Before
     public void initializeRuleLogic() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        // We don't use the static instance because we need a fresh one every time.
-        // Note that each of these RuleLogics will use the static ThingLogic instance!
-        Constructor<RuleLogic> constructor = RuleLogic.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        logic = constructor.newInstance();
+        ResetHelper.resetThingLogic();
+        ResetHelper.resetRuleLogic();
+        logic = RuleLogic.getRuleLogic();
     }
 
     @Test

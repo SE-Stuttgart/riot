@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -31,6 +30,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteExcepti
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -47,9 +47,7 @@ public class ThingLogicTest extends BaseDatabaseTest {
 
     @Before
     public void resetThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field instanceField = ThingLogic.class.getDeclaredField("instance");
-        instanceField.setAccessible(true);
-        instanceField.set(null, null);
+        ResetHelper.resetThingLogic();
         logic = ThingLogic.getThingLogic();
     }
 
@@ -232,6 +230,7 @@ public class ThingLogicTest extends BaseDatabaseTest {
 
     }
 
+    // CHECKSTYLE:OFF NCSS
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCreateParentHierarchies() throws DatasourceInsertException, DatasourceUpdateException, ResolveReferenceException, DatasourceFindException {
@@ -305,6 +304,9 @@ public class ThingLogicTest extends BaseDatabaseTest {
                 return true;
             }
         }));
+
+        // Tidy up
+        ResetHelper.resetServerReferenceResolver();
 
     }
 

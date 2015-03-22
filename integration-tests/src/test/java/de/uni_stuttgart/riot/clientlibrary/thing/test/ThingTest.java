@@ -9,7 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +24,10 @@ import de.uni_stuttgart.riot.clientlibrary.thing.test.Fridge.OutOfFoodEventInsta
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
-import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
@@ -40,9 +39,9 @@ public class ThingTest extends BaseClientTest {
 
     @Before
     public void clearThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = ThingLogic.class.getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(null, null);
+        ResetHelper.resetThingLogic();
+        ResetHelper.resetRuleLogic();
+        ResetHelper.resetServerReferenceResolver();
     }
 
     @Test

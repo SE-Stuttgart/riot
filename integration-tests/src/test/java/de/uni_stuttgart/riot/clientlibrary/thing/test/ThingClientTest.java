@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -20,6 +19,7 @@ import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -30,7 +30,6 @@ import de.uni_stuttgart.riot.thing.rest.ThingInformation;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
-import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
@@ -41,9 +40,9 @@ public class ThingClientTest extends BaseClientTest {
 
     @Before
     public void clearThingLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = ThingLogic.class.getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(null, null);
+        ResetHelper.resetThingLogic();
+        ResetHelper.resetRuleLogic();
+        ResetHelper.resetServerReferenceResolver();
     }
 
     public ThingClient getLoggedInThingClient() {

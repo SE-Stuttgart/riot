@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Collection;
 
 import org.hamcrest.CoreMatchers;
@@ -22,9 +21,9 @@ import de.uni_stuttgart.riot.rule.RuleConfiguration;
 import de.uni_stuttgart.riot.rule.RuleDescription;
 import de.uni_stuttgart.riot.rule.RuleStatus;
 import de.uni_stuttgart.riot.rule.client.RuleClient;
-import de.uni_stuttgart.riot.rule.server.RuleLogic;
 import de.uni_stuttgart.riot.rule.test.TestAdditionRule;
 import de.uni_stuttgart.riot.rule.test.TestSchedulingRule;
+import de.uni_stuttgart.riot.server.test.ResetHelper;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", //
         "/schema/schema_things.sql", "/testdata/testdata_things.sql", //
@@ -35,9 +34,9 @@ public class RuleClientTest extends BaseClientTest {
 
     @Before
     public void clearRuleLogic() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        Field field = RuleLogic.class.getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(null, null);
+        ResetHelper.resetThingLogic();
+        ResetHelper.resetRuleLogic();
+        ResetHelper.resetServerReferenceResolver();
     }
 
     public RuleClient getLoggedInRuleClient() {
