@@ -1,4 +1,4 @@
-describe('UsersDetailCtrl', function() {
+describe('ThingsDetailCtrl', function() {
 
 	beforeEach(module('riot'));
 
@@ -6,7 +6,7 @@ describe('UsersDetailCtrl', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
-      ctrl = $controller('UsersDetailCtrl', {$scope: scope});
+      ctrl = $controller('ThingsDetailCtrl', {$scope: scope});
     }));	
 
 	it('should ...', inject(function() {

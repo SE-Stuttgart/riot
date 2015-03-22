@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminDetailCtrl', function($scope, $rootScope, $state, $stateParams, $modal, Thing, User, locale){
+angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScope, $state, $stateParams, $modal, Thing, User, locale){
   var alertId = null;
 
   var init = function() {

@@ -5,7 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminListCtrl',function($scope, Thing, locale){
+angular.module('riot').controller('ThingsListCtrl',function($scope, Thing, locale){
   var init = function() {
     $scope.pagination = {
       current: 1,

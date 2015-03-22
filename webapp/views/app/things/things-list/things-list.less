@@ -1,1 +1,60 @@
-
+.things-user-list {
+    .thing {
+        position: relative;
+        border-left: 4px solid #428BCA;
+        .left {
+            position: absolute;
+            border-right: 1px solid #dddddd;
+            background-color: #FAFAFA;
+            left: 0;
+            bottom: 0;
+            top: 0;
+            width: 100px;
+            min-height: 50px;
+            .icon {
+                position: absolute;
+                font-size: 50px;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+        .description {
+            margin-left: 100px;
+            .name {
+                font-weight: bold;
+                font-size: 18px;
+            }
+            .badge {
+                background-color: #428BCA !important;
+                margin-left: 5px;
+            }
+            .online {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+            }
+            .last-action {
+                margin-top: 5px;
+            }
+            .state {
+                margin-top: 5px;
+                .property {
+                    margin-right: 10px;
+                    padding: 0;
+                    color: #428BCA;
+                }
+                .property::after {
+                    content: ' \2022';
+                    margin-left: 10px;
+                }
+                .property:last-child::after {
+                    content: ''
+                }
+            }
+            .online {
+                color: #AFAFAF;
+            }
+        }
+    }
+}

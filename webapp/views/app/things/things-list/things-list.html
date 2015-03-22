@@ -1,5 +1,47 @@
-<div class="row" ng-controller="ThingsUserListCtrl">
+<div class="row things-user-list" ng-controller="ThingsListCtrl">
 
-  TODO
+  <div class="col-md-6">
+    <!-- filter -->
+    <div class="form-group">
+      <div class="input-group filter" style="width: 100%;">
+        <input type="text" class="form-control" placeholder="Filter" ng-model="thingsFilter">
+        <span class="input-group-btn" ng-show="thingsFilter">
+          <button type="button" class="btn btn-default" ng-click="thingsFilter=''">
+            <span class="fa fa-times"></span>
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <!-- things -->
+    <ul class="list-group" ng-repeat="thing in things">
+      <a class="list-group-item thing" ui-sref="app.things.detail({thingid: thing.id})">
+        <div class="left">
+          <span class="icon fa fa-mobile"></span>
+        </div>
+        <div class="description">
+          <span class="online">01.01.2014 / 00:00</span>
+          <span class="name">Coffee Machine</span>
+          <span class="badge">14</span>
+          <div class="last-action">Here is the text for the last action</div>
+          <div class="state">
+            <span class="property">Water: 50%</span>
+            <span class="property">Temp: 80°C</span>
+            <span class="property">foo: bar</span>
+          </div>
+        </div>
+      </a>
+    </ul>
+
+    <!-- table footer -->
+    <div class="row">
+      <div class="col-sm-6">
+        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + things.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
+      </div>
+      <div class="col-sm-12 text-center">
+        <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getThings()"></pagination>
+      </div>
+    </div>
+  </div>
 
 </div>

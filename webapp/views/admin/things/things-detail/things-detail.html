@@ -1,4 +1,4 @@
-<div class="row" ng-controller="ThingsAdminDetailCtrl">
+<div class="row things-detail" ng-controller="ThingsDetailCtrl">
   <div class="col-lg-7">
     <!-- Administration -->
     <div class="detail-group" ng-if="thingDetail.id !== undefined">
@@ -19,7 +19,7 @@
 
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.thing' | i18n}}</div>
-      <form name="formThingDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formThingDetail.$valid">
+      <form name="formThingDetail" class="form-horizontal" novalidate ng-submit="formThingDetail.$valid">
         <!-- thingid -->
         <div class="form-group">
           <label class="control-label col-md-2" for="thingid">{{'thing.thingId' | i18n}}</label>
@@ -57,8 +57,8 @@
     <!-- Events -->
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.events' | i18n}}</div>
-      <form class="form-horizontal">
-        <div class="list-group-item margin-top-10" ng-repeat="event in thingDescription.events">
+      <form class="form-horizontal list-group" ng-repeat="event in thingDescription.events">
+        <div class="list-group-item event">
           <h4 class="list-group-item-heading">{{event.name}}</h4>
           <div class="list-group-item-text">
             <div ng-repeat="parameter in event.instanceDescription.parameters" value="foo" description="parameter" ui-element></div>
@@ -70,8 +70,8 @@
     <!-- Actions -->
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.actions' | i18n}}</div>
-      <form class="form-horizontal">
-        <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
+      <form class="form-horizontal list-group" ng-repeat="action in thingDescription.actions">
+        <div class="list-group-item action">
           <h4 class="list-group-item-heading">{{action.name}}</h4>
           <div class="list-group-item-text">
             <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" ui-element></div>
