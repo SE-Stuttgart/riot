@@ -99,44 +99,6 @@ public abstract class BaseResource<E extends Storable> {
      */
     public abstract void init(E storable) throws Exception;
 
-    // /**
-    // * Gets the collection for resources.
-    // *
-    // * @param offset
-    // * the beginning item number
-    // * @param limit
-    // * maximum number of items to return
-    // * @return the collection. If the both parameters are 0, it returns at maximum 20 elements.
-    // *
-    // * @throws DatasourceFindException
-    // * when retrieving the data fails
-    // */
-    // @GET
-    // @Produces(PRODUCED_FORMAT)
-    // public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit)
-    // throws DatasourceFindException {
-    // Collection<E> result;
-    // if (limit < 0 || offset < 0) {
-    // throw new BadRequestException("please provide valid parameter values");
-    // } else if (limit == 0) {
-    // // the case when GET request has no query parameters (api/resource)
-    // result = dao.findAll(offset, DEFAULT_PAGE_SIZE);
-    //
-    // } else {
-    // // the case when GET request has only limit query parameter (api/resource?limit=20)
-    // result = dao.findAll(offset, limit);
-    // }
-    // for (E e : result) {
-    // try {
-    // this.init(e);
-    // } catch (Exception e1) {
-    // throw new DatasourceFindException(e1);
-    // }
-    // }
-    // return result;
-    //
-    // }
-
     /**
      * Creates a new model with data from the request body.
      *
