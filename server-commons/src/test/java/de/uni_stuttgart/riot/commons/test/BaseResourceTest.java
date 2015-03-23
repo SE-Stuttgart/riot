@@ -159,7 +159,8 @@ public abstract class BaseResourceTest<E extends BaseResource<T>, T extends Stor
         assertThat(models, hasSize(pageSize));
         assertEquals("wrong offset", String.valueOf(offset), resp.getHeaders().getFirst("offset"));
         assertEquals("wrong limit", String.valueOf(pageSize), resp.getHeaders().getFirst("limit"));
-        assertTrue("Total should be equal or less than the total test size due to filtering.", (int) resp.getHeaders().getFirst("total") <= getTestDataSize());
+        int totalHeader = Integer.parseInt(resp.getHeaders().getFirst("total").toString());
+        assertTrue("Total should be equal or less than the total test size due to filtering.", totalHeader <= getTestDataSize());
     }
 
     public abstract T getNewObject();
