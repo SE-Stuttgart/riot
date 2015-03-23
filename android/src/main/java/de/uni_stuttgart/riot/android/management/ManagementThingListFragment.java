@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
-import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.things.ThingManager;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.Thing;
-import de.uni_stuttgart.riot.thing.client.ThingClient;
 
 /**
  * Activity that displays all things in a list.
@@ -31,7 +29,7 @@ public class ManagementThingListFragment extends ManagementListFragment {
             // ToDo I want to get an ArrayList instead of a Collection
         } catch (Exception e) {
             // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
         }
         return null;
     }
@@ -106,10 +104,12 @@ public class ManagementThingListFragment extends ManagementListFragment {
     protected OnlineState getOnlineState(final Object item) {
         if (item != null) {
             try {
-                return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(((Thing) item).getId());
+                return null;
+                // TODO thingClient.getOnlineState(thingId); --> NullPointerException if online state is "offline"!!
+                // return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(((Thing) item).getId());
             } catch (Exception e) {
                 // FIXME output message!!
-                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: " + e.getMessage());
+                IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
             }
         }
         return null;

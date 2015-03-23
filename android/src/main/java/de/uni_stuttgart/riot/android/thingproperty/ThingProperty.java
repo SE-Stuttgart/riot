@@ -11,6 +11,7 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
 /**
  * Created by Benny on 19.03.2015.
  * This generic parent class helps to handle properties combined with an ui element.
+ *
  * @param <T> stands for the ui element type.
  * @param <V> stands for the value type of the ui element.
  */
@@ -18,6 +19,7 @@ public abstract class ThingProperty<T, V> {
 
     protected Property<V> property;
     private BasePropertyListener<V> basePropertyListener;
+    private V value;
 
     /**
      * Constructor.
@@ -29,6 +31,15 @@ public abstract class ThingProperty<T, V> {
     }
 
     /**
+     * Constructor.
+     *
+     * @param value is used for testing
+     */
+    public ThingProperty(final V value) {
+        this.value = value;
+    }
+
+    /**
      * Build the element.
      *
      * @param context is the application context
@@ -37,12 +48,25 @@ public abstract class ThingProperty<T, V> {
         // Initialize the element
         initElement(context);
 
+        // Set the current value
+        if (this.property != null) {
+            setValue(this.property.get());
+        } else if (this.value != null) {
+            setValue(this.value);
+        }
+
         // Check if the property is writable
-        if (this.property instanceof WritableProperty) {
+        if (this.property != null) {
+            if (this.property instanceof WritableProperty) {
+                enableView(true);
+                setChangeListenerAndUpdateProperty();
+            } else {
+                enableView(false);
+            }
+        } else {
+            // Enable elements for testing
             enableView(true);
             setChangeListenerAndUpdateProperty();
-        } else {
-            enableView(false);
         }
 
         // Initialize the property listener for that element
@@ -58,14 +82,18 @@ public abstract class ThingProperty<T, V> {
      * Register a listener for the property.
      */
     public void bind() {
-        this.property.register(this.basePropertyListener);
+        if (this.property != null) {
+            this.property.register(this.basePropertyListener);
+        }
     }
 
     /**
      * Unregister the listener for the property.
      */
     public void unbind() {
-        this.property.unregister(this.basePropertyListener);
+        if (this.property != null) {
+            this.property.unregister(this.basePropertyListener);
+        }
     }
 
     /**
@@ -87,14 +115,16 @@ public abstract class ThingProperty<T, V> {
     /**
      * Set the value of the property.
      *
-     * @param value is the new value
+     * @param val is the new value
      */
-    protected void updateProperty(final V value) {
+    protected void updateProperty(final V val) {
         new Thread() {
 
             @Override
             public void run() {
-                ((WritableProperty<V>) property).set(value);
+                if (property != null) {
+                    ((WritableProperty<V>) property).set(val);
+                }
             }
         }.start();
     }
@@ -103,15 +133,15 @@ public abstract class ThingProperty<T, V> {
      * En-/disables all child items of the given view.
      *
      * @param view  the item that sub items should be disabled
-     * @param value is an boolean value to en-/disable this items
+     * @param val is an boolean value to en-/disable this items
      */
-    protected void enableChildItems(ViewGroup view, boolean value) {
+    protected void enableChildItems(ViewGroup view, boolean val) {
         for (int i = 0; i < view.getChildCount(); i++) {
             View subView = view.getChildAt(i);
             if (subView instanceof ViewGroup) {
-                enableChildItems((ViewGroup) subView, value);
+                enableChildItems((ViewGroup) subView, val);
             }
-            subView.setEnabled(value);
+            subView.setEnabled(val);
         }
     }
 
@@ -130,9 +160,9 @@ public abstract class ThingProperty<T, V> {
     /**
      * Enable the view element.
      *
-     * @param value is true if it should be enabled
+     * @param val is true if it should be enabled
      */
-    protected abstract void enableView(boolean value);
+    protected abstract void enableView(boolean val);
 
     /**
      * Set the value of the ui element.

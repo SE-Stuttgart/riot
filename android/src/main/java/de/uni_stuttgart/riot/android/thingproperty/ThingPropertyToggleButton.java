@@ -27,6 +27,17 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
         buildElement(context);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param value   is used for testing
+     * @param context is the application context
+     */
+    public ThingPropertyToggleButton(Boolean value, Context context) {
+        super(value);
+        buildElement(context);
+    }
+
     @Override
     public ToggleButton getUiElement() {
         return this.toggleButton;
@@ -43,11 +54,8 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
         this.toggleButton.setLayoutParams(toggleButtonParams);
 
         // Set toggleButton attributes
-        this.toggleButton.setTextOff(property.getName() + " " + context.getString(R.string.off));
-        this.toggleButton.setTextOn(property.getName() + " " + context.getString(R.string.on));
-
-        // Set the current value
-        setValue(property.get());
+        this.toggleButton.setTextOff((super.property != null ? super.property.getName() : "") + " " + context.getString(R.string.off));
+        this.toggleButton.setTextOn((super.property != null ? super.property.getName() : "") + " " + context.getString(R.string.on));
     }
 
     @Override
@@ -61,8 +69,8 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
     }
 
     @Override
-    protected void enableView(boolean value) {
-        this.toggleButton.setEnabled(value);
+    protected void enableView(boolean val) {
+        this.toggleButton.setEnabled(val);
     }
 
     @Override

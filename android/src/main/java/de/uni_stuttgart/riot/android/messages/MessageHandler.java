@@ -47,6 +47,16 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.ERROR priority.
      *
+     * @param text      the message that will be saved
+     * @param exception includes the error message and cause
+     */
+    public void writeErrorMessage(String text, Exception exception) {
+        writeErrorMessage(text + exception.getCause() + ": " + exception.getMessage());
+    }
+
+    /**
+     * Writes a message with the Log.ERROR priority.
+     *
      * @param text the message that will be saved
      */
     public void writeErrorMessage(String text) {

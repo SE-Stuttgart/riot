@@ -68,10 +68,11 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         ((LinearLayout) findViewById(R.id.thing_linear_layout)).removeAllViews();
 
         // Add items to the main layout
+        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.thing_linear_layout);
         for (Property<?> property : ((Thing) data).getProperties()) {
             View preparedItem = prepareItem(property);
             if (preparedItem != null) {
-                ((LinearLayout) findViewById(R.id.thing_linear_layout)).addView(preparedItem);
+                mainLayout.addView(preparedItem);
             }
         }
     }
@@ -83,7 +84,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
             return ThingManager.getInstance().getThing(this, this.itemId);
         } catch (Exception e) {
             // FIXME output message!!
-            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: " + e.getMessage());
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
         }
         return null;
     }
@@ -176,7 +177,7 @@ public class ManagementThingDetailFragment extends ManagementDetailFragment {
         } else if (property.getUiHint() instanceof UIHint.FractionalSlider) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) property.getUiHint();
-            addThingProperty(new ThingPropertyFractionalSlider((Property<Double>) property, getApplicationContext(), (float) uiHint.min, (float) uiHint.max), linearLayoutItem);
+            addThingProperty(new ThingPropertyFractionalSlider((Property<Double>) property, getApplicationContext(), uiHint.min, uiHint.max), linearLayoutItem);
         } else if (property.getUiHint() instanceof UIHint.IntegralSlider) {
             // Prepare and add scale value property
             UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) property.getUiHint();

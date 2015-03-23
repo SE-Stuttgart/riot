@@ -29,6 +29,17 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
     }
 
     /**
+     * Constructor.
+     *
+     * @param value   is used for testing
+     * @param context is the application context
+     */
+    public ThingPropertyEditNumber(Number value, Context context) {
+        super(value);
+        buildElement(context);
+    }
+
+    /**
      * Allow just positive or also negative numbers.
      *
      * @param allowNegative is true to allow negative numbers
@@ -58,9 +69,6 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
 
         // Set default
         setAllowNegative(true);
-
-        // Set the current value
-        setValue(property.get());
     }
 
     @Override
@@ -82,8 +90,8 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
     }
 
     @Override
-    protected void enableView(boolean value) {
-        this.editText.setEnabled(value);
+    protected void enableView(boolean val) {
+        this.editText.setEnabled(val);
     }
 
     @Override

@@ -27,6 +27,17 @@ public class ThingPropertyEditText extends ThingProperty<EditText, String> {
         buildElement(context);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param value   is used for testing
+     * @param context is the application context
+     */
+    public ThingPropertyEditText(String value, Context context) {
+        super(value);
+        buildElement(context);
+    }
+
     @Override
     public EditText getUiElement() {
         return this.editText;
@@ -41,9 +52,6 @@ public class ThingPropertyEditText extends ThingProperty<EditText, String> {
 
         // Set layout params
         editText.setLayoutParams(editTextParams);
-
-        // Set the current value
-        setValue(property.get());
     }
 
     @Override
@@ -65,8 +73,8 @@ public class ThingPropertyEditText extends ThingProperty<EditText, String> {
     }
 
     @Override
-    protected void enableView(boolean value) {
-        this.editText.setEnabled(value);
+    protected void enableView(boolean val) {
+        this.editText.setEnabled(val);
     }
 
     @Override

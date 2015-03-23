@@ -44,6 +44,32 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
 
     @Override
     protected void displayData(Object data) {
+        // TEST --->
+       /*
+        * EditText = String
+        * EditNumber = Double
+        * ToggleButton = Boolean
+        * IntegralSlider = Integer
+        * PercentageSlider = Double
+        * FractionalSlider = Double
+        * DropDown = Enum<?>
+        */
+//        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.thing_linear_layout);
+//        mainLayout.addView(new ThingPropertyEditText("Example Text", getApplicationContext()).getUiElement());
+//        mainLayout.addView(new ThingPropertyEditNumber(42, getApplicationContext()).getUiElement());
+//        mainLayout.addView(new ThingPropertyToggleButton(true, getApplicationContext()).getUiElement());
+//        mainLayout.addView(new ThingPropertyToggleButton(false, getApplicationContext()).getUiElement());
+//        mainLayout.addView(new ThingPropertyIntegralSlider(25, getApplicationContext(), 0, 100).getUiElement());
+//        mainLayout.addView(new ThingPropertyIntegralSlider(0, getApplicationContext(), -20, 20).getUiElement());
+//        mainLayout.addView(new ThingPropertyPercentageSlider(0.5d, getApplicationContext()).getUiElement());
+//        mainLayout.addView(new ThingPropertyFractionalSlider(0.5d, getApplicationContext(), 0.0d, 1.0d).getUiElement());
+//        mainLayout.addView(new ThingPropertyFractionalSlider(3.0d, getApplicationContext(), 2.25d, 5.0d).getUiElement());
+//        mainLayout.addView(new ThingPropertyFractionalSlider(0.05d, getApplicationContext(), -0.05d, 0.05d).getUiElement());
+//        ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
+//        Collections.addAll(possibleValues, OnlineState.values());
+//        mainLayout.addView(new ThingPropertyEnumDropDown(OnlineState.STATUS_ONLINE, getApplicationContext(), possibleValues).getUiElement());
+        // <--- TEST
+
         // Check if there is some data to display
         if (data == null) {
             // Show a message that there was something wrong (FIXME output message!!)
@@ -104,9 +130,14 @@ public abstract class ManagementDetailFragment extends ManagementFragment {
      * Unbind all thing properties with their property listener.
      */
     protected void unbindAllThingProperties() {
-        for (ThingProperty thingProperty : thingProperties) {
-            thingProperty.unbind();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (ThingProperty thingProperty : thingProperties) {
+                    thingProperty.unbind();
+                }
+            }
+        }).start();
     }
 
     /**

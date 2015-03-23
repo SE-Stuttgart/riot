@@ -139,7 +139,7 @@ public abstract class ManagementFragment extends Activity {
                     startProcessingAnimation(false);
 
                     // Show a message that there was something wrong (FIXME output message!!)
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: " + e.getMessage());
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: ", e);
                 }
             }
         }.start();
