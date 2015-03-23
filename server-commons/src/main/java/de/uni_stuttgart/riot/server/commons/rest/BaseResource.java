@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -152,8 +153,11 @@ public abstract class BaseResource<E extends Storable> {
     @GET
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> getBy(@Context UriInfo info, @QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
+    public Collection<E> getBy(@Context UriInfo info, @QueryParam("offset") int offset, @DefaultValue("20") @QueryParam("limit") int limit) throws DatasourceFindException {
         FilteredRequest request = new FilteredRequest();
+        if (limit < 0 || offset < 0) {
+            throw new BadRequestException("please provide valid parameter values");
+        }
         request.setLimit(limit);
         request.setOffset(offset);
         request.parseQueryParams(info.getQueryParameters().entrySet());

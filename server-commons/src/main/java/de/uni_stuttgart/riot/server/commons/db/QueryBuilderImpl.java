@@ -256,12 +256,15 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<String> sqlFilterList = createSqlFilterList(filter);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT COUNT(*) FROM " + tableName + " WHERE ");
+        sb.append("SELECT COUNT(*) FROM " + tableName + " ");
 
-        if (filter.isOrMode()) {
-            sb.append(StringUtils.join(sqlFilterList, " OR "));
-        } else {
-            sb.append(StringUtils.join(sqlFilterList, " AND "));
+        if (sqlFilterList.size() > 0) {
+            sb.append("WHERE ");
+            if (filter.isOrMode()) {
+                sb.append(StringUtils.join(sqlFilterList, " OR "));
+            } else {
+                sb.append(StringUtils.join(sqlFilterList, " AND "));
+            }
         }
         return sb.toString();
     }
