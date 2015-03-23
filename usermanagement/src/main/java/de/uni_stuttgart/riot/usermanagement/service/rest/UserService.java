@@ -5,20 +5,16 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
@@ -40,11 +36,7 @@ import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagemen
  * @author Marcel Lehwald <- // FIXME how to handle addUser with UMUser
  *
  */
-@Path("users")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-@RequiresAuthentication
-public class UserService extends BaseResource<UMUser> {
+public abstract class UserService extends BaseResource<UMUser> {
 
     private final UserManagementFacade facade = UserManagementFacade.getInstance();
 
@@ -248,10 +240,11 @@ public class UserService extends BaseResource<UMUser> {
 
     /**
      * Returns the current user online state (online or offline).
-     * @param userID 
+     * 
+     * @param userID
      * @return online if the user currently is logged in, offline otherwise.
-     * @throws UserManagementException   
-     *              Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
+     * @throws UserManagementException
+     *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
      *             {@link UserManagementExceptionMapper} class.
      */
     @GET

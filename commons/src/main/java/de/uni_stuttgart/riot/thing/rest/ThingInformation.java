@@ -157,4 +157,31 @@ public class ThingInformation {
         }
     }
 
+    /**
+     * Creates a ThingInformation instance for the given thing that contains nothing but {@link #id} and {@link #type}.
+     * 
+     * @param thing
+     *            The thing to read from.
+     * @return The corresponding ThingInformation.
+     */
+    public static ThingInformation emptyThingInformation(Thing thing) {
+        ThingInformation info = new ThingInformation();
+        info.setId(thing.getId());
+        info.setType(thing.getClass().getName());
+        return info;
+    }
+
+    /**
+     * Creates a ThingInformation instance that has the {@link #metainfo} set.
+     * 
+     * @param thing
+     *            The thing to read from.
+     * @return The corresponding ThingInformation.
+     */
+    public static ThingInformation metaInfoOnly(Thing thing) {
+        ThingInformation info = emptyThingInformation(thing);
+        info.setMetainfo(ThingMetainfo.create(thing));
+        return info;
+    }
+
 }
