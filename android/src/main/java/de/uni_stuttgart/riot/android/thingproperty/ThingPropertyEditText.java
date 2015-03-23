@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,22 +21,22 @@ public class ThingPropertyEditText extends ThingProperty<EditText, String> {
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      */
-    public ThingPropertyEditText(Property<String> property, Context context) {
+    public ThingPropertyEditText(Property<String> property, Activity activity) {
         super(property);
-        buildElement(context);
+        buildElement(activity);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
+     * @param value    is used for non property elements
+     * @param activity is the current activity
      */
-    public ThingPropertyEditText(String value, Context context) {
+    public ThingPropertyEditText(String value, Activity activity) {
         super(value);
-        buildElement(context);
+        buildElement(activity);
     }
 
     @Override

@@ -77,7 +77,7 @@
         </activity>
 
         <activity
-            android:name="de.uni_stuttgart.riot.android.management.ManagementThingListFragment"
+            android:name=".management.ThingListActivity"
             android:parentActivityName="de.uni_stuttgart.riot.android.HomeScreen" >
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
@@ -85,15 +85,15 @@
                 android:value="de.uni_stuttgart.riot.android.HomeScreen" />
         </activity>
         <activity
-            android:name="de.uni_stuttgart.riot.android.management.ManagementThingDetailFragment"
-            android:parentActivityName="de.uni_stuttgart.riot.android.management.ManagementThingListFragment" >
+            android:name=".management.ThingDetailActivity"
+            android:parentActivityName=".management.ThingListActivity" >
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.riot.android.management.ManagementThingListFragment" />
+                android:value=".management.ThingListActivity" />
         </activity>
         <activity
-            android:name="de.uni_stuttgart.riot.android.management.ManagementUserListFragment"
+            android:name=".management.UserListActivity"
             android:parentActivityName="de.uni_stuttgart.riot.android.HomeScreen" >
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
@@ -101,12 +101,12 @@
                 android:value="de.uni_stuttgart.riot.android.HomeScreen" />
         </activity>
         <activity
-            android:name="de.uni_stuttgart.riot.android.management.ManagementUserDetailFragment"
-            android:parentActivityName="de.uni_stuttgart.riot.android.management.ManagementUserListFragment" >
+            android:name=".management.UserDetailActivity"
+            android:parentActivityName=".management.UserListActivity" >
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_stuttgart.riot.android.management.ManagementUserListFragment" />
+                android:value=".management.UserListActivity" />
         </activity>
 
         <service

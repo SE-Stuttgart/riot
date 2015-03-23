@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -30,32 +31,32 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertySlider(Property<V> property, Context context, V min, V max) {
+    public ThingPropertySlider(Property<V> property, Activity activity, V min, V max) {
         super(property);
         this.min = min;
         this.max = max;
         thingsBeforeBuildElement();
-        buildElement(context);
+        buildElement(activity);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
-     * @param min     is the minimum possible value
-     * @param max     is the maximum possible value
+     * @param value    is used for non property elements
+     * @param activity is the current activity
+     * @param min      is the minimum possible value
+     * @param max      is the maximum possible value
      */
-    public ThingPropertySlider(V value, Context context, V min, V max) {
+    public ThingPropertySlider(V value, Activity activity, V min, V max) {
         super(value);
         this.min = min;
         this.max = max;
         thingsBeforeBuildElement();
-        buildElement(context);
+        buildElement(activity);
     }
 
     @Override
@@ -115,7 +116,7 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
         setEditTextAttributes();
 
         // Set textView attributes
-        // TODO textView.setText(identifier);
+        // TODO textView.setText(identifier); // Do we need an identifier behind the slider value?
     }
 
     @Override
@@ -145,6 +146,7 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
                     V value = getValueOfEditText();
                     if (isValueValid(value)) {
                         // Show a quick message that there was an error
+                        IM.INSTANCES.getMH().writeWarnMessage("Value is invalid!");
                         IM.INSTANCES.getMH().showQuickMessage("Value is invalid!");
 
                         // Reset displayed text
@@ -154,7 +156,7 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
                         updateProperty(value);
                     }
                 } catch (Exception e) {
-                    // Show a quick message that there was an error (ToDo log this?)
+                    IM.INSTANCES.getMH().writeErrorMessage("Value is not a number!");
                     IM.INSTANCES.getMH().showQuickMessage("Value is not a number!");
                 }
                 return false;

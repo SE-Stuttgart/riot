@@ -21,7 +21,7 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
  *
  * @author Benny
  */
-public abstract class ManagementListFragment extends ManagementFragment {
+public abstract class ManagementListActivity extends ManagementActivity {
 
     @Override
     protected int getLayoutResource() {
@@ -36,7 +36,7 @@ public abstract class ManagementListFragment extends ManagementFragment {
     protected void displayData(Object data) {
         // Check if there is some data to display
         if (data == null) {
-            // Show a message that no data is available (ToDo log?)
+            IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
             IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
             return;
         }
@@ -44,17 +44,17 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
         // Check if the given data is a list
         if (!(data instanceof List)) {
-            // Show a message that no data is available (ToDo log?)
+            IM.INSTANCES.getMH().writeErrorMessage("Data is not a list!");
             IM.INSTANCES.getMH().showQuickMessage("Data is not a list!");
             return;
         }
 
         // Add data list to the list adapter
-        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getFragment(), this, R.layout.managment_list_item, (List<Object>) data);
+        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getActivity(), this, R.layout.managment_list_item, (List<Object>) data);
         ListView listView = (ListView) findViewById(R.id.management_list_view);
         if (listView == null) {
-            // Show a message that no list view was found (ToDo output message!)
             IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
+            IM.INSTANCES.getMH().showQuickMessage("No list view was found!");
             return;
         }
         listView.setAdapter(managementListAdapter);
@@ -80,8 +80,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
     }
 
     @Override
-    protected Object getData() {
-        return getListData();
+    protected void getAndDisplayData() {
+        getAndDisplayListData();
     }
 
     /**
@@ -209,8 +209,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
     private void setTextViewText(View view, int id, String text) {
         TextView textView = (TextView) view.findViewById(id);
         if (textView == null) {
-            // ToDo output message!
             IM.INSTANCES.getMH().writeErrorMessage("No text view was found!");
+            IM.INSTANCES.getMH().showQuickMessage("No text view was found!");
             return;
         }
         textView.setText(text);
@@ -226,8 +226,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
     private void setImageViewImage(View view, int id, int imageId) {
         ImageView imageView = (ImageView) view.findViewById(id);
         if (imageView == null) {
-            // ToDo output message!
             IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+            IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
             return;
         }
         imageView.setImageResource(imageId);
@@ -243,8 +243,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
     private void setImageViewImage(View view, int id, String uri) {
         ImageView imageView = (ImageView) view.findViewById(id);
         if (imageView == null) {
-            // ToDo output message!
             IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+            IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
             return;
         }
         imageView.setImageURI(Uri.parse(uri));
@@ -258,7 +258,6 @@ public abstract class ManagementListFragment extends ManagementFragment {
      * @param onlineState is the online state of one item
      */
     private void updateOnlineState(final View view, OnlineState onlineState) {
-        // FIXME always offline (from server side) - immernoch??
         final OnlineState defaultOnlineState;
         if (onlineState == null) {
             // Take default online state if there is no one
@@ -271,8 +270,8 @@ public abstract class ManagementListFragment extends ManagementFragment {
         if (defaultOnlineState != null) {
             ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
             if (imageView == null) {
-                // ToDo output message!
                 IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
                 return;
             }
             imageView.setImageResource(getOnlineStateResourceId(defaultOnlineState));
@@ -322,17 +321,15 @@ public abstract class ManagementListFragment extends ManagementFragment {
 
     /**
      * Returns a list of all data that will be displayed.
-     *
-     * @return the list of the specified data type
      */
-    protected abstract List<Object> getListData();
+    protected abstract void getAndDisplayListData();
 
     /**
      * Returns the current frame.
      *
      * @return normally just 'this'
      */
-    protected abstract ManagementListFragment getFragment();
+    protected abstract ManagementListActivity getActivity();
 
     /**
      * Returns the fragment that is called by clicking on an icon

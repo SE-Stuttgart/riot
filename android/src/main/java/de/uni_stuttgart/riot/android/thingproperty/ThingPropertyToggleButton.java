@@ -1,11 +1,11 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
+import android.app.Activity;
 import android.content.Context;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.thing.Property;
 
 /**
@@ -15,27 +15,37 @@ import de.uni_stuttgart.riot.thing.Property;
 public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boolean> {
 
     private ToggleButton toggleButton;
+    private String valueOn;
+    private String valueOff;
 
     /**
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
+     * @param valueOff the displayed value if the button is toggled off
+     * @param valueOn  the displayed value if the button is toggled on
      */
-    public ThingPropertyToggleButton(Property<Boolean> property, Context context) {
+    public ThingPropertyToggleButton(Property<Boolean> property, Activity activity, String valueOff, String valueOn) {
         super(property);
-        buildElement(context);
+        this.valueOff = valueOff;
+        this.valueOn = valueOn;
+        buildElement(activity);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
+     * @param value    is used for non property elements
+     * @param activity is the current activity
+     * @param valueOff the displayed value if the button is toggled off
+     * @param valueOn  the displayed value if the button is toggled on
      */
-    public ThingPropertyToggleButton(Boolean value, Context context) {
+    public ThingPropertyToggleButton(Boolean value, Activity activity, String valueOff, String valueOn) {
         super(value);
-        buildElement(context);
+        this.valueOff = valueOff;
+        this.valueOn = valueOn;
+        buildElement(activity);
     }
 
     @Override
@@ -54,8 +64,8 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
         this.toggleButton.setLayoutParams(toggleButtonParams);
 
         // Set toggleButton attributes
-        this.toggleButton.setTextOff((super.property != null ? super.property.getName() : "") + " " + context.getString(R.string.off));
-        this.toggleButton.setTextOn((super.property != null ? super.property.getName() : "") + " " + context.getString(R.string.on));
+        this.toggleButton.setTextOff(this.valueOff);
+        this.toggleButton.setTextOn(this.valueOn);
     }
 
     @Override

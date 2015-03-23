@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/management_edit_buttons" />
-
     <ListView
         android:id="@+id/management_list_view"
         android:layout_width="fill_parent"

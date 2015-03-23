@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,26 +25,26 @@ public class ThingPropertyEnumDropDown extends ThingProperty<Spinner, Enum<?>> {
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      * @param enumList includes the possible enum values
      */
-    public ThingPropertyEnumDropDown(Property<Enum<?>> property, Context context, ArrayList<Enum<?>> enumList) {
+    public ThingPropertyEnumDropDown(Property<Enum<?>> property, Activity activity, ArrayList<Enum<?>> enumList) {
         super(property);
         this.enumList = enumList;
-        buildElement(context);
+        buildElement(activity);
     }
 
     /**
      * Constructor.
      *
-     * @param value    is used for testing
-     * @param context  is the application context
+     * @param value    is used for non property elements
+     * @param activity is the current activity
      * @param enumList includes the possible enum values
      */
-    public ThingPropertyEnumDropDown(Enum<?> value, Context context, ArrayList<Enum<?>> enumList) {
+    public ThingPropertyEnumDropDown(Enum<?> value, Activity activity, ArrayList<Enum<?>> enumList) {
         super(value);
         this.enumList = enumList;
-        buildElement(context);
+        buildElement(activity);
     }
 
     @Override

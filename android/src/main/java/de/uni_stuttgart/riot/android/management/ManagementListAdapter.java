@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ManagementListAdapter extends ArrayAdapter<Object> {
 
-    private ManagementListFragment managementListFragment;
+    private ManagementListActivity managementListActivity;
     private Context context;
     private int resource;
     private List<Object> data;
@@ -23,14 +23,14 @@ public class ManagementListAdapter extends ArrayAdapter<Object> {
     /**
      * Constructor.
      *
-     * @param managementListFragment is the fragment where the adapter was added
+     * @param managementListActivity is the fragment where the adapter was added
      * @param context                is the application context
      * @param resource               it the resource id of the layout for the list item
      * @param data                   is a list of data that will be displayed in the list
      */
-    public ManagementListAdapter(ManagementListFragment managementListFragment, Context context, int resource, List<Object> data) {
+    public ManagementListAdapter(ManagementListActivity managementListActivity, Context context, int resource, List<Object> data) {
         super(context, resource, data);
-        this.managementListFragment = managementListFragment;
+        this.managementListActivity = managementListActivity;
         this.context = context;
         this.resource = resource;
         this.data = data;
@@ -46,7 +46,7 @@ public class ManagementListAdapter extends ArrayAdapter<Object> {
         }
 
         // Set values of that item to the view elements
-        managementListFragment.doGetView(listRow, data.get(position));
+        managementListActivity.doGetView(listRow, data.get(position));
         return listRow;
     }
 }

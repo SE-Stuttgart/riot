@@ -14,7 +14,7 @@ import de.uni_stuttgart.riot.thing.Thing;
  *
  * @author Benny
  */
-public class ManagementThingListFragment extends ManagementListFragment {
+public class ThingListActivity extends ManagementListActivity {
 
     @Override
     protected String getPageTitle() {
@@ -22,26 +22,37 @@ public class ManagementThingListFragment extends ManagementListFragment {
     }
 
     @Override
-    protected List<Object> getListData() {
+    protected void getAndDisplayListData() {
         try {
             // Get all things and return them
-            return new ArrayList<Object>(ThingManager.getInstance().getAllThings(this));
+            final List<Object> data = new ArrayList<Object>(ThingManager.getInstance().getAllThings(this));
             // ToDo I want to get an ArrayList instead of a Collection
+
+            // Display data
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Display the data
+                    displayData(data);
+
+                    // End processing animation
+                    startProcessingAnimation(false);
+                }
+            });
         } catch (Exception e) {
-            // FIXME output message!!
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
+            IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
-        return null;
     }
 
     @Override
-    protected ManagementListFragment getFragment() {
+    protected ManagementListActivity getActivity() {
         return this;
     }
 
     @Override
     protected Class getOnItemClickActivity() {
-        return ManagementThingDetailFragment.class;
+        return ThingDetailActivity.class;
     }
 
     @Override
@@ -108,8 +119,8 @@ public class ManagementThingListFragment extends ManagementListFragment {
                 // TODO thingClient.getOnlineState(thingId); --> NullPointerException if online state is "offline"!!
                 // return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(((Thing) item).getId());
             } catch (Exception e) {
-                // FIXME output message!!
                 IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
+                IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
             }
         }
         return null;

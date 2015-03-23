@@ -151,6 +151,7 @@
     <string name="default_thing_description">This is the description of the thing</string>
     <string name="default_user_description">This is the description of the user</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 </resources>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -164,3 +165,8 @@
 =======
 </resources>
 >>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
+=======
+    <string name="user_name">Username</string>
+    <string name="user_mail">E-Mail</string>
+</resources>
+>>>>>>> RIOT-87:Android:Add user list and user view

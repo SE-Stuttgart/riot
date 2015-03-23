@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
-import android.content.Context;
+import android.app.Activity;
 import android.text.InputType;
 
 import de.uni_stuttgart.riot.thing.Property;
@@ -17,24 +17,24 @@ public class ThingPropertyFractionalSlider extends ThingPropertySlider<Double> {
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyFractionalSlider(Property<Double> property, Context context, double min, double max) {
-        super(property, context, min, max);
+    public ThingPropertyFractionalSlider(Property<Double> property, Activity activity, double min, double max) {
+        super(property, activity, min, max);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
-     * @param min     is the minimum possible value
-     * @param max     is the maximum possible value
+     * @param value    is used for testing
+     * @param activity is the current activity
+     * @param min      is the minimum possible value
+     * @param max      is the maximum possible value
      */
-    public ThingPropertyFractionalSlider(Double value, Context context, double min, double max) {
-        super(value, context, min, max);
+    public ThingPropertyFractionalSlider(Double value, Activity activity, double min, double max) {
+        super(value, activity, min, max);
     }
 
     @Override

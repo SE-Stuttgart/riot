@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
-import android.content.Context;
+import android.app.Activity;
 
 import de.uni_stuttgart.riot.thing.Property;
 
@@ -14,19 +14,19 @@ public class ThingPropertyPercentageSlider extends ThingPropertyFractionalSlider
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      */
-    public ThingPropertyPercentageSlider(Property<Double> property, Context context) {
-        super(property, context, 0.0, 1.0);
+    public ThingPropertyPercentageSlider(Property<Double> property, Activity activity) {
+        super(property, activity, 0.0, 1.0);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
+     * @param value    is used for non property elements
+     * @param activity is the current activity
      */
-    public ThingPropertyPercentageSlider(Double value, Context context) {
-        super(value, context, 0.0, 1.0);
+    public ThingPropertyPercentageSlider(Double value, Activity activity) {
+        super(value, activity, 0.0, 1.0);
     }
 }

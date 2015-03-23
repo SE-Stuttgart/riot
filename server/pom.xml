@@ -116,13 +116,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -130,6 +123,36 @@
 				<configuration>
 					<warName>riot</warName>
 					<attachClasses>true</attachClasses>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.glassfish.maven.plugin</groupId>
+				<artifactId>maven-glassfish-plugin</artifactId>
+				<configuration>
+					<glassfishDirectory>${glassfish.home}</glassfishDirectory>
+					<user>admin</user>
+					<adminPassword>changeit</adminPassword>
+					<!-- <passFile>path/to/asadmin/passfile</passFile> -->
+					<autoCreate>false</autoCreate>
+					<debug>true</debug>
+					<echo>false</echo>
+					<terse>true</terse>
+					<skip>${test.int.skip}</skip>
+					<glassfishDirectory>D:/GlassFish/glassfish</glassfishDirectory>
+					<domain>
+						<name>domain1</name>
+						<adminPort>4848</adminPort>
+						<httpPort>8080</httpPort>
+						<httpsPort>8443</httpsPort>
+						<iiopPort>3700</iiopPort>
+						<jmsPort>7676</jmsPort>
+					</domain>
+					<components>
+						<component>
+							<name>${project.artifactId}</name>
+							<artifact>${project.build.directory}/riot.war</artifact>
+						</component>
+					</components>
 				</configuration>
 			</plugin>
 		</plugins>

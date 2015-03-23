@@ -11,7 +11,7 @@
         android:padding="@dimen/fragment_main_margin">
 
         <LinearLayout
-            android:id="@+id/thing_linear_layout"
+            android:id="@+id/management_linear_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

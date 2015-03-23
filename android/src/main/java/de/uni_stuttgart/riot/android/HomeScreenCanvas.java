@@ -21,11 +21,16 @@ import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import de.uni_stuttgart.riot.android.rules.RuleListActivity;
 =======
 import de.uni_stuttgart.riot.android.management.ManagementThingListFragment;
 import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
 >>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+=======
+import de.uni_stuttgart.riot.android.management.ThingListActivity;
+import de.uni_stuttgart.riot.android.management.UserListActivity;
+>>>>>>> RIOT-87:Android:Add user list and user view
 import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -101,9 +106,9 @@ public class HomeScreenCanvas extends View {
 
             buttonList.add(new HomeScreenButton(this, 6, "Logout", 10, 10, R.drawable.logout));
 
-            buttonList.add(new HomeScreenButton(this, 7, MANAGEMENT_THINGS, 200, 200, R.drawable.ic_launcher));
+            buttonList.add(new HomeScreenButton(this, 7, MANAGEMENT_THINGS, 200, 200, android.R.drawable.ic_menu_mapmode));
 
-//            buttonList.add(new HomeScreenButton(this, 8, MANAGEMENT_USER, 240, 240, R.drawable.flag_uk));
+            buttonList.add(new HomeScreenButton(this, 8, MANAGEMENT_USER, 240, 240, android.R.drawable.ic_menu_gallery));
 
             for (HomeScreenButton button : buttonList) {
                 database.updateHomeScreenButtonCoordinates(button);
@@ -281,10 +286,10 @@ public class HomeScreenCanvas extends View {
                     //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
                     homeScreen.startActivity(logoutIntend);
                 } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_THINGS)) { // Special intent for the management
-                    Intent management = new Intent(homeScreen, ManagementThingListFragment.class);
+                    Intent management = new Intent(homeScreen, ThingListActivity.class);
                     homeScreen.startActivity(management);
                 } else if (selectedButton.getButtonDescription().equals(MANAGEMENT_USER)) { // Special intent for the management
-                    Intent management = new Intent(homeScreen, ManagementUserListFragment.class);
+                    Intent management = new Intent(homeScreen, UserListActivity.class);
                     homeScreen.startActivity(management);
                 } else {
                     Intent newNotificationScreen = new Intent(homeScreen, NotificationActivity.class);

@@ -1,10 +1,11 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import de.uni_stuttgart.riot.thing.BasePropertyListener;
+import de.uni_stuttgart.riot.android.communication.ActivityPropertyListener;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.WritableProperty;
 
@@ -18,7 +19,7 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
 public abstract class ThingProperty<T, V> {
 
     protected Property<V> property;
-    private BasePropertyListener<V> basePropertyListener;
+    private ActivityPropertyListener<V> propertyListener;
     private V value;
 
     /**
@@ -33,7 +34,7 @@ public abstract class ThingProperty<T, V> {
     /**
      * Constructor.
      *
-     * @param value is used for testing
+     * @param value is used for non property elements
      */
     public ThingProperty(final V value) {
         this.value = value;
@@ -42,11 +43,11 @@ public abstract class ThingProperty<T, V> {
     /**
      * Build the element.
      *
-     * @param context is the application context
+     * @param activity is the application activity
      */
-    public void buildElement(Context context) {
+    public void buildElement(final Activity activity) {
         // Initialize the element
-        initElement(context);
+        initElement(activity.getApplicationContext());
 
         // Set the current value
         if (this.property != null) {
@@ -64,13 +65,13 @@ public abstract class ThingProperty<T, V> {
                 enableView(false);
             }
         } else {
-            // Enable elements for testing
-            enableView(true);
+            // Disable non property elements
+            enableView(false);
             setChangeListenerAndUpdateProperty();
         }
 
         // Initialize the property listener for that element
-        this.basePropertyListener = new BasePropertyListener<V>() {
+        this.propertyListener = new ActivityPropertyListener<V>(activity) {
             @Override
             public void onChange(Property<? extends V> p, V oldValue, V newValue) {
                 setValue(newValue);
@@ -83,7 +84,7 @@ public abstract class ThingProperty<T, V> {
      */
     public void bind() {
         if (this.property != null) {
-            this.property.register(this.basePropertyListener);
+            this.property.register(this.propertyListener);
         }
     }
 
@@ -92,7 +93,7 @@ public abstract class ThingProperty<T, V> {
      */
     public void unbind() {
         if (this.property != null) {
-            this.property.unregister(this.basePropertyListener);
+            this.property.unregister(this.propertyListener);
         }
     }
 
@@ -132,8 +133,8 @@ public abstract class ThingProperty<T, V> {
     /**
      * En-/disables all child items of the given view.
      *
-     * @param view  the item that sub items should be disabled
-     * @param val is an boolean value to en-/disable this items
+     * @param view the item that sub items should be disabled
+     * @param val  is an boolean value to en-/disable this items
      */
     protected void enableChildItems(ViewGroup view, boolean val) {
         for (int i = 0; i < view.getChildCount(); i++) {

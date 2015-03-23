@@ -20,16 +20,11 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
  *
  * @author Benny
  */
-public abstract class ManagementFragment extends Activity {
+public abstract class ManagementActivity extends Activity {
 
     // FIXME TODOs for this and its subclasses:
     // reorder methods
-    // rename all fragment things to activity
-    // check output messages
     // do all fixes and to-do-s
-    // optimize the call of the "RIOTApiClient.getInstance()." -> maybe optimize that
-
-    // FIXME Changes will be saved instant? (detailView)
 
     protected static final String BUNDLE_OBJECT_ID = "SELECTED_OBJECT_ID";
     protected static final String BUNDLE_PAGE_TITLE = "SELECTED_PAGE_TITLE";
@@ -44,8 +39,8 @@ public abstract class ManagementFragment extends Activity {
         super.onCreate(savedInstanceState);
 
         if (getLayoutResource() == 0) {
-            // ToDo output message!
             IM.INSTANCES.getMH().writeErrorMessage("No layout resource was defined!");
+            IM.INSTANCES.getMH().showQuickMessage("No layout resource was defined!");
             return;
         }
 
@@ -115,30 +110,15 @@ public abstract class ManagementFragment extends Activity {
             public void run() {
                 // TODO use a timeout
                 try {
+                    // Start processing animation
                     startProcessingAnimation(true);
 
                     // Get data
-                    final Object data = getData();
-
-                    // Display data
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Update the home logo or icon
-                            updateHomeLogo();
-
-                            // Display the data
-                            displayData(data);
-
-                            // End processing animation
-                            startProcessingAnimation(false);
-                        }
-                    });
+                    getAndDisplayData();
                 } catch (Exception e) {
                     // End processing animation
                     startProcessingAnimation(false);
 
-                    // Show a message that there was something wrong (FIXME output message!!)
                     IM.INSTANCES.getMH().writeErrorMessage("Problems by creating view: ", e);
                 }
             }
@@ -150,7 +130,7 @@ public abstract class ManagementFragment extends Activity {
      *
      * @param value true starts it - false stops it
      */
-    private void startProcessingAnimation(final boolean value) {
+    protected void startProcessingAnimation(final boolean value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -172,7 +152,7 @@ public abstract class ManagementFragment extends Activity {
     /**
      * Update the home logo asynchronous (runs in a separate thread).
      */
-    private void updateHomeLogo() {
+    protected void updateHomeLogo() {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             if (getHomeIcon() != null) {
@@ -234,10 +214,8 @@ public abstract class ManagementFragment extends Activity {
 
     /**
      * Returns a list of all data that will be displayed (runs in a separate thread).
-     *
-     * @return the list of the specified data type
      */
-    protected abstract Object getData();
+    protected abstract void getAndDisplayData();
 
     /**
      * Build the elements that will be displayed (runs in a separate thread).

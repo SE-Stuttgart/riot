@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.android.thingproperty;
 
-import android.content.Context;
+import android.app.Activity;
 import android.text.InputType;
 
 import de.uni_stuttgart.riot.thing.Property;
@@ -15,24 +15,24 @@ public class ThingPropertyIntegralSlider extends ThingPropertySlider<Integer> {
      * Constructor.
      *
      * @param property for that the element will be implemented
-     * @param context  is the application context
+     * @param activity is the current activity
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyIntegralSlider(Property<Integer> property, Context context, int min, int max) {
-        super(property, context, min, max);
+    public ThingPropertyIntegralSlider(Property<Integer> property, Activity activity, int min, int max) {
+        super(property, activity, min, max);
     }
 
     /**
      * Constructor.
      *
-     * @param value   is used for testing
-     * @param context is the application context
-     * @param min     is the minimum possible value
-     * @param max     is the maximum possible value
+     * @param value    is used for non property elements
+     * @param activity is the current activity
+     * @param min      is the minimum possible value
+     * @param max      is the maximum possible value
      */
-    public ThingPropertyIntegralSlider(Integer value, Context context, int min, int max) {
-        super(value, context, min, max);
+    public ThingPropertyIntegralSlider(Integer value, Activity activity, int min, int max) {
+        super(value, activity, min, max);
     }
 
     @Override
