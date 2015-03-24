@@ -50,7 +50,7 @@
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.properties' | i18n}}</div>
       <form class="form-horizontal">
-        <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingState[property.name]" description="property" things-value></div>
+        <div ng-repeat="property in thingDescription.properties" disabled="property.writable" value="thingState" valuename="property.name" description="property" ui-element></div>
       </form>
     </div>
 
@@ -61,7 +61,7 @@
         <div class="list-group-item margin-top-10" ng-repeat="event in thingDescription.events">
           <h4 class="list-group-item-heading">{{event.name}}</h4>
           <div class="list-group-item-text">
-            <div ng-repeat="parameter in event.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
+            <div ng-repeat="parameter in event.instanceDescription.parameters" value="foo" description="parameter" ui-element></div>
           </div>
         </div>
       </form>
@@ -74,7 +74,7 @@
         <div class="list-group-item margin-top-10" ng-repeat="action in thingDescription.actions">
           <h4 class="list-group-item-heading">{{action.name}}</h4>
           <div class="list-group-item-text">
-            <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" things-value></div>
+            <div ng-repeat="parameter in action.instanceDescription.parameters" value="foo" description="parameter" ui-element></div>
           </div>
         </div>
       </form>
@@ -90,7 +90,7 @@
               <div style="min-width: 300px" complex-dropdown="users"></div>
             </div>
             <div class="form-group">
-              <select selectpicker class="form-control" title="{{ 'thing.chooseShareRight' | i18n }}" data-width="200px" ng-model="selectedRight">
+              <select selectpicker class="form-control" data-width="200px" ng-model="selectedRight">
                 <option>{{ 'thing.read' | i18n }}</option>
                 <option>{{ 'thing.control' | i18n }}</option>
                 <option>{{ 'thing.execute' | i18n }}</option>

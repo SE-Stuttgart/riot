@@ -40,6 +40,19 @@ public class PaginatedCollection<E> extends ArrayList<E> {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param collection
+     *            .
+     */
+    public PaginatedCollection(Collection<E> collection, int offset, int limit) {
+        super(collection);
+        total = collection.size();
+        this.offset = offset;
+        this.limit = limit;
+    }
+
+    /**
      * Gets the total.
      *
      * @return the total

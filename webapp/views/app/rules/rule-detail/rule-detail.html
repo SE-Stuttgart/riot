@@ -1,0 +1,75 @@
+<div class="row">
+  <div class="col-md-8" ng-controller="RuleDetailCtrl">
+  
+      <div class="detail-group" ng-if="rule.id !== undefined && ruleExists">
+        <div class="detail-group-header">{{'administration.administration' | i18n}}</div>
+        <form class="form-horizontal">
+          <!-- delete rule -->
+          <div class="form-group">
+            <label class="control-label col-md-2">{{'common.delete' | i18n}}</label>
+            <div class="col-md-8">
+              <button type="button" class="btn btn-danger" confirm-dialog title="'common.delete' | i18n" text="'common.delete' | i18n" confirm="removeRule()">
+                <span class="fa fa-times"></span>
+                {{'common.delete' | i18n}}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+  
+      <div class="detail-group">
+        <div class="detail-group-header">{{'rules.rule' | i18n}}</div>
+        <form name="formRuleDetail" class="form-horizontal margin-top-30" novalidate ng-submit="formRuleDetail.$valid">
+          <!-- ruleid -->
+          <div class="form-group">
+            <label class="control-label col-md-2" for="ruleid">{{'rules.ruleId' | i18n}}</label>
+            <div class="col-md-8">
+              <input id="ruleid" name="ruleid" type="text" placeholder="" class="form-control" ng-model="rule.id" disabled>
+            </div>
+          </div>
+  
+          <!-- name -->
+          <div class="form-group">
+            <label class="control-label col-md-2" for="name">{{'rules.name' | i18n}}</label>
+            <div class="col-md-8">
+              <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="rule.name" ng-disabled="ruleExists" required>
+            </div>
+          </div>
+  
+          <!-- type -->
+          <div class="form-group">
+            <label class="control-label col-md-2" for="type">{{'rules.type' | i18n}}</label>
+            <div class="col-md-8">
+              <input ng-if="ruleExists" id="type" name="type" type="text" placeholder="" class="form-control" ng-model="rule.type" disabled>
+              <select ng-if="!ruleExists" name="type" ng-model="ruleDescription.description" ng-options="description.type for description in descriptions" class="form-control" selectpicker required>
+                <option value="">Select rule type...</option>
+              </select>
+            </div>
+          </div>
+  
+          <!-- status -->
+          <div class="form-group">
+            <label class="control-label col-md-2" for="type">{{'rules.status' | i18n}}</label>
+            <div class="col-md-8">
+              <input ng-if="!showStatusDropDown()" id="type" name="type" type="text" placeholder="" class="form-control" ng-model="rule.status" disabled>
+              <select ng-if="showStatusDropDown()" ng-model="rule.status" class="form-control" selectpicker>
+                <option value="ACTIVE">{{ 'rules.ACTIVE' | i18n }}</option>
+                <option value="DEACTIVATED">{{ 'rules.DEACTIVATED' | i18n }}</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Parameters -->
+      <div class="detail-group">
+        <div class="detail-group-header">{{'rules.parameters' | i18n}}</div>
+        <form name="formParameters" class="form-horizontal">
+          <div ng-repeat="parameter in ruleDescription.description.parameters" disabled="false" name="{{rule.parameterValues[parameter.name]}}" value="rule.parameterValues" valuename="parameter.name" description="parameter" ui-element></div>
+          
+          <button submit="save()" ng-disabled="isDataInvalid()" class="btn btn-success" loading-button>{{ 'common.save' | i18n }}</button>
+          <button ui-sref="app.rules.list" class="btn btn-danger">{{ 'common.cancel' | i18n }}</button>
+        </form>
+      </div>
+  </div>
+</div>

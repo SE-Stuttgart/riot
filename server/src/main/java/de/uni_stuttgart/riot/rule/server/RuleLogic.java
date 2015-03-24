@@ -21,6 +21,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteExcepti
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
+import de.uni_stuttgart.riot.server.commons.rest.PaginatedCollection;
 import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
@@ -227,7 +228,7 @@ public class RuleLogic {
         if (limit > 0) {
             stream = stream.limit(limit);
         }
-        return stream.collect(Collectors.toList());
+        return new PaginatedCollection<>(stream.collect(Collectors.toList()), offset, limit);
     }
 
     /**

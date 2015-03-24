@@ -30,7 +30,8 @@
     "less.js": "~1.6",
     "font-awesome": "~4.0",
     "restangular": "~1.4.0",
-    "ladda-bootstrap": "~0.1.0"
+    "ladda-bootstrap": "~0.1.0",
+    "nya-bootstrap-select": "~2.0.10"
   },
   "resolutions": {
     "angular": "~1.2",
