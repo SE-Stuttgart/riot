@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing.house.coffeemachine;
 
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -41,7 +42,7 @@ public class CoffeeMachine extends Thing {
     /**
      * An event signalling that there is only little or no water left.
      */
-    private final NotificationEvent<OutOfWater> outOfWater = newNotification("outOfWater", OutOfWater.class);
+    private final NotificationEvent<OutOfWater> outOfWater = newNotification("outOfWater", OutOfWater.class, NotificationSeverity.WARNING);
 
     /**
      * The action of refilling the water tank. It will be filled to its maximum.
@@ -56,7 +57,7 @@ public class CoffeeMachine extends Thing {
     /**
      * An event signaling that there are only little or no beans left.
      */
-    private final NotificationEvent<OutOfBeans> outOfBeans = newNotification("outOfBeans", OutOfBeans.class);
+    private final NotificationEvent<OutOfBeans> outOfBeans = newNotification("outOfBeans", OutOfBeans.class, NotificationSeverity.WARNING);
 
     /**
      * The action of refilling a (specific number) of beans to the tank.
@@ -103,7 +104,7 @@ public class CoffeeMachine extends Thing {
      * An event that is raised when the coffee making finished. If the coffee making fails, this event is not raised (possibly another one,
      * indicating the failure).
      */
-    private final NotificationEvent<EventInstance> coffeeFinished = newNotification("coffeeFinished");
+    private final NotificationEvent<EventInstance> coffeeFinished = newNotification("coffeeFinished", NotificationSeverity.INFO_NOW);
 
     /**
      * Creates a new coffee machine.

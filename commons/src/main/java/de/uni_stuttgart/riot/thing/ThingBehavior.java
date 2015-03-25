@@ -2,12 +2,15 @@ package de.uni_stuttgart.riot.thing;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Map;
+import java.util.Set;
 
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.references.DelegatingReferenceResolver;
 import de.uni_stuttgart.riot.references.Reference;
 import de.uni_stuttgart.riot.references.ReferenceResolver;
 import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -326,22 +329,35 @@ public abstract class ThingBehavior implements ReferenceResolver {
     }
 
     /**
-     * New a new notification for the thing.
+     * Creates a new {@link NotificationEvent} for the thing.
      *
      * @param <E>
      *            The type of instances of the event.
-     * @param notificationName
+     * @param eventName
      *            The name of the event. Should check for uniqueness.
      * @param instanceType
-     *            The name of the event. Should check for uniqueness.
+     *            The type of instances of the event.
+     * @param severity
+     *            The severity of the notifications fired by the created notification event.
+     * @param titleKey
+     *            The key of the message title in notification.properties.
+     * @param messageKey
+     *            The key of the message in notification.properties.
+     * @param permissions
+     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent.
      * @return The newly created notification.
      */
-    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
-        checkEventArguments(notificationName, instanceType);
-
-        NotificationEvent<E> notification = new NotificationEvent<E>(thing, notificationName, instanceType);
-        thing.events.put(notificationName, notification);
-        return notification;
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String eventName, Class<E> instanceType, NotificationSeverity severity, String titleKey, String messageKey, Set<ThingPermission> permissions) {
+        checkEventArguments(eventName, instanceType);
+        if (titleKey == null || titleKey.isEmpty()) {
+            throw new IllegalArgumentException("titleKey must not be empty!");
+        }
+        if (messageKey == null || messageKey.isEmpty()) {
+            throw new IllegalArgumentException("messageKey must not be empty!");
+        }
+        NotificationEvent<E> notificationEvent = new NotificationEvent<E>(thing, eventName, instanceType, severity, titleKey, messageKey, permissions);
+        thing.events.put(eventName, notificationEvent);
+        return notificationEvent;
     }
 
     /**

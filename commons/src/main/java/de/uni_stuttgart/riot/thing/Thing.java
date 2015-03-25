@@ -1,17 +1,19 @@
 package de.uni_stuttgart.riot.thing;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.uni_stuttgart.riot.commons.rest.data.Storable;
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.references.ParentReference;
 import de.uni_stuttgart.riot.references.Referenceable;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -71,7 +73,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @param <E>
      *            The type of instances of the event.
      * @param eventName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
      * @param instanceType
      *            The type of instances of the event.
      * @return The newly created event.
@@ -84,7 +86,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * Creates a new event without parameters for the thing.
      * 
      * @param eventName
-     *            The name of the event. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
      * @return The newly created event.
      */
     protected Event<EventInstance> newEvent(String eventName) {
@@ -92,29 +94,92 @@ public class Thing extends Storable implements Referenceable<Thing> {
     }
 
     /**
-     * Creates a new notification without parameters for the thing.
-     * 
+     * Creates a new {@link NotificationEvent} for the thing.
+     *
      * @param <E>
-     *            The type of instances of the notification.
-     * @param notificationName
-     *            The name of the notification. Must be unique, i.e,. this method can only be called once for each name.
+     *            The type of instances of the event.
+     * @param eventName
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
      * @param instanceType
      *            The type of instances of the event.
+     * @param severity
+     *            The severity of the notifications fired by the created notification event.
+     * @param titleKey
+     *            The key of the message title in notification.properties.
+     * @param messageKey
+     *            The key of the message in notification.properties.
+     * @param permissions
+     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent. If no
+     *            permissions are specified, the {@link ThingPermission#READ} permission will be required.
      * @return The newly created notification.
      */
-    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
-        return getBehavior().newNotification(notificationName, instanceType);
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String eventName, Class<E> instanceType, NotificationSeverity severity, String titleKey, String messageKey, ThingPermission... permissions) {
+        EnumSet<ThingPermission> permissionsSet;
+        if (permissions.length == 0) {
+            permissionsSet = EnumSet.of(ThingPermission.READ);
+        } else {
+            permissionsSet = EnumSet.of(permissions[0], permissions);
+        }
+        return getBehavior().newNotification(eventName, instanceType, severity, titleKey, messageKey, permissionsSet);
     }
 
     /**
-     * Creates a new notification without parameters for the thing.
+     * Creates a new {@link NotificationEvent} without parameters for the thing.
      *
-     * @param notificationName
-     *            The name of the notification. Must be unique, i.e,. this method can only be called once for each name.
+     * @param eventName
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
+     * @param severity
+     *            The severity of the notifications fired by the created notification event.
+     * @param titleKey
+     *            The key of the message title in notification.properties.
+     * @param messageKey
+     *            The key of the message in notification.properties.
+     * @param permissions
+     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent. If no
+     *            permissions are specified, the {@link ThingPermission#READ} permission will be required.
      * @return The newly created notification.
      */
-    protected NotificationEvent<EventInstance> newNotification(String notificationName) {
-        return getBehavior().newNotification(notificationName, EventInstance.class);
+    protected NotificationEvent<EventInstance> newNotification(String eventName, NotificationSeverity severity, String titleKey, String messageKey, ThingPermission... permissions) {
+        return newNotification(eventName, EventInstance.class, severity, titleKey, messageKey, permissions);
+    }
+
+    /**
+     * Creates a new {@link NotificationEvent} for the thing. The <tt>titleKey</tt> and <tt>messageKey</tt> are derived canonically from the
+     * Thing's type and the event name. See <tt>notification_xx.properties</tt> for details.
+     *
+     * @param <E>
+     *            The type of instances of the event.
+     * @param eventName
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
+     * @param instanceType
+     *            The type of instances of the event.
+     * @param severity
+     *            The severity of the notifications fired by the created notification event.
+     * @param permissions
+     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent. If no
+     *            permissions are specified, the {@link ThingPermission#READ} permission will be required.
+     * @return The newly created notification.
+     */
+    protected <E extends EventInstance> NotificationEvent<E> newNotification(String eventName, Class<E> instanceType, NotificationSeverity severity, ThingPermission... permissions) {
+        String notificationName = getClass().getSimpleName() + "_" + eventName;
+        return newNotification(eventName, instanceType, severity, notificationName + "_title", notificationName + "_message", permissions);
+    }
+
+    /**
+     * Creates a new {@link NotificationEvent} without parameters for the thing. The <tt>titleKey</tt> and <tt>messageKey</tt> are derived
+     * canonically from the Thing's type and the event name. See <tt>notification_xx.properties</tt> for details.
+     *
+     * @param eventName
+     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
+     * @param severity
+     *            The severity of the notifications fired by the created notification event.
+     * @param permissions
+     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent. If no
+     *            permissions are specified, the {@link ThingPermission#READ} permission will be required.
+     * @return The newly created notification.
+     */
+    protected NotificationEvent<EventInstance> newNotification(String eventName, NotificationSeverity severity, ThingPermission... permissions) {
+        return newNotification(eventName, EventInstance.class, severity, permissions);
     }
 
     /**
@@ -123,7 +188,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e., this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -140,7 +205,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e., this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -159,7 +224,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e., this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -176,7 +241,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
      * @param <V>
      *            The type of the property's values.
      * @param propertyName
-     *            The name of the property. Must be unique, i.e,. this method can only be called once for each name.
+     *            The name of the property. Must be unique, i.e., this method can only be called once for each name.
      * @param valueType
      *            The type of the property's values.
      * @param initialValue
@@ -358,7 +423,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
     }
 
     /**
-     * Changes the name of this thing. TODO Do we need this method?
+     * Changes the name of this thing.
      * 
      * @param name
      *            The new name.
@@ -439,21 +504,6 @@ public class Thing extends Storable implements Referenceable<Thing> {
      */
     public Collection<Event<?>> getEvents() {
         return Collections.unmodifiableCollection(events.values());
-    }
-
-    /**
-     * Returns a non-editable collection of all notifications that this thing has.
-     * 
-     * @return The notifications of this thing.
-     */
-    public Collection<NotificationEvent<?>> getNotifcations() {
-        Collection<NotificationEvent<?>> notifications = new ArrayList<NotificationEvent<?>>();
-        for (Event<?> event : events.values()) {
-            if (event instanceof NotificationEvent<?>) {
-                notifications.add((NotificationEvent<?>) event);
-            }
-        }
-        return Collections.unmodifiableCollection(notifications);
     }
 
     /**
