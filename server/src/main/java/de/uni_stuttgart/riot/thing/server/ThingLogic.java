@@ -15,11 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
-import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
-import de.uni_stuttgart.riot.db.thing.NotificationDAO;
-import de.uni_stuttgart.riot.db.thing.Notification;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
 import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -42,6 +39,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 import de.uni_stuttgart.riot.thing.rest.UserThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
+import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetAllUsersException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -63,11 +61,6 @@ public class ThingLogic {
      * The DAO for storing sharing information.
      */
     private final ThingUserSqlQueryDAO thingUserDAO = new ThingUserSqlQueryDAO();
-
-    /**
-     * The DAO for storing notifications.
-     */
-    private final DAO<Notification> notificationDAO = new NotificationDAO();
 
     /**
      * Contains all known things. These need to be held in memory to allow for links like event listeners, etc. It is important to use a Map
@@ -274,49 +267,6 @@ public class ThingLogic {
             stream = stream.filter((behavior) -> behavior.canAccess(finalUserId, requirePermissions));
         }
         return stream.map(ThingBehavior::getThing);
-    }
-
-    /**
-     * Find all already fired notifications for either one thing or all things belonging to a user.
-     *
-     * @param offset
-     *            The offset (first index to be returned).
-     * @param limit
-     *            The number of things to be returned.
-     * @param userId
-     *            The id of the user. If this is <tt>null</tt>, it will be substituted by the ID of the current user.
-     * @param thingId
-     *            The id of the thing to get the notifications from. If this is null, the notifications of all things belonging to the user
-     *            will be returned.
-     * @return the collection
-     * @throws DatasourceFindException
-     *             the datasource find exception
-     */
-    public Collection<Notification> findNotifications(int offset, int limit, Long userId, Long thingId) throws DatasourceFindException {
-
-        FilteredRequest filteredRequest = new FilteredRequest();
-        List<FilterAttribute> fac = new ArrayList<>();
-        Long internalUserId = userId;
-
-        if (userId == null) {
-            internalUserId = umFacade.getCurrentUserId();
-        }
-
-        if (thingId == null) {
-            Collection<Thing> userThings = findThings(0, 0, internalUserId, ThingPermission.READ);
-            for (Thing thing : userThings) {
-                fac.add(new FilterAttribute("thingId", FilterOperator.EQ, thing.getId()));
-            }
-            filteredRequest.setOrMode(true);
-        } else {
-            fac.add(new FilterAttribute("thingId", FilterOperator.EQ, thingId));
-        }
-
-        filteredRequest.setFilterAttributes(fac);
-        filteredRequest.setOffset(offset);
-        filteredRequest.setLimit(limit);
-
-        return notificationDAO.findAll(filteredRequest);
     }
 
     /**
@@ -593,6 +543,29 @@ public class ThingLogic {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the IDs of all users that have at least the given permissions on the given thing, including inherited permissions.
+     * 
+     * @param thingId
+     *            The thing id.
+     * @param permissions
+     *            The required permissions.
+     * @return The user IDs.
+     * @throws DatasourceFindException
+     *             If a thing with the given id does not exist.
+     */
+    public Set<Long> getPermittedUsers(long thingId, Set<ThingPermission> permissions) throws DatasourceFindException {
+        if (permissions == null || permissions.isEmpty()) {
+            try {
+                return umFacade.getAllUsers().stream().map(User::getId).collect(Collectors.toSet());
+            } catch (GetAllUsersException e) {
+                throw new DatasourceFindException(e);
+            }
+        } else {
+            return getBehavior(thingId).getPermittedUsers(permissions);
+        }
     }
 
     /**

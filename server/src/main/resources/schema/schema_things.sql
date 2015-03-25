@@ -4,10 +4,11 @@ ActionDBObject,
 EventDBObject,
 PropertyDBObject,
 Thing,
+notification_arguments,
+notifications,
 propertyvalues,
 things_users,
-things,
-notifications;
+things;
 
 CREATE TABLE things
 (
@@ -27,16 +28,6 @@ name varchar(128) NOT NULL,
 val varchar(256),
 FOREIGN KEY (thingID) REFERENCES things(id) ON DELETE CASCADE,
 PRIMARY KEY (thingID, name)
-);
-
-CREATE TABLE notifications
-(
-id SERIAL,
-thingID bigint unsigned NOT NULL,
-name varchar(128) NOT NULL,
-time date NOT NULL,
-FOREIGN KEY (thingID) REFERENCES things(id) ON DELETE CASCADE,
-PRIMARY KEY (id)
 );
 
 CREATE TABLE things_users

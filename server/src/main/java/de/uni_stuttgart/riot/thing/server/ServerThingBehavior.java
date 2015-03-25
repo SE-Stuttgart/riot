@@ -6,12 +6,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
-import de.uni_stuttgart.riot.db.thing.NotificationDAO;
-import de.uni_stuttgart.riot.db.thing.Notification;
+import de.uni_stuttgart.riot.notification.server.NotificationLogic;
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.thing.ActionInstance;
@@ -40,7 +41,6 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
     private final Queue<ActionInstance> outstandingActions = new LinkedList<>();
     private final Queue<EventInstance> occuredEvents = new LinkedList<>();
     private final Map<Long, ThingShare> shares = new HashMap<>();
-    private final DAO<Notification> notificationDao = new NotificationDAO();
     private Date lastConnection;
 
     /**
@@ -162,6 +162,67 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
     }
 
     /**
+     * Gets the IDs of all users that have at least the given permissions on this thing, including inherited permissions.
+     * 
+     * @param permissions
+     *            The required permissions.
+     * @return The user IDs.
+     */
+    public Set<Long> getPermittedUsers(Set<ThingPermission> permissions) {
+        if (permissions.isEmpty()) {
+            throw new IllegalArgumentException("permissions must not be empty, this would require all users to be returned!");
+        }
+        Set<Long> result = new HashSet<>();
+        augmentPermittedUsers(permissions, result, new HashMap<>());
+        return result;
+    }
+
+    /**
+     * Adds all user IDs to <tt>success</tt> that are either permitted all <tt>permissions</tt> on this thing, including inherited
+     * permissions, or are contained in <tt>missing</tt> and are permitted the permissions from there.
+     * 
+     * @param permissions
+     *            The overall required permissions. This should not be empty!
+     * @param success
+     *            The set of users that has this permissions (this method will write to the set!).
+     * @param missing
+     *            A map of users that have some of the required permissions, but some are missing (this method will modify this set!). All
+     *            values in this map must be subsets of <tt>permissions</tt>.
+     */
+    private void augmentPermittedUsers(Set<ThingPermission> permissions, Set<Long> success, Map<Long, Set<ThingPermission>> missing) {
+        for (ThingShare share : getShares()) {
+            long userID = share.getUserId();
+            if (success.contains(userID)) {
+                continue; // Already successful, no further checks required.
+            } else if (missing.containsKey(userID)) {
+                Set<ThingPermission> missingForUser = missing.get(userID);
+                missingForUser.removeAll(share.getPermissions());
+                if (missingForUser.isEmpty()) {
+                    missing.remove(userID);
+                    success.add(userID);
+                }
+            } else {
+                Set<ThingPermission> missingForUser = new HashSet<>(permissions);
+                missingForUser.removeAll(share.getPermissions());
+                if (missingForUser.isEmpty()) {
+                    success.add(userID);
+                } else {
+                    missing.put(userID, missingForUser);
+                }
+            }
+        }
+
+        if (getThing().hasParent()) {
+            try {
+                ServerThingBehavior parentBehavior = ThingLogic.getThingLogic().getBehavior(getThing().getParentId());
+                parentBehavior.augmentPermittedUsers(permissions, success, missing);
+            } catch (DatasourceFindException e) {
+                return; // Ignore.
+            }
+        }
+    }
+
+    /**
      * The time at which the thing connected to the server for the last time.
      * 
      * @return The last connection time.
@@ -207,7 +268,16 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
      *            The event instance.
      */
     <E extends EventInstance> void fireEvent(E eventInstance) {
-        notifyListeners(getEventFromInstance(eventInstance), eventInstance);
+        Event<E> event = getEventFromInstance(eventInstance);
+        notifyListeners(event, eventInstance);
+
+        if (event instanceof NotificationEvent) {
+            try {
+                NotificationLogic.getNotificationLogic().fireNotificationEvent((NotificationEvent<E>) event, eventInstance);
+            } catch (DatasourceFindException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -221,25 +291,6 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
         response.setOutstandingActions(moveQueue(outstandingActions));
         markLastConnection();
         return response;
-    }
-
-    @Override
-    protected <E extends EventInstance> NotificationEvent<E> newNotification(String notificationName, Class<E> instanceType) {
-        NotificationEvent<E> notification = super.newNotification(notificationName, instanceType);
-
-        notification.register(new EventListener<EventInstance>() {
-
-            @Override
-            public void onFired(Event<? extends EventInstance> event, EventInstance eventInstance) {
-                try {
-                    notificationDao.insert(new Notification(ServerThingBehavior.this.getThing().getId(), event.getName(), eventInstance.getTime()));
-                } catch (DatasourceInsertException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        return notification;
     }
 
     /**

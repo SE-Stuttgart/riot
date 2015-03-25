@@ -310,62 +310,6 @@ public class ThingService {
     }
 
     /**
-     * Gets the already fired notifications from all things the current user has the permission to {@link ThingPermission#READ}.
-     *
-     * @param offset
-     *            The beginning item number
-     * @param limit
-     *            Maximum number of items to return
-     * @return The notifications in a collection
-     * @throws DatasourceFindException
-     *             the datasource find exception
-     */
-    @GET
-    @Path("/notifications")
-    public Collection<Notification> getNotifications(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
-        if (limit < 0 || offset < 0) {
-            throw new BadRequestException("please provide valid parameter values");
-        }
-
-        // Fetch the results
-        if (limit == 0) {
-            return logic.findNotifications(offset, DEFAULT_PAGE_SIZE, null, null);
-        } else {
-            return logic.findNotifications(offset, limit, null, null);
-        }
-    }
-
-    /**
-     * Gets the already fired notifications from the thing with the given id, if the current user has the permission to
-     * {@link ThingPermission#READ} this thing.
-     *
-     * @param offset
-     *            The beginning item number
-     * @param limit
-     *            Maximum number of items to return
-     * @param id
-     *            The id of the thing to get the notifications from
-     * @return The notifications in a collection
-     * @throws DatasourceFindException
-     *             the datasource find exception
-     */
-    @GET
-    @Path("{id}/notifications")
-    public Collection<Notification> getNotifications(@QueryParam("offset") int offset, @QueryParam("limit") int limit, @PathParam("id") Long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.READ);
-        if (limit < 0 || offset < 0) {
-            throw new BadRequestException("please provide valid parameter values");
-        }
-
-        // Fetch the results
-        if (limit == 0) {
-            return logic.findNotifications(offset, DEFAULT_PAGE_SIZE, null, id);
-        } else {
-            return logic.findNotifications(offset, limit, null, id);
-        }
-    }
-
-    /**
      * Creates a new model with data from the request body.
      *
      * @param request

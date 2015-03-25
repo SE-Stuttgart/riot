@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS
 things_users,
+notification_arguments,
+notifications,
 roles_permissions,
 tokens_roles,
 users_roles,

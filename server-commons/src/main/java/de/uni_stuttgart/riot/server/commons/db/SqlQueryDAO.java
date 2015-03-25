@@ -165,7 +165,8 @@ public abstract class SqlQueryDAO<T extends Storable> implements DAO<T> {
             resultWithPag.setLimit(limit);
             resultWithPag.setOffset(offset);
 
-            stmt = queryBuilder.buildGetTotal(getTableName(), connection);
+            stmt = queryBuilder.buildGetTotal(getTableName(), connection); // FIXME This class needs refactoring. For example, all stmts
+                                                                           // must be closed.
             resultWithPag.setTotal(stmt.executeAndFetchFirst(Integer.class));
 
             return resultWithPag;
