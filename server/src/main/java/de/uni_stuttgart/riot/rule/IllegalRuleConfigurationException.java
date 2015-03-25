@@ -7,7 +7,7 @@ package de.uni_stuttgart.riot.rule;
  */
 public class IllegalRuleConfigurationException extends Exception {
 
-    private static final long serialVersionUID = 1182375069868647185L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor for IllegalRuleConfigurationException.

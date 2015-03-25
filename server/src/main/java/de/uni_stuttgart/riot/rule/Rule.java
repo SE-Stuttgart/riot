@@ -11,6 +11,9 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uni_stuttgart.riot.notification.Notification;
+import de.uni_stuttgart.riot.notification.NotificationBuilder;
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.references.ReferenceResolver;
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
@@ -213,14 +216,80 @@ public abstract class Rule {
     }
 
     /**
+     * Creates a new notification sender. The title and message key will be generated canonically from the rule class name and the specified
+     * notification name.
+     * 
+     * @param name
+     *            The name of the created notifications.
+     * @return The notification sender.
+     */
+    protected RuleNotification newNotification(String name) {
+        return newNotification(name, null);
+    }
+
+    /**
+     * Creates a new notification sender.
+     * 
+     * @param name
+     *            The name of the created notifications.
+     * @param titleKey
+     *            The title key of the created notifications.
+     * @param messageKey
+     *            The message key of the created notifications.
+     * @return The notification sender.
+     */
+    protected RuleNotification newNotification(String name, String titleKey, String messageKey) {
+        return newNotification(name, titleKey, messageKey, null);
+    }
+
+    /**
+     * Creates a new notification sender. The title and message key will be generated canonically from the rule class name and the specified
+     * notification name.
+     * 
+     * @param name
+     *            The name of the created notifications.
+     * @param severity
+     *            The severity of the created notifications.
+     * @return The notification sender.
+     */
+    protected RuleNotification newNotification(String name, NotificationSeverity severity) {
+        String notificationName = getClass().getSimpleName() + "_" + name;
+        return newNotification(name, notificationName + "_title", notificationName + "_message", severity);
+    }
+
+    /**
+     * Creates a new notification sender.
+     * 
+     * @param name
+     *            The name of the created notifications.
+     * @param titleKey
+     *            The title key of the created notifications.
+     * @param messageKey
+     *            The message key of the created notifications.
+     * @param severity
+     *            The severity of the created notifications.
+     * @return The notification sender.
+     */
+    protected RuleNotification newNotification(String name, String titleKey, String messageKey, NotificationSeverity severity) {
+        Notification prototype = NotificationBuilder.create() //
+                .name(name) //
+                .titleKey(titleKey).messageKey(messageKey) //
+                .severity(severity) //
+                .build();
+        return new RuleNotification(this, prototype);
+    }
+
+    /**
      * This method should initialize the execution. When this method is called, all parameters are filled with their values. The
      * implementation should register to events, register schedulers, etc. Note: The caller ensures that this method is only called on an
      * uninitialized rule or on one that has been shut down previously.
      * 
      * @throws ResolveReferenceException
      *             When resolving one of the parameters fails.
+     * @throws IllegalRuleConfigurationException
+     *             When the validation of the rule configuration (including parameters) failed.
      */
-    protected abstract void initialize() throws ResolveReferenceException;
+    protected abstract void initialize() throws ResolveReferenceException, IllegalRuleConfigurationException;
 
     /**
      * This method should shutdown the execution, i.e. it should unregister and stop everything. Please do not call
@@ -240,7 +309,7 @@ public abstract class Rule {
             running = true;
             try {
                 initialize();
-            } catch (ResolveReferenceException e) {
+            } catch (ResolveReferenceException | IllegalRuleConfigurationException e) {
                 errorOccured(e);
             }
         }
@@ -374,6 +443,26 @@ public abstract class Rule {
     }
 
     /**
+     * Convenience method for creating property listeners with lambda expressions.
+     * 
+     * @param <V>
+     *            The value type of the property.
+     * @param listener
+     *            The lambda expression which is a simple void method with three parameters (the property, the old value and the new value).
+     * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onPropertyChange(ExceptionHandledPropertyListener)} a second time.
+     */
+    protected <V> PropertyListener<V> onPropertyChange(ExceptionHandledPropertyListener<V> listener) {
+        return (event, instance) -> {
+            try {
+                listener.onChange(instance.getOldValue(), instance.getNewValue());
+            } catch (ResolveReferenceException e) {
+                errorOccured(e);
+            }
+        };
+    }
+
+    /**
      * Convenience method for {@link ScheduledExecutorService#schedule(Runnable, long, java.util.concurrent.TimeUnit)} with lambda
      * expressions that does the exception handling.
      * 
@@ -409,8 +498,6 @@ public abstract class Rule {
     /**
      * This interface is designed for lambda methods. It can be used in conjunction with the creator methods in the {@link Rule} class (see
      * there).
-     * 
-     * @author Philipp Keck
      */
     protected interface ExceptionHandledParameterizedRunnable<P> {
         /**
@@ -422,6 +509,24 @@ public abstract class Rule {
          *             This exception will be handled by the base rule implementation.
          */
         void run(P p) throws ResolveReferenceException;
+    }
+
+    /**
+     * This interface is designed for lambda methods. It can be used in conjunction with the creator methods in the {@link Rule} class (see
+     * there).
+     */
+    protected interface ExceptionHandledPropertyListener<V> {
+        /**
+         * Called when a property changed that the listener was registered to.
+         * 
+         * @param oldValue
+         *            Its old value.
+         * @param newValue
+         *            Its new value.
+         * @throws ResolveReferenceException
+         *             This exception will be handled by the base rule implementation.
+         */
+        void onChange(V oldValue, V newValue) throws ResolveReferenceException;
     }
 
 }
