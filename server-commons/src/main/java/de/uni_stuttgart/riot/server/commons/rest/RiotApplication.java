@@ -101,6 +101,9 @@ public class RiotApplication extends ResourceConfig {
      * @return The Jackson ObjectMapper.
      */
     public static ObjectMapper produceObjectMapper() {
+        // Note: There are other ObjectMapper creations around.
+        // In case this method is changed, it should be moved to the commons project
+        // and all respective calls should be directed there.
         return new ObjectMapper(); // Currently there is no configuration necessary.
     }
 
