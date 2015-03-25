@@ -1,7 +1,7 @@
 package de.uni_stuttgart.riot.android.database;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,17 +10,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.ListView;
-import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.FilterItem;
 import de.uni_stuttgart.riot.android.HomeScreen;
 import de.uni_stuttgart.riot.android.HomeScreenButton;
 import de.uni_stuttgart.riot.android.HomeScreenCanvas;
-import de.uni_stuttgart.riot.android.NotificationScreen;
 import de.uni_stuttgart.riot.android.location.MyLocation;
-import de.uni_stuttgart.riot.android.notification.Notification;
-import de.uni_stuttgart.riot.android.notification.NotificationAdapter;
-import de.uni_stuttgart.riot.android.notification.NotificationType;
+import de.uni_stuttgart.riot.notification.Notification;
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class RIOTDatabase extends SQLiteOpenHelper {
@@ -30,16 +26,18 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
     private static final String TABLE_FILTER = "filter";
     private static final String FILTER_COLUMN_ID = "id";
-    private static final String FILTER_COLUMN_TYPE = "type";
+    private static final String FILTER_COLUMN_SEVERITY = "severity";
     private static final String FILTER_COLUMN_CHECKED = "is_checked";
 
     private static final String TABLE_NOTIFICATION = "notification";
-    private static final String NOTIFICATION_COLUMN_TITLE = "title";
-    private static final String NOTIFICATION_COLUMN_TYPE = "type";
     private static final String NOTIFICATION_COLUMN_ID = "id";
-    private static final String NOTIFICATION_COLUMN_CONTENT = "content";
-    private static final String NOTIFICATION_COLUMN_DATE = "date";
     private static final String NOTIFICATION_COLUMN_THING = "thing";
+    private static final String NOTIFICATION_COLUMN_SEVERITY = "severity";
+    private static final String NOTIFICATION_COLUMN_NAME = "name";
+    private static final String NOTIFICATION_COLUMN_TITLE = "title";
+    private static final String NOTIFICATION_COLUMN_MESSAGE = "message";
+    private static final String NOTIFICATION_COLUMN_TIME = "time";
+    private static final String NOTIFICATION_COLUMN_DISMISSED = "dismissed";
 
     private static final String TABLE_LANGUAGE = "language";
     private static final String LANGUAGE_COLUMN_ID = "id";
@@ -57,9 +55,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     private static final String COORDINATES_COLUMN_YPOSITION = "y";
     private static final String COORDINATES_IMAGEID = "imageid";
 
-    private String invokedNotificationScreen;
-    private NotificationScreen notificationScreen;
-
     public RIOTDatabase(HomeScreen homeScreen) {
         super(homeScreen, DATABASE_NAME, null, DATABASE_VERION);
     }
@@ -71,9 +66,20 @@ public class RIOTDatabase extends SQLiteOpenHelper {
      *            The database that is used to create the tables.
      */
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_FILTER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" + FILTER_COLUMN_ID + " INTEGER PRIMARY KEY," + FILTER_COLUMN_TYPE + " TEXT," + FILTER_COLUMN_CHECKED + " INTEGER)";
+        String CREATE_FILTER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" + //
+                FILTER_COLUMN_ID + " INTEGER PRIMARY KEY," + //
+                FILTER_COLUMN_SEVERITY + " TEXT," + //
+                FILTER_COLUMN_CHECKED + " INTEGER)";
 
-        String CREATE_NOTIFICATION_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NOTIFICATION + "(" + NOTIFICATION_COLUMN_ID + " INTEGER PRIMARY KEY," + NOTIFICATION_COLUMN_TYPE + " TEXT," + NOTIFICATION_COLUMN_TITLE + " TEXT," + NOTIFICATION_COLUMN_CONTENT + " TEXT, " + NOTIFICATION_COLUMN_DATE + " TEXT, " + NOTIFICATION_COLUMN_THING + " TEXT)";
+        String CREATE_NOTIFICATION_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NOTIFICATION + "(" + //
+                NOTIFICATION_COLUMN_ID + " INTEGER PRIMARY KEY," + //
+                NOTIFICATION_COLUMN_THING + " INTEGER," + //
+                NOTIFICATION_COLUMN_SEVERITY + " TEXT," + //
+                NOTIFICATION_COLUMN_NAME + " TEXT," + //
+                NOTIFICATION_COLUMN_TITLE + " TEXT," + //
+                NOTIFICATION_COLUMN_MESSAGE + " TEXT, " + //
+                NOTIFICATION_COLUMN_TIME + " INTEGER, " + //
+                NOTIFICATION_COLUMN_DISMISSED + " INTEGER)";
 
         String CREATE_LANGUAGE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LANGUAGE + "(" + LANGUAGE_COLUMN_ID + " TEXT PRIMARY KEY)";
 
@@ -116,7 +122,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(FILTER_COLUMN_ID, filter.getId());
-        values.put(FILTER_COLUMN_TYPE, filter.getType().toString());
+        values.put(FILTER_COLUMN_SEVERITY, filter.getSeverity().name());
         values.put(FILTER_COLUMN_CHECKED, filter.getItem().isChecked());
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_FILTER + " WHERE " + FILTER_COLUMN_ID + " = ?", new String[] { String.valueOf(filter.getId()) });
@@ -132,8 +138,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
             db.insert(TABLE_FILTER, null, values);
         }
 
-        filterNotifications();
-
         cursor.close();
         db.close();
     }
@@ -141,32 +145,28 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     /**
      * The checked filters in the UI of the NotificationScreen are used to create a list of Notifications.
      */
-    public void filterNotifications() {
+    public Collection<Notification> getFilteredNotifications() {
         SQLiteDatabase db = this.getWritableDatabase();
-        String filteredNotifications = "SELECT * FROM " + TABLE_NOTIFICATION + " INNER JOIN " + TABLE_FILTER + " ON " + TABLE_NOTIFICATION + "." + NOTIFICATION_COLUMN_TYPE + " == " + TABLE_FILTER + "." + FILTER_COLUMN_TYPE + " AND " + TABLE_FILTER + "." + FILTER_COLUMN_CHECKED + "== 1";
+        String filteredNotifications = "SELECT * FROM " + TABLE_NOTIFICATION + " INNER JOIN " + TABLE_FILTER + " ON " + TABLE_NOTIFICATION + "." + NOTIFICATION_COLUMN_SEVERITY + " == " + TABLE_FILTER + "." + FILTER_COLUMN_SEVERITY + " AND " + TABLE_FILTER + "." + FILTER_COLUMN_CHECKED + "== 1";
 
         Cursor cursor = db.rawQuery(filteredNotifications, null);
         List<Notification> notificationList = new ArrayList<Notification>();
 
         if (cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndex(NOTIFICATION_COLUMN_ID));
+                long thingIdZero = cursor.getLong(cursor.getColumnIndex(NOTIFICATION_COLUMN_THING));
+                Long thingId = thingIdZero == 0 ? null : thingIdZero;
 
-                String title = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_TITLE));
-
-                String content = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_CONTENT));
-
-                String type = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_TYPE));
-
-                // String date = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_DATE));
-
-                String thing = cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_THING));
-
-                if (invokedNotificationScreen.equals(thing)) {
-                    // TODO: richtiges Datum verwenden
-                    Notification notificiation = new Notification(id, title, content, NotificationType.valueOf(type), new SimpleDateFormat("K:mm a, E d.MMM,yyyy").format(new Date()), thing);
-                    notificationList.add(notificiation);
-                }
+                Notification notification = new Notification();
+                notification.setId(cursor.getLong(cursor.getColumnIndex(NOTIFICATION_COLUMN_ID)));
+                notification.setThingID(thingId);
+                notification.setSeverity(NotificationSeverity.valueOf(cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_SEVERITY))));
+                notification.setName(cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_NAME)));
+                notification.setResolvedTitle(cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_TITLE)));
+                notification.setResolvedMessage(cursor.getString(cursor.getColumnIndex(NOTIFICATION_COLUMN_MESSAGE)));
+                notification.setTime(new Date(cursor.getLong(cursor.getColumnIndex(NOTIFICATION_COLUMN_TIME))));
+                notification.setDismissed(cursor.getInt(cursor.getColumnIndex(NOTIFICATION_COLUMN_DISMISSED)) == 1);
+                notificationList.add(notification);
 
             } while (cursor.moveToNext());
 
@@ -174,19 +174,17 @@ public class RIOTDatabase extends SQLiteOpenHelper {
             db.close();
         }
 
-        NotificationAdapter chapterListAdapter = new NotificationAdapter(notificationScreen, notificationList);
-        ListView notification = (ListView) notificationScreen.findViewById(R.id.NotificationList);
-        notification.setAdapter(chapterListAdapter);
+        return notificationList;
     }
 
     /**
      * To show the user, which filter is already checked or not, we have to get the checked status of each filter from the database.
      * 
-     * @param type
-     *            The type of the Filter we want to know the checked status
+     * @param severity
+     *            The severity of the Filter we want to know the checked status
      * @return true = filter is checked, false = filter is unchecked
      */
-    public boolean getFilterSettings(NotificationType type) {
+    public boolean getFilterSettings(NotificationSeverity severity) {
 
         boolean isChecked = false;
         int i = 0;
@@ -198,7 +196,7 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                if (cursor.getString(cursor.getColumnIndex(FILTER_COLUMN_TYPE)).equals(type.toString())) {
+                if (cursor.getString(cursor.getColumnIndex(FILTER_COLUMN_SEVERITY)).equals(severity.name())) {
                     i = cursor.getInt(cursor.getColumnIndex(FILTER_COLUMN_CHECKED));
                 }
             } while (cursor.moveToNext());
@@ -238,43 +236,34 @@ public class RIOTDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * The different Notifications have to be save into the database to apply the filter settings on them.
+     * Sets a new list of notifications, deleting all previous ones.
      * 
      * @param notificationList
-     *            A list of Notifications that is stored in the database.
+     *            A collection of Notifications that is stored in the database.
      */
 
-    public void updateNotificationEntries(List<Notification> notificationList) {
+    public void setAllNotifications(Collection<Notification> notificationList) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor;
+
+        db.rawQuery("DELETE FROM " + TABLE_NOTIFICATION, new String[0]);
 
         for (Notification notification : notificationList) {
+            if (notification.isDismissed()) {
+                continue;
+            }
+
             ContentValues values = new ContentValues();
             values.put(NOTIFICATION_COLUMN_ID, notification.getId());
+            values.put(NOTIFICATION_COLUMN_THING, notification.getThingID());
+            values.put(NOTIFICATION_COLUMN_SEVERITY, notification.getSeverity().name());
+            values.put(NOTIFICATION_COLUMN_NAME, notification.getName());
             values.put(NOTIFICATION_COLUMN_TITLE, notification.getTitle());
-            values.put(NOTIFICATION_COLUMN_TYPE, notification.getType().toString());
-            values.put(NOTIFICATION_COLUMN_CONTENT, notification.getContent());
-            values.put(NOTIFICATION_COLUMN_DATE, notification.getDate());
-            values.put(NOTIFICATION_COLUMN_THING, notification.getThingName());
+            values.put(NOTIFICATION_COLUMN_MESSAGE, notification.getMessage());
+            values.put(NOTIFICATION_COLUMN_TIME, notification.getTime().getTime());
+            values.put(NOTIFICATION_COLUMN_DISMISSED, notification.isDismissed() ? 1 : 0);
 
-            // TODO: Handle LogCat Errors
-            // 02-25 21:55:13.280: W/ResourceType(1149): Failure getting entry for 0x7f080032 (t=7 e=50) in package 0 (error -75)
-            // 02-25 21:55:13.300: W/Resources(1149): Converting to string: TypedValue{t=0x1/d=0x7f080032 a=-1 r=0x7f080032}
-
-            cursor = db.rawQuery("SELECT * FROM " + TABLE_NOTIFICATION + " WHERE " + NOTIFICATION_COLUMN_ID + " = ?", new String[] { String.valueOf(notification.getId()) });
-
-            if (cursor.moveToFirst()) {
-                // System.out.println("Notification Eintrag update");
-                db.update(TABLE_NOTIFICATION, // table
-                        values, // column/value
-                        NOTIFICATION_COLUMN_ID + " = ?", // selections
-                        new String[] { String.valueOf(notification.getId()) });
-            } else {
-                // System.out.println("Notification Eintrag neu anlegen");
-                db.insert(TABLE_NOTIFICATION, null, values);
-            }
-            cursor.close();
+            db.insert(TABLE_NOTIFICATION, null, values);
         }
 
         db.close();
@@ -483,14 +472,6 @@ public class RIOTDatabase extends SQLiteOpenHelper {
 
         // return count
         return i;
-    }
-
-    public void setInvokedNotificationScreen(String invokedNotificationScreen) {
-        this.invokedNotificationScreen = invokedNotificationScreen;
-    }
-
-    public void setNotificationScreen(NotificationScreen notificationScreen) {
-        this.notificationScreen = notificationScreen;
     }
 
 }

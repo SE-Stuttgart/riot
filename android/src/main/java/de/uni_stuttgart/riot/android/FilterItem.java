@@ -1,20 +1,20 @@
 package de.uni_stuttgart.riot.android;
 
 import android.view.MenuItem;
-import de.uni_stuttgart.riot.android.notification.NotificationType;
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class FilterItem {
 
     private int id;
     private MenuItem item;
-    private NotificationType type;
+    private NotificationSeverity severity;
     private boolean checked;
 
-    public FilterItem(int id, MenuItem item, NotificationType type, boolean checked) {
+    public FilterItem(int id, MenuItem item, NotificationSeverity severity, boolean checked) {
         this.id = id;
         this.item = item;
-        this.type = type;
+        this.severity = severity;
         this.checked = checked;
     }
 
@@ -34,12 +34,12 @@ public class FilterItem {
         this.item = item;
     }
 
-    public NotificationType getType() {
-        return type;
+    public NotificationSeverity getSeverity() {
+        return severity;
     }
 
-    public void setType(NotificationType type) {
-        this.type = type;
+    public void setSeverity(NotificationSeverity severity) {
+        this.severity = severity;
     }
 
     public boolean isChecked() {

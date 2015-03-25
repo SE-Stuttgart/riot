@@ -9,18 +9,10 @@ import de.uni_stuttgart.riot.android.R;
 //CHECKSTYLE:OFF TODO 
 public class CoffeeMachine extends Activity {
 
-    // private HomeScreen homeScreen;
-
-    private String pressedHomeScreenButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        pressedHomeScreenButton = intent.getStringExtra("pressedButton");
-
-        getActionBar().setTitle(pressedHomeScreenButton);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setIcon(R.drawable.coffee);
 

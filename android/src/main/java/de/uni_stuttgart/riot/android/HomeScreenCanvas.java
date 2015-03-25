@@ -255,7 +255,7 @@ public class HomeScreenCanvas extends View {
                     //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
                     homeScreen.startActivity(logoutIntend);
                 } else {
-                    Intent newNotificationScreen = new Intent(homeScreen, NotificationScreen.class);
+                    Intent newNotificationScreen = new Intent(homeScreen, NotificationActivity.class);
                     newNotificationScreen.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(newNotificationScreen);
                 }

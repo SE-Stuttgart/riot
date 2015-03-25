@@ -1,5 +1,8 @@
 package de.uni_stuttgart.riot.android;
 
+import java.io.IOException;
+import java.util.Collection;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -13,17 +16,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
-import de.uni_stuttgart.riot.android.communication.NotificationServerConnection;
+import de.uni_stuttgart.riot.android.communication.ActivityServerConnection;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.messages.IM;
-import de.uni_stuttgart.riot.android.notification.NotificationType;
+import de.uni_stuttgart.riot.clientlibrary.RequestException;
+import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.notification.Notification;
+import de.uni_stuttgart.riot.notification.client.NotificationClient;
 
-//CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
+// CHECKSTYLE:OFF FIXME Fix checkstyle errors.
 /**
- * The main window.
+ * The notification screen that displays all notifications of the current user and allows filtering.
  */
-public class NotificationScreen extends Activity {
+public class NotificationActivity extends Activity {
 
     private ListView notificationList;
 
@@ -40,8 +46,10 @@ public class NotificationScreen extends Activity {
         pressedHomeScreenButton = intent.getStringExtra("pressedButton");
 
         database = DatabaseAccess.getDatabase();
-        database.setInvokedNotificationScreen(pressedHomeScreenButton);
-        database.setNotificationScreen(this);
+        
+        //database.setInvokedNotificationScreen(pressedHomeScreenButton);
+        //database.setNotificationScreen(this);
+        // TODO Use the getFilteredNotifications()
 
         // Save the application context in the singleton objects
         IM.INSTANCES.setContext(getApplicationContext());
@@ -75,7 +83,7 @@ public class NotificationScreen extends Activity {
 
         if (isNetworkAvailable()) {
             // get the latest Notifications
-            new NotificationServerConnection(this, database).execute();
+            refreshNotificationsFromServer();
         } else {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show();
         }
@@ -119,12 +127,13 @@ public class NotificationScreen extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
 
         // //get the values for the each filter from the database
-        menu.findItem(R.id.filter_error).setChecked(database.getFilterSettings(NotificationType.ERROR));
-        menu.findItem(R.id.filter_warning).setChecked(database.getFilterSettings(NotificationType.WARNING));
-        menu.findItem(R.id.filter_appointment).setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
+        // TODO Redo filters
+//        menu.findItem(R.id.filter_error).setChecked(database.getFilterSettings(NotificationType.ERROR));
+//        menu.findItem(R.id.filter_warning).setChecked(database.getFilterSettings(NotificationType.WARNING));
+//        menu.findItem(R.id.filter_appointment).setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
 
         menu.findItem(R.id.action_refresh).setVisible(true);
-        database.filterNotifications();
+        // TODO What's this? database.filterNotifications();
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -135,18 +144,19 @@ public class NotificationScreen extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        // TODO Redo filters
         switch (item.getItemId()) {
         case R.id.filter_error:
-            database.setFilter(new FilterItem(1, item, NotificationType.ERROR, false));
+            //database.setFilter(new FilterItem(1, item, NotificationType.ERROR, false));
             return true;
         case R.id.filter_appointment:
-            database.setFilter(new FilterItem(2, item, NotificationType.APPOINTMENT, false));
+            //database.setFilter(new FilterItem(2, item, NotificationType.APPOINTMENT, false));
             return true;
         case R.id.filter_warning:
-            database.setFilter(new FilterItem(3, item, NotificationType.WARNING, false));
+            //database.setFilter(new FilterItem(3, item, NotificationType.WARNING, false));
             return true;
         case R.id.action_refresh:
-            new NotificationServerConnection(this, database).execute();
+            refreshNotificationsFromServer();
             return true;
         case android.R.id.home:
             onBackPressed();
@@ -155,4 +165,18 @@ public class NotificationScreen extends Activity {
             return super.onOptionsItemSelected(item);
         }
     }
+    
+    private void refreshNotificationsFromServer() {
+        new ActivityServerConnection<Collection<Notification>>(this) {
+            protected Collection<Notification> executeRequest(ServerConnector serverConnector) throws IOException, RequestException {
+                return new NotificationClient(serverConnector).getOutstandingNotifications();
+            }
+
+            protected void onSuccess(Collection<Notification> result) {
+                DatabaseAccess.getDatabase().setAllNotifications(result);
+                // TODO: Update the adapter and stuff here.
+            }
+        }.execute();
+    }
+    
 }

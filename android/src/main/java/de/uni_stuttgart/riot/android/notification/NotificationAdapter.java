@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import de.uni_stuttgart.riot.android.R;
+import de.uni_stuttgart.riot.notification.Notification;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class NotificationAdapter extends BaseAdapter {
@@ -39,16 +40,17 @@ public class NotificationAdapter extends BaseAdapter {
         Notification noti = notificationList.get(arg0);
 
         title.setText(noti.getTitle());
-        content.setText(noti.getContent());
-        date.setText(noti.getDate().toString());
+        content.setText(noti.getMessage());
+        date.setText(noti.getTime().toString());
 
-        if (noti.getType().equals(NotificationType.ERROR)) {
-            typIcon.setImageResource(R.drawable.error_icon);
-        } else if (noti.getType().equals(NotificationType.WARNING)) {
-            typIcon.setImageResource(R.drawable.notification_icon);
-        } else if (noti.getType().equals(NotificationType.APPOINTMENT)) {
-            typIcon.setImageResource(R.drawable.appointment_icon);
-        }
+        // TODO Redo the icons.
+        // if (noti.getType().equals(NotificationType.ERROR)) {
+        // typIcon.setImageResource(R.drawable.error_icon);
+        // } else if (noti.getType().equals(NotificationType.WARNING)) {
+        // typIcon.setImageResource(R.drawable.notification_icon);
+        // } else if (noti.getType().equals(NotificationType.APPOINTMENT)) {
+        // typIcon.setImageResource(R.drawable.appointment_icon);
+        // }
 
         return arg1;
     }

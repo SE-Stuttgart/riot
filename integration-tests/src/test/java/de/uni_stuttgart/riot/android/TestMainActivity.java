@@ -19,7 +19,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ListView;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
-import de.uni_stuttgart.riot.android.notification.Notification;
+import de.uni_stuttgart.riot.notification.Notification;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = "../android/AndroidManifest.xml")

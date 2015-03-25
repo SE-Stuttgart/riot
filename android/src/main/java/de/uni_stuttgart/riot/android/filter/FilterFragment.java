@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
-import de.uni_stuttgart.riot.android.notification.NotificationType;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
 public class FilterFragment extends Fragment {
@@ -29,9 +28,10 @@ public class FilterFragment extends Fragment {
         check_appointment = (CheckBox) view.findViewById(R.id.filter_appointment_check);
         check_warning = (CheckBox) view.findViewById(R.id.filter_warning_check);
 
-        check_error.setChecked(database.getFilterSettings(NotificationType.ERROR));
-        check_appointment.setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
-        check_warning.setChecked(database.getFilterSettings(NotificationType.WARNING));
+        // TODO Redo filters
+//        check_error.setChecked(database.getFilterSettings(NotificationType.ERROR));
+//        check_appointment.setChecked(database.getFilterSettings(NotificationType.APPOINTMENT));
+//        check_warning.setChecked(database.getFilterSettings(NotificationType.WARNING));
 
         return view;
 
