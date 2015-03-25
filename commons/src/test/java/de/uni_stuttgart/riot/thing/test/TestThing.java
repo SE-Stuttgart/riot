@@ -1,15 +1,18 @@
 package de.uni_stuttgart.riot.thing.test;
 
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.NotificationEvent;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
 import de.uni_stuttgart.riot.thing.WritableReferenceProperty;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -27,6 +30,8 @@ public class TestThing extends Thing {
 
     private final Event<EventInstance> simpleEvent = newEvent("simpleEvent");
     private final Event<TestEventInstance> parameterizedEvent = newEvent("parameterizedEvent", TestEventInstance.class);
+    private final NotificationEvent<EventInstance> simpleNotification = newNotification("simpleNotification", NotificationSeverity.INFO, ThingPermission.CONTROL);
+    private final NotificationEvent<TestEventInstance> parameterizedNotification = newNotification("parameterizedNotification", TestEventInstance.class, NotificationSeverity.ERROR);
 
     private final Action<ActionInstance> simpleAction = newAction("simpleAction");
     private final Action<TestActionInstance> parameterizedAction = newAction("parameterizedAction", TestActionInstance.class);
@@ -86,6 +91,14 @@ public class TestThing extends Thing {
 
     public Event<TestEventInstance> getParameterizedEvent() {
         return parameterizedEvent;
+    }
+
+    public NotificationEvent<EventInstance> getSimpleNotification() {
+        return simpleNotification;
+    }
+
+    public NotificationEvent<TestEventInstance> getParameterizedNotification() {
+        return parameterizedNotification;
     }
 
     public Action<ActionInstance> getSimpleAction() {

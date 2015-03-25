@@ -296,7 +296,7 @@ public class ThingFrameworkTest {
         description = mapper.readValue(mapper.writeValueAsString(description), ThingDescription.class);
 
         // Check the events.
-        assertThat(description.getEvents(), hasSize(2));
+        assertThat(description.getEvents(), hasSize(4));
         assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
         assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getParameters().isEmpty(), is(true));
         BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();

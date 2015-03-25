@@ -242,6 +242,17 @@ public class ThingLogicTest extends BaseDatabaseTest {
         TypedReferenceResolver<Thing> resolver = SimpleResolver.create(thing1, thing2, thing3, thing4, thing5);
         ServerReferenceResolver.getInstance().addResolver(Thing.class, resolver);
 
+        // Precheck permitted users (User i can access Thing i | i=1,2)
+        assertThat(logic.canAccess(thing1.getId(), 1L, ThingPermission.READ), is(true));
+        assertThat(logic.canAccess(thing1.getId(), 2L, ThingPermission.READ), is(false));
+        assertThat(logic.canAccess(thing2.getId(), 1L, ThingPermission.READ), is(false));
+        assertThat(logic.canAccess(thing2.getId(), 2L, ThingPermission.READ), is(true));
+        assertThat(logic.getPermittedUsers(thing1.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(1L));
+        assertThat(logic.getPermittedUsers(thing1.getId(), EnumSet.of(ThingPermission.EXECUTE)), containsInAnyOrder(1L));
+        assertThat(logic.getPermittedUsers(thing2.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(2L));
+        assertThat(logic.getPermittedUsers(thing4.getId(), EnumSet.of(ThingPermission.READ)), is(empty()));
+        assertThat(logic.getPermittedUsers(thing5.getId(), EnumSet.of(ThingPermission.READ)), is(empty()));
+
         // Hierarchy: thing1 ( thing2 (thing3, thing4), thing5 )
         logic.setParent(thing2, thing1);
         logic.setParent(thing3, thing2);
@@ -272,6 +283,13 @@ public class ThingLogicTest extends BaseDatabaseTest {
         assertThat(logic.canAccess(thing3.getId(), 2L, ThingPermission.READ), is(true));
         assertThat(logic.canAccess(thing5.getId(), 1L, ThingPermission.READ), is(true));
         assertThat(logic.canAccess(thing5.getId(), 2L, ThingPermission.READ), is(false)); // User 2 cannot access thing 5.
+
+        // Check that permitted users are reported correctly.
+        assertThat(logic.getPermittedUsers(thing1.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(1L));
+        assertThat(logic.getPermittedUsers(thing1.getId(), EnumSet.of(ThingPermission.EXECUTE)), containsInAnyOrder(1L));
+        assertThat(logic.getPermittedUsers(thing2.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(1L, 2L));
+        assertThat(logic.getPermittedUsers(thing4.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(1L, 2L));
+        assertThat(logic.getPermittedUsers(thing5.getId(), EnumSet.of(ThingPermission.READ)), containsInAnyOrder(1L));
 
         // Check the childrens collections.
         assertThat(logic.getChildren(thing1), containsInAnyOrder(thing2, thing5));

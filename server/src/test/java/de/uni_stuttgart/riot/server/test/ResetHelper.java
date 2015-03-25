@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.server.test;
 import java.lang.reflect.Field;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
+import de.uni_stuttgart.riot.notification.server.NotificationLogic;
 import de.uni_stuttgart.riot.reference.ServerReferenceResolver;
 import de.uni_stuttgart.riot.rule.server.RuleLogic;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -22,18 +23,20 @@ public abstract class ResetHelper {
     }
 
     public static void resetThingLogic() {
-        try {
-            Field instanceField = ThingLogic.class.getDeclaredField("instance");
-            instanceField.setAccessible(true);
-            instanceField.set(null, null);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        resetInstanceFieldOf(ThingLogic.class);
+    }
+
+    public static void resetNotificationLogic() {
+        resetInstanceFieldOf(NotificationLogic.class);
     }
 
     public static void resetRuleLogic() {
+        resetInstanceFieldOf(RuleLogic.class);
+    }
+
+    private static void resetInstanceFieldOf(Class<?> clazz) {
         try {
-            Field instanceField = RuleLogic.class.getDeclaredField("instance");
+            Field instanceField = clazz.getDeclaredField("instance");
             instanceField.setAccessible(true);
             instanceField.set(null, null);
         } catch (Exception e) {
