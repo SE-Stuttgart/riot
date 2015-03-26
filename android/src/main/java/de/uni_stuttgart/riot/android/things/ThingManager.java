@@ -168,6 +168,7 @@ public class ThingManager {
             String deviceName = prefs.getString(PREFS_KEY_DEVICE_NAME, Build.MODEL);
             try {
                 behavior = ExecutingThingBehavior.launchNewThing(Device.class, thingClient, deviceName, behaviorFactory);
+                prefs.edit().putLong(PREFS_KEY_DEVICE_ID, behavior.getThing().getId()).commit();
             } catch (RequestException e) {
                 throw new RuntimeException(e);
             }
