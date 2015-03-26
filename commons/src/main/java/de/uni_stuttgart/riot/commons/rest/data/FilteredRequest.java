@@ -53,10 +53,18 @@ public class FilteredRequest {
     }
 
     /**
-     * Parses the query params. Invalid entries are ignored (otherwise additional query params would cause server errors).
+     * <p>
+     * Parses the query params and appends valid filters to {@link #filterAttributes}.<br>
+     * Note that {@link #limit} and {@link #offset} will not be parsed, and must be set via {@link #setLimit(int)} and
+     * {@link #setOffset(int)} respectively.
+     * </p>
+     * <p>
+     * Invalid entries are ignored (otherwise additional query params would cause server errors). It is hence save to pass in the whole list
+     * of queryparams. An empty list or a list without any filtering related attributes will have no effect.
+     * </p>
      *
      * @param entrySet
-     *            the entry set
+     *            the entry set (must not be null)
      */
     public void parseQueryParams(Set<Entry<String, List<String>>> entrySet) {
         for (Entry<String, List<String>> filter : entrySet) {
@@ -64,7 +72,7 @@ public class FilteredRequest {
                 FilterAttribute filterAttr = new FilterAttribute(filter);
                 this.filterAttributes.add(filterAttr);
             } catch (IllegalArgumentException ex) {
-                // ignore this filter, log a warning
+                // ignore this attribute as it is unrelated to filtering
             }
 
         }

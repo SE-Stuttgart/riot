@@ -48,7 +48,7 @@ public class FilterAttributeTest {
     @Test
     public void testValidStrings() {
         for (Entry<String, List<String>> entry : validQueries.entrySet()) {
-            FilterAttribute attr = new FilterAttribute(entry);
+            new FilterAttribute(entry);
         }
         // all good when this point is reached.
         assertTrue(true);
@@ -61,10 +61,10 @@ public class FilterAttributeTest {
     public void testInvalidStrings() {
         for (Entry<String, List<String>> entry : invalidQueries.entrySet()) {
             try {
-                FilterAttribute attr = new FilterAttribute(entry);
+                new FilterAttribute(entry);
                 fail(String.format("An exception should have been raised for %s", entry.getKey()));
             } catch (IllegalArgumentException ex) {
-                // ecpected
+                // expected
             }
             
         }
