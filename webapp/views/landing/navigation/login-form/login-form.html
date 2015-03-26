@@ -1,10 +1,8 @@
 <form class="navbar-form" role="search" ng-submit="submit()" ng-controller="LoginFormCtrl">
   <span class="fa fa-lg fa-spinner fa-spin" ng-if="login"></span>
-  <div class="form-group">
-    <input type="text" name="username" placeholder="Username" class="form-control" ng-model="username">
-  </div>
-  <div class="form-group">
-    <input type="password" name="password" placeholder="Password" class="form-control" ng-model="password">
-  </div>
-  <button type="submit" class="btn btn-default" ng-disabled="login">Sign In</button>
+  <div class="form-group right4pxmargin"><input type="text" name="username" placeholder="Username" class="form-control" ng-model="username"></div><!--
+  Comment as fix for 4px space between inline-block elements (Emulates the server behaviour without line breaks).
+  --><div class="form-group right4pxmargin"><input type="password" name="password" placeholder="Password" class="form-control" ng-model="password"></div><!--
+  Comment as fix for 4px space between inline-block elements (Emulates the server behaviour without line breaks).
+  --><button type="submit" class="btn btn-default right4pxmargin" ng-disabled="login">Sign In</button>
 </form>
