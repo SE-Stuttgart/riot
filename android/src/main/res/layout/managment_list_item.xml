@@ -3,21 +3,23 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/list_item_margin_left"
-    android:layout_marginRight="@dimen/list_item_margin_left"
+    android:layout_marginLeft="@dimen/list_item_margin"
+    android:layout_marginRight="@dimen/list_item_margin"
     android:layout_marginTop="@dimen/list_item_margin_top">
 
     <ImageView
         android:id="@+id/list_item_management_picture"
         android:layout_width="@dimen/list_item_image_size"
         android:layout_height="@dimen/list_item_image_size"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginRight="@dimen/list_item_margin"/>
 
     <ImageView
         android:id="@+id/list_item_management_online_state"
         android:layout_width="@dimen/list_item_online_status_size"
         android:layout_height="@dimen/list_item_online_status_size"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginRight="@dimen/list_item_margin" />
 
 
     <LinearLayout
@@ -26,8 +28,7 @@
         android:orientation="vertical"
         android:layout_weight="1"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/list_item_margin_left"
-        android:layout_marginRight="@dimen/list_item_margin_left">
+        android:layout_marginRight="@dimen/list_item_margin">
 
         <TextView
             android:id="@+id/list_item_management_subject"

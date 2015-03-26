@@ -87,6 +87,10 @@ public class UserListActivity extends ManagementListActivity {
 
     @Override
     protected String getImageUri(Object item) {
+        // TODO FIX -> this is just a test!!
+        if (((User) item).getId() == 1) {
+            return "http://crackberry.com/sites/crackberry.com/files/styles/large/public/topic_images/2013/ANDROID.png?itok=xhm7jaxS"; // TODO THIS IS A TEST!!
+        }
         return null;
     }
 

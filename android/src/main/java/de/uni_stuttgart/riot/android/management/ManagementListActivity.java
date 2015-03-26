@@ -1,8 +1,9 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
@@ -240,15 +244,34 @@ public abstract class ManagementListActivity extends ManagementActivity {
      * @param id   the id of the image view
      * @param uri  the uri for the image
      */
-    private void setImageViewImage(View view, int id, String uri) {
-        ImageView imageView = (ImageView) view.findViewById(id);
+    private void setImageViewImage(View view, int id, final String uri) {
+        final ImageView imageView = (ImageView) view.findViewById(id);
         if (imageView == null) {
             IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
             IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
             return;
         }
-        imageView.setImageURI(Uri.parse(uri));
-        // ToDo maybe load asynchronous??
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL(uri);
+                    final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bmp);
+                        }
+                    });
+                } catch (MalformedURLException e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating an url from the given uri!", e);
+                } catch (IOException e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by streaming the image (\"" + uri + "\")!", e);
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("Problems by set the image for the image view!", e);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -302,10 +325,10 @@ public abstract class ManagementListActivity extends ManagementActivity {
         }
 
         // Set the image value
-        if (imageId != 0) {
-            setImageViewImage(view, R.id.list_item_management_picture, imageId);
-        } else if (imageUri != null && !imageUri.isEmpty()) {
+        if (imageUri != null && !imageUri.isEmpty()) {
             setImageViewImage(view, R.id.list_item_management_picture, imageUri);
+        } else if (imageId != 0) {
+            setImageViewImage(view, R.id.list_item_management_picture, imageId);
         }
 
         // Load data asynchronous
