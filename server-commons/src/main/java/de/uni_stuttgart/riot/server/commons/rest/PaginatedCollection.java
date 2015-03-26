@@ -41,9 +41,13 @@ public class PaginatedCollection<E> extends ArrayList<E> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param collection
      *            .
+     * @param offset
+     *            the offset
+     * @param limit
+     *            the limit
      */
     public PaginatedCollection(Collection<E> collection, int offset, int limit) {
         super(collection);

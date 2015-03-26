@@ -52,14 +52,6 @@ angular.module('riot').controller('RuleDetailCtrl',function($scope, $stateParams
     }
   };
   
-  //check if the status is either ACTIVE or DEACTIVATED.
-  $scope.showStatusDropDown = function() {
-    if($scope.rule.status === 'ACTIVE' || $scope.rule.status === 'DEACTIVATED') {
-      return true;
-    }
-    return false;
-  };
-  
   //check if all data is entered correctly
   $scope.isDataInvalid = function() {
     

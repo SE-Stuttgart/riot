@@ -51,11 +51,23 @@
           <div class="form-group">
             <label class="control-label col-md-2" for="type">{{'rules.status' | i18n}}</label>
             <div class="col-md-8">
-              <input ng-if="!showStatusDropDown()" id="type" name="type" type="text" placeholder="" class="form-control" ng-model="rule.status" disabled>
-              <select ng-if="showStatusDropDown()" ng-model="rule.status" class="form-control" selectpicker>
-                <option value="ACTIVE">{{ 'rules.ACTIVE' | i18n }}</option>
-                <option value="DEACTIVATED">{{ 'rules.DEACTIVATED' | i18n }}</option>
-              </select>
+              <ol class="nya-bs-select" ng-model="rule.status">
+                <li class="nya-bs-option" value="ACTIVE">
+                  <a>{{ 'rules.ACTIVE' | i18n }}</a>
+                </li>
+                <li class="nya-bs-option" value="DEACTIVATED">
+                  <a>{{ 'rules.DEACTIVATED' | i18n }}</a>
+                </li>
+                <li class="nya-bs-option" value="FAILED" ng-if="rule.status == 'FAILED'">
+                  <a><span style="color: red">{{ 'rules.FAILED' | i18n }} <i style="color: red" class="fa fa-exclamation"></i></span></a>
+                </li>
+                <li class="nya-bs-option" value="FAILED" ng-if="rule.status == 'FAILED_REFERENCES'">
+                  <a><span style="color: red">{{ 'rules.FAILED_REFERENCES' | i18n }} <i style="color: red" class="fa fa-exclamation"></i></span></a>
+                </li>
+                <li class="nya-bs-option" value="FAILED" ng-if="rule.status == 'FAILED_PERMISSIONS'">
+                  <a><span style="color: red">{{ 'rules.FAILED_PERMISSIONS' | i18n }} <i style="color: red" class="fa fa-exclamation"></i></span></a>
+                </li>
+              </ol>
             </div>
           </div>
         </form>
