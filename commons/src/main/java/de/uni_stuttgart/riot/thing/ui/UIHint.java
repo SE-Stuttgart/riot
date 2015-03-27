@@ -48,7 +48,8 @@ public abstract class UIHint {
      *            The value type of the field that the annotation was used on. For references, this is the inner type of the reference (X).
      * @return A corresponding {@link UIHint} or <tt>null</tt> if none was set.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    // CHECKSTYLE: CyclomaticComplexity OFF
+    @SuppressWarnings({ "unchecked", "rawtypes" }) 
     public static UIHint fromAnnotation(Parameter annotation, java.lang.reflect.Type fieldType, java.lang.reflect.Type valueType) { // NOCS
         UIHint result = null;
         if (annotation.ui() == Parameter.NoHint.class) {

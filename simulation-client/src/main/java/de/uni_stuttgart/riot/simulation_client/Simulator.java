@@ -126,7 +126,18 @@ public abstract class Simulator<T extends Thing> {
         return future.get();
     }
 
-    protected ScheduledFuture<?> scheduleAtFixedRate(Runnable task,long initialDelay,long period) {
+    /**
+     * Schedules a Task at given fixed rate.
+     * 
+     * @param task
+     *            the task to be performed
+     * @param initialDelay
+     *            the starting delay
+     * @param period
+     *            .
+     * @return the {@link ScheduledFuture}
+     */
+    protected ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period) {
         return scheduler.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MILLISECONDS);
     }
 

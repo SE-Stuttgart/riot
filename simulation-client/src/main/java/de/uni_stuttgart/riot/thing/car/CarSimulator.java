@@ -19,6 +19,16 @@ public class CarSimulator extends Simulator<Car> {
     private static final long TANK_CONRTOLL_PERIOD = 10000;
 
     /**
+     * {@link ScheduledFuture} is stored to be able to interrupted the current heating process.
+     */
+    private ScheduledFuture<?> heatingFuture;
+
+    /**
+     * {@link ScheduledFuture} is stored to be able to interrupted the current engine process.
+     */
+    private ScheduledFuture<?> engineFuture;
+
+    /**
      * Creates a new instance.
      * 
      * @param thing
@@ -58,11 +68,6 @@ public class CarSimulator extends Simulator<Car> {
     }
 
     /**
-     * {@link ScheduledFuture} is stored to be able to interrupted the current heating process.
-     */
-    private ScheduledFuture<?> heatingFuture;
-
-    /**
      * Starts (if currently off) or Stops (if currently on) the heating.
      * 
      * @param actionInstance
@@ -70,13 +75,15 @@ public class CarSimulator extends Simulator<Car> {
     private <A extends ActionInstance> void doAirCondition(A actionInstance) {
         int stepCount = (int) Math.abs(getThing().getInteriorTemperature() - getThing().getConfiguredTemperature());
         if (getThing().isAirConditionOn()) {
-            if (heatingFuture != null)
+            if (heatingFuture != null) {
                 heatingFuture.cancel(false);
+            }
             changePropertyValue(getThing().getAirConditionProperty(), false);
             heatingFuture = linearChange(getThing().getInteriorTemperatureProperty(), Car.DEFAULT_TEMP, HEATING_STEP_TIME, stepCount);
         } else {
-            if (heatingFuture != null)
+            if (heatingFuture != null) {
                 heatingFuture.cancel(false);
+            }
             changePropertyValue(getThing().getAirConditionProperty(), true);
             heatingFuture = linearChange(getThing().getInteriorTemperatureProperty(), getThing().getConfiguredTemperature(), HEATING_STEP_TIME, stepCount);
         }
@@ -105,12 +112,6 @@ public class CarSimulator extends Simulator<Car> {
     }
 
     /**
-     * {@link ScheduledFuture} is stored to be able to interrupted the current engine process.
-     */
-    private ScheduledFuture<?> engineFuture;
-
-    
-    /**
      * Starts (if currently off) or Stops (if currently on) the engine.
      * 
      * @param actionInstance
@@ -119,8 +120,9 @@ public class CarSimulator extends Simulator<Car> {
         int stepCount = (int) Math.abs(getThing().getTankFillLevel() / FUEL_CONSUMPTION);
         if (getThing().isEngineStarted()) {
             changePropertyValue(getThing().getEngineProperty(), false);
-            if (engineFuture != null)
+            if (engineFuture != null) {
                 engineFuture.cancel(false);
+            }
         } else {
             changePropertyValue(getThing().getEngineProperty(), true);
             engineFuture = linearChange(getThing().getTankProperty(), 0.0, CONSUMPTION_STEP_TIME, stepCount);

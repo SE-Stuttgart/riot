@@ -8,6 +8,10 @@ import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
+/**
+ * Represents the event of a almost empty tank.
+ *
+ */
 public class OutOfGasoline extends EventInstance {
 
     @Parameter(ui = UIHint.IntegralSlider.class, min = 0, max = Car.TANK_MAX_FILL_LEVEL)

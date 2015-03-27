@@ -23,12 +23,28 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  * <li>lock switch
  * <li>engine state
  * <li>milage in KM
- * <ul>
+ * </ul>
  */
 public class Car extends Thing {
 
+    /**
+     * The default interior temperature configuration in degree Celsius.
+     */
+    static final Double DEFAULT_TEMP = 18.0;
+
+    /**
+     * Tank max fill level in liter.
+     */
+    static final double TANK_MAX_FILL_LEVEL = 100.0;
+
+    /**
+     * Group for all temp and aircondition.
+     */
     private static final int TEMP_GROUP = 3;
 
+    /**
+     * Group for gps position.
+     */
     private static final int GPS_GROUP = 2;
 
     /**
@@ -52,19 +68,9 @@ public class Car extends Thing {
     private static final Boolean DEFAULT_HEATING = false;
 
     /**
-     * The default interior temperature configuration in degree Celsius.
-     */
-    static final Double DEFAULT_TEMP = 18.0;
-
-    /**
      * Default tank fill level in liter
      */
     private static final Double DEFAULT_TANK_FILL_LEVEL = 40.0;
-
-    /**
-     * Tank max fill level in liter
-     */
-    static final double TANK_MAX_FILL_LEVEL = 100.0;
 
     /**
      * Default lock state (true=locked)
@@ -189,8 +195,6 @@ public class Car extends Thing {
     /**
      * Constructor for a car thing.
      * 
-     * @param name
-     *            name of the car.
      * @param behavior
      *            behavior to be used.
      */
@@ -280,7 +284,7 @@ public class Car extends Thing {
     }
 
     /**
-     * Getter for the configured Temperature of the heating
+     * Getter for the configured Temperature of the heating.
      * 
      * @return configured temperature in degree celsius.
      */
@@ -307,7 +311,9 @@ public class Car extends Thing {
     }
 
     /**
-     * Getter for the battery state
+     * Getter for the battery state.
+     * 
+     * @return the battery state
      */
     public BatteryState getBatteryState() {
         return batteryState.get();
@@ -316,7 +322,7 @@ public class Car extends Thing {
     /**
      * Getter for position as GPS DATA.
      * 
-     * @return
+     * @return the GPS Position
      */
     public GPSPosition getPosition() {
         return new GPSPosition(longitude.get(), latitude.get());
@@ -369,7 +375,7 @@ public class Car extends Thing {
     }
 
     /**
-     * Getter for the Heating action (is used to turn the heating on and off)
+     * Getter for the Heating action (is used to turn the heating on and off).
      * 
      * @return the action
      */
