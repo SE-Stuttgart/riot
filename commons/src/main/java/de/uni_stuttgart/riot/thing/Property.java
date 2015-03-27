@@ -188,18 +188,23 @@ public class Property<V> {
         }
         return true;
     }
-    
+
     private static Comparator<Property<?>> GROUP_COMPERATOR;
-    
+
     /**
      * Comparator for {@link ParameterDescription} according to the groupID.
-     * @return
+     * 
+     * @return Comarator
      */
     public static Comparator<Property<?>> groupComp() {
-        if (GROUP_COMPERATOR == null){
+        if (GROUP_COMPERATOR == null) {
             GROUP_COMPERATOR = new Comparator<Property<?>>() {
                 public int compare(Property<?> o1, Property<?> o2) {
-                    return ((Integer)o1.getUiHint().getgroupAndOrderID()).compareTo(o2.getUiHint().getgroupAndOrderID());
+                    if (o1.getUiHint() != null && o2.getUiHint() != null) {
+                        return o1.getUiHint().getGroupAndOrderID() - o2.getUiHint().getGroupAndOrderID();
+                    } else {
+                        return 0;
+                    }
                 }
             };
         }

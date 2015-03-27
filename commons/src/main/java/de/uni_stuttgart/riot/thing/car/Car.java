@@ -27,6 +27,10 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class Car extends Thing {
 
+    private static final int TEMP_GROUP = 3;
+
+    private static final int GPS_GROUP = 2;
+
     /**
      * Default tire pressure in bar.
      */
@@ -82,7 +86,10 @@ public class Car extends Thing {
      */
     private static final BatteryState DEFAULT_BATTERY_STATE = BatteryState.FULL;
 
-    private static final int TIRE_RESSURE_GRUOP = 1;
+    /**
+     * Group for all four tire pressues.
+     */
+    private static final int TIRE_PRESSURE_GRUOP = 1;
 
     /**
      * Property for the tank fill level.
@@ -112,53 +119,53 @@ public class Car extends Thing {
     /**
      * Property for the tire pressure of the front left tire.
      */
-    private final Property<Double> tirePressureFrontLeft = newProperty("tirePressureFrontLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
+    private final Property<Double> tirePressureFrontLeft = newProperty("tirePressureFrontLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber().groupAndOrder(TIRE_PRESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the front right tire.
      */
-    private final Property<Double> tirePressureFrontRight = newProperty("tirePressureFrontRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
+    private final Property<Double> tirePressureFrontRight = newProperty("tirePressureFrontRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber().groupAndOrder(TIRE_PRESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the back left tire.
      */
-    private final Property<Double> tirePressureBackLeft = newProperty("tirePressureBackLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
+    private final Property<Double> tirePressureBackLeft = newProperty("tirePressureBackLeft", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber().groupAndOrder(TIRE_PRESSURE_GRUOP));
 
     /**
      * Property for the tire pressure of the back right tire.
      */
-    private final Property<Double> tirePressureBackRight = newProperty("tirePressureBackRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber(TIRE_RESSURE_GRUOP));
+    private final Property<Double> tirePressureBackRight = newProperty("tirePressureBackRight", Double.class, DEFAULT_TIRE_PRESSURE, UIHint.editNumber().groupAndOrder(TIRE_PRESSURE_GRUOP));
 
     /**
      * Property for the longitude as part of the gps data.
      */
-    private final Property<Double> longitude = newProperty("longitude", Double.class, DEFAULT_LONGITUDE, UIHint.editNumber(2));
+    private final Property<Double> longitude = newProperty("longitude", Double.class, DEFAULT_LONGITUDE, UIHint.editNumber().groupAndOrder(GPS_GROUP));
 
     /**
      * Property for the latitude as part of the gps data.
      */
-    private final Property<Double> latitude = newProperty("latitude", Double.class, DEFAULT_LATITUDE, UIHint.editNumber(2));
+    private final Property<Double> latitude = newProperty("latitude", Double.class, DEFAULT_LATITUDE, UIHint.editNumber().groupAndOrder(GPS_GROUP));
 
     /**
      * Changeable Property for the heating switch.
      */
-    private final Property<Boolean> airCondition = newProperty("airCondition", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton(3));
+    private final Property<Boolean> airCondition = newProperty("airCondition", Boolean.class, DEFAULT_HEATING, UIHint.toggleButton().groupAndOrder(TEMP_GROUP));
 
     /**
      * Changeable Property for the configured heating temperature in degree Celsius.
      */
-    private final WritableProperty<Double> airConditionTemp = newWritableProperty("airConditionTemp", Double.class, DEFAULT_TEMP, UIHint.editNumber(3));
+    private final WritableProperty<Double> airConditionTemp = newWritableProperty("airConditionTemp", Double.class, DEFAULT_TEMP, UIHint.editNumber().groupAndOrder(TEMP_GROUP));
 
     /**
      * Property of the actual interior temperature in degree Celsius.
      */
-    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_TEMP, UIHint.editNumber(3));
+    private final Property<Double> temp = newProperty("temp", Double.class, DEFAULT_TEMP, UIHint.editNumber().groupAndOrder(TEMP_GROUP));
 
     /**
      * Action to refuel the car.
      */
     private final Action<Refuel> refuel = newAction("refuel", Refuel.class);
-    
+
     /**
      * Action to switch the heating on and off.
      */
@@ -178,7 +185,7 @@ public class Car extends Thing {
      * Event that is fired if refueling had lead to an tank overflow.
      */
     private final Event<EventInstance> tankOverflow = newEvent("tankOverflow");
-    
+
     /**
      * Constructor for a car thing.
      * 
@@ -211,6 +218,7 @@ public class Car extends Thing {
 
     /**
      * Getter for the tire pressure of the front right tire.
+     * 
      * @return pressure in bar.
      */
     public Double getTirePressureFrontRight() {
@@ -219,6 +227,7 @@ public class Car extends Thing {
 
     /**
      * Getter for the tire pressure of the back left tire.
+     * 
      * @return pressure in bar.
      */
     public Double getTirePressureBackLeft() {
@@ -227,6 +236,7 @@ public class Car extends Thing {
 
     /**
      * Getter for the tire pressure of the back right tire.
+     * 
      * @return pressure in bar.
      */
     public Double getTirePressureBackRight() {
@@ -235,145 +245,163 @@ public class Car extends Thing {
 
     /**
      * Getter for the tire pressure of the front left tire.
+     * 
      * @return pressure in bar.
      */
     public Double getTirePressureFrontLeft() {
         return tirePressureFrontLeft.get();
     }
-    
+
     /**
      * Getter for the tank fill level.
+     * 
      * @return fill level in liter.
      */
-    public Double getTankFillLevel(){
+    public Double getTankFillLevel() {
         return tankFillLevel.get();
     }
-    
+
     /**
      * Getter for the actual interior temperature.
+     * 
      * @return actual interior temperature in degree celsius.
      */
-    public Double getInteriorTemperature(){
+    public Double getInteriorTemperature() {
         return temp.get();
     }
-    
+
     /**
      * Getter for the actual interior temperature {@link Property}.
+     * 
      * @return actual interior temperature in degree celsius.
      */
-    public Property<Double> getInteriorTemperatureProperty(){
+    public Property<Double> getInteriorTemperatureProperty() {
         return temp;
     }
-    
+
     /**
      * Getter for the configured Temperature of the heating
+     * 
      * @return configured temperature in degree celsius.
      */
-    public Double getConfiguredTemperature(){
+    public Double getConfiguredTemperature() {
         return airConditionTemp.get();
     }
-    
+
     /**
      * True if the car is locked, false otherwise.
+     * 
      * @return state of the car lock.
      */
-    public boolean isLocked(){
+    public boolean isLocked() {
         return lock.get();
     }
-    
+
     /**
      * Getter for the milage.
+     * 
      * @return milage in KM.
      */
-    public Double getMilage(){
+    public Double getMilage() {
         return milage.get();
     }
-    
+
     /**
      * Getter for the battery state
      */
-    public BatteryState getBatteryState(){
+    public BatteryState getBatteryState() {
         return batteryState.get();
     }
-    
+
     /**
      * Getter for position as GPS DATA.
-     * @return  
+     * 
+     * @return
      */
-    public GPSPosition getPosition(){
+    public GPSPosition getPosition() {
         return new GPSPosition(longitude.get(), latitude.get());
     }
-    
+
     /**
      * Refuel the car.
-     * @param amount amount in liter
+     * 
+     * @param amount
+     *            amount in liter
      */
-    public void refuel(Double amount){
+    public void refuel(Double amount) {
         refuel.fire(new Refuel(refuel, amount));
     }
 
     /**
      * Getter for the {@link OutOfGasoline} event.
+     * 
      * @return the event
      */
     public Event<OutOfGasoline> getOutOfGasoline() {
         return outOfGasoline;
     }
-    
+
     /**
      * Getter for the Refuel action.
+     * 
      * @return the action
      */
-    public Action<Refuel> getRefuelAction(){
+    public Action<Refuel> getRefuelAction() {
         return refuel;
     }
-    
+
     /**
      * Getter for the tank property.
+     * 
      * @return tank property.
      */
-    public Property<Double> getTankProperty(){
+    public Property<Double> getTankProperty() {
         return tankFillLevel;
     }
-    
+
     /**
      * Getter for the engine property.
+     * 
      * @return engine property.
      */
-    public Property<Boolean> getEngineProperty(){
+    public Property<Boolean> getEngineProperty() {
         return engineState;
     }
 
     /**
      * Getter for the Heating action (is used to turn the heating on and off)
+     * 
      * @return the action
      */
     public Action<ActionInstance> getAirConditionAction() {
         return airConditionAction;
     }
-    
+
     /**
      * Getter for the heating property that is the heating state (on or off).
+     * 
      * @return the property
      */
-    public Property<Boolean> getAirConditionProperty(){
+    public Property<Boolean> getAirConditionProperty() {
         return airCondition;
     }
 
     /**
      * Getter for the tankOverflow event.
+     * 
      * @return the event
      */
     public Event<EventInstance> getTankOverflow() {
         return tankOverflow;
     }
-    
+
     /**
      * Getter for the engineAction.
+     * 
      * @return the action
      */
     public Action<ActionInstance> getEngineAction() {
         return engineAction;
     }
-    
+
 }

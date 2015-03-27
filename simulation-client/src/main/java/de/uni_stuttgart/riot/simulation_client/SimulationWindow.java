@@ -106,7 +106,7 @@ public class SimulationWindow extends Stage {
         container.setVgap(INNER_SPACING);
         int i = 0;
         ArrayList<Property<?>> properties = new ArrayList<Property<?>>(thing.getProperties());
-        Collections.sort(properties,Property.groupComp());
+        Collections.sort(properties, Property.groupComp());
         for (Property<?> property : properties) {
             Label label = new Label(property.getName());
             Control valueControl = UIProducer.produceInternalControl(property, behavior);

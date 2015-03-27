@@ -1,10 +1,8 @@
 package de.uni_stuttgart.riot.thing.ui;
 
-import java.util.Comparator;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
@@ -50,7 +48,9 @@ public abstract class UIHint {
      *            The value type of the field that the annotation was used on. For references, this is the inner type of the reference (X).
      * @return A corresponding {@link UIHint} or <tt>null</tt> if none was set.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static UIHint fromAnnotation(Parameter annotation, java.lang.reflect.Type fieldType, java.lang.reflect.Type valueType) { // NOCS
+        UIHint result = null;
         if (annotation.ui() == Parameter.NoHint.class) {
             return null;
 
@@ -58,56 +58,67 @@ public abstract class UIHint {
             if (annotation.min() == Double.MIN_VALUE || annotation.max() == Double.MAX_VALUE) {
                 throw new IllegalArgumentException("You must specify min and max for UIHint.IntegralSlider!");
             }
-            return integralSlider((long) annotation.min(), (long) annotation.max(), (int) annotation.group());
+            result = integralSlider((long) annotation.min(), (long) annotation.max());
 
         } else if (annotation.ui() == FractionalSlider.class) {
             if (annotation.min() == Double.MIN_VALUE || annotation.max() == Double.MAX_VALUE) {
                 throw new IllegalArgumentException("You must specify min and max for UIHint.IntegralSlider!");
             }
-            return fractionalSlider(annotation.min(), annotation.max(), (int) annotation.group());
+            result = fractionalSlider(annotation.min(), annotation.max());
 
         } else if (annotation.ui() == PercentageSlider.class) {
-            return percentageSlider((int) annotation.group());
+            result = percentageSlider();
 
         } else if (annotation.ui() == ToggleButton.class) {
-            return toggleButton((int) annotation.group());
+            result = toggleButton();
 
         } else if (annotation.ui() == EditText.class) {
-            return editText((int) annotation.group());
+            result = editText();
 
         } else if (annotation.ui() == EditNumber.class) {
-            return editNumber((int) annotation.group());
+            result = editNumber();
 
         } else if (annotation.ui() == EnumDropDown.class) {
             if (fieldType instanceof Class && ((Class<?>) fieldType).isEnum()) {
-                @SuppressWarnings({ "unchecked", "rawtypes" })
-                EnumDropDown result = dropDown((Class<Enum>) fieldType, (int) annotation.group());
-                return result;
+                result = dropDown((Class<Enum>) fieldType);
             } else {
                 throw new IllegalArgumentException("UIHint.EnumDropDown can only be used with Enum fields!");
             }
 
         } else if (annotation.ui() == ReferenceDropDown.class || annotation.ui() == ThingDropDown.class) {
 
-            @SuppressWarnings("unchecked")
             Class<? extends Referenceable<?>> targetType = (Class<? extends Referenceable<?>>) valueType;
             if (annotation.ui() == ReferenceDropDown.class) {
                 if (Thing.class.isAssignableFrom(targetType)) {
                     throw new IllegalArgumentException("UIHint.ReferenceDropDown cannot be used for things, use UIHint.ThingReferenceDropDown instead!");
                 }
-                return referenceDropDown(targetType, (int) annotation.group());
+                result = referenceDropDown(targetType);
             } else {
                 if (!Thing.class.isAssignableFrom(targetType)) {
                     throw new IllegalArgumentException("UIHint.ThingReferenceDropDown can only be used with Reference fields that reference a Thing!");
                 }
-                @SuppressWarnings("unchecked")
                 Class<? extends Thing> thingType = (Class<? extends Thing>) targetType;
-                return thingDropDown(thingType, (int) annotation.group(),annotation.requires());
+                result = thingDropDown(thingType, annotation.requires());
             }
 
         } else {
             throw new IllegalArgumentException("Unsupported UIHint type " + annotation.ui());
         }
+        result.setGroupAndOrderID(annotation.group());
+        return result;
+    }
+
+    /**
+     * Sets the group and order id, this number can be used to order or group UI elements. To order the elements just assign ascending
+     * numbers to the {@link UIHint}s. To group elements assign the same number to all group members.
+     * 
+     * @param groupAndOrder
+     *            number that should be used to order or group the elements in the ui.
+     * @return the {@link UIHint}
+     */
+    public UIHint groupAndOrder(int groupAndOrder) {
+        this.setGroupAndOrderID(groupAndOrder);
+        return this;
     }
 
     /**
@@ -127,23 +138,6 @@ public abstract class UIHint {
     }
 
     /**
-     * Returns a IntegralSlider for the given values. See {@link IntegralSlider}.
-     * 
-     * @param min
-     *            The minimum value.
-     * @param max
-     *            The maximum value.
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The IntegralSlider.
-     */
-    public static IntegralSlider integralSlider(long min, long max, int groupAndOrderID) {
-        IntegralSlider result = UIHint.integralSlider(min, max);
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
-    }
-
-    /**
      * The value is numeric and integral (e.g. int or long). The UI could use a draggable slider to display/change the value. Min/Max values
      * are provided to set the range of this slider. In readonly mode, this could be displayed as a disabled slider or as a progress bar.
      */
@@ -158,23 +152,6 @@ public abstract class UIHint {
          * The maximum value for the value and thus the upper bound of the slider range.
          */
         public long max;
-    }
-
-    /**
-     * Returns a FractionalSlider for the given values. See {@link FractionalSlider}.
-     * 
-     * @param min
-     *            The minimum value.
-     * @param max
-     *            The maximum value.
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The FractionalSlider.
-     */
-    public static FractionalSlider fractionalSlider(double min, double max, int groupAndOrderID) {
-        FractionalSlider result = UIHint.fractionalSlider(min, max);
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
     }
 
     /**
@@ -217,20 +194,7 @@ public abstract class UIHint {
      * @return The PercentageSlider.
      */
     public static PercentageSlider percentageSlider() {
-        return PercentageSlider.INSTANCE;
-    }
-
-    /**
-     * Returns a PercentageSlider.
-     * 
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The PercentageSlider.
-     */
-    public static PercentageSlider percentageSlider(int groupAndOrderID) {
-        PercentageSlider result = new PercentageSlider();
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
+        return new PercentageSlider();
     }
 
     /**
@@ -239,7 +203,6 @@ public abstract class UIHint {
      * slider or as a progress bar.
      */
     public static class PercentageSlider extends UIHint {
-        private static final PercentageSlider INSTANCE = new PercentageSlider();
     }
 
     /**
@@ -248,18 +211,7 @@ public abstract class UIHint {
      * @return The ToggleButton.
      */
     public static ToggleButton toggleButton() {
-        return ToggleButton.INSTANCE;
-    }
-
-    /**
-     * Returns a ToggleButton.
-     * 
-     * @return The ToggleButton.
-     */
-    public static ToggleButton toggleButton(int groupAndOrderID) {
-        ToggleButton result = new ToggleButton();
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
+        return new ToggleButton();
     }
 
     /**
@@ -267,7 +219,6 @@ public abstract class UIHint {
      * displayed as a disabled toggle or checkbox.
      */
     public static class ToggleButton extends UIHint {
-        private static final ToggleButton INSTANCE = new ToggleButton();
     }
 
     /**
@@ -276,20 +227,7 @@ public abstract class UIHint {
      * @return The EditText.
      */
     public static EditText editText() {
-        return EditText.INSTANCE;
-    }
-
-    /**
-     * Returns a EditText.
-     * 
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The EditText.
-     */
-    public static EditText editText(int groupAndOrderID) {
-        EditText result = new EditText();
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
+        return new EditText();
     }
 
     /**
@@ -298,7 +236,6 @@ public abstract class UIHint {
      * simple label.
      */
     public static class EditText extends UIHint {
-        private static final EditText INSTANCE = new EditText();
     }
 
     /**
@@ -307,20 +244,7 @@ public abstract class UIHint {
      * @return The EditNumber.
      */
     public static EditNumber editNumber() {
-        return EditNumber.INSTANCE;
-    }
-
-    /**
-     * Returns a EditNumber.
-     * 
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The EditNumber.
-     */
-    public static EditNumber editNumber(int groupAndOrderID) {
-        EditNumber result = new EditNumber();
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
+        return new EditNumber();
     }
 
     /**
@@ -329,7 +253,6 @@ public abstract class UIHint {
      * a simple label.
      */
     public static class EditNumber extends UIHint {
-        private static final EditNumber INSTANCE = new EditNumber();
     }
 
     /**
@@ -344,23 +267,6 @@ public abstract class UIHint {
     public static <E extends Enum<E>> EnumDropDown dropDown(Class<E> theEnum) {
         EnumDropDown result = new EnumDropDown();
         result.possibleValues = theEnum.getEnumConstants();
-        return result;
-    }
-
-    /**
-     * Returns an EnumDropDown.
-     * 
-     * @param <E>
-     *            The type of the enum.
-     * @param theEnum
-     *            The type of the enum.
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The EnumDropDown.
-     */
-    public static <E extends Enum<E>> EnumDropDown dropDown(Class<E> theEnum, int groupAndOrderID) {
-        EnumDropDown result = UIHint.dropDown(theEnum);
-        result.setgroupAndOrderID(groupAndOrderID);
         return result;
     }
 
@@ -388,23 +294,6 @@ public abstract class UIHint {
     public static <R extends Referenceable<?>> ReferenceDropDown referenceDropDown(Class<R> targetType) {
         ReferenceDropDown result = new ReferenceDropDown();
         result.targetType = targetType;
-        return result;
-    }
-
-    /**
-     * Returns a ReferenceDropDown.
-     * 
-     * @param <R>
-     *            The type of the referenced entities.
-     * @param targetType
-     *            The type of the referenced entities.
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The ReferenceDropDown.
-     */
-    public static <R extends Referenceable<?>> ReferenceDropDown referenceDropDown(Class<R> targetType, int groupAndOrderID) {
-        ReferenceDropDown result = UIHint.referenceDropDown(targetType);
-        result.setgroupAndOrderID(groupAndOrderID);
         return result;
     }
 
@@ -440,34 +329,15 @@ public abstract class UIHint {
     }
 
     /**
-     * Returns a ThingReferenceDropDown.
-     * 
-     * @param <T>
-     *            The type of the referenced things.
-     * @param targetType
-     *            The type of the referenced things.
-     * @param requiredPermissions
-     *            The permissions that the user needs on the things that can be chosen.
-     * @param groupAndOrderID
-     *            The group of this element
-     * @return The ThingReferenceDropDown.
-     */
-    public static <T extends Thing> ThingDropDown thingDropDown(Class<T> targetType, int groupAndOrderID, ThingPermission... requiredPermissions) {
-        ThingDropDown result = UIHint.thingDropDown(targetType, requiredPermissions);
-        result.setgroupAndOrderID(groupAndOrderID);
-        return result;
-    }
-
-    /**
      * Getter for the groupAndOrderID, could be used by the UI to group elements.
      * 
      * @return the groupAndOrderID of this element.
      */
-    public int getgroupAndOrderID() {
+    public int getGroupAndOrderID() {
         return groupAndOrderID;
     }
 
-    protected void setgroupAndOrderID(int groupAndOrderID) {
+    protected void setGroupAndOrderID(int groupAndOrderID) {
         this.groupAndOrderID = groupAndOrderID;
     }
 
@@ -484,5 +354,5 @@ public abstract class UIHint {
          */
         public ThingPermission[] requiredPermissions;
     }
-   
+
 }
