@@ -1,4 +1,4 @@
-describe('RegisterCtrl', function() {
+describe('DocumentationCtrl', function() {
 
 	beforeEach(module('riot'));
 
@@ -6,7 +6,7 @@ describe('RegisterCtrl', function() {
 
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
-      ctrl = $controller('RegisterCtrl', {$scope: scope});
+      ctrl = $controller('DocumentationCtrl', {$scope: scope});
     }));	
 
 	it('should ...', inject(function() {

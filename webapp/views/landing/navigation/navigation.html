@@ -9,9 +9,10 @@
 
   <div class="navbar-collapse">
     <ul class="nav navbar-nav">
-      <li ng-class="{active:isActive('landing.home')}"><a ui-sref="landing.home">Home</a></li>
-      <li ng-class="{active:isActive('landing.register')}"><a ui-sref="landing.register">Register</a></li>
-      <li ng-class="{active:isActive('landing.about')}"><a ui-sref="landing.about">About</a></li>
+      <li ng-class="{active:isActive('landing.home')}"><a ui-sref="landing.home">{{ 'webapp.nav_home' | i18n }}</a></li>
+      <li ng-class="{active:isActive('landing.features')}"><a ui-sref="landing.features">{{ 'webapp.nav_features' | i18n }}</a></li>
+      <li ng-class="{active:isActive('landing.scenario')}"><a ui-sref="landing.scenario">{{ 'webapp.nav_scenario' | i18n }}</a></li>
+	  <li ng-class="{active:isActive('landing.documentation')}"><a ui-sref="landing.documentation">{{ 'webapp.nav_documentation' | i18n }}</a></li>
     </ul>
 
     <div class="navbar-right">
