@@ -59,4 +59,21 @@ public abstract class Meter extends Thing {
         return blocked.get();
     }
 
+    /**
+     * Getter for the {@link Property} of the current consumption.
+     * (Only for Simulation)
+     * @return the property
+     */
+    public Property<Double> getCurrentConsumtionProperty() {
+        return this.currentConsumption;
+    }
+
+    /**
+     * Getter for the {@link Property} of the overall consumption.
+     * (Only for Simulation)
+     * @return the property
+     */
+    public Property<Double> getOverallConsumtionProperty() {
+        return this.overallConsumption;
+    }
 }

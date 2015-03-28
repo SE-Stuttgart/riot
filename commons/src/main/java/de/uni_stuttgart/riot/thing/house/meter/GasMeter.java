@@ -20,7 +20,7 @@ public class GasMeter extends Meter {
     }
     
     /**
-     * Getter for the {@link Property} of the current gas consumption in m^3.
+     * Getter for the {@link Property} of the current gas consumption in m^3/h.
      * 
      * @return the property
      */
@@ -29,9 +29,9 @@ public class GasMeter extends Meter {
     }
 
     /**
-     * Getter for the current gas consumption in m^3.
+     * Getter for the current gas consumption in m^3/h.
      * 
-     * @return current gas consumption in m^3.
+     * @return current gas consumption in m^3/h.
      */
     public Double getCurrentGasConsumtion() {
         return this.currentConsumption.get();
