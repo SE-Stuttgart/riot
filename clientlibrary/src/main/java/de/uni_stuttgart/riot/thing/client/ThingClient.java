@@ -7,14 +7,13 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.apache.http.client.utils.URIBuilder;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.uni_stuttgart.riot.clientlibrary.BaseClient;
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.clientlibrary.URIBuilder;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
@@ -182,11 +181,8 @@ public class ThingClient extends BaseClient {
      *             If the thing does not exist.
      */
     public ThingInformation getThingInformation(long id, Set<Field> fields) throws RequestException, IOException, NotFoundException {
-        URIBuilder parameters = new URIBuilder();
-        for (Field field : fields) {
-            parameters.addParameter("return", field.name());
-        }
-        return getConnector().doGET(GET_THING + id + parameters.toString(), ThingInformation.class);
+        String uri = GET_THING + id + "?" + fieldsToQueryString(fields);
+        return getConnector().doGET(uri, ThingInformation.class);
     }
 
     /**
@@ -201,15 +197,31 @@ public class ThingClient extends BaseClient {
      *             When a network error occured or the result format could not be read.
      */
     public Collection<ThingInformation> getThingInformations(Set<Field> fields) throws RequestException, IOException {
-        URIBuilder parameters = new URIBuilder();
-        for (Field field : fields) {
-            parameters.addParameter("return", field.name());
-        }
         try {
-            return getConnector().doGETCollection(THINGS_PREFIX + parameters.toString(), ThingInformation.class);
+            String uri = THINGS_PREFIX + "?" + fieldsToQueryString(fields);
+            return getConnector().doGETCollection(uri, ThingInformation.class);
         } catch (NotFoundException e) {
             throw new RequestException(e);
         }
+    }
+
+    /**
+     * Concatenates the fields to a query string.
+     * 
+     * @param fields
+     *            The fields.
+     * @return The query string.
+     */
+    private static String fieldsToQueryString(Set<Field> fields) {
+        StringBuilder builder = new StringBuilder();
+        for (Field field : fields) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append("return=");
+            builder.append(field.name());
+        }
+        return builder.toString();
     }
 
     /**
