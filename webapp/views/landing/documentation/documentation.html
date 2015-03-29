@@ -4,9 +4,19 @@
 	
 		<h1><span class="fa fa-book"></span> {{ 'webapp.nav_documentation' | i18n }}</h1>
 		<div class="row">
-
+			<h4>
+			<ul class="nav docnav">
+				<li ng-repeat="navLink in navLinks" ng-class="navClass('{{navLink.link}}')">
+				<a href="" ng-click="changeMarkdownDocument(navLink.link)">{{navLink.title}}</a>
+				</li>
+			</ul>
+			</h4>
+		</div>
+		
+		<div class="row">
+			<div id="markdownDiv" onload="contendLoaded()" btf-markdown ng-include="markdownDocument"></div>
 		</div>
 		
 	</div>
-
+	<br/>
 </div>

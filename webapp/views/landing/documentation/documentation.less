@@ -1,0 +1,17 @@
+ul.docnav li {
+	display: inline;
+	float: left;
+	width: 33%;
+	background-color: #F8F8F8;
+	text-align: center;
+}
+.docnav {
+	> .active > a {
+	  &,
+	  &:hover,
+	  &:focus {
+		color: @navbar-default-link-active-color;
+		background-color: @navbar-default-link-active-bg;
+	  }
+	}
+}

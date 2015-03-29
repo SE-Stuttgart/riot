@@ -78,7 +78,7 @@ module.exports = function (grunt) {
             livereloadOnError: false,
             spawn: false
         },
-        files: [createFolderGlobs(['*.js','*.less','*.html', '../commons/src/main/resources/languages/*.properties']),'!_SpecRunner.html','!.grunt'],
+        files: [createFolderGlobs(['*.js','*.less','*.html', '../commons/src/main/resources/languages/*.properties', '../documentation/**']),'!_SpecRunner.html','!.grunt'],
         tasks: [] //all the tasks are run dynamically during the watch event handler
       }
     },
@@ -122,7 +122,8 @@ module.exports = function (grunt) {
       main: {
         files: [
           {src: ['img/**'], dest: 'dist/'},
-    {src: ['languages/**'], dest: 'dist/'},
+		  {src: ['languages/**'], dest: 'dist/'},
+		  {src: ['documentation/**'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
           {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
           //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
@@ -244,6 +245,19 @@ module.exports = function (grunt) {
       }
     });
   });
+  
+  grunt.registerTask('copy_doku', 'Will remove languages/xx/yy.lang.json', function() {
+	grunt.file.mkdir('documentation/');
+    grunt.file.recurse('documentation/', function(abspath, rootdir, subdir, filename) {
+		grunt.file.delete(abspath);
+    });
+	var patt = /\.(md|jpg|png|pdf)$/i;
+	grunt.file.recurse('../documentation/', function(abspath, rootdir, subdir, filename) {
+		if (patt.test(abspath)) {
+			grunt.file.copy(abspath, 'documentation/' + filename);
+		}
+    });
+  });
 
   // Grunt Task to convert .properties from commons project to JSON files for AngularJS
   grunt.registerTask('convert_messages', 'Will read .properties files from commons project and create the localization JSON files for angularjs.', function() {
@@ -299,8 +313,8 @@ module.exports = function (grunt) {
     });
   });
 
-  grunt.registerTask('build',['jshint','clean:before','clean_messages','convert_messages','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-  grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'configureProxies:server', 'connect:server', 'watch']);
+  grunt.registerTask('build',['jshint','clean:before','clean_messages','convert_messages','copy_doku','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
+  grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'configureProxies:server', 'connect:server', 'copy_doku', 'watch']);
   grunt.registerTask('test',['dom_munger:read','karma:all_tests']);
   grunt.registerTask('test-headless',['dom_munger:read','karma:during_watch']);
 
@@ -308,6 +322,10 @@ module.exports = function (grunt) {
     //https://github.com/gruntjs/grunt-contrib-watch/issues/156
 
     var tasksToRun = [];
+	
+	if (filepath.indexOf('../documentation') === 0 || filepath.indexOf('..\\documentation') === 0) {
+		tasksToRun.push('copy_doku');
+	}
 
     if (filepath.lastIndexOf('.js') !== -1 && filepath.lastIndexOf('.js') === filepath.length - 3) {
 

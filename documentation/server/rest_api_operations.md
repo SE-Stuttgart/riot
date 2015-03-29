@@ -1,5 +1,6 @@
 # RIOT REST API Operations
 
+[WADL Description of REST API](https://belgrad.informatik.uni-stuttgart.de:8181/riot/api/v1/application.wadl)
 
 A complete REST operation is formed by combining an HTTP method with the full URI to the resource to be addressed. For example, here is an operation to retrieve all calendar entries:
 
