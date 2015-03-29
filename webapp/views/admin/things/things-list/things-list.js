@@ -42,12 +42,38 @@ angular.module('riot').controller('ThingsListCtrl',function($scope, Thing, local
       $scope.pagination.limit = things.pagination.limit;
       $scope.pagination.total = things.pagination.total;
       $scope.things = things;
+      $scope.getThingsDescription();
+      $scope.getThingsState();
+      $scope.getThingslastConnection();
     });
   };
 
-  $scope.$watch('limit', function() {
-    $scope.getThings();
-  });
+  $scope.getThingsDescription = function() {
+    for (var i = 0; i < $scope.things.length; i++) {
+      $scope.things[i].description = $scope.things[i].getDescription().$object;
+    }
+  };
+
+  $scope.getThingsState = function() {
+    for (var i = 0; i < $scope.things.length; i++) {
+      $scope.things[i].state = $scope.things[i].getState().$object;
+    }
+  };
+
+  $scope.getThingslastConnection = function() {
+    for (var i = 0; i < $scope.things.length; i++) {
+      $scope.things[i].lastConnection = $scope.things[i].getLastConnection().$object;
+    }
+  };
+
+  $scope.convertThingPropertyValue = function(value) {
+    if (angular.isArray(value)) {
+      return value[1];
+    }
+    else {
+      return value;
+    }
+  };
 
   locale.ready('thing').then(init);
 });

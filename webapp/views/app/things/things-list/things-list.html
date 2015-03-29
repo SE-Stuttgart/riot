@@ -17,17 +17,15 @@
     <ul class="list-group" ng-repeat="thing in things">
       <a class="list-group-item thing" ui-sref="app.things.detail({thingid: thing.id})">
         <div class="left">
-          <span class="icon fa fa-mobile"></span>
+          <span class="icon fa fa-tag"></span>
         </div>
         <div class="description">
-          <span class="online">01.01.2014 / 00:00</span>
-          <span class="name">Coffee Machine</span>
+          <span class="online"></span>
+          <span class="name">{{thing.metainfo.name}}</span>
           <span class="badge">14</span>
           <div class="last-action">Here is the text for the last action</div>
           <div class="state">
-            <span class="property">Water: 50%</span>
-            <span class="property">Temp: 80°C</span>
-            <span class="property">foo: bar</span>
+            <span class="property" ng-repeat="(name, value) in thing.state.propertyValues">{{name}}: {{convertThingPropertyValue(value)}}</span>
           </div>
         </div>
       </a>
@@ -36,10 +34,10 @@
     <!-- table footer -->
     <div class="row">
       <div class="col-sm-6">
-        <div>{{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + things.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}</div>
+        <div>{{ 'common.showing' | i18n }} {{(pagination.current - 1) * pagination.limit + 1}} {{ 'common.to' | i18n }} {{(pagination.current - 1) * pagination.limit + things.length}} {{ 'common.of' | i18n }} {{pagination.total}} {{ 'common.entries' | i18n }}</div>
       </div>
       <div class="col-sm-12 text-center">
-        <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getThings()"></pagination>
+        <pagination ng-model="pagination.current" items-per-page="pagination.limit" total-items="pagination.total" ng-change="getThings()"></pagination>
       </div>
     </div>
   </div>

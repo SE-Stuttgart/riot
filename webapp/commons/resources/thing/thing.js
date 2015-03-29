@@ -9,6 +9,10 @@ angular.module('riot').factory('Thing', function(Restangular) {
     model.getState = function() {
       return model.one('state').get();
     };
+    
+    model.getLastConnection = function() {
+      return model.one('lastconnection').get();
+    };
 
     return model;
   });

@@ -9,7 +9,7 @@ angular.module('riot').config(function(RestangularProvider) {
 });
 
 angular.module('riot').config(function(RestangularProvider) {
-  //REST response interceptor: extract pagination and filter header data
+  //REST response interceptor: extract pagination header data
   RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
     if (operation === 'getList') {
       data.pagination = {
