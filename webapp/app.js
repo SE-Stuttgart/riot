@@ -13,7 +13,9 @@ angular.module('riot', ['ngLocalize',
                         'ngAnimate',
                         'toggle-switch',
                         'angular-bootstrap-select',
-                        'nya.bootstrap.select'])
+                        'nya.bootstrap.select',
+                        'ngWebSocket',
+                        'infinite-scroll'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix

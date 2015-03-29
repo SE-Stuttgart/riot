@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col-md-12" ng-controller="NotificationsCtrl">
+    <h1>{{ 'notification.notifications' | i18n }}</h1>
+    
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-success dismiss-btn" ng-click="dismissNotifications()">{{ 'notification.dismissAllItems' | i18n }}</button>
+      </div>
+    </div>
+    
+    <div class="row" infinite-scroll="fetchNotificationsAndThings()">
+      <div class="col-md-12">
+        <table class="table">
+          <tr ng-repeat="notification in notificationsSocket" ng-class="{info: !notification.dismissed}" ng-mouseover="dismissNotification(notification)">
+            <td style="width: 20px">
+              <i ng-if="notification.severity == 'INFO' || notification.severity == 'INFO_NOW'" class="fa fa-info-circle"></i>
+              <i ng-if="notification.severity == 'MAINTENANCE'" class="fa fa-minus-circle"></i>
+              <i ng-if="notification.severity == 'WARNING'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="notification.severity == 'WARNING_IMPORTANT'" style="color: red" class="fa fa-exclamation-circle"></i>
+              <i ng-if="notification.severity == 'ERROR'" style="color: red" class="fa fa-times-circle"></i>
+            </td>
+            <td><strong>{{ 'notification.' + notification.titleKey | i18n }}</strong></td>
+            <td>{{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}</td>
+            <td>
+              <a ui-sref="app.things.detail({thingid: notification.thingID})">{{ things[notification.thingID].metainfo.name }}</a>
+            </td>
+            <td>{{ notification.time | date : 'dd.MM.yyyy HH:mm:ss'}}</td>
+          </tr>
+          <tr ng-repeat="notification in notifications" ng-class="{info: !notification.dismissed}" ng-mouseover="dismissNotification(notification)">
+            <td style="width: 20px">
+              <i ng-if="notification.severity == 'INFO' || notification.severity == 'INFO_NOW'" class="fa fa-info-circle"></i>
+              <i ng-if="notification.severity == 'MAINTENANCE'" class="fa fa-minus-circle"></i>
+              <i ng-if="notification.severity == 'WARNING'" class="fa fa-exclamation-circle"></i>
+              <i ng-if="notification.severity == 'WARNING_IMPORTANT'" style="color: red" class="fa fa-exclamation-circle"></i>
+              <i ng-if="notification.severity == 'ERROR'" style="color: red" class="fa fa-times-circle"></i>
+            </td>
+            <td><strong>{{ 'notification.' + notification.titleKey | i18n }}</strong></td>
+            <td>{{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}</td>
+            <td>
+              <a ui-sref="app.things.detail({thingid: notification.thingID})">{{ things[notification.thingID].metainfo.name }}</a>
+            </td>
+            <td>{{ notification.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+          </tr>
+        </table>
+        <span ng-show="loadMore">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
