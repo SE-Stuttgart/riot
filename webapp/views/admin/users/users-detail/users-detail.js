@@ -99,6 +99,7 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
       user.password1 = '';
       user.password2 = '';
       $scope.userDetail = user;
+      $scope.userDetail.things = user.getList('things').$object;
       $scope.roles.disabled = user.roles;
       $scope.permissions.disabled = user.permissions;
     });
