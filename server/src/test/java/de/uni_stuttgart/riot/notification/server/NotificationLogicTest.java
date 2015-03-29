@@ -37,7 +37,7 @@ import de.uni_stuttgart.riot.thing.server.ThingLogic;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 
-@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_rules.sql", "/schema/schema_notifications.sql" })
+@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_rules.sql" })
 public class NotificationLogicTest extends BaseDatabaseTest {
 
     NotificationLogic logic;

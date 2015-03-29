@@ -16,7 +16,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateException;
 
-@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/schema/schema_notifications.sql" })
+@TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql" })
 public class NotificationDBTest extends BaseDatabaseTest {
 
     /**
