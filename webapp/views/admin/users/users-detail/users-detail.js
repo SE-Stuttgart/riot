@@ -17,7 +17,11 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
         limit: 10,
         total: 0
       },
-      filter: null,
+      filter: {
+        property: 'roleName',
+        operator: 'CT',
+        value: null
+      },
       disabled: [],
       update: $scope.getRoles,
       toString: function(dataEntry) {
@@ -32,7 +36,11 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
         limit: 10,
         total: 0
       },
-      filter: null,
+      filter: {
+        property: 'permissionValue',
+        operator: 'CT',
+        value: null
+      },
       disabled: [],
       update: $scope.getPermissions,
       toString: function(dataEntry) {
@@ -43,7 +51,18 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
   };
 
   $scope.getRoles = function() {
-    Role.getList({limit: $scope.roles.pagination.limit, offset: ($scope.roles.pagination.current - 1) * $scope.roles.pagination.limit}).then(function(roles) {
+    //pagination
+    var parameters = { 
+      limit: $scope.roles.pagination.limit,
+      offset: ($scope.roles.pagination.current - 1) * $scope.roles.pagination.limit
+    };
+
+    //filter
+    if ($scope.roles.filter.value) {
+      parameters[$scope.roles.filter.property + '_' + $scope.roles.filter.operator] = $scope.roles.filter.value;
+    }
+
+    Role.getList(parameters).then(function(roles) {
       $scope.roles.pagination.limit = roles.pagination.limit;
       $scope.roles.pagination.total = roles.pagination.total;
       $scope.roles.data = roles;
@@ -51,7 +70,18 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
   };
 
   $scope.getPermissions = function() {
-    Permission.getList({limit: $scope.permissions.pagination.limit, offset: ($scope.permissions.pagination.current - 1) * $scope.permissions.pagination.limit}).then(function(permissions) {
+    //pagination
+    var parameters = { 
+      limit: $scope.permissions.pagination.limit,
+      offset: ($scope.permissions.pagination.current - 1) * $scope.permissions.pagination.limit
+    };
+
+    //filter
+    if ($scope.permissions.filter.value) {
+      parameters[$scope.permissions.filter.property + '_' + $scope.permissions.filter.operator] = $scope.permissions.filter.value;
+    }
+
+    Permission.getList(parameters).then(function(permissions) {
       $scope.permissions.pagination.limit = permissions.pagination.limit;
       $scope.permissions.pagination.total = permissions.pagination.total;
       $scope.permissions.data = permissions;

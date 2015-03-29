@@ -10,7 +10,10 @@
       - limit     [Number]      Limit of displayed entries
       - total     [Number]      Total number of data entries on server
 
-    - filter      [Object]      TODO
+    - filter      [Object]      Filter settings
+      - property  [String]      
+      - operator  [String]      
+      - values    [String]      
 
     - disabled    [Array]       List of data entries which will be disabled in the dropdown
 

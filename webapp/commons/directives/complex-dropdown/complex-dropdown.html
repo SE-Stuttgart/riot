@@ -7,9 +7,9 @@
   <ul class="dropdown-menu dropdown-full-width" role="menu">
     <li ng-click="$event.stopPropagation();">
       <div class="input-group filter" style="width: 100%;">
-        <input type="text" class="form-control" placeholder="Filter" ng-model="permissionsFilter">
-        <span class="input-group-btn" ng-show="permissionsFilter">
-          <button type="button" class="btn btn-default" ng-click="permissionsFilter=''">
+        <input type="text" class="form-control" placeholder="Filter" ng-model="options.filter.value" ng-change="options.update()">
+        <span class="input-group-btn" ng-show="options.filter.value">
+          <button type="button" class="btn btn-default" ng-click="options.filter.value=''; options.update();">
             <span class="fa fa-times"></span>
           </button>
         </span>

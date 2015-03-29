@@ -5,47 +5,81 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('AuthorizationListCtrl',function($scope, Role, Permission){
+angular.module('riot').controller('AuthorizationListCtrl',function($scope, Role, Permission, locale){
   var init = function() {
-    $scope.rolesList = {};
-    $scope.rolesList.current = 1;
-    $scope.rolesList.limit = 10;
-    $scope.rolesList.total = 10;
-    $scope.rolesList.filter = null;
+    $scope.rolesPagination = {
+      current: 1,
+      limit: 10,
+      total: 0
+    };
+    $scope.rolesFilter = {
+      filters: [],
+      properties: [
+        {
+          key: 'roleName',
+          name: locale.getString('user.roleName')
+        }
+      ]
+    };
 
-    $scope.permissionsList = {};
-    $scope.permissionsList.current = 1;
-    $scope.permissionsList.limit = 10;
-    $scope.permissionsList.total = 10;
-    $scope.permissionsList.filter = null;
+    $scope.permissionsPagination = {
+      current: 1,
+      limit: 10,
+      total: 0
+    };
+    $scope.permissionsFilter = {
+      filters: [],
+      properties: [
+        {
+          key: 'permissionValue',
+          name: locale.getString('user.permission')
+        }
+      ]
+    };
 
     $scope.getRoles();
     $scope.getPermissions();
   };
 
   $scope.getRoles = function() {
-    Role.getList({limit: $scope.rolesList.limit, offset: ($scope.rolesList.current - 1) * $scope.rolesList.limit}).then(function(roles) {
-      $scope.rolesList.limit = roles.pagination.limit;
-      $scope.rolesList.total = roles.pagination.total;
+    //pagination
+    var parameters = {
+      limit: $scope.rolesPagination.limit,
+      offset: ($scope.rolesPagination.current - 1) * $scope.rolesPagination.limit
+    };
+
+    //filters
+    for (var i = 0; i < $scope.rolesFilter.filters.length; i++) {
+      var filter = $scope.rolesFilter.filters[i];
+      parameters[filter.property + '_' + filter.operator] = filter.value;
+    }
+
+    Role.getList(parameters).then(function(roles) {
+      $scope.rolesPagination.limit = roles.pagination.limit;
+      $scope.rolesPagination.total = roles.pagination.total;
       $scope.roles = roles;
     });
   };
 
   $scope.getPermissions = function() {
-    Permission.getList({limit: $scope.permissionsList.limit, offset: ($scope.permissionsList.current - 1) * $scope.permissionsList.limit}).then(function(permissions) {
-      $scope.permissionsList.limit = permissions.pagination.limit;
-      $scope.permissionsList.total = permissions.pagination.total;
+    //pagination
+    var parameters = {
+      limit: $scope.permissionsPagination.limit,
+      offset: ($scope.permissionsPagination.current - 1) * $scope.permissionsPagination.limit
+    };
+
+    //filters
+    for (var i = 0; i < $scope.permissionsFilter.filters.length; i++) {
+      var filter = $scope.permissionsFilter.filters[i];
+      parameters[filter.property + '_' + filter.operator] = filter.value;
+    }
+
+    Permission.getList(parameters).then(function(permissions) {
+      $scope.permissionsPagination.limit = permissions.pagination.limit;
+      $scope.permissionsPagination.total = permissions.pagination.total;
       $scope.permissions = permissions;
     });
   };
 
-  $scope.$watch('rolesList.limit', function() {
-    $scope.getRoles();
-  });
-
-  $scope.$watch('permissionsList.limit', function() {
-    $scope.getPermissions();
-  });
-
-  init();
+  locale.ready('user').then(init);
 });

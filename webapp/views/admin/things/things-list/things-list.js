@@ -5,21 +5,42 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('ThingsAdminListCtrl',function($scope, Thing){
+angular.module('riot').controller('ThingsAdminListCtrl',function($scope, Thing, locale){
   var init = function() {
-    $scope.current = 1;
-    $scope.limit = 10;
-    $scope.total = 0;
-    $scope.filters = null;
-    $scope.filterProperties = [];
+    $scope.pagination = {
+      current: 1,
+      limit: 10,
+      total: 0
+    };
+    $scope.filter = {
+      filters: [],
+      properties: [
+        {
+          key: 'type',
+          name: locale.getString('thing.type')
+        }
+      ]
+    };
 
     $scope.getThings();
   };
 
   $scope.getThings = function() {
-    Thing.getList({limit: $scope.limit, offset: ($scope.current - 1) * $scope.limit}).then(function(things) {
-      $scope.limit = things.pagination.limit;
-      $scope.total = things.pagination.total;
+    //pagination
+    var parameters = {
+      limit: $scope.pagination.limit,
+      offset: ($scope.pagination.current - 1) * $scope.pagination.limit
+    };
+
+    //filters
+    for (var i = 0; i < $scope.filter.filters.length; i++) {
+      var filter = $scope.filter.filters[i];
+      parameters[filter.property + '_' + filter.operator] = filter.value;
+    }
+
+    Thing.getList(parameters).then(function(things) {
+      $scope.pagination.limit = things.pagination.limit;
+      $scope.pagination.total = things.pagination.total;
       $scope.things = things;
     });
   };
@@ -28,5 +49,5 @@ angular.module('riot').controller('ThingsAdminListCtrl',function($scope, Thing){
     $scope.getThings();
   });
 
-  init();
+  locale.ready('thing').then(init);
 });

@@ -13,7 +13,7 @@
     <!-- table header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <select selectpicker class="form-control" data-width="100px" ng-model="limit">
+        <select selectpicker class="form-control" data-width="100px" ng-model="pagination.limit" ng-change="getUsers()">
           <option>10</option>
           <option>20</option>
           <option>50</option>
@@ -21,7 +21,7 @@
         </select>
       </div>
       <div class="col-sm-6 form-group">
-        <div class="pull-right" rest-filter="filters" rest-filter-properties="filterProperties" rest-filter-update="getUsers()"></div>
+        <div class="pull-right" filters="filter.filters" properties="filter.properties" update="getUsers()" rest-filter></div>
       </div>
     </div>
 
@@ -54,7 +54,7 @@
     <!-- table footer -->
     <div class="row">
       <div class="col-sm-12">
-        {{ 'common.showing' | i18n }} {{(current - 1) * limit + 1}} {{ 'common.to' | i18n }} {{(current - 1) * limit + users.length}} {{ 'common.of' | i18n }} {{total}} {{ 'common.entries' | i18n }}
+        {{ 'common.showing' | i18n }} {{(pagination.current - 1) * pagination.limit + 1}} {{ 'common.to' | i18n }} {{(pagination.current - 1) * pagination.limit + users.length}} {{ 'common.of' | i18n }} {{pagination.total}} {{ 'common.entries' | i18n }}
         <span class="pull-right">
           <button type="button" class="btn btn-success" ui-sref="admin.users.detail">
             <span class="fa fa-plus"></span>
@@ -63,7 +63,7 @@
         </span>
       </div>
       <div class="col-sm-12 text-center">
-        <pagination ng-model="current" items-per-page="limit" total-items="total" ng-change="getUsers()"></pagination>
+        <pagination ng-model="pagination.current" items-per-page="pagination.limit" total-items="pagination.total" ng-change="getUsers()"></pagination>
       </div>
     </div>
   </div>

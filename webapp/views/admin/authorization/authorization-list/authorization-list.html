@@ -11,7 +11,7 @@
     <!-- header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <select selectpicker class="form-control" data-width="100px" ng-model="rolesList.limit">
+        <select selectpicker class="form-control" data-width="100px" ng-model="rolesPagination.limit" ng-change="getRoles()">
           <option>10</option>
           <option>20</option>
           <option>50</option>
@@ -19,7 +19,7 @@
         </select>
       </div>
       <div class="col-sm-6 form-group">
-        <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="rolesList.filter">
+        <div class="pull-right" filters="rolesFilter.filters" properties="rolesFilter.properties" update="getRoles()" rest-filter></div>
       </div>
     </div>
 
@@ -34,7 +34,7 @@
     <!-- footer -->
     <div class="row">
       <div class="col-sm-12">
-        {{ 'common.showing' | i18n }} {{(rolesList.current - 1) * rolesList.limit + 1}} {{ 'common.to' | i18n }} {{(rolesList.current - 1) * rolesList.limit + roles.length}} {{ 'common.of' | i18n }} {{rolesList.total}} {{ 'common.entries' | i18n }}
+        {{ 'common.showing' | i18n }} {{(rolesPagination.current - 1) * rolesPagination.limit + 1}} {{ 'common.to' | i18n }} {{(rolesPagination.current - 1) * rolesPagination.limit + roles.length}} {{ 'common.of' | i18n }} {{rolesPagination.total}} {{ 'common.entries' | i18n }}
         <span class="pull-right">
           <button type="button" class="btn btn-success" ui-sref="admin.authorization.role">
             <span class="fa fa-plus"></span>
@@ -43,7 +43,7 @@
         </span>
       </div>
       <div class="col-sm-12 text-center">
-        <pagination ng-model="rolesList.current" items-per-page="rolesList.limit" total-items="rolesList.total" ng-change="getRoles()"></pagination>
+        <pagination ng-model="rolesPagination.current" items-per-page="rolesPagination.limit" total-items="rolesPagination.total" ng-change="getRoles()"></pagination>
       </div>
     </div>
   </div>
@@ -58,7 +58,7 @@
     <!-- header -->
     <div class="row form-inline list-options margin-top-10">
       <div class="col-sm-6 form-group">
-        <select selectpicker class="form-control" data-width="100px" ng-model="permissionsList.limit">
+        <select selectpicker class="form-control" data-width="100px" ng-model="permissionsPagination.limit" ng-change="getPermissions()">
           <option>10</option>
           <option>20</option>
           <option>50</option>
@@ -66,7 +66,7 @@
         </select>
       </div>
       <div class="col-sm-6 form-group">
-        <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="permissionsList.filter">
+        <div class="pull-right" filters="permissionsFilter.filters" properties="permissionsFilter.properties" update="getPermissions()" rest-filter></div>
       </div>
     </div>
 
@@ -80,7 +80,7 @@
     <!-- footer -->
     <div class="row">
       <div class="col-sm-12">
-        {{ 'common.showing' | i18n }} {{(permissionsList.current - 1) * permissionsList.limit + 1}} {{ 'common.to' | i18n }} {{(permissionsList.current - 1) * permissionsList.limit + permissions.length}} {{ 'common.of' | i18n }} {{permissionsList.total}} {{ 'common.entries' | i18n }}
+        {{ 'common.showing' | i18n }} {{(permissionsPagination.current - 1) * permissionsPagination.limit + 1}} {{ 'common.to' | i18n }} {{(permissionsPagination.current - 1) * permissionsPagination.limit + permissions.length}} {{ 'common.of' | i18n }} {{permissionsPagination.total}} {{ 'common.entries' | i18n }}
         <span class="pull-right">
           <button type="button" class="btn btn-success" ui-sref="admin.authorization.permission">
             <span class="fa fa-plus"></span>
@@ -89,7 +89,7 @@
         </span>
       </div>
       <div class="col-sm-12 text-center">
-        <pagination ng-model="permissionsList.current" items-per-page="permissionsList.limit" total-items="permissionsList.total" ng-change="getPermissions()"></pagination>
+        <pagination ng-model="permissionsPagination.current" items-per-page="permissionsPagination.limit" total-items="permissionsPagination.total" ng-change="getPermissions()"></pagination>
       </div>
     </div>
   </div>
