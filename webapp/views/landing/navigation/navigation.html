@@ -10,14 +10,27 @@
   <div class="navbar-collapse">
     <ul class="nav navbar-nav">
       <li ng-class="{active:isActive('landing.home')}"><a ui-sref="landing.home">{{ 'webapp.nav_home' | i18n }}</a></li>
+	  <li ng_if="isAuthenticated()" ng-class="{active:false}"><a ui-sref="app.dashboard">App</a></li>
       <li ng-class="{active:isActive('landing.features')}"><a ui-sref="landing.features">{{ 'webapp.nav_features' | i18n }}</a></li>
       <li ng-class="{active:isActive('landing.scenario')}"><a ui-sref="landing.scenario">{{ 'webapp.nav_scenario' | i18n }}</a></li>
 	  <li ng-class="{active:isActive('landing.documentation')}"><a ui-sref="landing.documentation">{{ 'webapp.nav_documentation' | i18n }}</a></li>
     </ul>
 
-    <div class="navbar-right">
+    <div ng_if="!isAuthenticated()" class="navbar-right">
       <div ng-include="'views/landing/navigation/login-form/login-form.html'"></div>
     </div>
-	
+	<ul ng_if="isAuthenticated()" class="nav navbar-nav navbar-right">
+      <!-- signed in -->
+      <li>
+        <a>Signed in as <strong ng-bind="user().username"></strong></a>
+      </li>
+
+      <!-- alerts -->
+      <li alerts></li>
+
+      <!-- user -->
+      <li user></li>
+    </ul>
+
   </div>
 </nav>
