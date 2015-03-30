@@ -210,5 +210,9 @@ angular.module('riot').controller('UsersDetailCtrl', function($scope, $state, $s
     }
   };
 
+  $scope.isDevice = function(thing) {
+    return thing.type === 'de.uni_stuttgart.riot.thing.Device';
+  };  
+
   init();
 });
