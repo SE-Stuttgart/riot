@@ -40,7 +40,11 @@ public class FilterAttribute {
         /**
          * "GE" (greater than or equals).
          */
-        GE
+        GE,
+        /**
+         * "CT" (contains).
+         */
+        CT
     }
 
     private String fieldName;

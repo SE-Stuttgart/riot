@@ -291,6 +291,8 @@ public class QueryBuilderImpl implements QueryBuilder {
             return "<";
         case LE:
             return "<=";
+        case CT:
+            return " LIKE "; // needs whitespace for concatenation
         default:
             return "=";
         }
@@ -300,10 +302,31 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<String> sqlFilterList = new ArrayList<String>();
         int x = 0;
         for (FilterAttribute filterAttribute : filter.getFilterAttributes()) {
-            sqlFilterList.add(filterAttribute.getFieldName() + getSQLOperator(filterAttribute.getOperator()) + ":" + filterAttribute.getFieldName() + x);
-            x = x + 1;
+            sqlFilterList.add(createSQLFilterString(filterAttribute, x));
+            x++;
         }
         return sqlFilterList;
+    }
+
+    /**
+     * 
+     * @param filter
+     *            the filterattribute
+     * @return A filter string in the format
+     * 
+     *         <pre>
+     * fieldname operator :fieldnameN
+     * </pre>
+     * 
+     *         e.g. "id = :id1"
+     */
+    private String createSQLFilterString(FilterAttribute filter, int fieldNumber) {
+        String valueStr = ":" + filter.getFieldName() + fieldNumber;
+        if (filter.getOperator().equals(FilterAttribute.FilterOperator.CT)) {
+            // the contains operand needs a different format
+            valueStr = "%" + valueStr + "%";
+        }
+        return filter.getFieldName() + getSQLOperator(filter.getOperator()) + valueStr;
     }
 
     /**
