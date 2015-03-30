@@ -21,8 +21,8 @@ import android.widget.ListView;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.notification.Notification;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest = "../android/AndroidManifest.xml")
+//@RunWith(RobolectricTestRunner.class)
+//@Config(manifest = "../android/AndroidManifest.xml")
 public class TestMainActivity {
 
     @Test

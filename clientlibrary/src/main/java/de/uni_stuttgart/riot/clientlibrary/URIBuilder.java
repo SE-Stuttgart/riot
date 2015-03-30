@@ -11,13 +11,14 @@ import java.net.URLEncoder;
  */
 public class URIBuilder {
 
-    private final StringBuilder builder;
+    private final StringBuilder builder = new StringBuilder("");
+
+    private boolean isFirst = true;
 
     /**
      * Constructs an URI with parameters only (i.e. it will start at the <tt>?</tt>).
      */
     public URIBuilder() {
-        builder = new StringBuilder("?");
     }
 
     /**
@@ -27,8 +28,7 @@ public class URIBuilder {
      *            The base URL.
      */
     public URIBuilder(String baseURL) {
-        builder = new StringBuilder(baseURL);
-        builder.append("?");
+        builder.append(baseURL);
     }
 
     /**
@@ -40,10 +40,21 @@ public class URIBuilder {
      *            The value of the parameter.
      */
     public void addParameter(String parameterName, String parameterValue) {
+        if (parameterName == null || parameterName.isEmpty()) {
+            throw new IllegalArgumentException("parameterName must not be empty!");
+        }
         try {
+            if (isFirst) {
+                builder.append("?");
+                isFirst = false;
+            } else {
+                builder.append("&");
+            }
             builder.append(URLEncoder.encode(parameterName, "UTF-8"));
-            builder.append("=");
-            builder.append(URLEncoder.encode(parameterValue, "UTF-8"));
+            if (parameterValue != null) {
+                builder.append("=");
+                builder.append(URLEncoder.encode(parameterValue, "UTF-8"));
+            }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
