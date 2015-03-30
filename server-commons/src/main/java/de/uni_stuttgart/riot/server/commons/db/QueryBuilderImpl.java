@@ -233,12 +233,15 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<String> sqlFilterList = createSqlFilterList(filter);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM " + tableName + " WHERE ");
+        sb.append("SELECT * FROM " + tableName);
 
-        if (filter.isOrMode()) {
-            sb.append(StringUtils.join(sqlFilterList, " OR "));
-        } else {
-            sb.append(StringUtils.join(sqlFilterList, " AND "));
+        if (filter.getFilterAttributes().size() > 0) {
+            sb.append(" WHERE ");
+            if (filter.isOrMode()) {
+                sb.append(StringUtils.join(sqlFilterList, " OR "));
+            } else {
+                sb.append(StringUtils.join(sqlFilterList, " AND "));
+            }
         }
 
         if (filter.getLimit() > 0 && filter.getOffset() >= 0) {
@@ -253,12 +256,15 @@ public class QueryBuilderImpl implements QueryBuilder {
         List<String> sqlFilterList = createSqlFilterList(filter);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT COUNT(*) FROM " + tableName + " WHERE ");
+        sb.append("SELECT COUNT(*) FROM " + tableName + " ");
 
-        if (filter.isOrMode()) {
-            sb.append(StringUtils.join(sqlFilterList, " OR "));
-        } else {
-            sb.append(StringUtils.join(sqlFilterList, " AND "));
+        if (sqlFilterList.size() > 0) {
+            sb.append("WHERE ");
+            if (filter.isOrMode()) {
+                sb.append(StringUtils.join(sqlFilterList, " OR "));
+            } else {
+                sb.append(StringUtils.join(sqlFilterList, " AND "));
+            }
         }
         return sb.toString();
     }
@@ -314,6 +320,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         // checks if offset and limit are correct
         if (filter.getLimit() < 0 || filter.getOffset() < 0) {
             // negative values not allowed
+            // FIXME: this should be assured at filterattribute creation time
             throw new DatasourceFindException("Invalid limit | offset values at request");
         }
 
@@ -321,6 +328,7 @@ public class QueryBuilderImpl implements QueryBuilder {
         for (FilterAttribute filterAttribute : filter.getFilterAttributes()) {
             // checks filter operator
             if (filterAttribute.getOperator() == null) {
+                // FIXME: this should be assured at filterattribute creation time
                 throw new DatasourceFindException("Filter operator is null.");
             }
 
@@ -331,9 +339,11 @@ public class QueryBuilderImpl implements QueryBuilder {
 
                 // validate value according to field type (throws exception if not expected type)
                 if (value == null || !(ClassUtils.primitiveToWrapper(field.getType()) == value.getClass() || field.getType().isInstance(value))) {
+                    // FIXME: should be an exception which maps to a HTTP400
                     throw new DatasourceFindException("Wrong value type for filter value (" + value + "). Expected type: " + field.getType() + ".");
                 }
             } catch (NoSuchFieldException | SecurityException e) {
+                // FIXME: should be an exception which maps to a HTTP400
                 throw new DatasourceFindException("Filter attribute '" + filterAttribute.getFieldName() + "' doesn't exist.", e);
             }
         }

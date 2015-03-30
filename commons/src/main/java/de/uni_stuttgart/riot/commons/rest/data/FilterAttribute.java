@@ -1,5 +1,11 @@
 package de.uni_stuttgart.riot.commons.rest.data;
 
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 /**
  * This class stores a filter attribute and contains the field name, the operator and the value.
  */
@@ -62,6 +68,32 @@ public class FilterAttribute {
         this.fieldName = fieldName;
         this.operator = operator;
         this.value = value;
+    }
+
+    /**
+     * Parses the key to extract the operator and the field name, then applies the first value from the associated list. Multivalued entries
+     * are not supported (only the first one will be used)
+     * 
+     * @param filter
+     *            entry
+     */
+    public FilterAttribute(Entry<String, List<String>> filter) {
+        Pattern p = Pattern.compile("^([\\w]+)_(\\w{2})$");
+        Matcher m = p.matcher(filter.getKey());
+        // check key and operator
+        if (m.matches()) {
+            this.fieldName = m.group(1);
+            String op = m.group(2).toUpperCase();
+            this.operator = FilterOperator.valueOf(op);
+        } else {
+            throw new IllegalArgumentException("Invalid key. Must be in the form 'field_OP' where OP is a comparison operator.");
+        }
+        // check value
+        if (filter.getValue() != null && filter.getValue().size() > 0) {
+            this.value = filter.getValue().get(0); // multivalue filters are not yet supported
+        } else {
+            throw new IllegalArgumentException("Filter expression has no value.");
+        }
     }
 
     public String getFieldName() {

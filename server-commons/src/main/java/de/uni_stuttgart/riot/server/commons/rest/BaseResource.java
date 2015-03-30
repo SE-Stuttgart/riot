@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -99,59 +100,29 @@ public abstract class BaseResource<E extends Storable> {
     public abstract void init(E storable) throws Exception;
 
     /**
-     * Gets the collection for resources.
-     *
-     * @param offset
-     *            the beginning item number
-     * @param limit
-     *            maximum number of items to return
-     * @return the collection. If the both parameters are 0, it returns at maximum 20 elements.
-     * 
-     * @throws DatasourceFindException
-     *             when retrieving the data fails
-     */
-    @GET
-    @Produces(PRODUCED_FORMAT)
-    public Collection<E> get(@QueryParam("offset") int offset, @QueryParam("limit") int limit) throws DatasourceFindException {
-        Collection<E> result;
-        if (limit < 0 || offset < 0) {
-            throw new BadRequestException("please provide valid parameter values");
-        } else if (limit == 0) {
-            // the case when GET request has no query parameters (api/resource)
-            result = dao.findAll(offset, DEFAULT_PAGE_SIZE);
-
-        } else {
-            // the case when GET request has only limit query parameter (api/resource?limit=20)
-            result = dao.findAll(offset, limit);
-        }
-        for (E e : result) {
-            try {
-                this.init(e);
-            } catch (Exception e1) {
-                throw new DatasourceFindException(e1);
-            }
-        }
-        return result;
-
-    }
-
-    /**
      * Creates a new model with data from the request body.
      *
-     * @param request
-     *            object specifying the filter attributes (pagination also possible)
+     * @param info
+     *            the info
+     * @param offset
+     *            the offset
+     * @param limit
+     *            the limit
      * @return collection containing elements that applied to filter
      * @throws DatasourceFindException
      *             when retrieving the data fails
      */
-    @POST
-    @Path("/filter")
+    @GET
     @Consumes(CONSUMED_FORMAT)
     @Produces(PRODUCED_FORMAT)
-    public Collection<E> getBy(FilteredRequest request) throws DatasourceFindException {
-        if (request == null) {
-            throw new BadRequestException("please provide an entity in the request body.");
+    public Collection<E> getBy(@Context UriInfo info, @QueryParam("offset") int offset, @DefaultValue("20") @QueryParam("limit") int limit) throws DatasourceFindException {
+        FilteredRequest request = new FilteredRequest();
+        if (limit < 0 || offset < 0) {
+            throw new BadRequestException("please provide valid parameter values");
         }
+        request.setLimit(limit);
+        request.setOffset(offset);
+        request.parseQueryParams(info.getQueryParameters().entrySet());
         try {
             Collection<E> result = dao.findAll(request);
             for (E e : result) {

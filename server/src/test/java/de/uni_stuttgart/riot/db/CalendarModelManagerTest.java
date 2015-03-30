@@ -1,7 +1,9 @@
 package de.uni_stuttgart.riot.db;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -455,14 +457,6 @@ public class CalendarModelManagerTest extends BaseDatabaseTest {
         filter.setFilterAttributes(filterAtts);
         try {
             modelManager.findAll(filter);
-            fail("Expected an DaoException to be thrown");
-        } catch (DatasourceFindException exception) {
-            assertFalse("An error message should be provided", exception.getMessage().isEmpty());
-        }
-
-        // wrong syntax
-        try {
-            modelManager.findAll(null);
             fail("Expected an DaoException to be thrown");
         } catch (DatasourceFindException exception) {
             assertFalse("An error message should be provided", exception.getMessage().isEmpty());

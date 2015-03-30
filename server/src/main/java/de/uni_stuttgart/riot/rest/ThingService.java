@@ -321,6 +321,7 @@ public class ThingService {
      * @throws DatasourceFindException
      *             when retrieving the data fails
      */
+    //FIXME: should use query attribute filtering like the base resource
     @POST
     @Path("/filter")
     public Collection<ThingInformation> getBy(FilteredRequest request, @QueryParam("return") List<Field> fields) throws DatasourceFindException {
