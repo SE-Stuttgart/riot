@@ -7,17 +7,39 @@
 
   <div class="row">
     <div class="col-md-6">
-      <dashboard-item icon="fa-bullseye" heading="Things" items="items.things"></dashboard-item>
+      <dashboard-item icon="fa-cloud" headingkey="thing.things" view-more-state="app.things.list" max-items="5" items="items.things"></dashboard-item>
     </div>
     <div class="col-md-6">
-      <dashboard-item icon="fa-calendar" heading="Upcoming events" items="items.events"></dashboard-item>
+      <dashboard-item icon="fa-calendar" headingkey="calendar.calendarEntries" view-more-state="app.calendar.list" max-items="5" items="items.events"></dashboard-item>
     </div>
   </div>
 
   <div class="row">
-  <div class="col-lg-12">
-    <h2 class="activity-header">Activity Log</h2>
-    <dashboard-log-item text="item.text" time="item.time" important="item.important" icon="item.icon" ng-repeat="item in log.items"></dashboard-log-item>
-  </div>
+    <div class="col-lg-12">
+      <h2 class="activity-header">{{ 'notification.notifications' | i18n }}</h2>
+      <div ng-repeat="notification in log.notifications" class="row dashboard-activity-item" ng-class="{undismissed: !notification.dismissed}">
+        <div class="col-xs-9 dashboard-activity-text">
+          <i ng-if="notification.severity == 'INFO' || notification.severity == 'INFO_NOW'" class="fa fa-info-circle"></i>
+          <i ng-if="notification.severity == 'MAINTENANCE'" class="fa fa-minus-circle"></i>
+          <i ng-if="notification.severity == 'WARNING'" class="fa fa-exclamation-circle"></i>
+          <i ng-if="notification.severity == 'WARNING_IMPORTANT'" style="color: red" class="fa fa-exclamation-circle"></i>
+          <i ng-if="notification.severity == 'ERROR'" style="color: red" class="fa fa-times-circle"></i>
+          <span class="dashboard-activity-important">{{ 'notification.' + notification.titleKey | i18n }}</span>
+          {{ 'notification.' + notification.messageKey | i18n:{'thing.id': notification.thingID, 'thing.name': getThingName(notification.thingID)} }}
+        </div>
+        <div class="col-xs-2 dashboard-activity-time">
+            <span class="pull-right">{{ notification.time | date:'dd.MM HH:mm:ss' }}</span>
+        </div>
+        <div class="col-xs-1">
+          <span class="pull-right">
+            <i ng-if="!notification.dismissed" ng-mouseover="dismissNotification(notification)" class="fa fa-square-o"></i>
+            <i ng-if="notification.dismissed" class="fa fa-check-square-o"></i>
+          </span>
+        </div>
+      </div>
+      <button class="btn">
+        {{ 'common.showMore' | i18n }}
+      </button>
+    </div>
   </div>
 </div>

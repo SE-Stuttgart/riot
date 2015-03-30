@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import org.sql2o.Connection;
@@ -227,7 +228,7 @@ public class NotificationDAO {
             notification.setSeverity(NotificationSeverity.valueOf(resultSet.getString("severity")));
             notification.setTitleKey(resultSet.getString("titleKey"));
             notification.setMessageKey(resultSet.getString("messageKey"));
-            notification.setTime(resultSet.getDate("time"));
+            notification.setTime(new Date(resultSet.getTimestamp("time").getTime()));
             notification.setDismissed(resultSet.getBoolean("dismissed"));
 
             // Fetch argument values

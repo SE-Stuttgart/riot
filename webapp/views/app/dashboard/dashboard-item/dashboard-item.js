@@ -4,8 +4,10 @@ angular.module('riot').directive('dashboardItem', function() {
     replace: true,
     scope: {
       icon: "@",
-      heading: "@",
-      items: "=" //expected format: [{name: "Item1", link="link/to/item/1", type:"warning"},{name: "Item2", link="link/to/item/2", type:"error"}]
+      headingkey: "@",
+      viewMoreState: "@",
+      maxItems: "@", 
+      items: "=" //expected format: [{name: "Item1", state:"app.things.detail", stateParams:{thingid: 1}, type:"warning"}]
     },
     templateUrl: 'views/app/dashboard/dashboard-item/dashboard-item.html',
     link: function(scope, element, attrs, fn) {
@@ -26,6 +28,19 @@ angular.module('riot').directive('dashboardItem', function() {
             item.class = "";
         }
       });
+    },
+    controller: function($scope, $state) {
+      $scope.redirect = function(item) {
+        $state.go(item.state, item.stateParams);
+      };
+      
+      $scope.viewMore = function() {
+        $state.go($scope.viewMoreState);
+      };
+      
+      $scope.getSpacerHeight = function() {
+        return ($scope.maxItems - $scope.items.length) * 37;
+      };
     }
   };
 });

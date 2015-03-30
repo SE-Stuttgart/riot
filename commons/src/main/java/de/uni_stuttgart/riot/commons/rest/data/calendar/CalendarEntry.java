@@ -8,7 +8,7 @@ import de.uni_stuttgart.riot.commons.rest.data.TableName;
 /**
  * The Class CalendarEntry.
  */
-@TableName("calendarEntries")
+@TableName("calendarentries")
 public class CalendarEntry extends Storable {
 
     /** The start time. */
@@ -51,7 +51,6 @@ public class CalendarEntry extends Storable {
         this.location = entry.getLocation();
         this.allDayEvent = entry.isAllDayEvent();
     }
-
 
     /**
      * Instantiates a new calendar entry.

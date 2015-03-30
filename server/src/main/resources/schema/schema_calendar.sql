@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS calendarentries;
+DROP TABLE IF EXISTS calendarEntries;
 
 CREATE TABLE calendarentries (
 	id INT NOT NULL AUTO_INCREMENT,
