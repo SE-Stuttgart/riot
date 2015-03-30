@@ -29,7 +29,8 @@ import de.uni_stuttgart.riot.thing.client.ThingClient;
  * This class should be used as the main entry point for accessing things in the Android App. The thing manager keeps track of all things
  * that are known to the application. In particular, the thing manager uses a {@link Device} instance to register with the server. Thus, the
  * Android device will be present at the server as such a device. The thing manager then provides instances of other (mirrored) things to
- * the Android application.
+ * the Android application.<br>
+ * Note that most of the methods may only be called from a background thread, i.e., not from the Android UI Thread.
  * 
  * @author Philipp Keck
  */
@@ -132,7 +133,7 @@ public class ThingManager {
      * 
      * @return The behavior.
      */
-    private AndroidDeviceBehavior getPreviouslyRegisteredBehavior() {
+    private AndroidDeviceBehavior getRegisteredBehavior() {
         if (behavior == null) {
             throw new IllegalStateException("ThingManager has not been initialized!");
         }
@@ -249,7 +250,7 @@ public class ThingManager {
      *             When the thing could not be found anymore on the server.
      */
     public void updateThingState(Thing thing) throws IOException, NotFoundException {
-        getPreviouslyRegisteredBehavior().updateThingState(thing);
+        getRegisteredBehavior().updateThingState(thing);
     }
 
     /**
@@ -281,7 +282,7 @@ public class ThingManager {
             currentTokens.put(token, Boolean.TRUE);
         }
         if (wasFirstToken) {
-            getPreviouslyRegisteredBehavior().startMonitoring(thing);
+            getRegisteredBehavior().startMonitoring(thing);
             if (wasFirstMonitoredThing) {
                 startPolling();
             }
@@ -317,7 +318,7 @@ public class ThingManager {
             if (registeredMonitors.size() == 0) {
                 stopPolling();
             }
-            getPreviouslyRegisteredBehavior().stopMonitoring(thing);
+            getRegisteredBehavior().stopMonitoring(thing);
         }
     }
 
@@ -349,7 +350,7 @@ public class ThingManager {
         if (registeredMonitors.size() == 0) {
             stopPolling();
         }
-        getPreviouslyRegisteredBehavior().stopMonitoring(wasLastFor);
+        getRegisteredBehavior().stopMonitoring(wasLastFor);
     }
 
     /**
@@ -376,7 +377,7 @@ public class ThingManager {
      */
     private void doPollingRequest() {
         try {
-            getPreviouslyRegisteredBehavior().fetchUpdates();
+            getRegisteredBehavior().fetchUpdates();
         } catch (IOException e) {
             Log.e(TAG, "Error during polling", e);
         } catch (NotFoundException e) {

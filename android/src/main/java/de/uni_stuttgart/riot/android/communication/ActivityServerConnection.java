@@ -10,7 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * A helper class for asynchronous requests to the server that are bound to an activity.
+ * A helper class for asynchronous requests to the server that are bound to an activity and return a result.
  * 
  * @author Philipp Keck
  *
