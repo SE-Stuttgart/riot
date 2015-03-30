@@ -241,7 +241,7 @@ public abstract class UserService extends BaseResource<UMUser> {
     /**
      * Returns the current user online state (online or offline).
      * 
-     * @param userID
+     * @param userID The user ID.
      * @return online if the user currently is logged in, offline otherwise.
      * @throws UserManagementException
      *             Thrown when an internal error occurs. The exception will automatically be mapped to a proper response through the
