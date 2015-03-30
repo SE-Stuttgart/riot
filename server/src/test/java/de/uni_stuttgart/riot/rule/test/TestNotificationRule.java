@@ -29,7 +29,7 @@ public class TestNotificationRule extends Rule {
     private ThingParameter<TestThing> thing;
 
     private final RuleNotification testWarning = newNotification("testWarning");
-    private final PropertyListener<Integer> listener = onPropertyChange(this::checkLimit);
+    private final PropertyListener<Integer> listener = onPropertyChangeProperty(this::checkLimit);
 
     @Override
     protected void initialize() throws ResolveReferenceException, IllegalRuleParameterException {

@@ -27,7 +27,7 @@ public class TestAdditionRule extends Rule {
     @Parameter(ui = UIHint.ThingDropDown.class, requires = ThingPermission.CONTROL)
     private ThingParameter<TestThing> outputThing;
 
-    private final PropertyListener<Integer> listener = onPropertyChange(this::recalculate);
+    private final PropertyListener<Integer> listener = onPropertyChangeParameterized(this::recalculate);
 
     @Override
     protected void initialize() throws ResolveReferenceException {

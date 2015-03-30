@@ -432,7 +432,7 @@ public abstract class Rule {
      * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
      *         {@link #onPropertyChange(ExceptionHandledRunnable)} a second time.
      */
-    protected <V> PropertyListener<V> onPropertyChange(ExceptionHandledParameterizedRunnable<V> runnable) {
+    protected <V> PropertyListener<V> onPropertyChangeParameterized(ExceptionHandledParameterizedRunnable<V> runnable) {
         return (event, instance) -> {
             try {
                 runnable.run(instance.getNewValue());
@@ -452,7 +452,7 @@ public abstract class Rule {
      * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
      *         {@link #onPropertyChange(ExceptionHandledPropertyListener)} a second time.
      */
-    protected <V> PropertyListener<V> onPropertyChange(ExceptionHandledPropertyListener<V> listener) {
+    protected <V> PropertyListener<V> onPropertyChangeProperty(ExceptionHandledPropertyListener<V> listener) {
         return (event, instance) -> {
             try {
                 listener.onChange(instance.getOldValue(), instance.getNewValue());
