@@ -1,29 +1,23 @@
 <li class="alerts dropdown">
   <a class="dropdown-toggle" href="">
     <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+    <span ng-if="notifications.length > 0" style="background-color: red" class="badge">{{ notifications.length }}</span>
   </a>
   <ul class="dropdown-menu">
-    <li>
-      <a href="">
+    <li ng-repeat-start="notification in notifications | limitTo:5:0">
+      <a ui-sref="app.things.detail({thingid: notification.thingID})">
         <div>
-          <i class="fa fa-comment fa-fw"></i> New Comment
-          <span class="pull-right text-muted small">4 minutes ago</span>
+          <i notification-icon severity="notification.severity"></i> {{ 'notification.' + notification.titleKey | i18n }}
+          <span class="pull-right text-muted small">{{notification.time | date:'dd.MM.yyyy HH:mm:ss'}}</span>
         </div>
       </a>
     </li>
-    <li class="divider"></li>
+    <li ng-repeat-end class="divider"></li>
+    <li ng-if="notifications.length == 0">{{ 'notification.noUnreadNotifications' | i18n }}</li>
+    <li ng-if="notifications.length == 0" class="divider"></li>
     <li>
-      <a href="">
-        <div>
-          <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-          <span class="pull-right text-muted small">12 minutes ago</span>
-        </div>
-      </a>
-    </li>
-    <li class="divider"></li>
-    <li>
-      <a class="text-center" href="">
-        <strong>See All Alerts</strong>
+      <a class="text-center" ui-sref="app.notifications">
+        <strong>{{ 'common.showMore' | i18n }}</strong>
         <i class="fa fa-angle-right"></i>
       </a>
     </li>

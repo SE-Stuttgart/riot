@@ -19,11 +19,7 @@
       <h2 class="activity-header">{{ 'notification.notifications' | i18n }}</h2>
       <div ng-repeat="notification in log.notifications" class="row dashboard-activity-item" ng-class="{undismissed: !notification.dismissed}">
         <div class="col-xs-9 dashboard-activity-text">
-          <i ng-if="notification.severity == 'INFO' || notification.severity == 'INFO_NOW'" class="fa fa-info-circle"></i>
-          <i ng-if="notification.severity == 'MAINTENANCE'" class="fa fa-minus-circle"></i>
-          <i ng-if="notification.severity == 'WARNING'" class="fa fa-exclamation-circle"></i>
-          <i ng-if="notification.severity == 'WARNING_IMPORTANT'" style="color: red" class="fa fa-exclamation-circle"></i>
-          <i ng-if="notification.severity == 'ERROR'" style="color: red" class="fa fa-times-circle"></i>
+          <i notification-icon severity="notification.severity"></i> 
           <span class="dashboard-activity-important">{{ 'notification.' + notification.titleKey | i18n }}</span>
           {{ 'notification.' + notification.messageKey | i18n:{'thing.id': notification.thingID, 'thing.name': getThingName(notification.thingID)} }}
         </div>

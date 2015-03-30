@@ -37,6 +37,7 @@ angular.module('riot').factory('Socket',function($rootScope, $websocket, $log, $
     } else {
       //remove the notification from the array, because it is already dismissed
       notifications = notifications.splice(getNotificationIndexInArray(notifications, notification), 1);
+      $rootScope.$broadcast('Socket:notificationDismissed', notification);
     }  
     $rootScope.$broadcast('Socket:notification', notifications);
   }

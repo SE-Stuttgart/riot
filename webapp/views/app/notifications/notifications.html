@@ -13,11 +13,7 @@
         <table class="table">
           <tr ng-repeat="notification in notifications" ng-class="{info: !notification.dismissed}" ng-mouseover="dismissNotification(notification)">
             <td style="width: 20px">
-              <i ng-if="notification.severity == 'INFO' || notification.severity == 'INFO_NOW'" class="fa fa-info-circle"></i>
-              <i ng-if="notification.severity == 'MAINTENANCE'" class="fa fa-minus-circle"></i>
-              <i ng-if="notification.severity == 'WARNING'" class="fa fa-exclamation-circle"></i>
-              <i ng-if="notification.severity == 'WARNING_IMPORTANT'" style="color: red" class="fa fa-exclamation-circle"></i>
-              <i ng-if="notification.severity == 'ERROR'" style="color: red" class="fa fa-times-circle"></i>
+              <i notification-icon severity="notification.severity"></i> 
             </td>
             <td><strong>{{ 'notification.' + notification.titleKey | i18n }}</strong></td>
             <td>{{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}</td>
