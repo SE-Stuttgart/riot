@@ -5,8 +5,7 @@ angular.module('riot').config(function($stateProvider) {
   });
 });
 
-angular.module('riot').controller('DashboardCtrl', function($scope, Restangular, Thing, Calendar, Notification) {
-  var fetchedThingIds = [];
+angular.module('riot').controller('DashboardCtrl', function($scope, Socket, Restangular, Thing, Calendar, Notification) {
   var socketNotifications = [];
   
   $scope.items = {};
@@ -17,7 +16,6 @@ angular.module('riot').controller('DashboardCtrl', function($scope, Restangular,
   $scope.things = [];
   
   Thing.getList({limit: 5, offset: 0}).then(function(things) {
-    $scope.things = things;
     angular.forEach(things, function(thing) {
       var itemThing = {};
       itemThing.name = thing.metainfo.name;
@@ -25,8 +23,6 @@ angular.module('riot').controller('DashboardCtrl', function($scope, Restangular,
       itemThing.stateParams = {thingid: thing.id};
       itemThing.type = null;
       $scope.items.things.push(itemThing);
-      
-      fetchedThingIds.push(thing.id);
     });
   });
   
@@ -43,15 +39,6 @@ angular.module('riot').controller('DashboardCtrl', function($scope, Restangular,
   
   Notification.one('all').get({limit: 10, offset: 0}).then(function(notifications) {
     $scope.log.notifications = notifications;
-    
-    angular.forEach(notifications, function(notification) {
-      if(!_.contains(fetchedThingIds, notification.thingID)) {
-        fetchedThingIds.push(notification.thingID);
-        Thing.one(notification.thingID).get().then(function(thing) {
-          $scope.things.push(thing);
-        });
-      }
-    });
   });
   
   $scope.$on('Socket:notification', function(event, undismissedNotifications) {
@@ -66,16 +53,6 @@ angular.module('riot').controller('DashboardCtrl', function($scope, Restangular,
       }
     });    
   });
-  
-  $scope.getThingName = function(thingId) {
-    var thingName = "";
-    angular.forEach($scope.things, function(thing) {
-      if(thing.id === thingId) {
-        thingName = thing.metainfo.name;
-      }
-    });
-    return thingName;
-  };
   
   $scope.dismissNotification = function(notification) {
     if(!notification.dismissed) {

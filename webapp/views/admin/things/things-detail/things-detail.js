@@ -55,8 +55,6 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
           }
         }, $scope.thingState);
       });
-      console.log($scope.thingState);
-
     });
   };
 

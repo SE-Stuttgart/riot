@@ -19,17 +19,17 @@
               <strong>{{ 'notification.' + notification.titleKey | i18n }}</strong>
             </td>
             <td>
-              {{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}
+              {{ 'notification.' + notification.messageKey | i18n:notification.arguments }}
             </td>
-            <td>
-              <a ui-sref="app.things.detail({thingid: notification.thingID})">{{ things[notification.thingID].metainfo.name }}</a>
+            <td ng-if="notification.arguments['thing.name'] !== undefined">
+              <a ui-sref="app.things.detail({thingid: notification.thingID})">{{ notification.arguments['thing.name'] }}</a>
             </td>
             <td>
               {{ notification.time | date:'dd.MM.yyyy HH:mm:ss'}}
             </td>
           </tr>
         </table>
-        <span ng-show="loadMore">Loading...</span>
+        <span ng-show="loadMore"><i class="fa fa-spinner fa-spin"></i></span>
       </div>
     </div>
   </div>

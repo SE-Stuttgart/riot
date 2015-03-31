@@ -182,7 +182,7 @@ public class Notification extends Storable implements Cloneable {
     }
 
     private void resolveStrings() {
-        StrSubstitutor substitutor = new StrSubstitutor(arguments);
+        StrSubstitutor substitutor = new StrSubstitutor(arguments, "{", "}");
         resolvedTitle = substitutor.replace(NotificationMessages.INSTANCE.getString(titleKey));
         resolvedMessage = substitutor.replace(NotificationMessages.INSTANCE.getString(messageKey));
     }
@@ -213,8 +213,9 @@ public class Notification extends Storable implements Cloneable {
         notification.titleKey = notificationEvent.getTitleKey();
         notification.messageKey = notificationEvent.getMessageKey();
         notification.time = eventInstance.getTime();
-        notification.thingID = eventInstance.getThingId();
-        if (notification.thingID != notificationEvent.getThing().getId()) {
+        notification.thingID = notificationEvent.getThing().getId();
+        notification.arguments.put("thing.name", notificationEvent.getThing().getName());
+        if (notification.thingID != eventInstance.getThingId()) {
             throw new IllegalArgumentException("notificationEvent and eventInstance belong to different Things!");
         }
 

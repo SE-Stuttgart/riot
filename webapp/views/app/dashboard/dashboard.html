@@ -22,7 +22,7 @@
           <td class="dashboard-activity-text">
             <i notification-icon severity="notification.severity"></i> 
             <span class="dashboard-activity-important">{{ 'notification.' + notification.titleKey | i18n }}</span>
-            {{ 'notification.' + notification.messageKey | i18n:{'thing.id': notification.thingID, 'thing.name': getThingName(notification.thingID)} }}
+            {{ 'notification.' + notification.messageKey | i18n:notification.arguments }}
           </td>
           <td class="dashboard-activity-time">
             <span class="pull-right">{{ notification.time | date:'dd.MM HH:mm:ss' }}</span>
@@ -36,7 +36,7 @@
         </tr>
       </table>
 
-      <button class="btn btn-default margin-top-10" ng-if="log.notifications.length">
+      <button class="btn btn-default margin-top-10" ng-if="log.notifications.length" ui-sref="app.notifications">
         {{ 'common.showMore' | i18n }}
       </button>
     </div>

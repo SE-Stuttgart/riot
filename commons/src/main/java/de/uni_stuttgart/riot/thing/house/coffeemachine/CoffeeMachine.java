@@ -40,7 +40,7 @@ public class CoffeeMachine extends Thing {
     private final Property<Double> waterTank = newProperty("waterTank", Double.class, WATER_TANK_SIZE, UIHint.fractionalSlider(0, WATER_TANK_SIZE));
 
     /**
-     * An event signalling that there is only little or no water left.
+     * An event signaling that there is only little or no water left.
      */
     private final NotificationEvent<OutOfWater> outOfWater = newNotification("outOfWater", OutOfWater.class, NotificationSeverity.WARNING);
 

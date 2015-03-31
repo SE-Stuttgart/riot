@@ -7,7 +7,6 @@ angular.module('riot').config(function($stateProvider, $urlRouterProvider) {
 
 angular.module('riot').controller('NotificationsCtrl',function($scope, Thing, Notification, Socket, Restangular){
     
-  var thingIdsToFetch = []; //hold the IDs of the things, which are already getting fetched. Avoids unnecessary fetching of things
   var pagination = {};
   var socketNotifications = [];
   
@@ -30,7 +29,6 @@ angular.module('riot').controller('NotificationsCtrl',function($scope, Thing, No
    $scope.loadMore = true;
     Notification.one('all').get({limit: pagination.limit, offset: pagination.offset}).then(function(notifications) {
       $scope.notifications.push.apply($scope.notifications, notifications);
-      fetchThings();
       pagination.offset = pagination.offset + pagination.limit;
       $scope.loadMore = false;
     }, function() {
@@ -51,15 +49,4 @@ angular.module('riot').controller('NotificationsCtrl',function($scope, Thing, No
       notification.put();
     }
   };
-  
-  function fetchThings() {
-    angular.forEach($scope.notifications, function(notification) {
-      if(thingIdsToFetch.indexOf(notification.thingID) === -1) {
-        thingIdsToFetch.push(notification.thingID);
-        Thing.one(notification.thingID).get().then(function(thing) {
-          $scope.things[notification.thingID] = thing;
-        });
-      }
-    });
-  }
 });
