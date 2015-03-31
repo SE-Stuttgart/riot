@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  */
 public class WaterMeterSimulator extends MeterSimulator {
 
+    private static final int VARIATION = 5;
     private static final int AVERAGE_CONSUMPTION = 5;
 
     /**
@@ -26,7 +27,7 @@ public class WaterMeterSimulator extends MeterSimulator {
 
     @Override
     protected double getConsumptionVariation() {
-        return 5;
+        return VARIATION;
     }
 
 }

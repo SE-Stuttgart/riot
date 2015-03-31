@@ -18,7 +18,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
- * Rule that lets the "house" wakeup whenn you do.
+ * Rule that lets the "house" wake up when you do.
  *
  */
 public class GoodMorningRule extends Rule {
@@ -69,13 +69,13 @@ public class GoodMorningRule extends Rule {
     }
 
     private void makeCoffee() throws ResolveReferenceException {
-        CoffeeMachine coffeeMachine = this.coffeeMachine.getTarget();
-        coffeeMachine.getPressStartAction().fire(new ActionInstance(coffeeMachine.getPressStartAction()));
+        CoffeeMachine cM = this.coffeeMachine.getTarget();
+        cM.getPressStartAction().fire(new ActionInstance(cM.getPressStartAction()));
     }
 
     private void trunLightOn() throws ResolveReferenceException {
-        DimmableLight light = this.dimmableLight.getTarget();
-        light.getAdjustDimm().fire(new AdjustDimmLevel(light.getAdjustDimm(), 0.0));
+        DimmableLight dL = this.dimmableLight.getTarget();
+        dL.getAdjustDimm().fire(new AdjustDimmLevel(dL.getAdjustDimm(), 0.0));
     }
 
     private void openRollerShutter() throws ResolveReferenceException {

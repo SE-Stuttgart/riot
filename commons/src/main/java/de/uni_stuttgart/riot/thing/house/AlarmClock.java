@@ -26,7 +26,7 @@ public class AlarmClock extends Thing {
 
     private final WritableProperty<Boolean> alarm = newWritableProperty("alarm", Boolean.class, false, UIHint.toggleButton());
 
-    private Event<EventInstance> alarmEvent = newEvent("alarm");
+    private final Event<EventInstance> alarmEvent = newEvent("alarm");
     
     /**
      * Constructor.
@@ -101,17 +101,11 @@ public class AlarmClock extends Thing {
     }
 
     /**
+     * Getter for the alarm event.
      * @return the alarmEvent
      */
     public Event<EventInstance> getAlarmEvent() {
         return alarmEvent;
-    }
-
-    /**
-     * @param alarmEvent the alarmEvent to set
-     */
-    public void setAlarmEvent(Event<EventInstance> alarmEvent) {
-        this.alarmEvent = alarmEvent;
     }
 
 }
