@@ -7,11 +7,7 @@ import de.uni_stuttgart.riot.server.commons.db.DAO;
 import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPermissionsException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 
 /**
  * Contains all logic regarding the permissions.
@@ -28,14 +24,14 @@ public class PermissionLogic {
      * 
      * @param permission
      *            The permission to be added.
-     * @throws AddPermissionException
+     * @throws UserManagementException
      *             When adding the permission failed.
      */
-    public void addPermission(Permission permission) throws AddPermissionException {
+    public void addPermission(Permission permission) throws UserManagementException {
         try {
             dao.insert(permission);
         } catch (Exception e) {
-            throw new AddPermissionException(e);
+            throw new UserManagementException("Couldn't add permission", e);
         }
     }
 
@@ -44,14 +40,14 @@ public class PermissionLogic {
      * 
      * @param id
      *            The id of the permission to remove
-     * @throws DeletePermissionException
+     * @throws UserManagementException
      *             When deleting the permission failed.
      */
-    public void deletePermission(Long id) throws DeletePermissionException {
+    public void deletePermission(Long id) throws UserManagementException {
         try {
             dao.delete(dao.findBy(id));
         } catch (Exception e) {
-            throw new DeletePermissionException(e);
+            throw new UserManagementException("Couldn't delete permission", e);
         }
     }
 
@@ -62,14 +58,14 @@ public class PermissionLogic {
      *            The id of the permission to change
      * @param permission
      *            The new content of the permission
-     * @throws UpdatePermissionException
+     * @throws UserManagementException
      *             When updating the permission failed.
      */
-    public void updatePermission(Long id, Permission permission) throws UpdatePermissionException {
+    public void updatePermission(Long id, Permission permission) throws UserManagementException {
         try {
             dao.update(new Permission(id, permission.getPermissionValue()));
         } catch (Exception e) {
-            throw new UpdatePermissionException(e);
+            throw new UserManagementException("Couldn't update permission", e);
         }
     }
 
@@ -79,14 +75,14 @@ public class PermissionLogic {
      * @param id
      *            The id of the permission to get
      * @return The retrieved permission
-     * @throws GetPermissionException
+     * @throws UserManagementException
      *             When the permission could not be retrieved.
      */
-    public Permission getPermission(Long id) throws GetPermissionException {
+    public Permission getPermission(Long id) throws UserManagementException {
         try {
             return dao.findBy(id);
         } catch (Exception e) {
-            throw new GetPermissionException(e);
+            throw new UserManagementException("Couldn't get permission", e);
         }
     }
 
@@ -96,14 +92,14 @@ public class PermissionLogic {
      * @param permissionValue
      *            the permission value
      * @return The retrieved permission
-     * @throws GetPermissionException
+     * @throws UserManagementException
      *             When the permission could not be retrieved.
      */
-    public Permission getPermission(String permissionValue) throws GetPermissionException {
+    public Permission getPermission(String permissionValue) throws UserManagementException {
         try {
             return dao.findByUniqueField(new SearchParameter(SearchFields.PERMISSIONVALUE, permissionValue));
         } catch (Exception e) {
-            throw new GetPermissionException(e);
+            throw new UserManagementException("Couldn't get permission", e);
         }
     }
 
@@ -111,14 +107,14 @@ public class PermissionLogic {
      * Get all existing permissions.
      * 
      * @return All existing permissions in a collection
-     * @throws GetAllPermissionsException
+     * @throws UserManagementException
      *             When retrieving all per missions failed.
      */
-    public Collection<Permission> getAllPermissions() throws GetAllPermissionsException {
+    public Collection<Permission> getAllPermissions() throws UserManagementException {
         try {
             return dao.findAll();
         } catch (Exception e) {
-            throw new GetAllPermissionsException(e);
+            throw new UserManagementException("Couldn't get all permissions", e);
         }
     }
 }

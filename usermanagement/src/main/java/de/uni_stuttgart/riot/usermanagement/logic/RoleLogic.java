@@ -15,14 +15,7 @@ import de.uni_stuttgart.riot.usermanagement.data.dao.impl.PermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RolePermissionSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.RolePermission;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.DeleteRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetAllRolesException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 
 /**
  * Contains all logic regarding the roles.
@@ -39,18 +32,18 @@ public class RoleLogic {
      * 
      * @param role
      *            The role to add
-     * @throws AddRoleException
+     * @throws UserManagementException
      *             When adding the role fails.
      */
-    public void addRole(Role role) throws AddRoleException {
+    public void addRole(Role role) throws UserManagementException {
         try {
             if (StringUtils.isEmpty(role.getRoleName())) {
-                throw new AddRoleException("You have to specify a role name");
+                throw new UserManagementException("You have to specify a role name");
             }
 
             dao.insert(role);
         } catch (Exception e) {
-            throw new AddRoleException(e);
+            throw new UserManagementException("Couldn't add role", e);
         }
     }
 
@@ -59,14 +52,14 @@ public class RoleLogic {
      * 
      * @param id
      *            The id of the role to delete
-     * @throws DeleteRoleException
+     * @throws UserManagementException
      *             When deleting the role fails.
      */
-    public void deleteRole(Long id) throws DeleteRoleException {
+    public void deleteRole(Long id) throws UserManagementException {
         try {
             dao.delete(dao.findBy(id));
         } catch (Exception e) {
-            throw new DeleteRoleException(e);
+            throw new UserManagementException("Couldn't delete role", e);
         }
     }
 
@@ -75,18 +68,18 @@ public class RoleLogic {
      * 
      * @param role
      *            The content of the role to update
-     * @throws UpdateRoleException
+     * @throws UserManagementException
      *             When updating the role fails.
      */
-    public void updateRole(Role role) throws UpdateRoleException {
+    public void updateRole(Role role) throws UserManagementException {
         try {
             if (StringUtils.isEmpty(role.getRoleName())) {
-                throw new UpdateRoleException("You have to specify a role name");
+                throw new UserManagementException("You have to specify a role name");
             }
 
             dao.update(role);
         } catch (Exception e) {
-            throw new UpdateRoleException(e);
+            throw new UserManagementException("Couldn't update role", e);
         }
     }
 
@@ -96,14 +89,14 @@ public class RoleLogic {
      * @param id
      *            The id of the role to retrieve
      * @return Retrieved role
-     * @throws GetRoleException
+     * @throws UserManagementException
      *             When getting the role fails.
      */
-    public Role getRole(Long id) throws GetRoleException {
+    public Role getRole(Long id) throws UserManagementException {
         try {
             return dao.findBy(id);
         } catch (Exception e) {
-            throw new GetRoleException(e);
+            throw new UserManagementException("Couldn't get role", e);
         }
     }
 
@@ -111,14 +104,14 @@ public class RoleLogic {
      * Retrieve all existing roles.
      * 
      * @return Collection with all roles
-     * @throws GetAllRolesException
+     * @throws UserManagementException
      *             When getting the roles fails.
      */
-    public Collection<Role> getAllRoles() throws GetAllRolesException {
+    public Collection<Role> getAllRoles() throws UserManagementException {
         try {
             return dao.findAll();
         } catch (Exception e) {
-            throw new GetAllRolesException(e);
+            throw new UserManagementException("Couldn't get all roles", e);
         }
     }
 
@@ -128,12 +121,12 @@ public class RoleLogic {
      * @param roleId
      *            The id of the role.
      * @return Collection with permissions.
-     * @throws GetPermissionsFromRoleException
+     * @throws UserManagementException
      *             When getting the permissions fails.
      */
-    public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws GetPermissionsFromRoleException {
+    public Collection<Permission> getAllPermissionsFromRole(Long roleId) throws UserManagementException {
         if (roleId == null) {
-            throw new GetPermissionsFromRoleException("roleId must not be null!");
+            throw new UserManagementException("roleId must not be null!");
         }
         try {
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
@@ -153,7 +146,7 @@ public class RoleLogic {
             }
             return permissions;
         } catch (Exception e) {
-            throw new GetPermissionsFromRoleException(e);
+            throw new UserManagementException("Couldn't get all permissions from role", e);
         }
     }
 
@@ -164,16 +157,16 @@ public class RoleLogic {
      *            The id of the role
      * @param permissionId
      *            The id of the permission
-     * @throws AddPermissionToRoleException
+     * @throws UserManagementException
      *             When adding the permissions fails.
      */
-    public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
+    public void addPermissionToRole(Long roleId, Long permissionId) throws UserManagementException {
         try {
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
             RolePermission rp = new RolePermission(roleId, permissionId);
             rolePermissionDao.insert(rp);
         } catch (Exception e) {
-            throw new AddPermissionToRoleException(e);
+            throw new UserManagementException("Couldn't add permission to role", e);
         }
     }
 
@@ -184,13 +177,13 @@ public class RoleLogic {
      *            The id of the role.
      * @param permissionId
      *            The id of the permission.
-     * @throws RemovePermissionFromRoleException
+     * @throws UserManagementException
      *             When removing the permission fails.
      */
-    public void removePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
+    public void removePermissionFromRole(Long roleId, Long permissionId) throws UserManagementException {
         try {
             if (roleId == null || permissionId == null) {
-                throw new RemovePermissionFromRoleException("Role id and permission id can not be null");
+                throw new UserManagementException("Role id and permission id can not be null");
             }
 
             DAO<RolePermission> rolePermissionDao = new RolePermissionSqlQueryDAO();
@@ -207,13 +200,13 @@ public class RoleLogic {
             if (i.hasNext()) {
                 rp = i.next();
             } else {
-                throw new RemovePermissionFromRoleException("The user with the id " + roleId + " does not have the permission with the id " + permissionId);
+                throw new UserManagementException("The user with the id " + roleId + " does not have the permission with the id " + permissionId);
             }
 
             // remove the permission
             rolePermissionDao.delete(rp);
         } catch (Exception e) {
-            throw new RemovePermissionFromRoleException(e);
+            throw new UserManagementException("Couldn't remove permission from role", e);
         }
     }
 }

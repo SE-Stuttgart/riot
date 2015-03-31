@@ -4,47 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
-import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.TokenLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetAllPermissionsException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.DeleteRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetAllRolesException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetActiveTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
 
 /**
  * This class is the only point which should be used to access the user management.
@@ -90,10 +62,10 @@ public class UserManagementFacade {
      * @param password
      *            Password of the user. Is used for authentication.
      * @return Contains the generated bearer and refresh token
-     * @throws LoginException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Token login(String username, String password) throws LoginException {
+    public Token login(String username, String password) throws UserManagementException {
         return authLogic.login(username, password);
     }
 
@@ -103,12 +75,10 @@ public class UserManagementFacade {
      * @param refreshToken
      *            The refresh token used for generating the new tokens
      * @return Contains the generated bearer and refresh token
-     * @throws InvalidTokenException
-     *             When the provided token is invalid.
-     * @throws RefreshException
-     *             When another, rather unexpected error occurs.
+     * @throws UserManagementException
+     *             Thrown if any errors occur
      */
-    public Token refreshToken(String refreshToken) throws RefreshException, InvalidTokenException {
+    public Token refreshToken(String refreshToken) throws UserManagementException {
         return authLogic.refreshToken(refreshToken);
     }
 
@@ -117,10 +87,10 @@ public class UserManagementFacade {
      * 
      * @param currentBearerToken
      *            The current bearer token used to authenticate the user. Will no longer be valid after calling this method.
-     * @throws LogoutException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void logout(String currentBearerToken) throws LogoutException {
+    public void logout(String currentBearerToken) throws UserManagementException {
         authLogic.logout(currentBearerToken);
     }
 
@@ -134,10 +104,10 @@ public class UserManagementFacade {
      * @param clearTextPassword
      *            The password of the user as clear text,
      * @return The added user,
-     * @throws AddUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public User addUser(String username, String email, String clearTextPassword) throws AddUserException {
+    public User addUser(String username, String email, String clearTextPassword) throws UserManagementException {
         return (User) userLogic.addUser(username, email, clearTextPassword);
     }
 
@@ -147,10 +117,10 @@ public class UserManagementFacade {
      * 
      * @param id
      *            Id of the user
-     * @throws DeleteUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void deleteUser(Long id) throws DeleteUserException {
+    public void deleteUser(Long id) throws UserManagementException {
         userLogic.deleteUser(id);
     }
 
@@ -161,14 +131,14 @@ public class UserManagementFacade {
      *            New user data.
      * @param clearTextPassword
      *            The password of the user as clear text. If the password should not be updated use null.
-     * @throws UpdateUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void updateUser(User user, String clearTextPassword) throws UpdateUserException {
+    public void updateUser(User user, String clearTextPassword) throws UserManagementException {
         if (user instanceof UMUser) {
             userLogic.updateUser((UMUser) user, clearTextPassword);
         } else {
-            throw new UpdateUserException("The user is not an instance of a UMUser");
+            throw new UserManagementException("The user is not an instance of a UMUser");
         }
     }
 
@@ -178,10 +148,10 @@ public class UserManagementFacade {
      * @param id
      *            Id of the user to get.
      * @return User with the given id.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public User getUser(Long id) throws GetUserException {
+    public User getUser(Long id) throws UserManagementException {
         return (User) userLogic.getUser(id);
     }
 
@@ -191,10 +161,10 @@ public class UserManagementFacade {
      * @param username
      *            the username
      * @return User with the given id.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public User getUser(String username) throws GetUserException {
+    public User getUser(String username) throws UserManagementException {
         return (User) userLogic.getUser(username);
     }
 
@@ -204,10 +174,10 @@ public class UserManagementFacade {
      * @param token
      *            The token of the user.
      * @return Returns user.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When getting the user fails.
      */
-    public User getUser(Token token) throws GetUserException {
+    public User getUser(Token token) throws UserManagementException {
         return (User) userLogic.getUser(token);
     }
 
@@ -215,10 +185,10 @@ public class UserManagementFacade {
      * Get all existing users.
      * 
      * @return All users in a List.
-     * @throws GetAllUsersException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<User> getAllUsers() throws GetAllUsersException {
+    public Collection<User> getAllUsers() throws UserManagementException {
         ArrayList<User> users = new ArrayList<User>();
         users.addAll(userLogic.getAllUsers());
         return users;
@@ -230,10 +200,10 @@ public class UserManagementFacade {
      * @param id
      *            The id of the user to get roles from
      * @return A list with all roles of the given user
-     * @throws GetRolesFromUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
+    public Collection<Role> getAllRolesFromUser(Long id) throws UserManagementException {
         return userLogic.getAllRolesFromUser(id);
     }
 
@@ -244,10 +214,10 @@ public class UserManagementFacade {
      *            The id of the user.
      * @param roleId
      *            The id of the role.
-     * @throws AddRoleToUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
+    public void addRoleToUser(Long userId, Long roleId) throws UserManagementException {
         userLogic.addRoleToUser(userId, roleId);
     }
 
@@ -258,10 +228,10 @@ public class UserManagementFacade {
      *            The id of the user
      * @param idRole
      *            The id of the role to remove
-     * @throws RemoveRoleFromUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void removeRoleFromUser(Long idUser, Long idRole) throws RemoveRoleFromUserException {
+    public void removeRoleFromUser(Long idUser, Long idRole) throws UserManagementException {
         userLogic.removeRoleFromUser(idUser, idRole);
     }
 
@@ -271,10 +241,10 @@ public class UserManagementFacade {
      * @param id
      *            The id of the user to get permissions from
      * @return A list with all permissions of the given user
-     * @throws GetRolesFromUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<Permission> getAllPermissionsFromUser(Long id) throws GetRolesFromUserException {
+    public Collection<Permission> getAllPermissionsFromUser(Long id) throws UserManagementException {
         return userLogic.getAllPermissionsFromUser(id);
     }
 
@@ -285,10 +255,10 @@ public class UserManagementFacade {
      *            The id of the user.
      * @param permissionId
      *            The id of the permission.
-     * @throws AddRoleToUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void addPermissionToUser(Long userId, Long permissionId) throws AddRoleToUserException {
+    public void addPermissionToUser(Long userId, Long permissionId) throws UserManagementException {
         userLogic.addPermissionToUser(userId, permissionId);
     }
 
@@ -299,10 +269,10 @@ public class UserManagementFacade {
      *            The id of the user
      * @param permissionId
      *            The id of the permission to remove
-     * @throws RemoveRoleFromUserException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void removePermissionFromUser(Long idUser, Long permissionId) throws RemoveRoleFromUserException {
+    public void removePermissionFromUser(Long idUser, Long permissionId) throws UserManagementException {
         userLogic.removePermissionFromUser(idUser, permissionId);
     }
 
@@ -312,10 +282,10 @@ public class UserManagementFacade {
      * @param idUser
      *            The id of the user
      * @return All active tokens of the user.
-     * @throws GetActiveTokenException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<Token> getActiveTokensFromUser(Long idUser) throws GetActiveTokenException {
+    public Collection<Token> getActiveTokensFromUser(Long idUser) throws UserManagementException {
         return userLogic.getActiveTokensFromUser(idUser);
     }
 
@@ -325,10 +295,10 @@ public class UserManagementFacade {
      * @param token
      *            The token value.
      * @return Returns token.
-     * @throws GetTokenException
+     * @throws UserManagementException
      *             When getting the token fails.
      */
-    public Token getToken(String token) throws GetTokenException {
+    public Token getToken(String token) throws UserManagementException {
         return tokenLogic.getToken(token);
     }
 
@@ -337,10 +307,10 @@ public class UserManagementFacade {
      * 
      * @param permission
      *            The new permission
-     * @throws AddPermissionException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void addPermission(Permission permission) throws AddPermissionException {
+    public void addPermission(Permission permission) throws UserManagementException {
         permissionLogic.addPermission(permission);
     }
 
@@ -349,10 +319,10 @@ public class UserManagementFacade {
      * 
      * @param id
      *            The id of the permission to delete
-     * @throws DeletePermissionException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void deletePermission(Long id) throws DeletePermissionException {
+    public void deletePermission(Long id) throws UserManagementException {
         permissionLogic.deletePermission(id);
     }
 
@@ -363,10 +333,10 @@ public class UserManagementFacade {
      *            The id of the permission to update
      * @param permission
      *            The data of the new permission
-     * @throws UpdatePermissionException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void updatePermission(Long id, Permission permission) throws UpdatePermissionException {
+    public void updatePermission(Long id, Permission permission) throws UserManagementException {
         permissionLogic.updatePermission(id, permission);
     }
 
@@ -376,10 +346,10 @@ public class UserManagementFacade {
      * @param id
      *            The id of the permission to get
      * @return The permission.
-     * @throws GetPermissionException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Permission getPermission(Long id) throws GetPermissionException {
+    public Permission getPermission(Long id) throws UserManagementException {
         return permissionLogic.getPermission(id);
     }
 
@@ -387,10 +357,10 @@ public class UserManagementFacade {
      * Get all existing permissions.
      * 
      * @return All permissions in a list
-     * @throws GetAllPermissionsException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<Permission> getAllPermissions() throws GetAllPermissionsException {
+    public Collection<Permission> getAllPermissions() throws UserManagementException {
         return permissionLogic.getAllPermissions();
     }
 
@@ -399,10 +369,10 @@ public class UserManagementFacade {
      * 
      * @param role
      *            The role to add
-     * @throws AddRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void addRole(Role role) throws AddRoleException {
+    public void addRole(Role role) throws UserManagementException {
         roleLogic.addRole(role);
     }
 
@@ -411,10 +381,10 @@ public class UserManagementFacade {
      * 
      * @param id
      *            The id of the role to delete
-     * @throws DeleteRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void deleteRole(Long id) throws DeleteRoleException {
+    public void deleteRole(Long id) throws UserManagementException {
         roleLogic.deleteRole(id);
     }
 
@@ -423,10 +393,10 @@ public class UserManagementFacade {
      * 
      * @param role
      *            The new data for the role
-     * @throws UpdateRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void updateRole(Role role) throws UpdateRoleException {
+    public void updateRole(Role role) throws UserManagementException {
         roleLogic.updateRole(role);
     }
 
@@ -436,10 +406,10 @@ public class UserManagementFacade {
      * @param id
      *            The id of the role to get
      * @return The role
-     * @throws GetRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Role getRole(Long id) throws GetRoleException {
+    public Role getRole(Long id) throws UserManagementException {
         return roleLogic.getRole(id);
     }
 
@@ -447,10 +417,10 @@ public class UserManagementFacade {
      * Get all existing roles.
      * 
      * @return All existing roles in a list
-     * @throws GetAllRolesException
+     * @throws UserManagementException
      *             Thrown if any errors occur.
      */
-    public Collection<Role> getAllRoles() throws GetAllRolesException {
+    public Collection<Role> getAllRoles() throws UserManagementException {
         return roleLogic.getAllRoles();
     }
 
@@ -460,10 +430,10 @@ public class UserManagementFacade {
      * @param roleId
      *            The id of the role
      * @return All permissions of the role.
-     * @throws GetPermissionsFromRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public Collection<Permission> getAllPermissionsOfRole(Long roleId) throws GetPermissionsFromRoleException {
+    public Collection<Permission> getAllPermissionsOfRole(Long roleId) throws UserManagementException {
         return roleLogic.getAllPermissionsFromRole(roleId);
     }
 
@@ -474,10 +444,10 @@ public class UserManagementFacade {
      *            The id of the role
      * @param permissionId
      *            The id of the permission, which should be added
-     * @throws AddPermissionToRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void addPermissionToRole(Long roleId, Long permissionId) throws AddPermissionToRoleException {
+    public void addPermissionToRole(Long roleId, Long permissionId) throws UserManagementException {
         roleLogic.addPermissionToRole(roleId, permissionId);
     }
 
@@ -488,12 +458,10 @@ public class UserManagementFacade {
      *            the user id
      * @param permission
      *            the permission
-     * @throws GetPermissionException
-     *             the get permission exception
-     * @throws DatasourceInsertException
-     *             the datasource insert exception
+     * @throws UserManagementException
+     *             Thrown if any errors occur
      */
-    public void addNewPermissionToUser(Long userId, Permission permission) throws GetPermissionException, DatasourceInsertException {
+    public void addNewPermissionToUser(Long userId, Permission permission) throws UserManagementException {
         userLogic.addNewPermissionToUser(userId, permission);
     }
 
@@ -504,10 +472,10 @@ public class UserManagementFacade {
      *            The id of the role
      * @param permissionId
      *            The id of the permission, which should be removed
-     * @throws RemovePermissionFromRoleException
+     * @throws UserManagementException
      *             Thrown if any errors occur
      */
-    public void deletePermissionFromRole(Long roleId, Long permissionId) throws RemovePermissionFromRoleException {
+    public void deletePermissionFromRole(Long roleId, Long permissionId) throws UserManagementException {
         roleLogic.removePermissionFromRole(roleId, permissionId);
     }
 
@@ -516,10 +484,10 @@ public class UserManagementFacade {
      * 
      * @param role
      *            The role.
-     * @throws AuthorizationException
+     * @throws UserManagementException
      *             If the role is not held.
      */
-    public void requiresRole(String role) throws AuthorizationException {
+    public void requiresRole(String role) throws UserManagementException {
         SecurityUtils.getSubject().checkRole(role);
     }
 
@@ -528,10 +496,10 @@ public class UserManagementFacade {
      * 
      * @param permission
      *            The permission.
-     * @throws AuthorizationException
+     * @throws UserManagementException
      *             If the permission is not held.
      */
-    public void requiresPermission(String permission) throws AuthorizationException {
+    public void requiresPermission(String permission) throws UserManagementException {
         SecurityUtils.getSubject().checkPermission(permission);
     }
 
@@ -549,7 +517,7 @@ public class UserManagementFacade {
 
         try {
             return tokenLogic.getUserIdFromToken(token.toString());
-        } catch (GetUserException e) {
+        } catch (UserManagementException e) {
             throw new UnauthenticatedException("Invalid token " + token);
         }
     }
@@ -559,10 +527,10 @@ public class UserManagementFacade {
      * logged in.
      * 
      * @return The user who is currently logged in.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When the user logged in does not exist anymore in the database.
      */
-    public User getCurrentUser() throws GetUserException {
+    public User getCurrentUser() throws UserManagementException {
         return getUser(getCurrentUserId());
     }
 

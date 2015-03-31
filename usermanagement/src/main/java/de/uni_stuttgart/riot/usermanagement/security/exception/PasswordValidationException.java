@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.usermanagement.security.exception;
 
-import de.uni_stuttgart.riot.usermanagement.exception.ErrorCodes;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 
 /**
@@ -21,16 +20,6 @@ public class PasswordValidationException extends UserManagementException {
      */
     public PasswordValidationException(String message) {
         super(message);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.uni_stuttgart.riot.usermanagement.exception.UserManagementException#getErrorCode()
-     */
-    @Override
-    public int getErrorCode() {
-        return ErrorCodes.PASSWORD_VALIDATION;
     }
 
 }

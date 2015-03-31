@@ -20,9 +20,7 @@ public class AuthorizationExceptionMapper implements ExceptionMapper<Authorizati
 
     @Override
     public Response toResponse(AuthorizationException exception) {
-        return Response.status(Status.FORBIDDEN)
-                       .entity("")
-                       .build();
+        return Response.status(Status.FORBIDDEN).entity("").build();
     }
 
 }

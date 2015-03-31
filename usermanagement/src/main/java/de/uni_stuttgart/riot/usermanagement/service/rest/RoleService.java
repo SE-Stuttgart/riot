@@ -21,7 +21,6 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.server.commons.rest.BaseResource;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.RoleSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 import de.uni_stuttgart.riot.usermanagement.service.rest.exception.UserManagementExceptionMapper;
 
@@ -103,7 +102,7 @@ public class RoleService extends BaseResource<Role> {
         return Response.ok().build();
     }
 
-    private Collection<Permission> getRolePermissions(Role role) throws GetPermissionsFromRoleException {
+    private Collection<Permission> getRolePermissions(Role role) throws UserManagementException {
         Collection<Permission> permissions = UserManagementFacade.getInstance().getAllPermissionsOfRole(role.getId());
         Collection<Permission> permissionsResult = new LinkedList<Permission>();
         for (Permission permission : permissions) {

@@ -5,8 +5,7 @@ import de.uni_stuttgart.riot.server.commons.db.SearchFields;
 import de.uni_stuttgart.riot.server.commons.db.SearchParameter;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.usermanagement.data.dao.impl.TokenSqlQueryDAO;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.token.GetTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 
 /**
  * Logic class for tokens.
@@ -21,14 +20,14 @@ public class TokenLogic {
      * @param token
      *            The token string.
      * @return The token instance.
-     * @throws GetTokenException
+     * @throws UserManagementException
      *             When retrieving the token failed.
      */
-    public Token getToken(String token) throws GetTokenException {
+    public Token getToken(String token) throws UserManagementException {
         try {
             return dao.findByUniqueField(new SearchParameter(SearchFields.TOKENVALUE, token));
         } catch (Exception e) {
-            throw new GetTokenException(e);
+            throw new UserManagementException("Couldn't get token", e);
         }
     }
 
@@ -38,14 +37,14 @@ public class TokenLogic {
      * @param token
      *            The String representation of the token.
      * @return The user ID.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When the token could not be found.
      */
-    public long getUserIdFromToken(String token) throws GetUserException {
+    public long getUserIdFromToken(String token) throws UserManagementException {
         try {
             return dao.getUserIdFromToken(token);
         } catch (DatasourceFindException e) {
-            throw new GetUserException(e);
+            throw new UserManagementException("Couldn't get user from token", e);
         }
     }
 }

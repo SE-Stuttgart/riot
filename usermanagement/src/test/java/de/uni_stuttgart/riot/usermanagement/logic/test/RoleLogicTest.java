@@ -9,14 +9,8 @@ import org.junit.Test;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Role;
 import de.uni_stuttgart.riot.commons.test.TestData;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.RoleLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddPermissionToRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.AddRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.DeleteRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetPermissionsFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.GetRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.RemovePermissionFromRoleException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.role.UpdateRoleException;
 import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 public class RoleLogicTest extends LogicTestBase {
@@ -36,13 +30,13 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(role, role2);
     }
 
-    @Test(expected = AddRoleException.class)
-    public void testAddRoleNull() throws AddRoleException {
+    @Test(expected = UserManagementException.class)
+    public void testAddRoleNull() throws UserManagementException {
         rl.addRole(null);
     }
 
-    @Test(expected = AddRoleException.class)
-    public void testAddRoleEmptyString() throws AddRoleException {
+    @Test(expected = UserManagementException.class)
+    public void testAddRoleEmptyString() throws UserManagementException {
         rl.addRole(new Role(""));
     }
 
@@ -50,19 +44,19 @@ public class RoleLogicTest extends LogicTestBase {
      * Delete role tests
      */
 
-    @Test(expected = GetRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testDeleteRoleValidId() throws Exception {
         rl.deleteRole(1L);
         rl.getRole(1L);
     }
 
-    @Test(expected = DeleteRoleException.class)
-    public void testDeleteRoleInvalidId() throws DeleteRoleException {
+    @Test(expected = UserManagementException.class)
+    public void testDeleteRoleInvalidId() throws UserManagementException {
         rl.deleteRole(42L);
     }
 
-    @Test(expected = DeleteRoleException.class)
-    public void testDeleteRoleNull() throws DeleteRoleException {
+    @Test(expected = UserManagementException.class)
+    public void testDeleteRoleNull() throws UserManagementException {
         rl.deleteRole(null);
     }
 
@@ -77,32 +71,32 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals("newRole", role.getRoleName());
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleInvalidIdAndValidRole() throws Exception {
         rl.updateRole(new Role(42L, "newRole"));
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleValidIdAndInvalidRole() throws Exception {
         rl.updateRole(new Role(1L, ""));
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleInvalidIdAndInvalidRole() throws Exception {
         rl.updateRole(new Role(42L, ""));
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleNull() throws Exception {
         rl.updateRole(new Role(null, null));
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleNullId() throws Exception {
         rl.updateRole(new Role(null, "test"));
     }
 
-    @Test(expected = UpdateRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testUpdateRoleNullRole() throws Exception {
         rl.updateRole(new Role(1L, null));
     }
@@ -118,12 +112,12 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(expect, role);
     }
 
-    @Test(expected = GetRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testGetRoleInvalid() throws Exception {
         rl.getRole(42L);
     }
 
-    @Test(expected = GetRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testGetRoleNull() throws Exception {
         rl.getRole(null);
     }
@@ -160,7 +154,7 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(0, rl.getAllPermissionsFromRole(42L).size());
     }
 
-    @Test(expected = GetPermissionsFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testGetAllPermissionsFromRoleNull() throws Exception {
         rl.getAllPermissionsFromRole(null);
     }
@@ -176,33 +170,33 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(2, allPermissionsFromRole.size());
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleDoubleEntry() throws Exception {
         rl.addPermissionToRole(1L, 2L);
         rl.addPermissionToRole(1L, 2L);
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleNull() throws Exception {
         rl.addPermissionToRole(null, null);
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleNullRoleId() throws Exception {
         rl.addPermissionToRole(1L, null);
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleNullPermissionId() throws Exception {
         rl.addPermissionToRole(null, 1L);
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleInvalidRoleId() throws Exception {
         rl.addPermissionToRole(42L, 1L);
     }
 
-    @Test(expected = AddPermissionToRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testAddPermissiontToRoleInvalidPermissionId() throws Exception {
         rl.addPermissionToRole(1L, 42L);
     }
@@ -217,35 +211,35 @@ public class RoleLogicTest extends LogicTestBase {
         assertEquals(0, rl.getAllPermissionsFromRole(1L).size());
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleInvalidRoleId() throws Exception {
         rl.removePermissionFromRole(42L, 1L);
         assertEquals(1, rl.getAllPermissionsFromRole(1L).size());
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleInvalidPermissionId() throws Exception {
         rl.removePermissionFromRole(1L, 42L);
         assertEquals(1, rl.getAllPermissionsFromRole(1L).size());
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleDoubleRemove() throws Exception {
         rl.removePermissionFromRole(1L, 1L);
         rl.removePermissionFromRole(1L, 1L);
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleNull() throws Exception {
         rl.removePermissionFromRole(null, null);
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleNullRoleId() throws Exception {
         rl.removePermissionFromRole(null, 1L);
     }
 
-    @Test(expected = RemovePermissionFromRoleException.class)
+    @Test(expected = UserManagementException.class)
     public void testRemovePermissionFromRoleNullPermissionId() throws Exception {
         rl.removePermissionFromRole(1L, null);
     }

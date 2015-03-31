@@ -25,17 +25,7 @@ import de.uni_stuttgart.riot.usermanagement.data.dao.impl.UserSqlQueryDAO;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserPermission;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UserRole;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddRoleToUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.AddUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.DeleteUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetActiveTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetAllUsersException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetRolesFromUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.RemoveRoleFromUserException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.UpdateUserException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.security.AuthenticationUtil;
 import de.uni_stuttgart.riot.usermanagement.security.PasswordValidator;
 
@@ -59,10 +49,10 @@ public class UserLogic {
      * @param email
      *            The mail of the user
      * @return The added user.
-     * @throws AddUserException
+     * @throws UserManagementException
      *             When adding the user failed.
      */
-    public UMUser addUser(String username, String email, String clearTextPassword) throws AddUserException {
+    public UMUser addUser(String username, String email, String clearTextPassword) throws UserManagementException {
         try {
             Validate.notEmpty(username, "username must not be empty");
             Validate.notEmpty(clearTextPassword, "clearTextPassword must not be empty");
@@ -76,11 +66,11 @@ public class UserLogic {
 
                 return user;
             } else {
-                throw new AddUserException("The password does not meet the requirements");
+                throw new UserManagementException("The password does not meet the requirements");
             }
 
         } catch (Exception e) {
-            throw new AddUserException(e);
+            throw new UserManagementException("Couldn't add a new user", e);
         }
     }
 
@@ -89,14 +79,14 @@ public class UserLogic {
      * 
      * @param id
      *            The id of the user.
-     * @throws DeleteUserException
+     * @throws UserManagementException
      *             Thrown if any error occurs.
      */
-    public void deleteUser(Long id) throws DeleteUserException {
+    public void deleteUser(Long id) throws UserManagementException {
         try {
             dao.delete(dao.findBy(id));
         } catch (Exception e) {
-            throw new DeleteUserException(e);
+            throw new UserManagementException("Couldn't delete user", e);
         }
     }
 
@@ -107,13 +97,13 @@ public class UserLogic {
      *            The new content of the user.
      * @param clearTextPassword
      *            The password of the user as clear text. If the password should not be updated use null.
-     * @throws UpdateUserException
+     * @throws UserManagementException
      *             When updating the user failed.
      */
-    public void updateUser(UMUser user, String clearTextPassword) throws UpdateUserException {
+    public void updateUser(UMUser user, String clearTextPassword) throws UserManagementException {
         try {
             if (!isUserValid(user)) {
-                throw new UpdateUserException("Username, password and password salt must not be empty or null");
+                throw new UserManagementException("Username, password and password salt must not be empty or null");
             }
 
             if (StringUtils.isNotEmpty(clearTextPassword)) {
@@ -122,13 +112,13 @@ public class UserLogic {
                     user.setLoginAttemptCount(0);
                     hashPassword(user, clearTextPassword);
                 } else {
-                    throw new AddUserException("The password does not meet the requirements");
+                    throw new UserManagementException("The password does not meet the requirements");
                 }
             }
 
             dao.update(user);
         } catch (Exception e) {
-            throw new UpdateUserException(e);
+            throw new UserManagementException("Couldn't update user", e);
         }
     }
 
@@ -138,14 +128,14 @@ public class UserLogic {
      * @param id
      *            The user's id.
      * @return The user.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When getting the user failed.
      */
-    public UMUser getUser(Long id) throws GetUserException {
+    public UMUser getUser(Long id) throws UserManagementException {
         try {
             return dao.findBy(id);
         } catch (Exception e) {
-            throw new GetUserException(e);
+            throw new UserManagementException("Couldn't get user", e);
         }
     }
 
@@ -155,16 +145,16 @@ public class UserLogic {
      * @param username
      *            Username of the user.
      * @return The user.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When getting the user failed.
      */
-    public UMUser getUser(String username) throws GetUserException {
+    public UMUser getUser(String username) throws UserManagementException {
 
         try {
             // search user by user name
             return dao.findByUniqueField(new SearchParameter(SearchFields.USERNAME, username));
         } catch (Exception e) {
-            throw new GetUserException(e);
+            throw new UserManagementException("Couldn't get user", e);
         }
     }
 
@@ -174,14 +164,14 @@ public class UserLogic {
      * @param token
      *            The token of the user.
      * @return Returns user.
-     * @throws GetUserException
+     * @throws UserManagementException
      *             When getting the user failed.
      */
-    public UMUser getUser(Token token) throws GetUserException {
+    public UMUser getUser(Token token) throws UserManagementException {
         try {
             return dao.findByUniqueField(new SearchParameter(SearchFields.TABLEPK, token.getUserID()));
         } catch (Exception e) {
-            throw new GetUserException(e);
+            throw new UserManagementException("Couldn't get user", e);
         }
     }
 
@@ -189,14 +179,14 @@ public class UserLogic {
      * Retrieve all existing users.
      * 
      * @return Collection containing all users.
-     * @throws GetAllUsersException
+     * @throws UserManagementException
      *             When getting the users failed.
      */
-    public Collection<UMUser> getAllUsers() throws GetAllUsersException {
+    public Collection<UMUser> getAllUsers() throws UserManagementException {
         try {
             return dao.findAll();
         } catch (Exception e) {
-            throw new GetAllUsersException(e);
+            throw new UserManagementException("Couldn't get all user", e);
         }
     }
 
@@ -206,12 +196,12 @@ public class UserLogic {
      * @param id
      *            The id of the user
      * @return Collection with roles
-     * @throws GetRolesFromUserException
+     * @throws UserManagementException
      *             When getting the roles failed.
      */
-    public Collection<Role> getAllRolesFromUser(Long id) throws GetRolesFromUserException {
+    public Collection<Role> getAllRolesFromUser(Long id) throws UserManagementException {
         if (id == null) {
-            throw new GetRolesFromUserException("The id must not be null");
+            throw new UserManagementException("The id must not be null");
         }
 
         try {
@@ -233,7 +223,7 @@ public class UserLogic {
 
             return roles;
         } catch (Exception e) {
-            throw new GetRolesFromUserException(e);
+            throw new UserManagementException("Couldn't get all roles from the user", e);
         }
     }
 
@@ -244,16 +234,16 @@ public class UserLogic {
      *            The id of the user.
      * @param roleId
      *            The id of the role.
-     * @throws AddRoleToUserException
+     * @throws UserManagementException
      *             When adding the user role failed.
      */
-    public void addRoleToUser(Long userId, Long roleId) throws AddRoleToUserException {
+    public void addRoleToUser(Long userId, Long roleId) throws UserManagementException {
         try {
             DAO<UserRole> roleDao = new UserRoleSqlQueryDAO();
             UserRole ur = new UserRole(userId, roleId);
             roleDao.insert(ur);
         } catch (Exception e) {
-            throw new AddRoleToUserException(e);
+            throw new UserManagementException("Couldn't add role to user", e);
         }
     }
 
@@ -264,10 +254,10 @@ public class UserLogic {
      *            The id of a user
      * @param roleId
      *            The id of the role
-     * @throws RemoveRoleFromUserException
+     * @throws UserManagementException
      *             When getting the roles failed.
      */
-    public void removeRoleFromUser(Long userId, Long roleId) throws RemoveRoleFromUserException {
+    public void removeRoleFromUser(Long userId, Long roleId) throws UserManagementException {
         try {
             DAO<UserRole> userRoleDao = new UserRoleSqlQueryDAO();
 
@@ -280,10 +270,10 @@ public class UserLogic {
             if (i.hasNext()) {
                 userRoleDao.delete(i.next());
             } else {
-                throw new RemoveRoleFromUserException("User with the id " + userId + " has not the role with the id " + roleId);
+                throw new UserManagementException("User with the id " + userId + " has not the role with the id " + roleId);
             }
         } catch (Exception e) {
-            throw new RemoveRoleFromUserException(e);
+            throw new UserManagementException("Couldn't remove role from user", e);
         }
     }
 
@@ -293,12 +283,12 @@ public class UserLogic {
      * @param id
      *            The id of the user
      * @return Collection with permissions
-     * @throws GetRolesFromUserException
+     * @throws UserManagementException
      *             When getting the permissions failed.
      */
-    public Collection<Permission> getAllPermissionsFromUser(Long id) throws GetRolesFromUserException {
+    public Collection<Permission> getAllPermissionsFromUser(Long id) throws UserManagementException {
         if (id == null) {
-            throw new GetRolesFromUserException("The id must not be null");
+            throw new UserManagementException("The id must not be null");
         }
 
         try {
@@ -320,7 +310,7 @@ public class UserLogic {
 
             return permissions;
         } catch (Exception e) {
-            throw new GetRolesFromUserException(e);
+            throw new UserManagementException("Couldn't get all permissions from user", e);
         }
     }
 
@@ -331,16 +321,16 @@ public class UserLogic {
      *            The id of the user.
      * @param permissionId
      *            The id of the permission.
-     * @throws AddRoleToUserException
+     * @throws UserManagementException
      *             When adding the user permission failed.
      */
-    public void addPermissionToUser(Long userId, Long permissionId) throws AddRoleToUserException {
+    public void addPermissionToUser(Long userId, Long permissionId) throws UserManagementException {
         try {
             DAO<UserPermission> userPermissionDao = new UserPermissionSqlQueryDAO();
             UserPermission userPermission = new UserPermission(userId, permissionId);
             userPermissionDao.insert(userPermission);
         } catch (Exception e) {
-            throw new AddRoleToUserException(e);
+            throw new UserManagementException("Couldn't add permission to user", e);
         }
     }
 
@@ -351,10 +341,10 @@ public class UserLogic {
      *            The id of a user
      * @param permissionId
      *            The id of the permission
-     * @throws RemoveRoleFromUserException
+     * @throws UserManagementException
      *             When removing the permission failed.
      */
-    public void removePermissionFromUser(Long userId, Long permissionId) throws RemoveRoleFromUserException {
+    public void removePermissionFromUser(Long userId, Long permissionId) throws UserManagementException {
         try {
             DAO<UserPermission> userPermissionDao = new UserPermissionSqlQueryDAO();
 
@@ -367,10 +357,10 @@ public class UserLogic {
             if (i.hasNext()) {
                 userPermissionDao.delete(i.next());
             } else {
-                throw new RemoveRoleFromUserException("User with the id " + userId + " has not the permission with the id " + permissionId);
+                throw new UserManagementException("User with the id " + userId + " has not the permission with the id " + permissionId);
             }
         } catch (Exception e) {
-            throw new RemoveRoleFromUserException(e);
+            throw new UserManagementException("Couldn't remove permission from user", e);
         }
     }
 
@@ -380,12 +370,12 @@ public class UserLogic {
      * @param userId
      *            The id of a user.
      * @return Collection with tokens.
-     * @throws GetActiveTokenException
+     * @throws UserManagementException
      *             When getting the token failed.
      */
-    public Collection<Token> getActiveTokensFromUser(Long userId) throws GetActiveTokenException {
+    public Collection<Token> getActiveTokensFromUser(Long userId) throws UserManagementException {
         if (userId == null) {
-            throw new GetActiveTokenException("The id must not be null");
+            throw new UserManagementException("The id must not be null");
         }
 
         try {
@@ -398,7 +388,7 @@ public class UserLogic {
 
             return tokenDao.findBy(searchParams, false);
         } catch (Exception e) {
-            throw new GetActiveTokenException(e);
+            throw new UserManagementException("Couldn't get tokens from user", e);
         }
     }
 
@@ -409,16 +399,14 @@ public class UserLogic {
      *            the user id
      * @param permission
      *            the permission
-     * @throws DatasourceInsertException
-     *             When inserting the new permission-user-relation failed.
-     * @throws GetPermissionException
-     *             When retrieving the permission failed.
+     * @throws UserManagementException
+     *             When inserting the new permission-user-relation failed or retrieving the permission failed.
      */
-    public void addNewPermissionToUser(Long userId, Permission permission) throws DatasourceInsertException, GetPermissionException {
+    public void addNewPermissionToUser(Long userId, Permission permission) throws UserManagementException {
         PermissionLogic pl = new PermissionLogic();
         try {
             pl.addPermission(permission);
-        } catch (AddPermissionException e) {
+        } catch (UserManagementException e) {
             // permission is already created.
             if (permission.getId() < 0) {
                 permission.setId(pl.getPermission(permission.getPermissionValue()).getId());
@@ -426,7 +414,11 @@ public class UserLogic {
         }
 
         DAO<UserPermission> upDao = new UserPermissionSqlQueryDAO();
-        upDao.insert(new UserPermission(userId, permission.getId()));
+        try {
+            upDao.insert(new UserPermission(userId, permission.getId()));
+        } catch (DatasourceInsertException e) {
+            throw new UserManagementException(e);
+        }
     }
 
     /**

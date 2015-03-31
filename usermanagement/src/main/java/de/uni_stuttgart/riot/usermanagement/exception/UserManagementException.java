@@ -1,12 +1,16 @@
 package de.uni_stuttgart.riot.usermanagement.exception;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Superclass for all exceptions regarding the user management.
  * 
  * @author Niklas Schnabel
  *
  */
-public abstract class UserManagementException extends Exception {
+@JsonIgnoreProperties({ "cause", "stackTrace", "suppressed" })
+public class UserManagementException extends Exception {
 
     private static final long serialVersionUID = 1182375069868647185L;
 
@@ -42,15 +46,16 @@ public abstract class UserManagementException extends Exception {
         super(cause);
     }
 
-    public String getEndUserMessage() {
-        return this.getMessage();
+    @JsonProperty("errorMessage")
+    @Override
+    public String getMessage() {
+        return super.getMessage();
     }
-    
-    /**
-     * Constructor for UserManagementException.
-     * 
-     * @return Error code
-     */
-    public abstract int getErrorCode();
+
+    @JsonProperty("localizedErrorMessage")
+    @Override
+    public String getLocalizedMessage() {
+        return super.getLocalizedMessage();
+    }
 
 }

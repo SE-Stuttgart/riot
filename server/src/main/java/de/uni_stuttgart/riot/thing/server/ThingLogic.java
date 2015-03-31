@@ -33,13 +33,13 @@ import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
 import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
 import de.uni_stuttgart.riot.thing.rest.UserThingShare;
-import de.uni_stuttgart.riot.thing.rest.ThingInformation.Field;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetAllUsersException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -560,7 +560,7 @@ public class ThingLogic {
         if (permissions == null || permissions.isEmpty()) {
             try {
                 return umFacade.getAllUsers().stream().map(User::getId).collect(Collectors.toSet());
-            } catch (GetAllUsersException e) {
+            } catch (UserManagementException e) {
                 throw new DatasourceFindException(e);
             }
         } else {

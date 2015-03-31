@@ -16,14 +16,10 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Token;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.commons.config.Configuration;
 import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.InvalidTokenException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LoginException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.LogoutException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.RefreshException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.authentication.WrongCredentialsException;
-import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
+import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;;
 
 public class AuthenticationLogicTest extends LogicTestBase {
 
@@ -52,37 +48,37 @@ public class AuthenticationLogicTest extends LogicTestBase {
         assertFalse(token.getRefreshtokenValue().isEmpty());
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginInvalidUsername() throws Exception {
         al.login("Invalid", "YodaPW");
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginInvalidPassword() throws Exception {
         al.login("Yoda", "Invalid");
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginEmptyUsername() throws Exception {
         al.login("", "YodaPW");
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginEmptyPassword() throws Exception {
         al.login("Yoda", "");
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginNull() throws Exception {
         al.login(null, null);
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginNullUsername() throws Exception {
         al.login(null, "YodaPW");
     }
 
-    @Test(expected = LoginException.class)
+    @Test(expected = UserManagementException.class)
     public void testLoginNullPassword() throws Exception {
         al.login("Invalid", null);
     }
@@ -93,15 +89,15 @@ public class AuthenticationLogicTest extends LogicTestBase {
         for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
-            } catch (LoginException e) {
-                assertEquals(e.getClass(), WrongCredentialsException.class);
+            } catch (UserManagementException e) {
+                assertEquals(e.getClass(), UserManagementException.class);
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
 
         try {
             al.login("Yoda", "Invalid");
-        } catch (LoginException e) {
+        } catch (UserManagementException e) {
             assertEquals(PASSWORD_TOO_MANY_TIMES_WRONG, e.getMessage());
             return;
         }
@@ -114,7 +110,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries) - 1; i++) {
             try {
                 al.login("Yoda", "Invalid");
-            } catch (LoginException e) {
+            } catch (UserManagementException e) {
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
@@ -125,7 +121,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries) - 1; i++) {
             try {
                 al.login("Yoda", "Invalid");
-            } catch (LoginException e) {
+            } catch (UserManagementException e) {
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
@@ -137,7 +133,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
         for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
-            } catch (LoginException e) {
+            } catch (UserManagementException e) {
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
@@ -150,14 +146,14 @@ public class AuthenticationLogicTest extends LogicTestBase {
         for (int i = 0; i <= Configuration.getInt(ConfigurationKey.um_maxLoginRetries); i++) {
             try {
                 al.login("Yoda", "Invalid");
-            } catch (LoginException e) {
+            } catch (UserManagementException e) {
                 assertEquals(WRONG_USERNAMEEXCEPTION, e.getMessage());
             }
         }
 
         try {
             al.login("Yoda", "Invalid");
-        } catch (LoginException e) {
+        } catch (UserManagementException e) {
             assertEquals(PASSWORD_TOO_MANY_TIMES_WRONG, e.getMessage());
             return;
         }
@@ -176,17 +172,17 @@ public class AuthenticationLogicTest extends LogicTestBase {
         assertFalse(token.getRefreshtokenValue().isEmpty());
     }
 
-    @Test(expected = InvalidTokenException.class)
+    @Test(expected = UserManagementException.class)
     public void testRefreshTokenInvalid() throws Exception {
         al.refreshToken("Invalid");
     }
 
-    @Test(expected = InvalidTokenException.class)
+    @Test(expected = UserManagementException.class)
     public void testRefreshTokenNull() throws Exception {
         al.refreshToken(null);
     }
 
-    @Test(expected = InvalidTokenException.class)
+    @Test(expected = UserManagementException.class)
     public void testRefreshTokenEmpty() throws Exception {
         al.refreshToken("");
     }
@@ -195,7 +191,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
      * Logout tests
      */
 
-    @Test(expected = InvalidTokenException.class)
+    @Test(expected = UserManagementException.class)
     public void testLogoutValid() throws Exception {
         al.logout("token1");
 
@@ -203,17 +199,17 @@ public class AuthenticationLogicTest extends LogicTestBase {
         al.refreshToken("token1R");
     }
 
-    @Test(expected = LogoutException.class)
+    @Test(expected = UserManagementException.class)
     public void testLogoutInvalid() throws Exception {
         al.logout("invalid");
     }
 
-    @Test(expected = LogoutException.class)
+    @Test(expected = UserManagementException.class)
     public void testLogoutNull() throws Exception {
         al.logout(null);
     }
 
-    @Test(expected = LogoutException.class)
+    @Test(expected = UserManagementException.class)
     public void testLogoutEmpty() throws Exception {
         al.logout("");
     }

@@ -11,10 +11,6 @@ import org.junit.Test;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.Permission;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.PermissionLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.AddPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.DeletePermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.GetPermissionException;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.permission.UpdatePermissionException;
 import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
 
 public class PermissionLogicTest extends LogicTestBase {
@@ -34,28 +30,28 @@ public class PermissionLogicTest extends LogicTestBase {
         assertEquals(permission, permissionRead);
     }
 
-    @Test(expected = AddPermissionException.class)
+    @Test(expected = UserManagementException.class)
     public void shoudFailOnNullAdd() throws UserManagementException {
         pl.addPermission(null);
     }
 
-    @Test(expected = AddPermissionException.class)
+    @Test(expected = UserManagementException.class)
     public void shoudFailOnEmptyAdd() throws UserManagementException {
         pl.addPermission(new Permission(null));
     }
 
     @Test
-    public void shouldDeletePermission() throws DeletePermissionException {
+    public void shouldDeletePermission() throws UserManagementException {
         pl.deletePermission(1L);
     }
 
-    @Test(expected = DeletePermissionException.class)
-    public void shouldFailOnDoubleDelete() throws DeletePermissionException {
+    @Test(expected = UserManagementException.class)
+    public void shouldFailOnDoubleDelete() throws UserManagementException {
         pl.deletePermission(1L);
         pl.deletePermission(1L); // Intentional
     }
 
-    @Test(expected = GetPermissionException.class)
+    @Test(expected = UserManagementException.class)
     public void shouldFailOnGettingDeletedPermission() throws UserManagementException {
         pl.deletePermission(1L);
         pl.getPermission(1L);
@@ -79,37 +75,37 @@ public class PermissionLogicTest extends LogicTestBase {
         assertEquals(permissionUpdated, permission);
     }
 
-    @Test(expected = UpdatePermissionException.class)
-    public void shouldThrowOnNullUpdate() throws UpdatePermissionException {
+    @Test(expected = UserManagementException.class)
+    public void shouldThrowOnNullUpdate() throws UserManagementException {
         pl.updatePermission(1L, null);
     }
 
-    @Test(expected = UpdatePermissionException.class)
-    public void shouldThrowOnUpdateNonExisting() throws UpdatePermissionException {
+    @Test(expected = UserManagementException.class)
+    public void shouldThrowOnUpdateNonExisting() throws UserManagementException {
         pl.updatePermission(null, new Permission("testValue"));
     }
 
     @Test
-    public void shouldGetPermission() throws GetPermissionException {
+    public void shouldGetPermission() throws UserManagementException {
         Permission p1 = pl.getPermission(1L);
         Permission p2 = pl.getPermission(1L);
         assertEquals(p1, p2);
     }
 
-    @Test(expected = GetPermissionException.class)
+    @Test(expected = UserManagementException.class)
     public void shouldFailGettingPermissionAfterDelete() throws UserManagementException {
         pl.deletePermission(1L);
         pl.getPermission(1L);
 
     }
 
-    @Test(expected = GetPermissionException.class)
-    public void shouldFailGettingNonexistentPermission() throws GetPermissionException {
+    @Test(expected = UserManagementException.class)
+    public void shouldFailGettingNonexistentPermission() throws UserManagementException {
         pl.getPermission(Long.MAX_VALUE);
     }
 
-    @Test(expected = GetPermissionException.class)
-    public void shouldFailGettingNonexistentPermission2() throws GetPermissionException {
+    @Test(expected = UserManagementException.class)
+    public void shouldFailGettingNonexistentPermission2() throws UserManagementException {
         pl.getPermission(Long.MIN_VALUE);
     }
 

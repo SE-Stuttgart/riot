@@ -7,7 +7,7 @@ import de.uni_stuttgart.riot.references.TargetNotFoundException;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.server.ThingLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.exception.user.GetUserException;
+import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.service.facade.UserManagementFacade;
 
 /**
@@ -24,7 +24,7 @@ public class ServerReferenceResolver extends DelegatingReferenceResolver {
         public User resolve(long targetId) throws ResolveReferenceException {
             try {
                 return UserManagementFacade.getInstance().getUser(targetId);
-            } catch (GetUserException e) {
+            } catch (UserManagementException e) {
                 // TODO GetUserException should be refactored (i.e. deleted).
                 // TODO Then we could distinguish between NotFound and some other errors here.
                 throw new TargetNotFoundException(e);
