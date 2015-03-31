@@ -9,14 +9,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class GasMeterSimulator extends MeterSimulator {
 
     private static final double AVERAGE_CONSUMPTION = 20;
-    private static final double VARIATION = 0;
+    private static final double VARIATION = 8;
 
     /**
      * Constructor.
      * @param thing .
      * @param scheduler .
      */
-    public GasMeterSimulator(Meter thing, ScheduledThreadPoolExecutor scheduler) {
+    public GasMeterSimulator(GasMeter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
     }
 

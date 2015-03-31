@@ -23,7 +23,7 @@ public abstract class Meter extends Thing {
     /**
      * Holds the overall amount of consumption eg. kw/h for electricity.
      */
-    protected final Property<Double> overallConsumption = newProperty("waterTank", Double.class, OVERALL_CONSUMPTION, UIHint.editNumber());
+    protected final Property<Double> overallConsumption = newProperty("overallConsumption", Double.class, OVERALL_CONSUMPTION, UIHint.editNumber());
    
     /**
      * Shows if the meter has blocked the connection (eg. Water supply is blocked), eg. because of a open account.

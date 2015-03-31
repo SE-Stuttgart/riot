@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.thing.house.light;
 
+import de.uni_stuttgart.riot.thing.Action;
+import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
@@ -16,7 +18,6 @@ public class Light extends Thing {
      */
     private final WritableProperty<Boolean> lightSwitch = newWritableProperty("lightSwitch", Boolean.class, false, UIHint.toggleButton());
 
-    
     /**
      * Constructor.
      * @param behavior .
