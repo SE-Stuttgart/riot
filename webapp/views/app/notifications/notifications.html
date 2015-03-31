@@ -1,30 +1,37 @@
-<div class="row">
-  <div class="col-md-12" ng-controller="NotificationsCtrl">
-    <h1>{{ 'notification.notifications' | i18n }}</h1>
-    
-    <div class="row">
-      <div class="col-md-12">
-        <button class="btn btn-success dismiss-btn" ng-click="dismissNotifications()">{{ 'notification.dismissAllItems' | i18n }}</button>
-      </div>
+<div ng-controller="NotificationsCtrl">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">{{ 'notification.notifications' | i18n }}</h1>
     </div>
-    
-    <div class="row" infinite-scroll="fetchNotificationsAndThings()">
-      <div class="col-md-12">
+  </div>
+
+  <div>
+    <button class="btn btn-success dismiss-btn" ng-if="log.notifications.length > 0" ng-click="dismissNotifications()">{{ 'notification.dismissAllItems' | i18n }}</button>   
+    <div infinite-scroll="fetchNotificationsAndThings()">
+      <div>
+        <div ng-if="!notifications.length"><strong>{{ 'notification.no_new_notifications' | i18n }}</strong></div>
         <table class="table">
           <tr ng-repeat="notification in notifications" ng-class="{info: !notification.dismissed}" ng-mouseover="dismissNotification(notification)">
             <td style="width: 20px">
               <i notification-icon severity="notification.severity"></i> 
             </td>
-            <td><strong>{{ 'notification.' + notification.titleKey | i18n }}</strong></td>
-            <td>{{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}</td>
+            <td>
+              <strong>{{ 'notification.' + notification.titleKey | i18n }}</strong>
+            </td>
+            <td>
+              {{ 'notification.' + notification.messageKey | i18n:{"thing.name": things[notification.thingID].metainfo.name, "thing.id": things[notification.thingID].id} }}
+            </td>
             <td>
               <a ui-sref="app.things.detail({thingid: notification.thingID})">{{ things[notification.thingID].metainfo.name }}</a>
             </td>
-            <td>{{ notification.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+            <td>
+              {{ notification.time | date:'dd.MM.yyyy HH:mm:ss'}}
+            </td>
           </tr>
         </table>
         <span ng-show="loadMore">Loading...</span>
       </div>
     </div>
   </div>
+
 </div>

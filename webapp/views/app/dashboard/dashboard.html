@@ -9,31 +9,34 @@
     <div class="col-md-6">
       <dashboard-item icon="fa-cloud" headingkey="thing.things" view-more-state="app.things.list" max-items="5" items="items.things"></dashboard-item>
     </div>
+
     <div class="col-md-6">
       <dashboard-item icon="fa-calendar" headingkey="calendar.calendarEntries" view-more-state="app.calendar.list" max-items="5" items="items.events"></dashboard-item>
     </div>
-  </div>
 
-  <div class="row">
     <div class="col-lg-12">
-      <h2 class="activity-header">{{ 'notification.notifications' | i18n }}</h2>
-      <div ng-repeat="notification in log.notifications" class="row dashboard-activity-item" ng-class="{undismissed: !notification.dismissed}">
-        <div class="col-xs-9 dashboard-activity-text">
-          <i notification-icon severity="notification.severity"></i> 
-          <span class="dashboard-activity-important">{{ 'notification.' + notification.titleKey | i18n }}</span>
-          {{ 'notification.' + notification.messageKey | i18n:{'thing.id': notification.thingID, 'thing.name': getThingName(notification.thingID)} }}
-        </div>
-        <div class="col-xs-2 dashboard-activity-time">
+      <h2>{{ 'notification.notifications' | i18n }}</h2>
+      <div ng-if="!log.notifications.length"><strong>{{ 'notification.no_new_notifications' | i18n }}</strong></div>
+      <table class="table">
+        <tr class="dashboard-activity-item" ng-repeat="notification in log.notifications" ng-class="{undismissed: !notification.dismissed}">
+          <td class="dashboard-activity-text">
+            <i notification-icon severity="notification.severity"></i> 
+            <span class="dashboard-activity-important">{{ 'notification.' + notification.titleKey | i18n }}</span>
+            {{ 'notification.' + notification.messageKey | i18n:{'thing.id': notification.thingID, 'thing.name': getThingName(notification.thingID)} }}
+          </td>
+          <td class="dashboard-activity-time">
             <span class="pull-right">{{ notification.time | date:'dd.MM HH:mm:ss' }}</span>
-        </div>
-        <div class="col-xs-1">
-          <span class="pull-right">
-            <i ng-if="!notification.dismissed" ng-mouseover="dismissNotification(notification)" class="fa fa-square-o"></i>
-            <i ng-if="notification.dismissed" class="fa fa-check-square-o"></i>
-          </span>
-        </div>
-      </div>
-      <button class="btn">
+          </td>
+          <td>
+            <span class="pull-right">
+              <i ng-if="!notification.dismissed" ng-mouseover="dismissNotification(notification)" class="fa fa-square-o"></i>
+              <i ng-if="notification.dismissed" class="fa fa-check-square-o"></i>
+            </span>
+          </td>
+        </tr>
+      </table>
+
+      <button class="btn btn-default margin-top-10" ng-if="log.notifications.length">
         {{ 'common.showMore' | i18n }}
       </button>
     </div>
