@@ -27,8 +27,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1"
-        android:layout_gravity="center"
-        android:layout_marginRight="@dimen/list_item_margin">
+        android:layout_gravity="center">
 
         <TextView
             android:id="@+id/list_item_management_subject"
@@ -43,11 +42,4 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/list_item_description_size" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/list_item_management_details"
-        android:layout_width="@dimen/list_item_details_size"
-        android:layout_height="@dimen/list_item_details_size"
-        android:layout_gravity="center"
-        android:src="@android:drawable/ic_menu_info_details" />
 </LinearLayout>

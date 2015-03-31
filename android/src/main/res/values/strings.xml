@@ -168,5 +168,12 @@
 =======
     <string name="user_name">Username</string>
     <string name="user_mail">E-Mail</string>
+<<<<<<< HEAD
 </resources>
 >>>>>>> RIOT-87:Android:Add user list and user view
+=======
+    <string name="management_list">Management List</string>
+    <string name="default_thing_subject">The Thing</string>
+    <string name="default_user_subject">The user</string>
+</resources>
+>>>>>>> RIOT-87:Android:Changes on the structure of the management views

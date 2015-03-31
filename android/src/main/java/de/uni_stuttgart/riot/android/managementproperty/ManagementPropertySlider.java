@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,7 +18,7 @@ import de.uni_stuttgart.riot.thing.Property;
  *
  * @param <V> stands for the value type of the ui element.
  */
-public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout, V> {
+public abstract class ManagementPropertySlider<V> extends ManagementProperty<LinearLayout, V> {
 
     protected LinearLayout linearLayoutRow;
     protected SeekBar seekBar;
@@ -35,7 +35,7 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertySlider(Property<V> property, Activity activity, V min, V max) {
+    public ManagementPropertySlider(Property<V> property, Activity activity, V min, V max) {
         super(property);
         this.min = min;
         this.max = max;
@@ -51,7 +51,7 @@ public abstract class ThingPropertySlider<V> extends ThingProperty<LinearLayout,
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertySlider(V value, Activity activity, V min, V max) {
+    public ManagementPropertySlider(V value, Activity activity, V min, V max) {
         super(value);
         this.min = min;
         this.max = max;

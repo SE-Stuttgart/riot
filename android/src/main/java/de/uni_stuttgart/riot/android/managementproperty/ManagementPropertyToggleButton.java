@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +12,7 @@ import de.uni_stuttgart.riot.thing.Property;
  * Created by Benny on 19.03.2015.
  * This class provides a ToggleButton ui element.
  */
-public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boolean> {
+public class ManagementPropertyToggleButton extends ManagementProperty<ToggleButton, Boolean> {
 
     private ToggleButton toggleButton;
     private String valueOn;
@@ -26,7 +26,7 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
      * @param valueOff the displayed value if the button is toggled off
      * @param valueOn  the displayed value if the button is toggled on
      */
-    public ThingPropertyToggleButton(Property<Boolean> property, Activity activity, String valueOff, String valueOn) {
+    public ManagementPropertyToggleButton(Property<Boolean> property, Activity activity, String valueOff, String valueOn) {
         super(property);
         this.valueOff = valueOff;
         this.valueOn = valueOn;
@@ -41,7 +41,7 @@ public class ThingPropertyToggleButton extends ThingProperty<ToggleButton, Boole
      * @param valueOff the displayed value if the button is toggled off
      * @param valueOn  the displayed value if the button is toggled on
      */
-    public ThingPropertyToggleButton(Boolean value, Activity activity, String valueOff, String valueOn) {
+    public ManagementPropertyToggleButton(Boolean value, Activity activity, String valueOff, String valueOn) {
         super(value);
         this.valueOff = valueOff;
         this.valueOn = valueOn;

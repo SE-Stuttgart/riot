@@ -1,8 +1,6 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -11,9 +9,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
@@ -23,9 +18,13 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
 /**
  * Abstract activity that provides a list to show all elements of a Object item typ.
  *
+ * @param <T> type of the handled object
+ * @param <D> type of the detailed view (that will be displayed after clicking on a item)
  * @author Benny
  */
-public abstract class ManagementListActivity extends ManagementActivity {
+public abstract class ManagementListActivity<T, D> extends ManagementActivity {
+
+    protected List<T> itemList;
 
     @Override
     protected int getLayoutResource() {
@@ -37,170 +36,166 @@ public abstract class ManagementListActivity extends ManagementActivity {
     }
 
     @Override
-    protected void displayData(Object data) {
-        // Check if there is some data to display
-        if (data == null) {
+    protected void displayData() {
+        // Check if there are some items for displaying
+        if (this.itemList == null) {
             IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
             IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
             return;
         }
 
-
-        // Check if the given data is a list
-        if (!(data instanceof List)) {
-            IM.INSTANCES.getMH().writeErrorMessage("Data is not a list!");
-            IM.INSTANCES.getMH().showQuickMessage("Data is not a list!");
-            return;
-        }
-
-        // Add data list to the list adapter
-        ManagementListAdapter managementListAdapter = new ManagementListAdapter(getActivity(), this, R.layout.managment_list_item, (List<Object>) data);
+        // Check if the list view is available
         ListView listView = (ListView) findViewById(R.id.management_list_view);
         if (listView == null) {
             IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
             IM.INSTANCES.getMH().showQuickMessage("No list view was found!");
             return;
         }
+
+        // Add data list to the list adapter
+        ManagementListAdapter<T> managementListAdapter = new ManagementListAdapter<T>(this, R.layout.managment_list_item, this.itemList);
         listView.setAdapter(managementListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                doOnItemClick(parent, position);
+                try {
+                    T item = (T) parent.getItemAtPosition(position);
+                    doOnItemClick(item);
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("Could not cast list item to the needed type!", e);
+                    IM.INSTANCES.getMH().showQuickMessage("Could not cast list item to the needed type!");
+                }
+
             }
         });
         // To change items afterwards (when list adapter is already installed) use:
         // managementListAdapter.notifyDataSetChanged();
     }
 
-
-    @Override
-    protected Drawable getHomeIcon() {
-        return null;
-    }
-
-    @Override
-    protected int getHomeLogo() {
-        return 0;
-    }
-
-    @Override
-    protected void getAndDisplayData() {
-        getAndDisplayListData();
+    /**
+     * Get values of the item and save them.
+     *
+     * @param item is the clicked list item
+     * @param view of the list item
+     */
+    public void buildListItem(T item, View view) {
+        setSubject(item, view);
+        setDescription(item, view);
+        setImage(item, view);
+        setOnlineState(item, view);
     }
 
     /**
      * Is the overwrite of the onItemClick method (it's possible to abstract this method for subclasses).
      *
-     * @param parent   the adapter view where the click came from
-     * @param position the position in the displayed list
+     * @param item is the clicked list item
      */
-    private void doOnItemClick(AdapterView<?> parent, int position) {
+    protected void doOnItemClick(T item) {
         if (getOnItemClickActivity() != null) {
-            Object item = parent.getItemAtPosition(position);
-
             // Call detail view with the id as argument
             Intent detailView = new Intent(getApplicationContext(), getOnItemClickActivity());
-            if (isInstanceOf(item)) {
-                detailView.putExtra(BUNDLE_OBJECT_ID, getId(item));
-                detailView.putExtra(BUNDLE_PAGE_TITLE, getDetailPageTitle(item));
-            }
+            detailView.putExtra(BUNDLE_OBJECT_ID, getId(item));
             startActivity(detailView);
         }
     }
 
     /**
-     * Tries to get the online state from the server and update it.
+     * Set the subject of the list item.
+     *
+     * @param item includes the values
+     * @param view of the list item
+     */
+    private void setSubject(final T item, final View view) {
+        String subject = getSubject(item);
+        if (subject == null || subject.isEmpty()) {
+            subject = getDefaultSubject();
+        }
+
+        if (subject != null && !subject.isEmpty()) {
+            setTextViewText(view, R.id.list_item_management_subject, subject);
+        }
+    }
+
+    /**
+     * Set the description of the list item.
+     *
+     * @param item includes the values
+     * @param view of the list item
+     */
+    private void setDescription(final T item, final View view) {
+        String description = getDescription(item);
+        if (description == null || description.isEmpty()) {
+            description = getDefaultDescription();
+        }
+
+        if (description != null && !description.isEmpty()) {
+            setTextViewText(view, R.id.list_item_management_description, description);
+        }
+    }
+
+    /**
+     * Set the image of the list item.
+     *
+     * @param item includes the values
+     * @param view of the list item
+     */
+    private void setImage(final T item, final View view) {
+        Drawable image = getImage(item);
+        if (image == null) {
+            image = getDefaultImage();
+        }
+
+        if (image != null) {
+            setImageViewImage(view, R.id.list_item_management_picture, image);
+        }
+    }
+
+    /**
+     * Try to get the online state from the server and update it.
      *
      * @param item is the item that has the online state
      * @param view of the list item
      */
-    private void getAndUpdateOnlineState(Object item, final View view) {
-        if (isInstanceOf(item)) {
-            final OnlineState onlineState = getOnlineState(item);
+    private void setOnlineState(final T item, final View view) {
+        new Thread() {
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateOnlineState(view, onlineState);
+            @Override
+            public void run() {
+                // Load the current online state
+                OnlineState onlineState = getOnlineState(item);
+
+                // If there could no online state be loaded use the default one
+                if (onlineState == null) {
+                    onlineState = getDefaultOnlineState();
                 }
-            });
-        }
+
+                displayOnlineState(onlineState, view);
+            }
+        }.start();
     }
 
     /**
-     * Get the subject from the item.
+     * Display the loaded online state.
      *
-     * @param item includes the values
-     * @return the value from the item or the default value
+     * @param onlineState of the list item
+     * @param view        of the list item
      */
-    private String doGetSubject(Object item) {
-        if (isInstanceOf(item)) {
-            // Get subject from item
-            String subject = getSubject(item);
-
-            // Check if item had a subject
-            if (subject != null && !subject.isEmpty()) {
-                return subject;
-            }
+    private void displayOnlineState(final OnlineState onlineState, final View view) {
+        if (onlineState == null) {
+            return;
         }
-        return getDefaultSubject();
-    }
-
-    /**
-     * Get the description from the item.
-     *
-     * @param item includes the values
-     * @return the value from the item or the default value
-     */
-    private String doGetDescription(Object item) {
-        if (isInstanceOf(item)) {
-            // Get description from item
-            String description = getDescription(item);
-
-            // Check if item had a description
-            if (description != null && !description.isEmpty()) {
-                return description;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
+                if (imageView == null) {
+                    IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
+                    IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
+                    return;
+                }
+                imageView.setImageResource(getOnlineStateResourceId(onlineState));
             }
-        }
-        return getDefaultDescription();
-    }
-
-    /**
-     * Get the image id from the item.
-     *
-     * @param item includes the values
-     * @return the value from the item or the default value
-     */
-    private int doGetImageId(Object item) {
-        if (isInstanceOf(item)) {
-            // Get subject from image id
-            int imageId = getImageId(item);
-
-            // Check if item had a image id
-            if (imageId != 0) {
-                return imageId;
-            }
-        }
-        return getDefaultImageId();
-    }
-
-    /**
-     * Get the image uri from the item.
-     *
-     * @param item includes the values
-     * @return the value from the item or the default value
-     */
-    private String doGetImageUri(Object item) {
-        if (isInstanceOf(item)) {
-            // Get image uri from item
-            String imageUri = getImageUri(item);
-
-            // Check if item had a image uri
-            if (imageUri != null && !imageUri.isEmpty()) {
-                return imageUri;
-            }
-        }
-        return getDefaultImageUri();
+        });
     }
 
     /**
@@ -221,145 +216,28 @@ public abstract class ManagementListActivity extends ManagementActivity {
     }
 
     /**
-     * Set the image of the image view with the given id.
+     * Set the image of the image view with the given drawable.
      *
-     * @param view    the main view
-     * @param id      the id of the image view
-     * @param imageId the id for the image
+     * @param view  the main view
+     * @param id    the id of the image view
+     * @param image the drawable for the image
      */
-    private void setImageViewImage(View view, int id, int imageId) {
+    private void setImageViewImage(View view, int id, Drawable image) {
         ImageView imageView = (ImageView) view.findViewById(id);
         if (imageView == null) {
             IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
             IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
             return;
         }
-        imageView.setImageResource(imageId);
+        imageView.setImageDrawable(image);
     }
-
-    /**
-     * Set the image of the image view with the given id.
-     *
-     * @param view the main view
-     * @param id   the id of the image view
-     * @param uri  the uri for the image
-     */
-    private void setImageViewImage(View view, int id, final String uri) {
-        final ImageView imageView = (ImageView) view.findViewById(id);
-        if (imageView == null) {
-            IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
-            IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
-            return;
-        }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(uri);
-                    final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            imageView.setImageBitmap(bmp);
-                        }
-                    });
-                } catch (MalformedURLException e) {
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by creating an url from the given uri!", e);
-                } catch (IOException e) {
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by streaming the image (\"" + uri + "\")!", e);
-                } catch (Exception e) {
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by set the image for the image view!", e);
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * Update the online state of the list item.
-     *
-     * @param view        the view that will be updated
-     * @param onlineState is the online state of one item
-     */
-    private void updateOnlineState(final View view, OnlineState onlineState) {
-        final OnlineState defaultOnlineState;
-        if (onlineState == null) {
-            // Take default online state if there is no one
-            defaultOnlineState = getDefaultOnlineState();
-        } else {
-            defaultOnlineState = onlineState;
-        }
-
-        // Set the online state value
-        if (defaultOnlineState != null) {
-            ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
-            if (imageView == null) {
-                IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
-                IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
-                return;
-            }
-            imageView.setImageResource(getOnlineStateResourceId(defaultOnlineState));
-        }
-    }
-
-    /**
-     * Set values of the given item to the view elements.
-     *
-     * @param view includes the elements of the current view
-     * @param item includes the data
-     */
-    public void doGetView(final View view, final Object item) {
-        // Get values of the item
-        String subject = doGetSubject(item);
-        String description = doGetDescription(item);
-        int imageId = doGetImageId(item);
-        String imageUri = doGetImageUri(item);
-
-        // Set the subject value
-        if (subject != null && !subject.isEmpty()) {
-            setTextViewText(view, R.id.list_item_management_subject, subject);
-        }
-
-        // Set the description value
-        if (description != null && !description.isEmpty()) {
-            setTextViewText(view, R.id.list_item_management_description, description);
-        }
-
-        // Set the image value
-        if (imageUri != null && !imageUri.isEmpty()) {
-            setImageViewImage(view, R.id.list_item_management_picture, imageUri);
-        } else if (imageId != 0) {
-            setImageViewImage(view, R.id.list_item_management_picture, imageId);
-        }
-
-        // Load data asynchronous
-        new Thread() {
-
-            @Override
-            public void run() {
-                // Load the online state
-                getAndUpdateOnlineState(item, view);
-            }
-        }.start();
-    }
-
-    /**
-     * Returns a list of all data that will be displayed.
-     */
-    protected abstract void getAndDisplayListData();
-
-    /**
-     * Returns the current frame.
-     *
-     * @return normally just 'this'
-     */
-    protected abstract ManagementListActivity getActivity();
 
     /**
      * Returns the fragment that is called by clicking on an icon
      *
      * @return the called fragment (null if there should be no onClick action)
      */
-    protected abstract Class getOnItemClickActivity();
+    protected abstract Class<D> getOnItemClickActivity();
 
     /**
      * Returns the id of the list item.
@@ -367,7 +245,7 @@ public abstract class ManagementListActivity extends ManagementActivity {
      * @param item the item
      * @return the id of the list item
      */
-    protected abstract long getId(Object item);
+    protected abstract long getId(T item);
 
     /**
      * Returns the default subject for the list item.
@@ -382,7 +260,7 @@ public abstract class ManagementListActivity extends ManagementActivity {
      * @param item the item
      * @return the subject for the list item
      */
-    protected abstract String getSubject(Object item);
+    protected abstract String getSubject(T item);
 
     /**
      * Returns the default description of the list item.
@@ -397,37 +275,22 @@ public abstract class ManagementListActivity extends ManagementActivity {
      * @param item the item
      * @return the description of the list item
      */
-    protected abstract String getDescription(Object item);
+    protected abstract String getDescription(T item);
 
     /**
-     * Returns the default image uri of the list item.
+     * Returns the default drawable image of the list item.
      *
      * @return is null if the element should not be displayed
      */
-    protected abstract String getDefaultImageUri();
+    protected abstract Drawable getDefaultImage();
 
     /**
-     * Returns the image uri of the list item.
+     * Returns the drawable image of the list item.
      *
      * @param item the item
-     * @return the image uri of the list item
+     * @return the drawable image of the list item
      */
-    protected abstract String getImageUri(Object item);
-
-    /**
-     * Returns the default image resource id of the list item.
-     *
-     * @return is 0 if the element should not be displayed
-     */
-    protected abstract int getDefaultImageId();
-
-    /**
-     * Returns the image resource id of the list item.
-     *
-     * @param item the item
-     * @return the image resource id of the list item
-     */
-    protected abstract int getImageId(Object item);
+    protected abstract Drawable getImage(T item);
 
     /**
      * Returns the default online state of the list item.
@@ -442,13 +305,5 @@ public abstract class ManagementListActivity extends ManagementActivity {
      * @param item the item
      * @return the online state of the item
      */
-    protected abstract OnlineState getOnlineState(Object item);
-
-    /**
-     * Returns the page title for the detail view of the given item.
-     *
-     * @param item is the item that will be displayed in the detail view
-     * @return the page title for the detail view
-     */
-    protected abstract String getDetailPageTitle(Object item);
+    protected abstract OnlineState getOnlineState(T item);
 }

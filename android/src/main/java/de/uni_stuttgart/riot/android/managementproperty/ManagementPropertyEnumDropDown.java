@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,7 @@ import de.uni_stuttgart.riot.thing.Property;
  * Created by Benny on 19.03.2015.
  * This class provides a Spinner ui element as enum drop down.
  */
-public class ThingPropertyEnumDropDown extends ThingProperty<Spinner, Enum<?>> {
+public class ManagementPropertyEnumDropDown extends ManagementProperty<Spinner, Enum<?>> {
 
     private Spinner spinner;
     private ArrayList<Enum<?>> enumList;
@@ -28,7 +28,7 @@ public class ThingPropertyEnumDropDown extends ThingProperty<Spinner, Enum<?>> {
      * @param activity is the current activity
      * @param enumList includes the possible enum values
      */
-    public ThingPropertyEnumDropDown(Property<Enum<?>> property, Activity activity, ArrayList<Enum<?>> enumList) {
+    public ManagementPropertyEnumDropDown(Property<Enum<?>> property, Activity activity, ArrayList<Enum<?>> enumList) {
         super(property);
         this.enumList = enumList;
         buildElement(activity);
@@ -41,7 +41,7 @@ public class ThingPropertyEnumDropDown extends ThingProperty<Spinner, Enum<?>> {
      * @param activity is the current activity
      * @param enumList includes the possible enum values
      */
-    public ThingPropertyEnumDropDown(Enum<?> value, Activity activity, ArrayList<Enum<?>> enumList) {
+    public ManagementPropertyEnumDropDown(Enum<?> value, Activity activity, ArrayList<Enum<?>> enumList) {
         super(value);
         this.enumList = enumList;
         buildElement(activity);

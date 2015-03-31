@@ -1,6 +1,6 @@
 package de.uni_stuttgart.riot.android.messages;
 
-import android.content.Context;
+import android.app.Activity;
 
 /**
  * InstanceManager Enum that saves all singleton instances of the application.
@@ -13,7 +13,7 @@ public enum IM {
      */
     INSTANCES(new NotificationFactory(), new MessageHandler());
 
-    private Context context;
+    private Activity activity;
     private NotificationFactory notificationFactory = null;
     private MessageHandler messageHandler = null;
 
@@ -47,22 +47,22 @@ public enum IM {
     }
 
     /**
-     * It is important that the instances gets the application context.
+     * It is important that the instances gets the application activity.
      *
-     * @param context the context of the application
+     * @param activity the main activity of the application
      */
-    public void setContext(Context context) {
-        this.context = context;
-        notificationFactory.setContext(context);
-        messageHandler.setContext(context);
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+        notificationFactory.setActivity(activity);
+        messageHandler.setActivity(activity);
     }
 
     /**
-     * Return the application context.
+     * Return the main activity of the application.
      *
-     * @return the context of the application
+     * @return the activity of the application
      */
-    public Context getContext() {
-        return this.context;
+    public Activity getActivity() {
+        return this.activity;
     }
 }

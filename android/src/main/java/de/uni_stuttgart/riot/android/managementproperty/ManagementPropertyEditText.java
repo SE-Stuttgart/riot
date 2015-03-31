@@ -1,9 +1,8 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -12,9 +11,9 @@ import de.uni_stuttgart.riot.thing.Property;
 
 /**
  * Created by Benny on 19.03.2015.
- * This class provides a EditText ui element for numbers.
+ * This class provides a EditText ui element.
  */
-public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
+public class ManagementPropertyEditText extends ManagementProperty<EditText, String> {
 
     private EditText editText;
 
@@ -24,7 +23,7 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
      * @param property for that the element will be implemented
      * @param activity is the current activity
      */
-    public ThingPropertyEditNumber(Property<Number> property, Activity activity) {
+    public ManagementPropertyEditText(Property<String> property, Activity activity) {
         super(property);
         buildElement(activity);
     }
@@ -35,22 +34,9 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
      * @param value    is used for non property elements
      * @param activity is the current activity
      */
-    public ThingPropertyEditNumber(Number value, Activity activity) {
+    public ManagementPropertyEditText(String value, Activity activity) {
         super(value);
         buildElement(activity);
-    }
-
-    /**
-     * Allow just positive or also negative numbers.
-     *
-     * @param allowNegative is true to allow negative numbers
-     */
-    public void setAllowNegative(boolean allowNegative) {
-        if (allowNegative) {
-            editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
-        } else {
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }
     }
 
     @Override
@@ -67,9 +53,6 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
 
         // Set layout params
         editText.setLayoutParams(editTextParams);
-
-        // Set default
-        setAllowNegative(true);
     }
 
     @Override
@@ -85,7 +68,7 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
 
             @Override
             public void afterTextChanged(Editable s) {
-                updateProperty(Double.parseDouble(s.toString()));
+                updateProperty(s.toString());
             }
         });
     }
@@ -96,7 +79,7 @@ public class ThingPropertyEditNumber extends ThingProperty<EditText, Number> {
     }
 
     @Override
-    protected void setValue(Number value) {
-        this.editText.setText(String.valueOf(value));
+    protected void setValue(String value) {
+        this.editText.setText(value);
     }
 }

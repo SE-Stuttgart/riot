@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.text.InputType;
@@ -9,7 +9,7 @@ import de.uni_stuttgart.riot.thing.Property;
  * Created by Benny on 19.03.2015.
  * This class provides a SeekBar ui element as fractional slider.
  */
-public class ThingPropertyFractionalSlider extends ThingPropertySlider<Double> {
+public class ManagementPropertyFractionalSlider extends ManagementPropertySlider<Double> {
 
     private int factor;
 
@@ -21,7 +21,7 @@ public class ThingPropertyFractionalSlider extends ThingPropertySlider<Double> {
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyFractionalSlider(Property<Double> property, Activity activity, double min, double max) {
+    public ManagementPropertyFractionalSlider(Property<Double> property, Activity activity, double min, double max) {
         super(property, activity, min, max);
     }
 
@@ -33,7 +33,7 @@ public class ThingPropertyFractionalSlider extends ThingPropertySlider<Double> {
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyFractionalSlider(Double value, Activity activity, double min, double max) {
+    public ManagementPropertyFractionalSlider(Double value, Activity activity, double min, double max) {
         super(value, activity, min, max);
     }
 

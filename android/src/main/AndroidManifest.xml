@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Required for fetching feed data. -->
+    <!-- Required for fetching feed itemList. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Required to register a SyncStatusObserver to display a "syncing..." progress indicator. -->
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
@@ -79,32 +79,32 @@
         <activity
             android:name=".management.ThingListActivity"
             android:parentActivityName="de.uni_stuttgart.riot.android.HomeScreen" >
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
+            <!-- Parent activity meta-itemList to support API level 7+ -->
+            <meta-itemList
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_stuttgart.riot.android.HomeScreen" />
         </activity>
         <activity
             android:name=".management.ThingDetailActivity"
             android:parentActivityName=".management.ThingListActivity" >
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
+            <!-- Parent activity meta-itemList to support API level 7+ -->
+            <meta-itemList
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".management.ThingListActivity" />
         </activity>
         <activity
             android:name=".management.UserListActivity"
             android:parentActivityName="de.uni_stuttgart.riot.android.HomeScreen" >
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
+            <!-- Parent activity meta-itemList to support API level 7+ -->
+            <meta-itemList
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_stuttgart.riot.android.HomeScreen" />
         </activity>
         <activity
             android:name=".management.UserDetailActivity"
             android:parentActivityName=".management.UserListActivity" >
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
+            <!-- Parent activity meta-itemList to support API level 7+ -->
+            <meta-itemList
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".management.UserListActivity" />
         </activity>
@@ -116,7 +116,7 @@
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <!-- This points to an XML file which describes our account service. -->
-            <meta-data
+            <meta-itemList
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
@@ -126,8 +126,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.PROVIDER_CHANGED" />
 
-                <data android:scheme="content" />
-                <data android:host="com.android.calendar" />
+                <itemList android:scheme="content" />
+                <itemList android:host="com.android.calendar" />
             </intent-filter>
         </receiver>
 
@@ -144,7 +144,7 @@
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
 
-            <meta-data
+            <meta-itemList
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/calendarsyncadapter" />
         </service>

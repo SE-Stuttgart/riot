@@ -9,31 +9,29 @@ import android.widget.ArrayAdapter;
 import java.util.List;
 
 /**
- * Is the list adapter for the list for the ManagementListFragment class.
+ * Is the list adapter for the list for the ManagementListActivity class.
  *
+ * @param <T> type of the handled object
  * @author Benny
  */
-public class ManagementListAdapter extends ArrayAdapter<Object> {
+public class ManagementListAdapter<T> extends ArrayAdapter<T> {
 
     private ManagementListActivity managementListActivity;
-    private Context context;
     private int resource;
-    private List<Object> data;
+    private List<T> itemList;
 
     /**
      * Constructor.
      *
      * @param managementListActivity is the fragment where the adapter was added
-     * @param context                is the application context
      * @param resource               it the resource id of the layout for the list item
-     * @param data                   is a list of data that will be displayed in the list
+     * @param itemList               is a list of items that will be displayed in the list
      */
-    public ManagementListAdapter(ManagementListActivity managementListActivity, Context context, int resource, List<Object> data) {
-        super(context, resource, data);
+    public ManagementListAdapter(ManagementListActivity managementListActivity, int resource, List<T> itemList) {
+        super(managementListActivity.getApplicationContext(), resource, itemList);
         this.managementListActivity = managementListActivity;
-        this.context = context;
         this.resource = resource;
-        this.data = data;
+        this.itemList = itemList;
     }
 
     @Override
@@ -41,12 +39,15 @@ public class ManagementListAdapter extends ArrayAdapter<Object> {
         // Get current row view
         View listRow = convertView;
         if (listRow == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) managementListActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             listRow = inflater.inflate(resource, parent, false);
         }
+        // Get item from the item list
+        T item = itemList.get(position);
 
-        // Set values of that item to the view elements
-        managementListActivity.doGetView(listRow, data.get(position));
+        // Get values of the item and save them
+        managementListActivity.buildListItem(item, listRow);
+
         return listRow;
     }
 }

@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.android.messages;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 public class MessageHandler {
 
     private Context context;
+    private Activity activity;
 
     /**
      * Constructor.
@@ -29,10 +31,20 @@ public class MessageHandler {
     /**
      * Saves the application context.
      *
-     * @param pContext the context of the application
+     * @param context the context of the application
      */
-    public void setContext(Context pContext) {
-        context = pContext;
+    private void setContext(Context context) {
+        this.context = context;
+    }
+
+    /**
+     * Saves the main activity.
+     *
+     * @param activity the main activity of the application
+     */
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+        setContext(this.activity.getApplicationContext());
     }
 
     /**
@@ -119,14 +131,20 @@ public class MessageHandler {
      * @param text     the message that will be shown
      * @param duration the time the message will visible
      */
-    private void showToast(String text, int duration) {
-        if (this.context == null) {
+    private void showToast(final String text, final int duration) {
+        if (this.context == null && this.activity != null) {
             // ToDo information!!!
             return;
         }
-        Toast.makeText(this.context, text, duration).show();
-        // ToDo: If app is in background show notification?
-        // ToDo: Show no notification if app is in foreground??
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, text, duration).show();
+                // ToDo: If app is in background show notification?
+                // ToDo: Show no notification if app is in foreground??
+            }
+        });
+
     }
 
     /**

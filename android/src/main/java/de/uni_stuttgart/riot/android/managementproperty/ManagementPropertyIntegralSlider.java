@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.text.InputType;
@@ -9,7 +9,7 @@ import de.uni_stuttgart.riot.thing.Property;
  * Created by Benny on 19.03.2015.
  * This class provides a SeekBar ui element as integral slider.
  */
-public class ThingPropertyIntegralSlider extends ThingPropertySlider<Integer> {
+public class ManagementPropertyIntegralSlider extends ManagementPropertySlider<Integer> {
 
     /**
      * Constructor.
@@ -19,7 +19,7 @@ public class ThingPropertyIntegralSlider extends ThingPropertySlider<Integer> {
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyIntegralSlider(Property<Integer> property, Activity activity, int min, int max) {
+    public ManagementPropertyIntegralSlider(Property<Integer> property, Activity activity, int min, int max) {
         super(property, activity, min, max);
     }
 
@@ -31,7 +31,7 @@ public class ThingPropertyIntegralSlider extends ThingPropertySlider<Integer> {
      * @param min      is the minimum possible value
      * @param max      is the maximum possible value
      */
-    public ThingPropertyIntegralSlider(Integer value, Activity activity, int min, int max) {
+    public ManagementPropertyIntegralSlider(Integer value, Activity activity, int min, int max) {
         super(value, activity, min, max);
     }
 

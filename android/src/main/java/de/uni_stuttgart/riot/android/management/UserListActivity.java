@@ -1,13 +1,12 @@
 package de.uni_stuttgart.riot.android.management;
 
-import java.io.IOException;
+import android.graphics.drawable.Drawable;
+
 import java.util.ArrayList;
 
 import de.uni_stuttgart.riot.android.R;
-import de.uni_stuttgart.riot.android.communication.ActivityServerConnection;
+import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
 import de.uni_stuttgart.riot.android.messages.IM;
-import de.uni_stuttgart.riot.clientlibrary.RequestException;
-import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.clientlibrary.client.UsermanagementClient;
 import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
@@ -17,91 +16,49 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
  *
  * @author Benny
  */
-public class UserListActivity extends ManagementListActivity {
+public class UserListActivity extends ManagementListActivity<User, UserDetailActivity> {
 
     @Override
-    protected void getAndDisplayListData() {
-        new ActivityServerConnection<ArrayList<Object>>(getActivity()) {
-            @Override
-            protected ArrayList<Object> executeRequest(ServerConnector serverConnector) throws IOException, RequestException {
-                try {
-                    return new ArrayList<Object>(new UsermanagementClient(serverConnector).getUsers());
-                    // ToDo I want to get an ArrayList instead of a Collection
-                } catch (Exception e) {
-                    IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
-                    IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
-                }
-                return null;
-            }
-
-            @Override
-            protected void onSuccess(ArrayList<Object> result) {
-                // ToDo do the same for the thing views or change it on some way (to use the ManagementActivity)
-                displayData(result);
-
-                // End processing animation
-                startProcessingAnimation(false);
-            }
-        }.execute();
-    }
-
-    @Override
-    protected ManagementListActivity getActivity() {
-        return this;
-    }
-
-    @Override
-    protected Class getOnItemClickActivity() {
+    protected Class<UserDetailActivity> getOnItemClickActivity() {
         return UserDetailActivity.class;
     }
 
     @Override
-    protected long getId(Object item) {
-        return ((User) item).getId();
+    protected long getId(User item) {
+        return item.getId();
     }
 
     @Override
     protected String getDefaultSubject() {
-        return getString(R.string.user_name);
+        return getString(R.string.default_user_subject);
     }
 
     @Override
-    protected String getSubject(Object item) {
-        return ((User) item).getUsername();
+    protected String getSubject(User item) {
+        return item.getUsername();
     }
 
     @Override
     protected String getDefaultDescription() {
-        return getString(R.string.user_mail);
+        return getString(R.string.default_user_description);
     }
 
     @Override
-    protected String getDescription(Object item) {
-        return ((User) item).getEmail();
+    protected String getDescription(User item) {
+        return item.getEmail();
     }
 
     @Override
-    protected String getDefaultImageUri() {
-        return null;
+    protected Drawable getDefaultImage() {
+        return getResources().getDrawable(android.R.drawable.ic_menu_gallery);
     }
 
     @Override
-    protected String getImageUri(Object item) {
-        // TODO FIX -> this is just a test!!
-        if (((User) item).getId() == 1) {
-            return "http://crackberry.com/sites/crackberry.com/files/styles/large/public/topic_images/2013/ANDROID.png?itok=xhm7jaxS"; // TODO THIS IS A TEST!!
+    protected Drawable getImage(User item) {
+        if (item.getId() == 1) { // TODO this is for testing....
+            return getDrawableByUri("http://crackberry.com/sites/crackberry.com/files/styles/large/public/topic_images/2013/ANDROID.png?itok=xhm7jaxS");
         }
-        return null;
-    }
-
-    @Override
-    protected int getDefaultImageId() {
-        return android.R.drawable.ic_menu_gallery;
-    }
-
-    @Override
-    protected int getImageId(Object item) {
-        return 0;
+        return getDrawableLetter(item.getUsername(), item.getEmail());
     }
 
     @Override
@@ -110,45 +67,32 @@ public class UserListActivity extends ManagementListActivity {
     }
 
     @Override
-    protected OnlineState getOnlineState(final Object item) {
-        if (item != null) {
-            new ActivityServerConnection<OnlineState>(getActivity()) {
-                @Override
-                protected OnlineState executeRequest(ServerConnector serverConnector) throws IOException, RequestException {
-                    try {
-                        return new UsermanagementClient(serverConnector).getOnlineState(((User) item).getId());
-                    } catch (Exception e) {
-                        IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
-                        // IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onSuccess(OnlineState result) {
-
-                }
-            }.execute();
+    protected OnlineState getOnlineState(final User item) {
+        try {
+            // TODO Testen!!!!!!
+            return new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(item.getId());
+        } catch (Exception e) {
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
+            IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
         }
         return null;
     }
 
     @Override
-    protected String getDetailPageTitle(Object item) {
-        // Get the name of the item as title
-        if (isInstanceOf(item)) {
-            return ((User) item).getUsername();
+    protected void setDefaultData() {
+        setTitle(getString(R.string.user_list));
+        setHomeLogo(android.R.drawable.ic_menu_sort_by_size);
+    }
+
+    @Override
+    protected void loadData() {
+        try {
+            // Get all users and save them
+            super.itemList = new ArrayList<User>(new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getUsers());
+            // FIXME - I want to get an ArrayList instead of a Collection (for the list view)
+        } catch (Exception e) {
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
+            IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
-        return null;
-    }
-
-    @Override
-    protected String getPageTitle() {
-        return getResources().getString(R.string.user_list);
-    }
-
-    @Override
-    protected boolean isInstanceOf(Object item) {
-        return (item instanceof User);
     }
 }

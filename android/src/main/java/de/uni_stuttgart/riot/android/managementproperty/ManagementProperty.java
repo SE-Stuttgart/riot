@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.android.thingproperty;
+package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,7 @@ import de.uni_stuttgart.riot.thing.WritableProperty;
  * @param <T> stands for the ui element type.
  * @param <V> stands for the value type of the ui element.
  */
-public abstract class ThingProperty<T, V> {
+public abstract class ManagementProperty<T, V> {
 
     protected Property<V> property;
     private ActivityPropertyListener<V> propertyListener;
@@ -27,7 +27,7 @@ public abstract class ThingProperty<T, V> {
      *
      * @param property for that the element will be implemented
      */
-    public ThingProperty(final Property<V> property) {
+    public ManagementProperty(final Property<V> property) {
         this.property = property;
     }
 
@@ -36,7 +36,7 @@ public abstract class ThingProperty<T, V> {
      *
      * @param value is used for non property elements
      */
-    public ThingProperty(final V value) {
+    public ManagementProperty(final V value) {
         this.value = value;
     }
 
