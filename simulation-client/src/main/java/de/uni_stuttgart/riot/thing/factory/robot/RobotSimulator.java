@@ -77,7 +77,7 @@ public class RobotSimulator extends Simulator<Robot> {
             delay(Robot.ACTION_DURATION, () -> {
                 // Processing is done.
                 // fire events on the factory machine
-                    executeEvent(new EventInstance(getThing().getMaterialTankIsFilled()));
+                    executeEvent(new EventInstance(getThing().getMaterialTankIsFilledEvent()));
 
                     changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.WAITING);
                     changePropertyValue(getThing().getTransportDurationProperty(), 0);

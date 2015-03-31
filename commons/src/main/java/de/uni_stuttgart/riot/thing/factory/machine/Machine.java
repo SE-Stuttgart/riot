@@ -17,7 +17,7 @@ public class Machine extends Thing {
     /**
      * The size of the material tank (in number of pieces).
      */
-    static final int MATERIAL_TANK_SIZE = 50;
+    public static final int MATERIAL_TANK_SIZE = 50;
 
     /**
      * The size of the processed pieces tank (in number of pieces).

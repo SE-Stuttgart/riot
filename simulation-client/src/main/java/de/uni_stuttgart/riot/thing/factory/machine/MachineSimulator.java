@@ -190,7 +190,7 @@ public class MachineSimulator extends Simulator<Machine> {
 
         try {
             Robot robot = super.getOtherThing(this.thingToSubscribeId, Robot.class);
-            robot.getMaterialTankIsFilled().register(materialTankIsFilledListener);
+            robot.getMaterialTankIsFilledEvent().register(materialTankIsFilledListener);
             robot.getProcessedPiecesTankIsEmptyEvent().register(processedPiecesTankIsEmptyListener);
         } catch (NotFoundException | IOException e) {
             logger.debug("Could not register to robot events");
@@ -204,7 +204,7 @@ public class MachineSimulator extends Simulator<Machine> {
 
         try {
             Robot robot = super.getOtherThing(this.thingToSubscribeId, Robot.class);
-            robot.getMaterialTankIsFilled().unregister(materialTankIsFilledListener);
+            robot.getMaterialTankIsFilledEvent().unregister(materialTankIsFilledListener);
             robot.getProcessedPiecesTankIsEmptyEvent().unregister(processedPiecesTankIsEmptyListener);
         } catch (NotFoundException | IOException e) {
             logger.debug("Could not unregister from robot events");

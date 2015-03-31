@@ -112,7 +112,7 @@ public class Robot extends Thing {
         return processedPiecesTankIsEmpty;
     }
 
-    public Event<EventInstance> getMaterialTankIsFilled() {
+    public Event<EventInstance> getMaterialTankIsFilledEvent() {
         return materialTankIsFilled;
     }
 }
