@@ -124,11 +124,17 @@
 					<files>
 						<file>thing</file>
 						<file>configuration</file>
+						<file>rules</file>
+						<file>common</file>
+						<file>administration</file>
+						<file>user</file>
+						<file>notification</file>
 					</files>
 					<languages>
 						<language>de</language>
 						<language>en</language>
 					</languages>
+					<defaultLanguage>en</defaultLanguage>
 				</configuration>
 				<executions>
 					<execution>

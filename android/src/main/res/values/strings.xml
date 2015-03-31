@@ -40,8 +40,8 @@
     <string name="acc_host">Host:</string>
     <string name="acc_port">Port:</string>
     <string name="acc_path">Path:</string>
-    <string name="user_role">User-Role:</string>
-    <string name="user_permission">User-Permissions:</string>
+    <string name="lbl_user_role">User-Role:</string>
+    <string name="lbl_user_permission">User-Permissions:</string>
     <string name="user_edit">Edit User</string>
 
     <!-- Filter (all entries for language please insert here) -->
@@ -86,7 +86,7 @@
     <string name="device_name">Device Name</string>
     <string name="device_detail">Device Detail</string>
     <string name="thing_id">Id</string>
-    <string name="thing_name">Thing Name</string>
+    <string name="lbl_thing_name">Thing Name</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
 

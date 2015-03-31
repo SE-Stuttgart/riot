@@ -61,7 +61,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_role"
+            android:text="@string/lbl_user_role"
             android:id="@+id/userRoleText" />
 
         <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner
@@ -73,7 +73,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_permission"
+            android:text="@string/lbl_user_permission"
             android:id="@+id/userPermissionText" />
 
         <de.uni_stuttgart.riot.android.management.MultiSelectionSpinner

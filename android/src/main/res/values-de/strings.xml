@@ -28,8 +28,8 @@
     <string name="acc_login">Login</string>
     <string name="acc_username">Benutzername:</string>
     <string name="acc_password">Passwort:</string>
-    <string name="user_role">Benutzer-Rolle:</string>
-    <string name="user_permission">Benutzer-Rechte:</string>
+    <string name="lbl_user_role">Benutzer-Rolle:</string>
+    <string name="lbl_user_permission">Benutzer-Rechte:</string>
 
     <!-- Fragment filter (all entries for language please insert here) -->
     <string name="desc_filter_error">Zeigt alle Fehler Meldungen an</string>
@@ -62,7 +62,8 @@
     <string name="processDialogExecute">Daten werden geladen …</string>
     <string name="user_list">User Liste</string>
     <string name="device_list">Geräte Liste</string>
-    <string name="thing_list">Ding List</string>
+    <string name="thing_list">Thing-List</string>
+    <string name="lbl_thing_name">Thing-Name</string>
     <string name="user_detail">User Detail</string>
     <string name="user_back">Zurück</string>
     <string name="user_id">Id</string>

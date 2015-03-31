@@ -18,6 +18,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.xml.PrettyPrintXMLWriter;
 import org.codehaus.plexus.util.xml.XMLWriter;
 
@@ -40,9 +41,13 @@ public class ConvertMessagesToAndroidMojo extends AbstractMojo {
     @Parameter(required = true)
     List<String> languages;
 
+    @Parameter(required = true)
+    String defaultLanguage;
+
     @Parameter(required = false, defaultValue = "${project.basedir}/src/main/res/")
     private String outputBaseDirectory;
 
+    // CHECKSTYLE:OFF NCSS
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -53,12 +58,20 @@ public class ConvertMessagesToAndroidMojo extends AbstractMojo {
         }
 
         // Create subdirectories for languages, if necessary
+        File defaultDirectory = new File(outputDirectory, "values");
+        if (!defaultDirectory.exists()) {
+            if (!defaultDirectory.mkdir()) {
+                throw new MojoExecutionException("Could not create output directory " + defaultDirectory);
+            }
+        } else if (!defaultDirectory.isDirectory()) {
+            throw new MojoExecutionException("Target " + defaultDirectory + " is not a directory!");
+        }
         Map<String, File> languageDirectories = new HashMap<String, File>();
         for (String language : languages) {
             File languageDirectory = new File(outputDirectory, "values-" + language);
             if (!languageDirectory.exists()) {
                 if (!languageDirectory.mkdir()) {
-                    throw new MojoExecutionException("Could not create outut directory " + languageDirectory);
+                    throw new MojoExecutionException("Could not create output directory " + languageDirectory);
                 }
             } else if (!languageDirectory.isDirectory()) {
                 throw new MojoExecutionException("Target " + languageDirectory + " is not a directory!");
@@ -88,6 +101,15 @@ public class ConvertMessagesToAndroidMojo extends AbstractMojo {
                         fileWriter.close();
                     } catch (IOException e) {
                         // Fail silently, it is not that important to close the file here.
+                    }
+                }
+
+                if (language.equals(defaultLanguage)) {
+                    File defaultLangFile = new File(defaultDirectory, file + "_generated.xml");
+                    try {
+                        FileUtils.copyFile(outFile, defaultLangFile);
+                    } catch (IOException e) {
+                        throw new MojoExecutionException("Could not copy file", e);
                     }
                 }
             }
