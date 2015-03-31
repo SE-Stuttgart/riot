@@ -24,9 +24,9 @@ public class Radiator extends Thing {
     private final Property<Double> measuredTemp = newProperty("measuredTemp", Double.class, DEFAULT_CONFIGURED_TEMP, UIHint.editNumber());
 
     /**
-     * Constructor
+     * Constructor.
      * 
-     * @param behavior
+     * @param behavior .
      */
     public Radiator(ThingBehavior behavior) {
         super(behavior);

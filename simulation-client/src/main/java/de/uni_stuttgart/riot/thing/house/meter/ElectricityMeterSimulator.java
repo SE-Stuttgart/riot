@@ -2,11 +2,20 @@ package de.uni_stuttgart.riot.thing.house.meter;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+/**
+ * Simulates a electricity meter that measures the current and overall consumption.
+ *
+ */
 public class ElectricityMeterSimulator extends MeterSimulator {
 
     private static final double VARIATION = 0;
     private static final double AVERAGE_CONSUMPTION = 0;
 
+    /**
+     * Constructor for {@link ElectricityMeter}.
+     * @param thing .
+     * @param scheduler .
+     */
     public ElectricityMeterSimulator(Meter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
     }

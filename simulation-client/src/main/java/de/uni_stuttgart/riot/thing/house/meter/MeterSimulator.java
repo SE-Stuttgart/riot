@@ -11,6 +11,9 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
  */
 public abstract class MeterSimulator extends Simulator<Meter> {
 
+    /**
+     * The period in that the consumption is updated
+     */
     private static final long CONSUMPTION_UPDATE_PERIOD = 500;
 
     private static final long HOUR_IN_MILLI = 3600000;
@@ -28,6 +31,9 @@ public abstract class MeterSimulator extends Simulator<Meter> {
         this.scheduleConsumptionTask();
     }
 
+    /**
+     * Schedules the cosumption task that updates the current and overall consumption based on the average consumption and variation. 
+     */
     private void scheduleConsumptionTask() {
         this.scheduleAtFixedRate(() -> {
             if (!MeterSimulator.this.getThing().isBlocked()) {
@@ -46,12 +52,14 @@ public abstract class MeterSimulator extends Simulator<Meter> {
 
     /**
      * Getter for the current average consumption.
+     * 
      * @return the average.
      */
     protected abstract double getAverageConsumption();
 
     /**
      * Getter for the current variation in the consumption.
+     * 
      * @return the variation
      */
     protected abstract double getConsumptionVariation();
