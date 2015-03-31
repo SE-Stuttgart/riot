@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.rule;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -18,7 +19,9 @@ import de.uni_stuttgart.riot.thing.ThingDescription;
  * 
  * @author Philipp Keck
  */
-public class RuleDescription {
+public class RuleDescription implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String type;
     private final List<ParameterDescription> parameters;

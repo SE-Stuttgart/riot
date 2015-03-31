@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -21,7 +22,9 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  * 
  * @author Philipp Keck
  */
-public class ParameterDescription {
+public class ParameterDescription implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String name;
     private final boolean isReference;

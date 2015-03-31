@@ -50,6 +50,16 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name="de.uni_stuttgart.riot.android.rules.RuleListActivity"
+            android:parentActivityName="de.uni_stuttgart.riot.android.HomeScreen"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.uni_stuttgart.riot.android.rules.RuleDetailActivity"
+            android:parentActivityName="de.uni_stuttgart.riot.android.rules.RuleListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name="de.uni_stuttgart.riot.android.SettingScreen"
             android:screenOrientation="portrait" >
         </activity>

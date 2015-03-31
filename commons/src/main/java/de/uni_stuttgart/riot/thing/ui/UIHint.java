@@ -1,5 +1,9 @@
 package de.uni_stuttgart.riot.thing.ui;
 
+import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -30,7 +34,8 @@ import de.uni_stuttgart.riot.thing.rest.ThingPermission;
         @Type(value = UIHint.ReferenceDropDown.class, name = "ReferenceDropDown"), //
         @Type(value = UIHint.ThingDropDown.class, name = "ThingReferenceDropDown"), //
 })
-public abstract class UIHint {
+@SuppressWarnings("serial")
+public abstract class UIHint implements Serializable {
 
     /**
      * Could be used by the UI to group or order the elements.
@@ -49,7 +54,7 @@ public abstract class UIHint {
      * @return A corresponding {@link UIHint} or <tt>null</tt> if none was set.
      */
     // CHECKSTYLE: CyclomaticComplexity OFF
-    @SuppressWarnings({ "unchecked", "rawtypes" }) 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static UIHint fromAnnotation(Parameter annotation, java.lang.reflect.Type fieldType, java.lang.reflect.Type valueType) { // NOCS
         UIHint result = null;
         if (annotation.ui() == Parameter.NoHint.class) {
@@ -354,6 +359,19 @@ public abstract class UIHint {
          * The permissions that the user needs on the things that can be chosen.
          */
         public ThingPermission[] requiredPermissions;
+
+        /**
+         * Gets the permissions as a set.
+         * 
+         * @return The permissions that the user needs on the things that can be chosen.
+         */
+        public Set<ThingPermission> getThingPermissions() {
+            if (requiredPermissions == null || requiredPermissions.length == 0) {
+                return EnumSet.noneOf(ThingPermission.class);
+            } else {
+                return EnumSet.of(requiredPermissions[0], requiredPermissions);
+            }
+        }
     }
 
 }

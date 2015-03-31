@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.rule;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,9 @@ import de.uni_stuttgart.riot.thing.ThingState;
  * 
  * @author Philipp Keck
  */
-public class RuleConfiguration extends Storable {
+public class RuleConfiguration extends Storable implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String type;
     private RuleStatus status;

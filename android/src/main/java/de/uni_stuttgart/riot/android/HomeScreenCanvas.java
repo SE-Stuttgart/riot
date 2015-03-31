@@ -20,6 +20,7 @@ import de.uni_stuttgart.riot.android.account.LoginActivity;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
+import de.uni_stuttgart.riot.android.rules.RuleListActivity;
 import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -74,6 +75,7 @@ public class HomeScreenCanvas extends View {
         paint.setTextSize(fontSize);
 
         buttonList = database.getHomeScreenButtonCoordinates(this);
+        // TODO Localization
         if (buttonList.size() == 0) {
             buttonList.add(new HomeScreenButton(this, 0, "Car", 100, 100, R.drawable.car));
 
@@ -82,6 +84,8 @@ public class HomeScreenCanvas extends View {
             buttonList.add(new HomeScreenButton(this, 2, "Coffee", 100, 300, R.drawable.coffee));
 
             buttonList.add(new HomeScreenButton(this, 3, "Calendar", 300, 300, R.drawable.calendar));
+
+            buttonList.add(new HomeScreenButton(this, 10, "Rules", 200, 400, R.drawable.rules));
 
             buttonList.add(new HomeScreenButton(this, 4, "Settings", 100, 500, R.drawable.settings));
 
@@ -249,6 +253,9 @@ public class HomeScreenCanvas extends View {
                     Intent coffeeIntent = new Intent(homeScreen, CoffeeMachine.class);
                     coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(coffeeIntent);
+                } else if (selectedButton.getButtonDescription().equals("Rules")) { // Special intent for the rules management
+                    Intent rulesIntent = new Intent(homeScreen, RuleListActivity.class);
+                    homeScreen.startActivity(rulesIntent);
                 } else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
                     Intent logoutIntend = new Intent(homeScreen, LoginActivity.class);
                     //TODO should we send an logout request or just show the loginWindow?

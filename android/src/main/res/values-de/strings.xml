@@ -4,6 +4,9 @@
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
     <string name="settings">Einstellungen</string>
+    <string name="pleaseWait">Bitte warten &#8230;</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">Löschen</string>
 
     <!-- Main (all entries for main please insert here) -->
     <string name="refresh">Aktualisieren</string>
@@ -74,4 +77,12 @@
     <string name="thing_id">Id</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
+    
+    <!-- Rules -->
+    <string name="rules_emptytext">Sie haben noch keine Regeln angelegt. Tippen Sie hier um eine neue Regel hinzuzufügen:</string>
+    <string name="rules_btnAddRule">Neue Regel hinzufügen</string>
+    <string name="rules_chooseType">Regel-Typ wählen</string>
+    <string name="rules_errorMissingName">Bitte den Namen angeben!</string>
+    <string name="rules_errorMissingParameter">Bitte den Parameter angeben:</string>
+    
 </resources>

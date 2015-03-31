@@ -4,6 +4,9 @@
     <!-- Default entries -->
     <string name="app_name">RIOT</string>
     <string name="settings">Settings</string>
+    <string name="pleaseWait">Please wait &#8230;</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 
     <!-- Main (all entries for main please insert here) -->
     <string name="filter_appointment">Appointments</string>
@@ -89,5 +92,12 @@
     <string name="lbl_thing_name">Thing Name</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
+
+    <!-- Rules -->
+    <string name="rules_emptytext">You don\'t have any rules yet. Tap here to add one:</string>
+    <string name="rules_btnAddRule">Add new rule</string>
+    <string name="rules_chooseType">Choose rule type</string>
+    <string name="rules_errorMissingName">Please specify the name!</string>
+    <string name="rules_errorMissingParameter">Please specify the parameter </string>
 
 </resources>
