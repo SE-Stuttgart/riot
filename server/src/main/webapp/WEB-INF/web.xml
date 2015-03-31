@@ -18,6 +18,9 @@
 	<listener>
 		<listener-class>de.uni_stuttgart.riot.websocket.server.WebSocketServletContextListener</listener-class>
 	</listener>
+	<listener>
+		<listener-class>de.uni_stuttgart.riot.rule.server.RuleLogicStarter</listener-class>
+	</listener>
 	<filter>
 		<filter-name>ShiroFilter</filter-name>
 		<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
