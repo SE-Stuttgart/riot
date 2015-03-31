@@ -321,7 +321,7 @@ public class ThingService {
      * @throws DatasourceFindException
      *             when retrieving the data fails
      */
-    //FIXME: should use query attribute filtering like the base resource
+    // FIXME: should use query attribute filtering like the base resource
     @POST
     @Path("/filter")
     public Collection<ThingInformation> getBy(FilteredRequest request, @QueryParam("return") List<Field> fields) throws DatasourceFindException {
@@ -577,6 +577,9 @@ public class ThingService {
     @Path("{id}/notify")
     public Response notifyEvent(@PathParam("id") long thingId, EventInstance eventInstance) throws DatasourceFindException {
         assertPermitted(thingId, ThingPermission.EXECUTE);
+        if (thingId != eventInstance.getThingId()) {
+            throw new IllegalArgumentException("Mismatching Thing ID!");
+        }
         this.logic.fireEvent(eventInstance);
         return Response.noContent().build();
     }
@@ -595,6 +598,9 @@ public class ThingService {
     @Path("{id}/action")
     public void submitAction(@PathParam("id") long thingId, ActionInstance actionInstance) throws DatasourceFindException {
         assertPermitted(thingId, ThingPermission.CONTROL);
+        if (thingId != actionInstance.getThingId()) {
+            throw new IllegalArgumentException("Mismatching thing ID!");
+        }
         this.logic.submitAction(actionInstance);
     }
 

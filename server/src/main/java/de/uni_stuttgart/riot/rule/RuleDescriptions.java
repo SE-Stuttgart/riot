@@ -123,6 +123,10 @@ public abstract class RuleDescriptions {
     private static void discoverRulesOnClassPath() {
         discoveredClasspath = true;
         for (Class<?> clazz : CPScanner.scanClasses(new ClassFilter().classOnly().packageName("de.uni_stuttgart.riot.*").superClass(Rule.class))) {
+            if (clazz.getPackage().getName().startsWith("de.uni_stuttgart.riot.rule.test")) {
+                // Eclipse-GlassFish plugin will also deploy src/test/java, so we need to exclude this here.
+                continue;
+            }
             get(clazz.asSubclass(Rule.class));
         }
     }

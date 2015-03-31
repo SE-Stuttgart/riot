@@ -365,12 +365,14 @@ public abstract class Rule {
     /**
      * Convenience method for creating event listeners with lambda expressions.
      * 
+     * @param <E>
+     *            The type of the event instance.
      * @param runnable
      *            The lambda expression which is a simple void method with no parameters that may throw any of the supported exceptions.
      * @return An event listener. Please save this instance, you won't be able to unregister the listener if you call
      *         {@link #onEvent(ExceptionHandledRunnable)} a second time.
      */
-    protected EventListener<EventInstance> onEvent(ExceptionHandledRunnable runnable) {
+    protected <E extends EventInstance> EventListener<E> onEvent(ExceptionHandledRunnable runnable) {
         return (event, instance) -> {
             try {
                 runnable.run();
