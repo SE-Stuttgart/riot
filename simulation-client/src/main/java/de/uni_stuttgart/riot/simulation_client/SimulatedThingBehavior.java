@@ -12,6 +12,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.client.ExecutingThingBehavior;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 
@@ -123,4 +124,22 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
         return super.getClient();
     }
 
+    /**
+     * Gets another thing by its id.
+     *
+     * @param <T>
+     *            the generic type
+     * @param id
+     *            the id
+     * @param expectedType
+     *            the expected type
+     * @return the other thing
+     * @throws NotFoundException
+     *             the not found exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    protected <T extends Thing> T getOtherThing(int id, Class<T> expectedType) throws NotFoundException, IOException {
+        return super.getOtherThing(id, expectedType);
+    }
 }

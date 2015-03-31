@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -11,6 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javafx.application.Platform;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -346,4 +348,32 @@ public abstract class Simulator<T extends Thing> {
         getBehavior().executeEvent(new EventInstance(event));
     }
 
+    /**
+     * Gets another thing by its id.
+     *
+     * @param <X>
+     *            the generic type
+     * @param id
+     *            the id
+     * @param expectedType
+     *            the expected type
+     * @return the other thing
+     * @throws NotFoundException
+     *             the not found exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     */
+    protected <X extends Thing> X getOtherThing(int id, Class<X> expectedType) throws NotFoundException, IOException {
+        return getBehavior().getOtherThing(id, expectedType);
+    }
+
+    /**
+     * Subscribe to events fired by the thing with the given id.
+     *
+     * @param thingId
+     *            the thing to subscribe id
+     */
+    protected void subscribeEvents(int thingId) {
+
+    }
 }
