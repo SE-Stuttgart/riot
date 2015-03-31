@@ -299,5 +299,5 @@ public class HomeScreenCanvas extends View {
         }
 
     }
-
+    
 }
