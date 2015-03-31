@@ -1,5 +1,6 @@
 package de.uni_stuttgart.riot.thing.house;
 
+import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
@@ -16,6 +17,8 @@ public class RollerShutter extends Thing {
      */
     private final Property<Double> level = newProperty("level", Double.class, 0.0, UIHint.percentageSlider());
 
+    private final Action<AdjustShutterPostion> adjustAction = newAction("adjustAction", AdjustShutterPostion.class);
+    
     /**
      * Constructor.
      * 
@@ -41,6 +44,14 @@ public class RollerShutter extends Thing {
      */
     public double getLevel() {
         return level.get();
+    }
+
+    /**
+     * Getter for the {@link AdjustShutterPostion} Action.
+     * @return the adjustAction
+     */
+    public Action<AdjustShutterPostion> getAdjustAction() {
+        return adjustAction;
     }
 
 }

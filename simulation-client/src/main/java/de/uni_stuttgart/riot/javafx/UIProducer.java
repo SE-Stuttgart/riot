@@ -151,6 +151,7 @@ public abstract class UIProducer {
      */
     private static Slider produceIntegralSlider(Property<Number> property, long min, long max) {
         Slider slider = new Slider();
+        slider.setShowTickLabels(true);
         slider.setMinorTickCount(0);
         slider.setMajorTickUnit(1.0);
         slider.setSnapToTicks(true);
