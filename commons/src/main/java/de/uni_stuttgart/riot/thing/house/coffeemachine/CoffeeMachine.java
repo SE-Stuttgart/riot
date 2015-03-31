@@ -22,12 +22,12 @@ public class CoffeeMachine extends Thing {
     /**
      * The size of the water tank in milliliters.
      */
-    static final double WATER_TANK_SIZE = 1000;
+    public static final double WATER_TANK_SIZE = 1000;
 
     /**
      * The size of the bean tank (in number of beans).
      */
-    static final int BEAN_TANK_SIZE = 500;
+    public static final int BEAN_TANK_SIZE = 500;
 
     /**
      * The on/off switch, where false is off.

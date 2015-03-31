@@ -29,6 +29,7 @@ import de.uni_stuttgart.riot.rule.RuleConfiguration;
 import de.uni_stuttgart.riot.rule.RuleDescription;
 import de.uni_stuttgart.riot.rule.RuleDescriptions;
 import de.uni_stuttgart.riot.rule.RuleStatus;
+import de.uni_stuttgart.riot.rule.house.AutoRefillRule;
 import de.uni_stuttgart.riot.rule.test.TestAdditionRule;
 import de.uni_stuttgart.riot.rule.test.TestSchedulingRule;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
@@ -187,14 +188,10 @@ public class RuleLogicTest extends BaseDatabaseTest {
         scannedField.set(null, false);
 
         Collection<RuleDescription> descriptions = RuleDescriptions.getAll(true);
-        assertThat(descriptions, hasItem(new CustomMatcher<RuleDescription>("A TestAdditionRule") {
+        // Note that the test rules are not discovered on purpose.
+        assertThat(descriptions, hasItem(new CustomMatcher<RuleDescription>("The AutoRefillRule") {
             public boolean matches(Object item) {
-                return item instanceof RuleDescription && ((RuleDescription) item).getType().equals(TestAdditionRule.class.getName());
-            }
-        }));
-        assertThat(descriptions, hasItem(new CustomMatcher<RuleDescription>("A TestSchedulingRule") {
-            public boolean matches(Object item) {
-                return item instanceof RuleDescription && ((RuleDescription) item).getType().equals(TestSchedulingRule.class.getName());
+                return item instanceof RuleDescription && ((RuleDescription) item).getType().equals(AutoRefillRule.class.getName());
             }
         }));
     }
