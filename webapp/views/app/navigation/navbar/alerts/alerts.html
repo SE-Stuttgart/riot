@@ -1,7 +1,8 @@
 <li class="alerts dropdown">
   <a class="dropdown-toggle" href="">
-    <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
-    <span ng-if="notifications.length > 0" style="background-color: red" class="badge">{{ notifications.length }}</span>
+    <span ng-if="notifications.length > 0" class="badge">{{ notifications.length }}</span>
+    <i class="fa fa-bell fa-fw"></i>
+    <i class="fa fa-caret-down"></i>
   </a>
   <ul class="dropdown-menu">
     <li ng-repeat-start="notification in notifications | limitTo:5:0">
@@ -13,7 +14,9 @@
       </a>
     </li>
     <li ng-repeat-end class="divider"></li>
-    <li ng-if="notifications.length == 0">{{ 'notification.noUnreadNotifications' | i18n }}</li>
+    <li class="no-notifications" ng-if="notifications.length == 0">
+      <strong>{{ 'notification.no_new_notifications' | i18n }}</strong>
+    </li>
     <li ng-if="notifications.length == 0" class="divider"></li>
     <li>
       <a class="text-center" ui-sref="app.notifications">

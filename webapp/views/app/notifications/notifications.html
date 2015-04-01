@@ -6,7 +6,7 @@
   </div>
 
   <div>
-    <button class="btn btn-success dismiss-btn" ng-if="log.notifications.length > 0" ng-click="dismissNotifications()">{{ 'notification.dismissAllItems' | i18n }}</button>   
+    <button class="btn btn-success dismiss-btn pull-right" ng-if="notifications.length" ng-click="dismissNotifications()">{{ 'notification.dismissAllItems' | i18n }}</button>   
     <div infinite-scroll="fetchNotificationsAndThings()">
       <div>
         <div ng-if="!notifications.length"><strong>{{ 'notification.no_new_notifications' | i18n }}</strong></div>
