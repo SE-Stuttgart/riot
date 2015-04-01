@@ -14,6 +14,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
+import de.uni_stuttgart.riot.thing.factory.ThingStatusEvent;
 import de.uni_stuttgart.riot.thing.factory.robot.Robot;
 
 //CHECKSTYLE: MagicNumber OFF
@@ -46,10 +47,19 @@ public class MachineSimulator extends Simulator<Machine> {
 
     private void fireOutOfMaterial() {
         executeEvent(new OutOfMaterial(getThing().getOutOfMaterialEvent(), getThing().getMaterialTank()));
+        fireStatusChangedEvent();
     }
 
     private void fireFullProcessedPiecesTank() {
         executeEvent(new FullProcessedPiecesTank(getThing().getFullProcessedPiecesTankEvent(), getThing().getProcessedPiecesTank()));
+        fireStatusChangedEvent();
+    }
+
+    /**
+     * Fires event for a machine status change.
+     */
+    private void fireStatusChangedEvent() {
+        executeEvent(new ThingStatusEvent(getThing().getStatusChangedEvent(), getThing().getMachineStatus().toString()));
     }
 
     @Override
@@ -60,13 +70,15 @@ public class MachineSimulator extends Simulator<Machine> {
             int newValue = Math.min(Machine.MATERIAL_TANK_SIZE, getThing().getMaterialTank() + refillAmount);
             changePropertyValue(getThing().getMaterialTankProperty(), newValue);
             if (getThing().getMachineStatus() == MachineStatus.OUT_OF_MATERIAL) {
-                changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.WAITING);
+                changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.IDLE);
+                fireStatusChangedEvent();
             }
 
         } else if (action == getThing().getEmptyProcessedPiecesTankAction()) { // empty processed pieces
             changePropertyValue(getThing().getProcessedPiecesTankProperty(), 0);
             if (getThing().getMachineStatus() == MachineStatus.FULL) {
-                changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.WAITING);
+                changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.IDLE);
+                fireStatusChangedEvent();
             }
 
         } else if (action == getThing().getPressStartAction()) { // pressed start
@@ -81,7 +93,7 @@ public class MachineSimulator extends Simulator<Machine> {
      * Starts processing at the factory machine.
      */
     private synchronized void startPressed() {
-        if (getThing().getMachineStatus() != MachineStatus.WAITING || !getThing().isPowerOn()) {
+        if (getThing().getMachineStatus() != MachineStatus.IDLE || !getThing().isPowerOn()) {
             // Ignore if not waiting.
             return;
         }
@@ -103,6 +115,7 @@ public class MachineSimulator extends Simulator<Machine> {
 
         // Start the machine.
         changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.RUNNING);
+        fireStatusChangedEvent();
 
         // calculates how many pieces can be produced based on material and processed pieces tank
         int nPiecesToProduce = getThing().getMaterialTank();
@@ -136,7 +149,8 @@ public class MachineSimulator extends Simulator<Machine> {
                 }
 
                 if (getThing().getMachineStatus() == MachineStatus.RUNNING) {
-                    changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.WAITING);
+                    changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.IDLE);
+                    fireStatusChangedEvent();
                 }
                 materialFuture = null;
                 processedPiecesFuture = null;
@@ -163,7 +177,7 @@ public class MachineSimulator extends Simulator<Machine> {
             materialFuture = null;
         }
         // Stops the machine.
-        changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.WAITING);
+        changePropertyValue(getThing().getMachineStatusProperty(), MachineStatus.IDLE);
     }
 
     // listen for notification that the material tank is filled

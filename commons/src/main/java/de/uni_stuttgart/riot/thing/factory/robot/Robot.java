@@ -1,13 +1,16 @@
 package de.uni_stuttgart.riot.thing.factory.robot;
 
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.NotificationEvent;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.factory.ThingStatusEvent;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -23,9 +26,9 @@ public class Robot extends Thing {
     private final WritableProperty<Boolean> powerSwitch = newWritableProperty("powerSwitch", Boolean.class, false, UIHint.toggleButton());
 
     /**
-     * The robot status. It is initially WAITING.
+     * The robot status. It is initially IDLE.
      */
-    private final Property<RobotStatus> status = newProperty("status", RobotStatus.class, RobotStatus.WAITING, UIHint.dropDown(RobotStatus.class));
+    private final Property<RobotStatus> status = newProperty("status", RobotStatus.class, RobotStatus.IDLE, UIHint.dropDown(RobotStatus.class));
 
     /**
      * Action for refilling material tank of a machine.
@@ -45,12 +48,17 @@ public class Robot extends Thing {
     /**
      * An event signaling that the robot has emptied the factory machine tank of processed pieces.
      */
-    private final Event<EventInstance> processedPiecesTankIsEmpty = newEvent("processedPiecesTankIsEmpty");
+    private final NotificationEvent<EventInstance> processedPiecesTankIsEmpty = newNotification("processedPiecesTankIsEmpty", NotificationSeverity.INFO);
 
     /**
      * An event signaling that the robot has filled the factory machine tank of material.
      */
-    private final Event<EventInstance> materialTankIsFilled = newEvent("materialTankIsFilled");
+    private final NotificationEvent<EventInstance> materialTankIsFilled = newNotification("materialTankIsFilled", NotificationSeverity.INFO);
+
+    /**
+     * An event signaling that the status of the robot changed.
+     */
+    private final NotificationEvent<ThingStatusEvent> statusChanged = newNotification("statusChanged", ThingStatusEvent.class, NotificationSeverity.INFO);
 
     /**
      * Instantiates a new robot.
@@ -114,5 +122,9 @@ public class Robot extends Thing {
 
     public Event<EventInstance> getMaterialTankIsFilledEvent() {
         return materialTankIsFilled;
+    }
+
+    public Event<ThingStatusEvent> getStatusChangedEvent() {
+        return statusChanged;
     }
 }

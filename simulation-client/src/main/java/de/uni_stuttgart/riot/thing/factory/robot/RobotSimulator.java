@@ -13,6 +13,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
+import de.uni_stuttgart.riot.thing.factory.ThingStatusEvent;
 import de.uni_stuttgart.riot.thing.factory.machine.FullProcessedPiecesTank;
 import de.uni_stuttgart.riot.thing.factory.machine.Machine;
 import de.uni_stuttgart.riot.thing.factory.machine.OutOfMaterial;
@@ -63,42 +64,55 @@ public class RobotSimulator extends Simulator<Robot> {
     @Override
     protected <A extends ActionInstance> void executeAction(Action<A> action, A actionInstance) {
 
-        if (getThing().getRobotStatus() != RobotStatus.WAITING || !getThing().isPowerOn()) {
-            // Ignore if not waiting.
+        if (getThing().getRobotStatus() != RobotStatus.IDLE || !getThing().isPowerOn()) {
+            // Ignore if not idle.
             return;
         }
         if (action == getThing().getPressRefillMaterialTankAction()) { // refill material tank
 
-            changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.ON_THE_WAY);
+            changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.ON_THE_WAY_FILL_MODUS);
+            fireStatusChangedEvent();
+
             final int stepCount = 10;
             long stepDuration = Robot.ACTION_DURATION / stepCount;
             linearChange(getThing().getTransportDurationProperty(), Robot.ACTION_DURATION, stepDuration, stepCount);
 
             delay(Robot.ACTION_DURATION, () -> {
-                // Processing is done.
                 // fire events on the factory machine
                     executeEvent(new EventInstance(getThing().getMaterialTankIsFilledEvent()));
 
-                    changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.WAITING);
+                    // updates robot status
+                    changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.IDLE);
+                    fireStatusChangedEvent();
                     changePropertyValue(getThing().getTransportDurationProperty(), 0);
                 });
 
         } else if (action == getThing().getPressEmptyProcessedPiecesTankAction()) { // empty processed pieces
 
-            changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.ON_THE_WAY);
+            changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.ON_THE_WAY_EMPTY_MODUS);
+            fireStatusChangedEvent();
+
             final int stepCount = 10;
             long stepDuration = Robot.ACTION_DURATION / stepCount;
             linearChange(getThing().getTransportDurationProperty(), Robot.ACTION_DURATION, stepDuration, stepCount);
 
             delay(Robot.ACTION_DURATION, () -> {
-                // Processing is done.
+
                 // fire events on the factory machine
                     executeEvent(new EventInstance(getThing().getProcessedPiecesTankIsEmptyEvent()));
-
-                    changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.WAITING);
+                    // updates robot status
+                    changePropertyValue(getThing().getRobotStatusProperty(), RobotStatus.IDLE);
+                    fireStatusChangedEvent();
                     changePropertyValue(getThing().getTransportDurationProperty(), 0);
                 });
         }
+    }
+
+    /**
+     * Fires event for a robot status change.
+     */
+    private void fireStatusChangedEvent() {
+        executeEvent(new ThingStatusEvent(getThing().getStatusChangedEvent(), getThing().getRobotStatus().toString()));
     }
 
     /**

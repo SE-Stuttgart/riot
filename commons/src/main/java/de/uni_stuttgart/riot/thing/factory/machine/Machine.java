@@ -1,12 +1,15 @@
 package de.uni_stuttgart.riot.thing.factory.machine;
 
+import de.uni_stuttgart.riot.notification.NotificationSeverity;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
+import de.uni_stuttgart.riot.thing.NotificationEvent;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.factory.ThingStatusEvent;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -30,9 +33,9 @@ public class Machine extends Thing {
     private final WritableProperty<Boolean> powerSwitch = newWritableProperty("powerSwitch", Boolean.class, false, UIHint.toggleButton());
 
     /**
-     * The machine status. It is initially WAITING.
+     * The machine status. It is initially IDLE.
      */
-    private final Property<MachineStatus> status = newProperty("status", MachineStatus.class, MachineStatus.WAITING, UIHint.dropDown(MachineStatus.class));
+    private final Property<MachineStatus> status = newProperty("status", MachineStatus.class, MachineStatus.IDLE, UIHint.dropDown(MachineStatus.class));
 
     /**
      * The machine speed in which it processes the material.
@@ -47,7 +50,7 @@ public class Machine extends Thing {
     /**
      * An event signaling that there is only little or no material left.
      */
-    private final Event<OutOfMaterial> outOfMaterial = newEvent("outOfMaterial", OutOfMaterial.class);
+    private final NotificationEvent<OutOfMaterial> outOfMaterial = newNotification("outOfMaterial", OutOfMaterial.class, NotificationSeverity.WARNING);
 
     /**
      * The action of refilling the material tank. It will be filled to its maximum.
@@ -62,12 +65,17 @@ public class Machine extends Thing {
     /**
      * An event signaling that the tank of processed pieces is full.
      */
-    private final Event<FullProcessedPiecesTank> fullProcessedPiecesTank = newEvent("fullProcessedPiecesTank", FullProcessedPiecesTank.class);
+    private final NotificationEvent<FullProcessedPiecesTank> fullProcessedPiecesTank = newNotification("fullProcessedPiecesTank", FullProcessedPiecesTank.class, NotificationSeverity.WARNING);
 
     /**
      * The action of emptying the processed pieces tank.
      */
     private final Action<ActionInstance> emptyProcessedPiecesTank = newAction("emptyProcessedPiecesTank");
+
+    /**
+     * An event signaling that the status of the machine changed.
+     */
+    private final NotificationEvent<ThingStatusEvent> statusChanged = newNotification("statusChanged", ThingStatusEvent.class, NotificationSeverity.INFO);
 
     /**
      * Starts the processing at the machine with the current setting of {@link #processingSpeed}. If the machine is already busy, the action
@@ -187,5 +195,9 @@ public class Machine extends Thing {
      */
     public void pressStop() {
         pressStop.fire(new ActionInstance(pressStop));
+    }
+
+    public Event<ThingStatusEvent> getStatusChangedEvent() {
+        return statusChanged;
     }
 }

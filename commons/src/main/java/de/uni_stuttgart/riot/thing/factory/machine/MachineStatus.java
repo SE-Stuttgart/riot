@@ -11,7 +11,7 @@ public enum MachineStatus {
     RUNNING,
 
     /** machine is waiting. */
-    WAITING,
+    IDLE,
 
     /** machine is out of material. */
     OUT_OF_MATERIAL,
