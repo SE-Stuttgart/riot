@@ -28,19 +28,40 @@
           </div>
         </div>
 
-        <!-- name -->
-        <div class="form-group">
-          <label class="control-label col-md-2" for="name">{{'thing.name' | i18n}}</label>
-          <div class="col-md-8">
-            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.metainfo.name" disabled>
-          </div>
-        </div>
-
         <!-- type -->
         <div class="form-group">
           <label class="control-label col-md-2" for="type">{{'thing.type' | i18n}}</label>
           <div class="col-md-8">
             <input id="type" name="type" type="text" placeholder="" class="form-control" ng-model="thingDetail.type" disabled>
+          </div>
+        </div>
+
+        <!-- name -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="name">{{'thing.name' | i18n}}</label>
+          <div class="col-md-8">
+            <input id="name" name="name" type="text" placeholder="" class="form-control" ng-model="thingDetail.metainfo.name">
+          </div>
+        </div>
+
+        <!-- parent -->
+        <div class="form-group">
+          <label class="control-label col-md-2" for="parent">{{'thing.parent' | i18n}}</label>
+          <div class="col-md-8">
+            <div class="form-inline">
+              <div class="parent-list" style="width:300px;" complex-dropdown="things"></div>
+              <button type="button" class="btn btn-danger parent-remove" ng-if="things.selection.id" ng-click="things.selection=null">
+                <span class="fa fa-times"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-8">
+            <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
+            <button ui-sref="admin.users.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
           </div>
         </div>
       </form>

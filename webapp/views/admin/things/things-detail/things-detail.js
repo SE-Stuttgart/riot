@@ -9,7 +9,6 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
   var alertId = null;
 
   var init = function() {
-    
     locale.ready('thing').then(function () {
       $scope.users.selection = locale.getString('thing.chooseShareUser');
       
@@ -17,6 +16,26 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
       //force the select box with the permissions to update
       $scope.selectedRight = null; 
     });
+
+    $scope.things = {
+      data: [],
+      selection: null,
+      pagination: {
+        current: 1,
+        limit: 10,
+        total: 0
+      },
+      filter: {
+        property: 'name',
+        operator: 'CT',
+        value: null
+      },
+      disabled: [],
+      update: $scope.getThings,
+      toString: function(dataEntry) {
+        return dataEntry['metainfo']['name'];
+      }
+    };
     
     $scope.users = {
       data: [],
@@ -40,8 +59,32 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
     $scope.getSharedUsers();
   };
 
+  $scope.getThings = function() {
+    //pagination
+    var parameters = { 
+      limit: $scope.things.pagination.limit,
+      offset: ($scope.things.pagination.current - 1) * $scope.things.pagination.limit
+    };
+
+    //filter
+    if ($scope.things.filter.value) {
+      parameters[$scope.things.filter.property + '_' + $scope.things.filter.operator] = $scope.things.filter.value;
+    }
+
+    Thing.getList(parameters).then(function(things) {
+      $scope.things.pagination.limit = things.pagination.limit;
+      $scope.things.pagination.total = things.pagination.total;
+      $scope.things.data = things;
+    });
+  };
+
   $scope.getThing = function() {
     Thing.one($stateParams.thingid).get().then(function(thing) {
+      $scope.things.disabled = [thing];
+      Thing.one(thing.metainfo.parentId).get().then(function(thing) {
+        $scope.things.selection = thing;
+      });
+
       $scope.thingDetail = thing;
       $scope.thingDescription = $scope.thingDetail.getDescription().$object;
       
@@ -59,7 +102,14 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
   };
 
   $scope.updateThing = function() {
-    return $scope.thingDetail.put().then(function() {
+    if ($scope.things.selection) {
+      $scope.thingDetail.metainfo.parentId = $scope.things.selection.id;
+    }
+    else {
+      $scope.thingDetail.metainfo.parentId = null;
+    }
+
+    return $scope.thingDetail.updateMetainfo().then(function() {
         $scope.alerts.close(alertId);
         alertId = $scope.alerts.showSuccess('Successfully updated thing');
         $scope.getThing();
@@ -154,13 +204,9 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
         $scope.getSharedUsers();
       });
     });
-    
-
-    
   };
   
   $scope.unshare = function(userPermissions, permission, userId) {
-  
     permission = permission.toUpperCase();
   
     if(userPermissions.indexOf(permission) !== -1) {
@@ -178,6 +224,10 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
     if(array.indexOf(value) === -1) {
       array.push(value);
     }
+  };
+
+  $scope.save = function() {
+    $scope.updateThing();
   };
 
   init();
