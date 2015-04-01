@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.android.management;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
@@ -50,7 +51,7 @@ public class UserListActivity extends ManagementListActivity<User, UserDetailAct
 
     @Override
     protected Drawable getDefaultImage() {
-        return getResources().getDrawable(android.R.drawable.ic_menu_gallery);
+        return getDrawableByResource(android.R.drawable.ic_menu_gallery);
     }
 
     @Override
@@ -69,7 +70,6 @@ public class UserListActivity extends ManagementListActivity<User, UserDetailAct
     @Override
     protected OnlineState getOnlineState(final User item) {
         try {
-            // TODO Testen!!!!!!
             return new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(item.getId());
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
@@ -85,14 +85,15 @@ public class UserListActivity extends ManagementListActivity<User, UserDetailAct
     }
 
     @Override
-    protected void loadData() {
+    protected List<User> loadManagementData() {
         try {
             // Get all users and save them
-            super.itemList = new ArrayList<User>(new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getUsers());
+            return new ArrayList<User>(new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getUsers());
             // FIXME - I want to get an ArrayList instead of a Collection (for the list view)
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
+        return null;
     }
 }

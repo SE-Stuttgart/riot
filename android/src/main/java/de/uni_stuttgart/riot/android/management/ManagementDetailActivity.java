@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
@@ -31,11 +32,15 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  * @param <T> type of the handled object
  * @author Benny
  */
-public abstract class ManagementDetailActivity<T> extends ManagementActivity {
+public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> {
+
+    private static int nonGroupId = 0;
 
     protected long itemId;
-    protected T item;
     protected Collection<ManagementProperty> managementProperties;
+    private LinearLayout mainLayout;
+    private SparseArray<List<View>> groupedItems;
+    private SparseArray<String> groupNames;
 
     @Override
     protected void handleArguments(Bundle bundle) {
@@ -55,49 +60,95 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
     }
 
     @Override
-    protected void displayData() {
-        // Check if there is a item for displaying
-        if (this.item == null) {
-            IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
-            IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
-            return;
+    protected void displayManagementData(T data) {
+        // Check if the main layout is available
+        if (this.mainLayout == null) {
+            this.mainLayout = (LinearLayout) findViewById(R.id.management_linear_layout);
+            if (this.mainLayout == null) {
+                IM.INSTANCES.getMH().writeErrorMessage("No main layout was found!");
+                IM.INSTANCES.getMH().showQuickMessage("No main layout was found!");
+                return;
+            }
+        } else {
+            // Clear all children and the group list
+            this.mainLayout.removeAllViews();
         }
 
-        // Check if the list view is available
-        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.management_linear_layout);
-        if (mainLayout == null) {
-            IM.INSTANCES.getMH().writeErrorMessage("No main layout was found!");
-            IM.INSTANCES.getMH().showQuickMessage("No main layout was found!");
-            return;
+        // Initialize the list of the grouped items
+        if (this.groupedItems == null) {
+            this.groupedItems = new SparseArray<List<View>>();
+            this.groupNames = new SparseArray<String>();
+        } else {
+            // Clear all grouped items
+            this.groupedItems.clear();
+            this.groupNames.clear();
         }
 
-        // TEST --->
-       /*
-        * EditText = String
-        * EditNumber = Double
-        * ToggleButton = Boolean
-        * IntegralSlider = Integer
-        * PercentageSlider = Double
-        * FractionalSlider = Double
-        * DropDown = Enum<?>
-        */
-//        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.thing_linear_layout);
-//        mainLayout.addView(new ManagementPropertyEditText("Example Text", this).getUiElement());
-//        mainLayout.addView(new ManagementPropertyEditNumber(42, this).getUiElement());
-//        mainLayout.addView(new ManagementPropertyToggleButton(true, this).getUiElement());
-//        mainLayout.addView(new ManagementPropertyToggleButton(false, this).getUiElement());
-//        mainLayout.addView(new ManagementPropertyIntegralSlider(25, this, 0, 100).getUiElement());
-//        mainLayout.addView(new ManagementPropertyIntegralSlider(0, this, -20, 20).getUiElement());
-//        mainLayout.addView(new ManagementPropertyPercentageSlider(0.5d, this).getUiElement());
-//        mainLayout.addView(new ManagementPropertyFractionalSlider(0.5d, this, 0.0d, 1.0d).getUiElement());
-//        mainLayout.addView(new ManagementPropertyFractionalSlider(3.0d, this, 2.25d, 5.0d).getUiElement());
-//        mainLayout.addView(new ManagementPropertyFractionalSlider(0.05d, this, -0.05d, 0.05d).getUiElement());
-//        ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
-//        Collections.addAll(possibleValues, OnlineState.values());
-//        mainLayout.addView(new ManagementPropertyEnumDropDown(OnlineState.STATUS_ONLINE, this, possibleValues).getUiElement());
-        // <--- TEST
+        displayDetailData(data);
+    }
 
-        displayDetailData(mainLayout);
+    /**
+     * Add the given item to the the wanted group.
+     *
+     * @param groupId the unique id of the group
+     * @param view    the prepared item
+     */
+    protected void addPreparedItemToGroup(int groupId, View view) {
+        // If the group list for that group id does not exists yet create it
+        if (this.groupedItems.get(groupId) == null) {
+            this.groupedItems.append(groupId, new ArrayList<View>());
+        }
+
+        // Add it to the group list
+        if (view != null) {
+            this.groupedItems.get(groupId).add(view);
+        }
+    }
+
+    /**
+     * Prepare and add all items in the right group list.
+     *
+     * @param properties the items
+     */
+    protected void prepareAndGroupItems(Collection<Property<?>> properties) {
+        for (Property<?> property : properties) {
+            // Get group id and prepare the view item
+            int groupId = property.getUiHint().getGroupAndOrderID();
+            addPreparedItemToGroup(groupId, prepareItemBy(property));
+            if (groupId != nonGroupId) {
+                saveGroupName(groupId, String.valueOf(groupId));
+            }
+        }
+    }
+
+    /**
+     * Save the name of the group.
+     *
+     * @param groupId   the unique id of the group
+     * @param groupName the name of the group
+     */
+    protected void saveGroupName(int groupId, String groupName) {
+        if (this.groupNames.get(groupId) == null) {
+            this.groupNames.append(groupId, groupName);
+        }
+    }
+
+    /**
+     * Add the grouped and prepared items to the main layout
+     */
+    protected void addGroupedItemsToMainLayout() {
+        for (int i = 0; i < this.groupedItems.size(); i++) {
+            int key = this.groupedItems.keyAt(i);
+            if (key == nonGroupId) {
+                // Just add the items to the main layout (because they do not belong to a group)
+                for (View view : this.groupedItems.get(key)) {
+                    this.mainLayout.addView(view);
+                }
+            } else {
+                // Prepare a group with the grouped items
+                this.mainLayout.addView(prepareGroup(this.groupNames.get(key), this.groupedItems.get(key)));
+            }
+        }
     }
 
     /**
@@ -111,7 +162,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
     protected View prepareItemBy(String itemName, Object value, UIHint uiHint) {
         // Prepare the item
         LinearLayout linearLayoutItem = prepareItemName(itemName);
-        ManagementProperty managementProperty = prepareItem(value, uiHint);
+        ManagementProperty managementProperty = prepareItem(itemName, value, uiHint);
 
         if (managementProperty != null) {
             // Add prepared item
@@ -183,9 +234,6 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
         // Add sub items to group
         if (items != null) {
             for (View view : items) {
-                //        // Change top padding of the first element in the group TODO add group property
-//            ((ViewGroup) linearLayoutItem.getChildAt(1)).getChildAt(0).setPadding(0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2, 0, (int) getDimension(R.dimen.fragment_margin_between_elements) / 2);
-
                 // Add an id to the view
                 view.setId(generateViewId());
 
@@ -298,10 +346,11 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
     /**
      * Prepare the ui item.
      *
-     * @param value  includes the value that will be displayed with this item
-     * @param uiHint is needed for decide which ui element will be built
+     * @param itemName is the name that will be displayed above the item
+     * @param value    includes the value that will be displayed with this item
+     * @param uiHint   is needed for decide which ui element will be built
      */
-    private ManagementProperty prepareItem(Object value, UIHint uiHint) {
+    private ManagementProperty prepareItem(String itemName, Object value, UIHint uiHint) {
         /**
          * Note for UIHint - value types:
          *
@@ -321,8 +370,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
             return new ManagementPropertyEditNumber((Number) value, this);
         } else if (uiHint instanceof UIHint.ToggleButton) {
             // Prepare and add toggle button property
-            UIHint.ToggleButton uiHintToggleButton = (UIHint.ToggleButton) uiHint;
-            return new ManagementPropertyToggleButton((Boolean) value, this, uiHintToggleButton.valueOff, uiHintToggleButton.valueOn);
+            return new ManagementPropertyToggleButton((Boolean) value, this, itemName, itemName);
         } else if (uiHint instanceof UIHint.FractionalSlider) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHintFractionalSlider = (UIHint.FractionalSlider) uiHint;
@@ -372,11 +420,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
             return new ManagementPropertyEditNumber((Property<Number>) property, this);
         } else if (property.getUiHint() instanceof UIHint.ToggleButton) {
             // Prepare and add toggle button property
-            UIHint.ToggleButton uiHint = (UIHint.ToggleButton) property.getUiHint();
-            // ToDo save this values at the server
-            uiHint.valueOff = property.getName() + " " + getString(R.string.off);
-            uiHint.valueOn = property.getName() + " " + getString(R.string.on);
-            return new ManagementPropertyToggleButton((Property<Boolean>) property, this, uiHint.valueOff, uiHint.valueOn);
+            return new ManagementPropertyToggleButton((Property<Boolean>) property, this, property.getName(), property.getName());
         } else if (property.getUiHint() instanceof UIHint.FractionalSlider) {
             // Prepare and add scale value property
             UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) property.getUiHint();
@@ -430,7 +474,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity {
     /**
      * Display the loaded data.
      *
-     * @param mainLayout the layout that will be filled with the detailed data
+     * @param data that will be displayed.
      */
-    protected abstract void displayDetailData(LinearLayout mainLayout);
+    protected abstract void displayDetailData(T data);
 }

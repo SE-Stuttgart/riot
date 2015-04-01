@@ -3,6 +3,7 @@ package de.uni_stuttgart.riot.android.management;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
@@ -51,12 +52,11 @@ public class ThingListActivity extends ManagementListActivity<Thing, ThingDetail
 
     @Override
     protected Drawable getDefaultImage() {
-        return getResources().getDrawable(android.R.drawable.ic_menu_gallery);
+        return getDrawableByResource(android.R.drawable.ic_menu_gallery);
     }
 
     @Override
     protected Drawable getImage(Thing item) {
-        // TODO evtl. keine zahl als key???
         return getDrawableLetter(item.getName(), String.valueOf(item.getId()));
     }
 
@@ -71,8 +71,7 @@ public class ThingListActivity extends ManagementListActivity<Thing, ThingDetail
             // FIXME thingClient.getOnlineState(thingId); --> NullPointerException if online state is "offline"!!
             return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(item.getId());
         } catch (Exception e) {
-            IM.INSTANCES.getMH().writeWarnMessage("Problems by getting online state!");
-//            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state: ", e);
+            IM.INSTANCES.getMH().writeWarnMessage("Problems by getting online state! "); //, e);
 //            IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
         }
         return null;
@@ -85,14 +84,15 @@ public class ThingListActivity extends ManagementListActivity<Thing, ThingDetail
     }
 
     @Override
-    protected void loadData() {
+    protected List<Thing> loadManagementData() {
         try {
             // Get all things and save them
-            super.itemList = new ArrayList<Thing>(ThingManager.getInstance().getAllThings(this));
+            return new ArrayList<Thing>(ThingManager.getInstance().getAllThings(this));
             // FIXME - I want to get an ArrayList instead of a Collection (for the list view)
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
+        return null;
     }
 }

@@ -22,9 +22,9 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
  * @param <D> type of the detailed view (that will be displayed after clicking on a item)
  * @author Benny
  */
-public abstract class ManagementListActivity<T, D> extends ManagementActivity {
+public abstract class ManagementListActivity<T, D> extends ManagementActivity<List<T>> {
 
-    protected List<T> itemList;
+    private ListView listView;
 
     @Override
     protected int getLayoutResource() {
@@ -36,26 +36,21 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity {
     }
 
     @Override
-    protected void displayData() {
-        // Check if there are some items for displaying
-        if (this.itemList == null) {
-            IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
-            IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
-            return;
-        }
-
+    protected void displayManagementData(List<T> data) {
         // Check if the list view is available
-        ListView listView = (ListView) findViewById(R.id.management_list_view);
-        if (listView == null) {
-            IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
-            IM.INSTANCES.getMH().showQuickMessage("No list view was found!");
-            return;
+        if (this.listView == null) {
+            this.listView = (ListView) findViewById(R.id.management_list_view);
+            if (this.listView == null) {
+                IM.INSTANCES.getMH().writeErrorMessage("No list view was found!");
+                IM.INSTANCES.getMH().showQuickMessage("No list view was found!");
+                return;
+            }
         }
 
         // Add data list to the list adapter
-        ManagementListAdapter<T> managementListAdapter = new ManagementListAdapter<T>(this, R.layout.managment_list_item, this.itemList);
-        listView.setAdapter(managementListAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ManagementListAdapter<T> managementListAdapter = new ManagementListAdapter<T>(this, R.layout.managment_list_item, data);
+        this.listView.setAdapter(managementListAdapter);
+        this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
@@ -140,14 +135,24 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity {
      * @param view of the list item
      */
     private void setImage(final T item, final View view) {
-        Drawable image = getImage(item);
-        if (image == null) {
-            image = getDefaultImage();
-        }
+        new AsyncHelper<Drawable>() {
 
-        if (image != null) {
-            setImageViewImage(view, R.id.list_item_management_picture, image);
-        }
+            @Override
+            protected Drawable loadData() {
+                return getImage(item);
+            }
+
+            @Override
+            protected void processData(Drawable drawable) {
+                Drawable newDrawable;
+                if (drawable == null) {
+                    newDrawable = getDefaultImage();
+                } else {
+                    newDrawable = drawable;
+                }
+                setImageViewImage(view, R.id.list_item_management_picture, newDrawable);
+            }
+        };
     }
 
     /**
@@ -157,45 +162,24 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity {
      * @param view of the list item
      */
     private void setOnlineState(final T item, final View view) {
-        new Thread() {
+        new AsyncHelper<OnlineState>() {
 
             @Override
-            public void run() {
-                // Load the current online state
-                OnlineState onlineState = getOnlineState(item);
+            protected OnlineState loadData() {
+                return getOnlineState(item);
+            }
 
-                // If there could no online state be loaded use the default one
+            @Override
+            protected void processData(OnlineState onlineState) {
+                OnlineState newOnlineState;
                 if (onlineState == null) {
-                    onlineState = getDefaultOnlineState();
+                    newOnlineState = getDefaultOnlineState();
+                } else {
+                    newOnlineState = onlineState;
                 }
-
-                displayOnlineState(onlineState, view);
+                setImageViewImage(view, R.id.list_item_management_online_state, getDrawableByResource(getOnlineStateResourceId(newOnlineState)));
             }
-        }.start();
-    }
-
-    /**
-     * Display the loaded online state.
-     *
-     * @param onlineState of the list item
-     * @param view        of the list item
-     */
-    private void displayOnlineState(final OnlineState onlineState, final View view) {
-        if (onlineState == null) {
-            return;
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ImageView imageView = (ImageView) view.findViewById(R.id.list_item_management_online_state);
-                if (imageView == null) {
-                    IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");
-                    IM.INSTANCES.getMH().showQuickMessage("No image view was found!");
-                    return;
-                }
-                imageView.setImageResource(getOnlineStateResourceId(onlineState));
-            }
-        });
+        };
     }
 
     /**
@@ -223,6 +207,9 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity {
      * @param image the drawable for the image
      */
     private void setImageViewImage(View view, int id, Drawable image) {
+        if (image == null) {
+            return;
+        }
         ImageView imageView = (ImageView) view.findViewById(id);
         if (imageView == null) {
             IM.INSTANCES.getMH().writeErrorMessage("No image view was found!");

@@ -1,13 +1,11 @@
 package de.uni_stuttgart.riot.android.management;
 
-import android.view.View;
-import android.widget.LinearLayout;
+import android.graphics.drawable.Drawable;
 
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.managementproperty.ManagementProperty;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.things.ThingManager;
-import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 
 /**
@@ -25,27 +23,35 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     }
 
     @Override
-    protected void displayDetailData(LinearLayout mainLayout) {
+    protected void displayDetailData(final Thing data) {
+        // Update the home icon and title
+        new AsyncHelper<Drawable>() {
+
+            @Override
+            protected Drawable loadData() {
+                return getDrawableLetter(data.getName(), String.valueOf(data.getId()));
+            }
+
+            @Override
+            protected void processData(Drawable data) {
+                if (data != null) {
+                    setHomeIcon(data);
+                }
+            }
+        };
+        setTitle(data.getName());
+
         // Unbind all thing properties if they are bind
         unbindAllThingProperties();
 
-        // Clear all children
-        mainLayout.removeAllViews();
+        // Prepare the items and save them in the right group
+        prepareAndGroupItems(data.getProperties());
 
-        // Add items to the main layout
-        for (Property<?> property : super.item.getProperties()) {
-            View preparedItem = prepareItemBy(property);
-            if (preparedItem != null) {
-                mainLayout.addView(preparedItem);
-            }
-        }
-
-        // Update the home icon and title
-        setHomeIcon(getDrawableLetter(super.item.getName(), String.valueOf(super.item.getId())));
-        setTitle(super.item.getName());
+        // Add prepared and grouped items to the main layout
+        addGroupedItemsToMainLayout();
 
         // Bind all thing properties to constantly update the data
-        bindAllThingProperties();
+        bindAllThingProperties(data);
     }
 
     @Override
@@ -55,20 +61,21 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     }
 
     @Override
-    protected void loadData() {
+    protected Thing loadManagementData() {
         try {
             // Get the thing with the given id
-            super.item = ThingManager.getInstance().getThing(this, super.itemId);
+            return ThingManager.getInstance().getThing(this, super.itemId);
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
+        return null;
     }
 
     /**
      * Bind all thing properties with their property listener.
      */
-    private void bindAllThingProperties() {
+    private void bindAllThingProperties(final Thing data) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -78,7 +85,7 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
                     }
 
                     // Start monitoring to receive change events
-                    ThingManager.getInstance().startMonitoring(item, this);
+                    ThingManager.getInstance().startMonitoring(data, this);
                 }
             }
         }).start();
@@ -98,6 +105,7 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
                     for (ManagementProperty managementProperty : managementProperties) {
                         managementProperty.unbind();
                     }
+                    managementProperties.clear();
                 }
             }
         }).start();

@@ -4,7 +4,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="fragment_main_margin">50px</dimen>
+    <dimen name="fragment_main_padding">50px</dimen>
     <dimen name="fragment_margin_between_elements">30px</dimen>
 
     <dimen name="list_item_margin">5dp</dimen>

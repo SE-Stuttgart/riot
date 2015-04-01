@@ -22,13 +22,10 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
 /**
  * Is the main abstract activity for all management classes.
  *
+ * @param <T> type of the handled object
  * @author Benny
  */
-public abstract class ManagementActivity extends Activity {
-
-    // FIXME TODOs for this and its subclasses:
-    // reorder methods
-    // do all fixes and to-do-s
+public abstract class ManagementActivity<T> extends Activity {
 
     /**
      * Helps to save the selected item of the list to display the details of it.
@@ -51,12 +48,11 @@ public abstract class ManagementActivity extends Activity {
 
         // If no layout resource was defined throw an exception
         if (getLayoutResource() == 0) {
+            IM.INSTANCES.getMH().writeErrorMessage("Missing the management layout!");
+            IM.INSTANCES.getMH().showQuickMessage("Missing the management layout!");
             throw new IllegalArgumentException();
         }
         setContentView(getLayoutResource());
-        // TODO do this generic!!!!!!!!!!!!!!!!!!
-        // add new view in display data -> save as local attribute and check if not null -> create new one
-
 
         // Get extras from intent and handle them
         if (getIntent().getExtras() != null) {
@@ -73,7 +69,7 @@ public abstract class ManagementActivity extends Activity {
         setDefaultData();
 
         // Load the data to display them
-        loadAndDisplayData();
+        loadAndDisplayManagementData();
     }
 
     @Override
@@ -86,7 +82,7 @@ public abstract class ManagementActivity extends Activity {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 // Update displayed data
-                loadAndDisplayData();
+                loadAndDisplayManagementData();
                 return false;
             }
         });
@@ -97,40 +93,33 @@ public abstract class ManagementActivity extends Activity {
     /**
      * Load and display the loaded data afterwards.
      */
-    private void loadAndDisplayData() {
+    private void loadAndDisplayManagementData() {
         // Start processing animation
         startProcessingAnimation();
 
-        new Thread(new Runnable() {
+        new AsyncHelper<T>() {
+
             @Override
-            public void run() {
-                // If loading the data was successful display them
-                try {
-                    loadData();
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Display loaded data
-                            displayData();
-
-                            // End processing animation
-                            stopProcessingAnimation();
-                        }
-                    });
-                } catch (final Exception e) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // End processing animation
-                            stopProcessingAnimation();
-                            IM.INSTANCES.getMH().writeErrorMessage("Problems by creating the view: ", e);
-                            IM.INSTANCES.getMH().showQuickMessage("Problems by creating the view!");
-                        }
-                    });
-                }
+            protected T loadData() {
+                return loadManagementData();
             }
-        }).start();
+
+            @Override
+            protected void processData(T data) {
+                if (data == null) {
+                    IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
+                    IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
+                    return;
+                }
+                displayManagementData(data);
+            }
+
+            @Override
+            protected void doAfterErrorOccurred() {
+                // End processing animation
+                stopProcessingAnimation();
+            }
+        };
     }
 
     /**
@@ -172,11 +161,8 @@ public abstract class ManagementActivity extends Activity {
      * @param logo the resource id
      */
     protected void setHomeLogo(int logo) {
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            if (logo != 0) {
-                actionBar.setLogo(logo);
-            }
+        if (logo != 0) {
+            setHomeIcon(getDrawableByResource(logo));
         }
     }
 
@@ -208,10 +194,6 @@ public abstract class ManagementActivity extends Activity {
      * @return the drawable image for the given uri
      */
     protected Drawable getDrawableByUri(final String uri) {
-        // TODO pruefen ob das so ok ist oder ob der thread benoetigt wird!!!!!!!
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
         try {
             return new BitmapDrawable(getResources(), BitmapFactory.decodeStream(new URL(uri).openConnection().getInputStream()));
         } catch (MalformedURLException e) {
@@ -222,8 +204,6 @@ public abstract class ManagementActivity extends Activity {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting an image by an uri!", e);
         }
         return null;
-//            }
-//        }).start();
     }
 
     /**
@@ -235,6 +215,16 @@ public abstract class ManagementActivity extends Activity {
      */
     protected Drawable getDrawableLetter(String displayName, String key) {
         return new BitmapDrawable(getResources(), new LetterTileProvider(this).getLetterTile(displayName, key));
+    }
+
+    /**
+     * Return the drawable of the given resource id.
+     *
+     * @param id of the resource
+     * @return the drawable item
+     */
+    protected Drawable getDrawableByResource(int id) {
+        return getResources().getDrawable(id);
     }
 
     /**
@@ -276,11 +266,15 @@ public abstract class ManagementActivity extends Activity {
 
     /**
      * Load the data for displaying.
+     *
+     * @return the loaded data
      */
-    protected abstract void loadData();
+    protected abstract T loadManagementData();
 
     /**
      * Display the loaded data.
+     *
+     * @param data the loaded data
      */
-    protected abstract void displayData();
+    protected abstract void displayManagementData(T data);
 }

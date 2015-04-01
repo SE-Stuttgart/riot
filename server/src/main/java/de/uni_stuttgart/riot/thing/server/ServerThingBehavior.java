@@ -57,6 +57,7 @@ public class ServerThingBehavior extends ThingBehavior implements Authenticating
      */
     public ServerThingBehavior() {
         super(ServerReferenceResolver.getInstance());
+        // TODO add this line: this.markLastConnection();
     }
 
     @Override
