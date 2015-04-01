@@ -92,4 +92,14 @@ To add a new key-value-pair the following steps should be executed:
 2. Add a translation and a description for the key in `commons/src/main/resources/languages/configuration_de.properties` and `commons/src/main/resources/languages/configuration_en.properties`
 3. Add the value and the key in `server-commons/src/main/resources/data/testdata_configuration.sql`
 
-
+## Test Coverage
+1. Install ant
+	- Download from https://ant.apache.org/bindownload.cgi
+	- Unzip
+	- Set path to bin directory
+2. Install cobertura
+	- Download from http://cobertura.github.io/cobertura/
+	- Unzip
+	- Set environment variable COBERTURA_HOME
+3. Run either coverage.bat or coverage.sh
+4. View results in target/report/index.html

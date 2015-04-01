@@ -10,3 +10,4 @@ gitinspector
 generateGitreport.sh
 gitreport.html
 gitlog.txt
+*.ser

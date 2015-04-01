@@ -1,13 +1,12 @@
 package de.uni_stuttgart.riot.server.commons.db.exception;
 
-
 /**
  * Superclass for all errors according the datasource.
  * 
  * @author Jonas Tangermann
  *
  */
-public abstract class DatasourceException extends Exception{
+public abstract class DatasourceException extends Exception {
 
     private static final long serialVersionUID = -509609274709680393L;
 
@@ -42,6 +41,5 @@ public abstract class DatasourceException extends Exception{
     public DatasourceException(Throwable cause) {
         super(cause);
     }
-    
 
 }
