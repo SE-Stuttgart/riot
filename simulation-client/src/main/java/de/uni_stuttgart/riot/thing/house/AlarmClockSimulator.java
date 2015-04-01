@@ -1,11 +1,16 @@
 package de.uni_stuttgart.riot.thing.house;
 
 import java.util.Calendar;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import de.uni_stuttgart.riot.simulation_client.Simulator;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.Event;
+import de.uni_stuttgart.riot.thing.PropertyChangeEvent.Instance;
+import de.uni_stuttgart.riot.thing.PropertyListener;
 
 /**
  * Simulates a alarm clock. Fires a alarm event if the configured time (hour,minute) is the current time and the alarm clock is activated.
@@ -13,36 +18,56 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
  */
 public class AlarmClockSimulator extends Simulator<AlarmClock> {
 
-    private static final long CHECK_INTERVAL = 1000 * 30; // every half minute
+    private ScheduledFuture<?> alarmFuture;
 
     /**
-     * Constructor.
+     * Constructor for the {@link AlarmClockSimulator}.
      * 
      * @param thing
-     *            .
+     *            Thing to be simulated
      * @param scheduler
-     *            .
+     *            The scheduler
      */
     public AlarmClockSimulator(AlarmClock thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
-        this.scheduleTimeCheckTask();
+        this.initListeners();
     }
 
     /**
-     * Schedules the task that checks the configured alarm time against the current time. (if the alarm clock is activated)
+     * Inits the listeners for the hour minute and activeded properties. That are used to schedule the alarm task.
      */
-    private void scheduleTimeCheckTask() {
-        this.scheduleAtFixedRate(() -> {
-            if (AlarmClockSimulator.this.getThing().isActivated()) {
-                Calendar cal = Calendar.getInstance();
-                int hour = AlarmClockSimulator.this.getThing().getHour();
-                int min = AlarmClockSimulator.this.getThing().getMinute();
-                if (cal.get(Calendar.HOUR_OF_DAY) == hour && cal.get(Calendar.MINUTE) == min) {
-                    executeEvent(AlarmClockSimulator.this.getThing().getAlarmEvent());
-                    changePropertyValue(AlarmClockSimulator.this.getThing().getAlarmProperty(), true);
-                }
+    private void initListeners() {
+        PropertyListener<Object> setAlarmListener = new PropertyListener<Object>() {
+            @Override
+            public void onFired(Event<? extends Instance<? extends Object>> event, Instance<? extends Object> eventInstance) {
+                scheduleAlarmTask();
             }
-        }, 0, CHECK_INTERVAL);
+        };
+        getThing().getHourProperty().register(setAlarmListener);
+        getThing().getMinuteProperty().register(setAlarmListener);
+        getThing().getActivatedProperty().register(setAlarmListener);
+    }
+
+    /**
+     * Schedules the alarm task to the currently configured time. Cancels the obsolete task.
+     */
+    private void scheduleAlarmTask() {
+        if (alarmFuture != null) {
+            alarmFuture.cancel(false);
+        }
+        int hour = getThing().getHour();
+        int min = getThing().getMinute();
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, min);
+        long delay = calendar.getTimeInMillis() - now;
+        if (getThing().isActivated()) {
+            alarmFuture = this.getScheduler().schedule(() -> {
+                executeEvent(getThing().getAlarmEvent());
+                changePropertyValue(getThing().getAlarmProperty(), true);
+            }, delay, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override

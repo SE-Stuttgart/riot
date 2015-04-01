@@ -8,12 +8,11 @@ import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Parameter;
-import de.uni_stuttgart.riot.thing.house.AdjustShutterPostion;
 import de.uni_stuttgart.riot.thing.house.AlarmClock;
-import de.uni_stuttgart.riot.thing.house.RollerShutter;
 import de.uni_stuttgart.riot.thing.house.coffeemachine.CoffeeMachine;
-import de.uni_stuttgart.riot.thing.house.light.AdjustDimmLevel;
 import de.uni_stuttgart.riot.thing.house.light.DimmableLight;
+import de.uni_stuttgart.riot.thing.house.roller_shutter.AdjustShutterPostion;
+import de.uni_stuttgart.riot.thing.house.roller_shutter.RollerShutter;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
@@ -22,6 +21,8 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  *
  */
 public class GoodMorningRule extends Rule {
+
+    private static final double DIM_LEVEL = 0.5;
 
     private static final int END_OF_RULE_TIME = 11;
 
@@ -37,16 +38,13 @@ public class GoodMorningRule extends Rule {
     @Parameter(ui = UIHint.ThingDropDown.class, requires = ThingPermission.CONTROL)
     private ThingParameter<DimmableLight> dimmableLight;
 
-    private final EventListener<EventInstance> listener = new EventListener<EventInstance>() {
-        @Override
-        public void onFired(Event<? extends EventInstance> event, EventInstance eventInstance) {
-            Calendar cal = Calendar.getInstance();
-            if (cal.get(Calendar.HOUR_OF_DAY) <= END_OF_RULE_TIME) {
-                GoodMorningRule.this.doGoodMorningActions();
-            }
+    private final EventListener<EventInstance> listener = onEvent(() -> {
+        Calendar cal = Calendar.getInstance();
+        if (cal.get(Calendar.HOUR_OF_DAY) <= END_OF_RULE_TIME) {
+            GoodMorningRule.this.doGoodMorningActions();
         }
-    };
-
+    });
+            
     @Override
     protected void initialize() throws ResolveReferenceException, IllegalRuleConfigurationException {
         AlarmClock clock = alarmClock.getTarget();
@@ -58,29 +56,26 @@ public class GoodMorningRule extends Rule {
         this.alarmClock.getTarget().getAlarmEvent().unregister(listener);
     }
 
-    private void doGoodMorningActions() {
-        try {
+    private void doGoodMorningActions() throws ResolveReferenceException {
             this.openRollerShutter();
-            this.trunLightOn();
+            this.turnLightOn();
             this.makeCoffee();
-        } catch (ResolveReferenceException e) {
-            errorOccured(e);
-        }
     }
 
     private void makeCoffee() throws ResolveReferenceException {
         CoffeeMachine cM = this.coffeeMachine.getTarget();
-        cM.getPressStartAction().fire(new ActionInstance(cM.getPressStartAction()));
+        cM.pressStart();
     }
 
-    private void trunLightOn() throws ResolveReferenceException {
+    private void turnLightOn() throws ResolveReferenceException {
         DimmableLight dL = this.dimmableLight.getTarget();
-        dL.getAdjustDimm().fire(new AdjustDimmLevel(dL.getAdjustDimm(), 0.0));
+        dL.setDimLevel(DIM_LEVEL);
+        dL.setOn(true);
     }
 
     private void openRollerShutter() throws ResolveReferenceException {
         RollerShutter rS = this.rollerShutter.getTarget();
-        rS.getAdjustAction().fire(new AdjustShutterPostion(rS.getAdjustAction(), 0.0));
+        rS.adjustShutter(0.0);
     }
 
 }

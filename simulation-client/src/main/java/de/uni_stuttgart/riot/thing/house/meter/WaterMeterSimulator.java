@@ -12,9 +12,12 @@ public class WaterMeterSimulator extends MeterSimulator {
     private static final int AVERAGE_CONSUMPTION = 5;
 
     /**
-     * Constructor.
-     * @param thing .
-     * @param scheduler .
+     * Constructor for the {@link WaterMeterSimulator}.
+     * 
+     * @param thing
+     *            Thing to be simulated
+     * @param scheduler
+     *            The scheduler
      */
     public WaterMeterSimulator(Meter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);

@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.thing.house;
+package de.uni_stuttgart.riot.thing.house.roller_shutter;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.JsonNode;

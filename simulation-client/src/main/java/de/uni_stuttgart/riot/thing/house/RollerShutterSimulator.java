@@ -5,6 +5,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import de.uni_stuttgart.riot.simulation_client.Simulator;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.house.roller_shutter.AdjustShutterPostion;
+import de.uni_stuttgart.riot.thing.house.roller_shutter.RollerShutter;
 
 /**
  * 
@@ -17,12 +19,12 @@ public class RollerShutterSimulator extends Simulator<RollerShutter> {
     private static final int STEPCOUNT_MULT = 300;
 
     /**
-     * Constructor.
+     * Constructor for the {@link RollerShutterSimulator}.
      * 
      * @param thing
-     *            .
+     *            Thing to be simulated
      * @param scheduler
-     *            .
+     *            The scheduler
      */
     public RollerShutterSimulator(RollerShutter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
@@ -38,7 +40,9 @@ public class RollerShutterSimulator extends Simulator<RollerShutter> {
 
     /**
      * Adjusts the position
-     * @param position target position
+     * 
+     * @param position
+     *            target position
      */
     private void adjustPosition(double position) {
         int stepCount = (int) (Math.abs(this.getThing().getLevel() - position) * STEPCOUNT_MULT);

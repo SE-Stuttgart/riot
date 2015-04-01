@@ -12,9 +12,12 @@ public class GasMeterSimulator extends MeterSimulator {
     private static final double VARIATION = 8;
 
     /**
-     * Constructor.
-     * @param thing .
-     * @param scheduler .
+     * Constructor for the {@link GasMeterSimulator}.
+     * 
+     * @param thing
+     *            Thing to be simulated
+     * @param scheduler
+     *            The scheduler
      */
     public GasMeterSimulator(GasMeter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);

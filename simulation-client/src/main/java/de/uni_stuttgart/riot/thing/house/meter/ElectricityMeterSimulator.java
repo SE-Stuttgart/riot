@@ -12,9 +12,12 @@ public class ElectricityMeterSimulator extends MeterSimulator {
     private static final double AVERAGE_CONSUMPTION = 0;
 
     /**
-     * Constructor for {@link ElectricityMeter}.
-     * @param thing .
-     * @param scheduler .
+     * Constructor for the {@link ElectricityMeterSimulator}.
+     * 
+     * @param thing
+     *            Thing to be simulated
+     * @param scheduler
+     *            The scheduler
      */
     public ElectricityMeterSimulator(Meter thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);

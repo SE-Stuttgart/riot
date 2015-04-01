@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.thing.house.meter;
 
-import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 
 /**
@@ -10,7 +9,7 @@ import de.uni_stuttgart.riot.thing.ThingBehavior;
 public class GasMeter extends Meter {
 
     /**
-     * Constructor.
+     * Constructor for the {@link GasMeter}.
      * 
      * @param behavior
      *            behavior to be used
@@ -19,40 +18,4 @@ public class GasMeter extends Meter {
         super(behavior);
     }
     
-    /**
-     * Getter for the {@link Property} of the current gas consumption in m^3/h.
-     * 
-     * @return the property
-     */
-    public Property<Double> getCurrentGasConsumtionProperty() {
-        return this.currentConsumption;
-    }
-
-    /**
-     * Getter for the current gas consumption in m^3/h.
-     * 
-     * @return current gas consumption in m^3/h.
-     */
-    public Double getCurrentGasConsumtion() {
-        return this.currentConsumption.get();
-    }
-    
-    /**
-     * Getter for the {@link Property} of the overall gas consumption in m^3.
-     * 
-     * @return the property
-     */
-    public Property<Double> getOverallGasConsumtionProperty() {
-        return this.overallConsumption;
-    }
-
-    /**
-     * Getter for the overall gas consumption in m^3.
-     * 
-     * @return overall gas consumption in m^3.
-     */
-    public Double getOverallGasConsumtion() {
-        return this.overallConsumption.get();
-    }
-
 }

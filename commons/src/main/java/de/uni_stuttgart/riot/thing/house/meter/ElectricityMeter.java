@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.thing.house.meter;
 
-import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 
 /**
@@ -10,49 +9,13 @@ import de.uni_stuttgart.riot.thing.ThingBehavior;
 public class ElectricityMeter extends Meter {
 
     /**
-     * Constructor.
+     * Constructor for the {@link ElectricityMeter}.
      * 
      * @param behavior
-     *            the behavior to use
+     *            the behavior to be used
      */
     public ElectricityMeter(ThingBehavior behavior) {
         super(behavior);
-    }
-
-    /**
-     * Getter for the {@link Property} of the current electricity consumption in kw/h.
-     * 
-     * @return the property
-     */
-    public Property<Double> getCurrentElectricityConsumtionProperty() {
-        return this.currentConsumption;
-    }
-
-    /**
-     * Getter for the current electricity consumption in kw/h.
-     * 
-     * @return current electricity consumption in kw/h.
-     */
-    public Double getCurrentElectricityConsumtion() {
-        return this.currentConsumption.get();
-    }
-    
-    /**
-     * Getter for the {@link Property} of the overall electricity consumption in kw/h.
-     * 
-     * @return the property
-     */
-    public Property<Double> getOverallElectricityConsumtionProperty() {
-        return this.overallConsumption;
-    }
-
-    /**
-     * Getter for the overall electricity consumption in kw/h.
-     * 
-     * @return overall electricity consumption in kw/h.
-     */
-    public Double getOverallElectricityConsumtion() {
-        return this.overallConsumption.get();
     }
 
 }

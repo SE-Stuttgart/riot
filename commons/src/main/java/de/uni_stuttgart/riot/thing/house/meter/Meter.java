@@ -18,12 +18,12 @@ public abstract class Meter extends Thing {
     /**
      * Holds the value of the current consumption eg. kw/h for electricity.
      */
-    protected final Property<Double> currentConsumption = newProperty("currentConsumption", Double.class, CURRENT_CONSUMPTION, UIHint.editNumber());
+    private final Property<Double> currentConsumption = newProperty("currentConsumption", Double.class, CURRENT_CONSUMPTION, UIHint.editNumber());
 
     /**
      * Holds the overall amount of consumption eg. kw/h for electricity.
      */
-    protected final Property<Double> overallConsumption = newProperty("overallConsumption", Double.class, OVERALL_CONSUMPTION, UIHint.editNumber());
+    private final Property<Double> overallConsumption = newProperty("overallConsumption", Double.class, OVERALL_CONSUMPTION, UIHint.editNumber());
    
     /**
      * Shows if the meter has blocked the connection (eg. Water supply is blocked), eg. because of a open account.
@@ -32,7 +32,7 @@ public abstract class Meter extends Thing {
     
    
     /**
-     * Constructor.
+     * Constructor for {@link Meter}.
      * 
      * @param behavior
      *            behavior to be used
@@ -61,19 +61,33 @@ public abstract class Meter extends Thing {
 
     /**
      * Getter for the {@link Property} of the current consumption.
-     * (Only for Simulation)
      * @return the property
      */
-    public Property<Double> getCurrentConsumtionProperty() {
+    public Property<Double> getCurrentConsumptionProperty() {
         return this.currentConsumption;
     }
 
     /**
      * Getter for the {@link Property} of the overall consumption.
-     * (Only for Simulation)
      * @return the property
      */
-    public Property<Double> getOverallConsumtionProperty() {
+    public Property<Double> getOverallConsumptionProperty() {
         return this.overallConsumption;
+    }
+    
+    /**
+     * Getter for the {@link Property} value of the current consumption.
+     * @return the value
+     */
+    public Double getCurrentConsumption() {
+        return this.currentConsumption.get();
+    }
+
+    /**
+     * Getter for the {@link Property} of the overall consumption.
+     * @return the property
+     */
+    public Double getOverallConsumption() {
+        return this.overallConsumption.get();
     }
 }

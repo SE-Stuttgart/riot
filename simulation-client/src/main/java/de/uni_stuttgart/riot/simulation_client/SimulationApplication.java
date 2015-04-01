@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -221,14 +222,14 @@ public class SimulationApplication extends Application {
             try {
                 @SuppressWarnings("unchecked")
                 Class<? extends Simulator<?>> simulatorType = (Class<? extends Simulator<?>>) Class.forName(simulatorClassName).asSubclass(Simulator.class);
-                Constructor<? extends Simulator<?>> constructor = simulatorType.getConstructor(thingType, ScheduledThreadPoolExecutor.class);
-                simulator = constructor.newInstance(thingType.cast(behavior.getThing()), scheduler);
+                Constructor<? extends Simulator<?>> constructor = ConstructorUtils.getMatchingAccessibleConstructor(simulatorType, thingType, ScheduledThreadPoolExecutor.class);
+                if (constructor == null) {
+                    logger.error("{} must have a constructor with argument types {} and ScheduledThreadPoolExecutor", simulatorClassName, thingType);
+                    System.exit(1);
+                    return;
+                }
             } catch (ClassCastException | ClassNotFoundException e) {
                 logger.error("Invalid simulator type {}", simulatorClassName, e);
-                System.exit(1);
-                return;
-            } catch (NoSuchMethodException e) {
-                logger.error("{} must have a constructor with argument types {} and ScheduledThreadPoolExecutor", simulatorClassName, thingType, e);
                 System.exit(1);
                 return;
             }

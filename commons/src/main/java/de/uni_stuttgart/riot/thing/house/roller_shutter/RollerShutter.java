@@ -1,4 +1,4 @@
-package de.uni_stuttgart.riot.thing.house;
+package de.uni_stuttgart.riot.thing.house.roller_shutter;
 
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.Property;
@@ -18,12 +18,12 @@ public class RollerShutter extends Thing {
     private final Property<Double> level = newProperty("level", Double.class, 0.0, UIHint.percentageSlider());
 
     private final Action<AdjustShutterPostion> adjustAction = newAction("adjustAction", AdjustShutterPostion.class);
-    
+
     /**
-     * Constructor.
+     * Constructor for the {@link RollerShutter}.
      * 
      * @param behavior
-     *            .
+     *            behavior to be used
      */
     public RollerShutter(ThingBehavior behavior) {
         super(behavior);
@@ -40,6 +40,7 @@ public class RollerShutter extends Thing {
 
     /**
      * Getter for the level value.
+     * 
      * @return (0 -> opened, 100 -> closed)
      */
     public double getLevel() {
@@ -48,10 +49,21 @@ public class RollerShutter extends Thing {
 
     /**
      * Getter for the {@link AdjustShutterPostion} Action.
+     * 
      * @return the adjustAction
      */
     public Action<AdjustShutterPostion> getAdjustAction() {
         return adjustAction;
+    }
+
+    /**
+     * Adjusts the shutter.
+     * 
+     * @param position
+     *            of the shutter (0 -> opened, 100 -> closed)
+     */
+    public void adjustShutter(double position) {
+        this.adjustAction.fire(new AdjustShutterPostion(this.adjustAction, position));
     }
 
 }
