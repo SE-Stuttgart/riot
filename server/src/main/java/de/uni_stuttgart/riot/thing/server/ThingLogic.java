@@ -19,6 +19,7 @@ import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
 import de.uni_stuttgart.riot.db.thing.ThingUserSqlQueryDAO;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceDeleteException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceFindException;
 import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceInsertException;
@@ -630,8 +631,20 @@ public class ThingLogic {
             throw new IllegalArgumentException("name must not be empty!");
         } else if (metainfo.getOwnerId() == null || metainfo.getOwnerId() < 1) {
             throw new IllegalArgumentException("ownerId must not be empty!");
-        } else if (metainfo.getParentId() == null || metainfo.getParentId() < 1) {
+        }
+
+        if (metainfo.getParentId() == null || metainfo.getParentId() < 1) {
             metainfo.setParentId(null);
+        } else {
+            Thing newParent = ThingLogic.getThingLogic().getThing(metainfo.getParentId());
+            if (newParent == null) {
+                throw new IllegalArgumentException("parentId " + metainfo.getParentId() + " does not exist");
+            }
+            try {
+                thing.assertValidParent(newParent);
+            } catch (ResolveReferenceException e) {
+                throw new IllegalArgumentException("Inconsistent ancestor hierarchy");
+            }
         }
 
         Objects.requireNonNull(thing, "thing must not be null");

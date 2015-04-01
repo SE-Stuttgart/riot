@@ -401,15 +401,29 @@ public class Thing extends Storable implements Referenceable<Thing> {
         try {
             if (parent == null) {
                 this.parent.setTarget(null);
-            } else if (parent == this) {
-                throw new IllegalArgumentException("A thing cannot be its own parent.");
-            } else if (parent.hasAncestor(this)) {
-                throw new IllegalArgumentException(this + " is already an ancestor of " + parent + ", so that the call would result in a cycle.");
             } else {
+                assertValidParent(parent);
                 this.parent.setTarget(parent);
             }
         } catch (ResolveReferenceException e) {
             throw new IllegalStateException("Incomplete ancestor hierarchy", e);
+        }
+    }
+
+    /**
+     * Ensures that <tt>parent</tt> could become the parent of <tt>this</tt> thing without corrupting the parent hierarchy. Throws an
+     * {@link IllegalArgumentException} if the parent hierarchy would be invalid.
+     * 
+     * @param newParent
+     *            The possible new parent. Must not be <tt>null</tt>.
+     * @throws ResolveReferenceException
+     *             When the ancestor hierarchy is corrupted.
+     */
+    public void assertValidParent(Thing newParent) throws ResolveReferenceException {
+        if (newParent == this) {
+            throw new IllegalArgumentException("A thing cannot be its own parent.");
+        } else if (newParent.hasAncestor(this)) {
+            throw new IllegalArgumentException(this + " is already an ancestor of " + newParent + ", so that the call would result in a cycle.");
         }
     }
 
