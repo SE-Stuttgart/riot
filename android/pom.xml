@@ -52,12 +52,6 @@
 			<groupId>de.uni-stuttgart.riot</groupId>
 			<artifactId>riot.commons</artifactId>
 			<version>${project.parent.version}</version>
-			<exclusions>
-			    <exclusion>
-					<groupId>net.sourceforge.cobertura</groupId>
-					<artifactId>cobertura</artifactId>
-			    </exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>de.uni-stuttgart.riot</groupId>

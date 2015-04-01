@@ -9,11 +9,7 @@
     </path>
     <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
-    <target name="instrument">
-        <!-- Add all modules that should be included below -->
-        <!-- <antcall target="instrumentAModule">
-            <param name="module" value="MODULE_NAME_TO_REPLACE"/>
-        </antcall> -->
+    <!-- <target name="instrument">
         <antcall target="instrumentAModule">
             <param name="module" value="clientlibrary"/>
         </antcall>
@@ -22,14 +18,16 @@
         </antcall>
         <antcall target="instrumentAModule">
             <param name="module" value="server"/>
+            <param name="auxpath" value="commons\target\classes"/>
         </antcall>
         <antcall target="instrumentAModule">
             <param name="module" value="server-commons"/>
+            <param name="auxpath" value="C:\Users\Philipp\.m2\repository\org\sql2o\sql2o\1.5.3\sql2o-1.5.3.jar"/>
         </antcall>
         <antcall target="instrumentAModule">
             <param name="module" value="usermanagement"/>
         </antcall>
-    </target>
+    </target> -->
 
     <target name="report" depends="merge">
         <cobertura-report datafile="./sum.ser"
@@ -51,12 +49,13 @@
         </cobertura-merge>
     </target>
 
-    <target name="instrumentAModule">
+    <!-- <target name="instrumentAModule">
         <cobertura-instrument>
             <fileset dir="./${module}/target/classes">
                 <include name="**/*.class"/>
             </fileset>
+            <auxClasspath path="${auxpath}"/>
         </cobertura-instrument>
-    </target>
+    </target> -->
 	
 </project>

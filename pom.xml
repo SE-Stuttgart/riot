@@ -312,6 +312,74 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>coverage</id>
+			<dependencies>
+				<dependency>
+					<groupId>net.sourceforge.cobertura</groupId>
+					<artifactId>cobertura</artifactId>
+					<version>2.1.1</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.10</version>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>build-classpath</goal>
+								</goals>
+								<configuration>
+									<outputProperty>auxClasspath</outputProperty>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<inherited>true</inherited>
+								<configuration>
+									<target>
+										<echo>${auxClasspath}</echo>
+										<property environment="env" />
+										<path id="cobertura.classpath">
+											<fileset dir="${env.COBERTURA_HOME}">
+												<include name="cobertura*.jar" />
+												<include name="lib/**/*.jar" />
+											</fileset>
+										</path>
+										<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+										<cobertura-instrument>
+											<fileset dir="./target/classes">
+												<include name="**/*.class" />
+											</fileset>
+											<auxClasspath path="${auxClasspath}" />
+										</cobertura-instrument>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<inherited>false</inherited>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>

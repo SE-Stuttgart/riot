@@ -1,16 +1,6 @@
-call mvn clean process-classes
+call mvn clean install -Pcoverage -pl '-maven-plugin,-webapp,-simulation-client,-android'
 if %ERRORLEVEL% NEQ 0 (
    echo Error while compiling the code: %errorlevel%
-   exit /b %errorlevel%
-)
-call ant instrument
-if %ERRORLEVEL% NEQ 0 (
-   echo Error while instrumenting the code: %errorlevel%
-   exit /b %errorlevel%
-)
-call mvn verify -DskipITs=false -Pcoverage
-if %ERRORLEVEL% NEQ 0 (
-   echo Error while running the tests: %errorlevel%
    exit /b %errorlevel%
 )
 call ant report
