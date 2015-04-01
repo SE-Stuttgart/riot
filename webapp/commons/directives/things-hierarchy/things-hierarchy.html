@@ -1,0 +1,9 @@
+<div class="thing-hierarchy-node">
+  <div class="info" ng-class="{'no-border': !thing.children.length || collapsed}">
+    <span class="collapse fa" ng-if="thing.children.length" ng-click="$parent.collapsed=!collapsed" ng-class="{'fa-chevron-down': !collapsed, 'fa-chevron-right': collapsed}"></span>
+    <span class="name"><a ui-sref="app.things.detail({thingid: thing.id})">{{thing.metainfo.name}}</a></span>
+  </div>
+  <ul class="children" ng-if="thing.children.length && !collapsed">
+    <li ng-repeat="thing in thing.children" things-hierarchy="thing"></li>
+  </ul>
+</div>

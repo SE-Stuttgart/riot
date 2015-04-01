@@ -17,7 +17,7 @@ angular.module('riot', ['ngLocalize',
                         'ngWebSocket',
                         'infinite-scroll',
 						'btford.markdown',
-						'angularTreeview'])
+						'RecursionHelper'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix

@@ -61,7 +61,7 @@
         <div class="form-group">
           <div class="col-md-offset-2 col-md-8">
             <button type="submit" class="btn btn-primary" submit="save()" loading-button>{{ 'common.save' | i18n }}</button>
-            <button ui-sref="admin.users.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
+            <button ui-sref="app.things.list" type="button" class="btn btn-default">{{ 'common.cancel' | i18n }}</button>
           </div>
         </div>
       </form>
@@ -104,7 +104,7 @@
     <!-- hierarchy -->
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.hierarchy' | i18n}}</div>
-      <div data-angular-treeview="true" data-tree-id="thingChildrenTree" data-tree-model="[thingDetail]" data-node-id="id" data-node-label="metainfo.name" data-node-children="children"></div>
+      <div things-hierarchy="thingDetail"></div>
     </div>
 
     <!-- Share -->
