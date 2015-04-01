@@ -16,7 +16,8 @@ angular.module('riot', ['ngLocalize',
                         'nya.bootstrap.select',
                         'ngWebSocket',
                         'infinite-scroll',
-						'btford.markdown'])
+						'btford.markdown',
+						'angularTreeview'])
 .value('localeConf', {
   basePath: 'languages',
   defaultLocale: 'en', // Note that this has no region suffix

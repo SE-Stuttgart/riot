@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -667,8 +668,6 @@ public class ThingLogic {
     public ThingInformation map(Long userId, Thing thing, Collection<Field> fields) { // NOCS
         if (thing == null) {
             return null;
-        } else if (fields == null || fields.isEmpty()) {
-            return new ThingInformation();
         }
 
         ThingInformation result = new ThingInformation();

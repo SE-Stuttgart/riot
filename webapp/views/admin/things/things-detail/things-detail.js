@@ -17,6 +17,13 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
       $scope.selectedRight = null; 
     });
 
+    $scope.$watch('thingChildrenTree.currentNode', function(newObj, oldObj) {
+      if($scope.thingChildrenTree && angular.isObject($scope.thingChildrenTree.currentNode) ) {
+        var id = $scope.thingChildrenTree.currentNode.id;
+        $state.go('app.things.detail', {thingid: id});
+      }
+    }, false);
+
     $scope.things = {
       data: [],
       selection: null,
@@ -79,7 +86,8 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
   };
 
   $scope.getThing = function() {
-    Thing.one($stateParams.thingid).get().then(function(thing) {
+    Thing.one($stateParams.thingid).get({return: ['ALLCHILDREN', 'METAINFO']}).then(function(thing) {
+      //request parent thing
       $scope.things.disabled = [thing];
       Thing.one(thing.metainfo.parentId).get().then(function(thing) {
         $scope.things.selection = thing;
@@ -87,7 +95,7 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
 
       $scope.thingDetail = thing;
       $scope.thingDescription = $scope.thingDetail.getDescription().$object;
-      
+
       $scope.thingState = {};
       $scope.thingDetail.getState().then(function(state) {
         angular.forEach(state.propertyValues, function (propertyValueValue, propertyValueKey) {

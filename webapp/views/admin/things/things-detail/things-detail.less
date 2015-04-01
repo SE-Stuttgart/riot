@@ -19,4 +19,46 @@
     .parent-remove {
         display: inline-block;
     }
+    div[data-tree-model] li .selected {
+        background-color: transparent !important;
+        font-weight: normal !important;
+        padding: 0 !important;
+    }
+    div[data-tree-model] ul {
+        padding: 5px 0 !important;
+    }
+    div[data-angular-treeview] {
+        font-family: inherit !important;
+        font-size: inherit !important;
+        color: inherit !important;
+    }
+    div[data-angular-treeview] > ul > li {
+        padding: 0 !important;
+    }
+    div[data-tree-model] li .expanded {
+        background-image: none !important;
+    }
+    div[data-tree-model] li .expanded:before {
+        font-family: FontAwesome !important;
+        content: "\f078" !important;
+        font-style: normal !important;
+    }
+    div[data-tree-model] li .collapsed {
+        background-image: none !important;
+    }
+    div[data-tree-model] li .collapsed:before {
+        font-family: FontAwesome !important;
+        content: "\f054" !important;
+        font-style: normal !important;
+    }
+    div[data-tree-model] li .normal {
+        background-image: none !important;
+    }
+    div[data-tree-model] li .normal:before {
+        font-family: FontAwesome !important;
+        content: "\f111" !important;
+        font-style: normal !important;
+        font-size: 0.5em;
+        vertical-align: middle;
+    }
 }

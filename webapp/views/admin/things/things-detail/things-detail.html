@@ -101,6 +101,13 @@
       </form>
     </div>
 
+    <!-- hierarchy -->
+    <div class="detail-group">
+      <div class="detail-group-header">{{'thing.hierarchy' | i18n}}</div>
+      <div data-angular-treeview="true" data-tree-id="thingChildrenTree" data-tree-model="[thingDetail]" data-node-id="id" data-node-label="metainfo.name" data-node-children="children"></div>
+    </div>
+
+    <!-- Share -->
     <div class="detail-group">
       <div class="detail-group-header">{{ 'thing.sharing' | i18n }}</div>
       <div class="panel panel-default">

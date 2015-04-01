@@ -34,7 +34,8 @@
     "nya-bootstrap-select": "~2.0.10",
     "angular-websocket": "~1.0.9",
     "ngInfiniteScroll": "~1.2.0",
-	"angular-markdown-directive": "~0.3.1"
+	"angular-markdown-directive": "~0.3.1",
+	"angular.treeview": "*"
   },
   "resolutions": {
     "angular": "~1.2",
