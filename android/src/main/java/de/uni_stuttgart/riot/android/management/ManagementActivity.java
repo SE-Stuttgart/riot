@@ -47,8 +47,6 @@ public abstract class ManagementActivity<T> extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IM.INSTANCES.getMH().showQuickMessage("Dast ist eine Testnachricht...");
-
         // If no layout resource was defined throw an exception
         if (getLayoutResource() == 0) {
             IM.INSTANCES.getMH().writeErrorMessage("Missing the management layout!");
@@ -118,7 +116,7 @@ public abstract class ManagementActivity<T> extends Activity {
             protected void onPostExecute(Boolean aBoolean) {
                 super.onPostExecute(aBoolean);
 
-                if(aBoolean) {
+                if (aBoolean) {
                     // Display the loaded data
                     displayManagementData();
                 }
@@ -126,31 +124,7 @@ public abstract class ManagementActivity<T> extends Activity {
                 // End processing animation
                 stopProcessingAnimation();
             }
-        };
-// TODO DELETE!
-//        new AsyncHelper<T>() {
-//
-//            @Override
-//            protected T loadData() {
-//                loadManagementData();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void processData(T data) {
-//                // Display the loaded data
-//                displayManagementData();
-//
-//                // End processing animation
-//                stopProcessingAnimation();
-//            }
-//
-//            @Override
-//            protected void doAfterErrorOccurred() {
-//                // End processing animation
-//                stopProcessingAnimation();
-//            }
-//        };
+        }.execute();
     }
 
     /**

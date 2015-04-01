@@ -72,22 +72,7 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
                     setHomeIcon(drawable);
                 }
             }
-        };
-// ToDo DELTE!
-//        new AsyncHelper<Drawable>() {
-//
-//            @Override
-//            protected Drawable loadData() {
-//                return getDrawableLetter(data.getName(), String.valueOf(data.getId()));
-//            }
-//
-//            @Override
-//            protected void processData(Drawable data) {
-//                if (data != null) {
-//                    setHomeIcon(data);
-//                }
-//            }
-//        };
+        }.execute();
         setTitle(super.item.getName());
 
         // Prepare the items and save them in the right group

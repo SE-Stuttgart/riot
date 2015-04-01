@@ -55,6 +55,7 @@ public class MessageHandler {
      */
     public void writeErrorMessage(String text, Exception exception) {
         writeErrorMessage(text + exception.getCause() + ": " + exception.getMessage());
+        exception.printStackTrace();
     }
 
     /**

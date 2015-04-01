@@ -46,25 +46,7 @@ public class UserDetailActivity extends ManagementDetailActivity<User> {
                     setHomeIcon(drawable);
                 }
             }
-        };
-// ToDo DELTE!
-//        new AsyncHelper<Drawable>() {
-//
-//            @Override
-//            protected Drawable loadData() {
-//                if (data.getId() == 1) {
-//                    return getDrawableByUri("http://crackberry.com/sites/crackberry.com/files/styles/large/public/topic_images/2013/ANDROID.png?itok=xhm7jaxS");
-//                }
-//                return getDrawableLetter(data.getUsername(), data.getEmail());
-//            }
-//
-//            @Override
-//            protected void processData(Drawable data) {
-//                if (data != null) {
-//                    setHomeIcon(data);
-//                }
-//            }
-//        };
+        }.execute();
         setTitle(super.item.getUsername());
 
         // Add items to the group collection

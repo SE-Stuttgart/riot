@@ -25,8 +25,8 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
  */
 public abstract class ManagementListActivity<T, D> extends ManagementActivity<List<T>> {
 
-    private ListView listView;
     protected List<T> items;
+    private ListView listView;
 
     @Override
     protected int getLayoutResource() {
@@ -169,26 +169,7 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
                 }
                 setImageViewImage(view, R.id.list_item_management_picture, newDrawable);
             }
-        };
-// ToDo delete...
-//        new AsyncHelper<Drawable>() {
-//
-//            @Override
-//            protected Drawable loadData() {
-//                return getImage(item);
-//            }
-//
-//            @Override
-//            protected void processData(Drawable drawable) {
-//                Drawable newDrawable;
-//                if (drawable == null) {
-//                    newDrawable = getDefaultImage();
-//                } else {
-//                    newDrawable = drawable;
-//                }
-//                setImageViewImage(view, R.id.list_item_management_picture, newDrawable);
-//            }
-//        };
+        }.execute();
     }
 
     /**
@@ -224,26 +205,7 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
                 }
                 setImageViewImage(view, R.id.list_item_management_online_state, getDrawableByResource(getOnlineStateResourceId(newOnlineState)));
             }
-        };
-// TODO DELETE!
-//        new AsyncHelper<OnlineState>() {
-//
-//            @Override
-//            protected OnlineState loadData() {
-//                return getOnlineState(item);
-//            }
-//
-//            @Override
-//            protected void processData(OnlineState onlineState) {
-//                OnlineState newOnlineState;
-//                if (onlineState == null) {
-//                    newOnlineState = getDefaultOnlineState();
-//                } else {
-//                    newOnlineState = onlineState;
-//                }
-//                setImageViewImage(view, R.id.list_item_management_online_state, getDrawableByResource(getOnlineStateResourceId(newOnlineState)));
-//            }
-//        };
+        }.execute();
     }
 
     /**
