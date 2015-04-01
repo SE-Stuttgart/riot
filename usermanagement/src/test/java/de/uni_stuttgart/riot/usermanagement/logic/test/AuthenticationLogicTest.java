@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.Factory;
@@ -19,7 +21,9 @@ import de.uni_stuttgart.riot.usermanagement.data.storable.UMUser;
 import de.uni_stuttgart.riot.usermanagement.exception.UserManagementException;
 import de.uni_stuttgart.riot.usermanagement.logic.AuthenticationLogic;
 import de.uni_stuttgart.riot.usermanagement.logic.UserLogic;
-import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;;
+import de.uni_stuttgart.riot.usermanagement.logic.test.common.LogicTestBase;
+
+;
 
 public class AuthenticationLogicTest extends LogicTestBase {
 
@@ -172,17 +176,17 @@ public class AuthenticationLogicTest extends LogicTestBase {
         assertFalse(token.getRefreshtokenValue().isEmpty());
     }
 
-    @Test(expected = UserManagementException.class)
+    @Test(expected = IncorrectCredentialsException.class)
     public void testRefreshTokenInvalid() throws Exception {
         al.refreshToken("Invalid");
     }
 
-    @Test(expected = UserManagementException.class)
+    @Test(expected = IncorrectCredentialsException.class)
     public void testRefreshTokenNull() throws Exception {
         al.refreshToken(null);
     }
 
-    @Test(expected = UserManagementException.class)
+    @Test(expected = IncorrectCredentialsException.class)
     public void testRefreshTokenEmpty() throws Exception {
         al.refreshToken("");
     }
@@ -191,7 +195,7 @@ public class AuthenticationLogicTest extends LogicTestBase {
      * Logout tests
      */
 
-    @Test(expected = UserManagementException.class)
+    @Test(expected = ExpiredCredentialsException.class)
     public void testLogoutValid() throws Exception {
         al.logout("token1");
 

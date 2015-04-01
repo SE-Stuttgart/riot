@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 
@@ -120,7 +122,8 @@ public class AuthenticationLogic {
      *            The refresh token used for generating the new tokens.
      * @return A response containing the bearer and refresh token.
      * @throws UserManagementException
-     *             Thrown if any error happens.
+     *             Thrown if any major error happens. Note that {@link AuthenticationException}s will be thrown if the authentication fails
+     *             because of an invalid token.
      */
     public Token refreshToken(String providedRefreshToken) throws UserManagementException {
 
@@ -129,7 +132,7 @@ public class AuthenticationLogic {
         try {
             token = dao.findByUniqueField(new SearchParameter(SearchFields.REFRESHTOKEN, providedRefreshToken));
         } catch (DatasourceFindException e) {
-            throw new UserManagementException("The provided token does not exist!", e);
+            throw new IncorrectCredentialsException("The provided token does not exist!", e);
         }
 
         // test, if token is valid
@@ -158,7 +161,7 @@ public class AuthenticationLogic {
                 throw new UserManagementException("Couldn't refresh token", e);
             }
         } else {
-            throw new UserManagementException("The provided refresh token is not valid");
+            throw new ExpiredCredentialsException("The provided refresh token is not valid");
         }
     }
 
