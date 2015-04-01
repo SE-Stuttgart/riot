@@ -18,7 +18,9 @@ import de.uni_stuttgart.riot.thing.PropertyListener;
  */
 public class AlarmClockSimulator extends Simulator<AlarmClock> {
 
+    private static final long ONE_DAY = 1000 * 60 * 60 * 24;
     private ScheduledFuture<?> alarmFuture;
+    private PropertyListener<Object> setAlarmListener;
 
     /**
      * Constructor for the {@link AlarmClockSimulator}.
@@ -30,14 +32,39 @@ public class AlarmClockSimulator extends Simulator<AlarmClock> {
      */
     public AlarmClockSimulator(AlarmClock thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
+    }
+
+    /**
+     * Called to start the simulator.
+     */
+    public void startSimulation() {
+        super.startSimulation();
         this.initListeners();
+        this.scheduleAlarmTask();
+    }
+
+    /**
+     * Called to stop the simulator.
+     */
+    public void stopSimulation() {
+        super.stopSimulation();
+        this.unregister();
+    }
+
+    /**
+     * Unregisters the setalarmlistener.
+     */
+    private void unregister() {
+        getThing().getHourProperty().unregister(setAlarmListener);
+        getThing().getMinuteProperty().unregister(setAlarmListener);
+        getThing().getActivatedProperty().unregister(setAlarmListener);
     }
 
     /**
      * Inits the listeners for the hour minute and activeded properties. That are used to schedule the alarm task.
      */
     private void initListeners() {
-        PropertyListener<Object> setAlarmListener = new PropertyListener<Object>() {
+        setAlarmListener = new PropertyListener<Object>() {
             @Override
             public void onFired(Event<? extends Instance<? extends Object>> event, Instance<? extends Object> eventInstance) {
                 scheduleAlarmTask();
@@ -62,6 +89,9 @@ public class AlarmClockSimulator extends Simulator<AlarmClock> {
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, min);
         long delay = calendar.getTimeInMillis() - now;
+        if (calendar.getTimeInMillis() < now) {
+            delay = delay + ONE_DAY;
+        }
         if (getThing().isActivated()) {
             alarmFuture = this.getScheduler().schedule(() -> {
                 executeEvent(getThing().getAlarmEvent());

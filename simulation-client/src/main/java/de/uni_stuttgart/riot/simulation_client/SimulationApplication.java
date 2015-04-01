@@ -228,6 +228,7 @@ public class SimulationApplication extends Application {
                     System.exit(1);
                     return;
                 }
+                simulator = constructor.newInstance(thingType.cast(behavior.getThing()), scheduler);
             } catch (ClassCastException | ClassNotFoundException e) {
                 logger.error("Invalid simulator type {}", simulatorClassName, e);
                 System.exit(1);

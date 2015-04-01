@@ -3,15 +3,12 @@ package de.uni_stuttgart.riot.rule;
 import java.util.Calendar;
 
 import de.uni_stuttgart.riot.references.ResolveReferenceException;
-import de.uni_stuttgart.riot.thing.ActionInstance;
-import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Parameter;
 import de.uni_stuttgart.riot.thing.house.AlarmClock;
 import de.uni_stuttgart.riot.thing.house.coffeemachine.CoffeeMachine;
 import de.uni_stuttgart.riot.thing.house.light.DimmableLight;
-import de.uni_stuttgart.riot.thing.house.roller_shutter.AdjustShutterPostion;
 import de.uni_stuttgart.riot.thing.house.roller_shutter.RollerShutter;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
@@ -24,7 +21,7 @@ public class GoodMorningRule extends Rule {
 
     private static final double DIM_LEVEL = 0.5;
 
-    private static final int END_OF_RULE_TIME = 11;
+    private static final int END_OF_RULE_TIME = 24;
 
     @Parameter(ui = UIHint.ThingDropDown.class, requires = ThingPermission.READ)
     private ThingParameter<AlarmClock> alarmClock;
@@ -44,7 +41,7 @@ public class GoodMorningRule extends Rule {
             GoodMorningRule.this.doGoodMorningActions();
         }
     });
-            
+
     @Override
     protected void initialize() throws ResolveReferenceException, IllegalRuleConfigurationException {
         AlarmClock clock = alarmClock.getTarget();
@@ -57,9 +54,9 @@ public class GoodMorningRule extends Rule {
     }
 
     private void doGoodMorningActions() throws ResolveReferenceException {
-            this.openRollerShutter();
-            this.turnLightOn();
-            this.makeCoffee();
+        this.openRollerShutter();
+        this.turnLightOn();
+        this.makeCoffee();
     }
 
     private void makeCoffee() throws ResolveReferenceException {

@@ -69,6 +69,12 @@ public class RuleParameter<V> {
      * @return The current value of the parameter.
      */
     public V get() {
+        // FIXME: quick-fix
+        Object o = getRule().getConfiguration().get(name);
+        if (o instanceof Integer && valueType == Long.class) {
+            Integer oi = (Integer) o;
+            return valueType.cast(oi.longValue());
+        }
         return valueType.cast(getRule().getConfiguration().get(name));
     }
 

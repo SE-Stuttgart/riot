@@ -46,6 +46,8 @@ public class RollerShutterSimulator extends Simulator<RollerShutter> {
      */
     private void adjustPosition(double position) {
         int stepCount = (int) (Math.abs(this.getThing().getLevel() - position) * STEPCOUNT_MULT);
-        this.linearChange(this.getThing().getLevelProperty(), position, STEPTIME, stepCount);
+        if (stepCount != 0) {
+            this.linearChange(this.getThing().getLevelProperty(), position, STEPTIME, stepCount);
+        }
     }
 }
