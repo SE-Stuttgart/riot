@@ -94,17 +94,19 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
       });
 
       $scope.thingDetail = thing;
-      $scope.thingDescription = $scope.thingDetail.getDescription().$object;
-
-      $scope.thingState = {};
-      $scope.thingDetail.getState().then(function(state) {
-        angular.forEach(state.propertyValues, function (propertyValueValue, propertyValueKey) {
-          if(angular.isArray(propertyValueValue)) {
-            this[propertyValueKey] = propertyValueValue[1];
-          } else {
-            this[propertyValueKey] = propertyValueValue;
-          }
-        }, $scope.thingState);
+      $scope.thingDetail.getDescription().then(function(description) {
+        $scope.thingDescription = description;
+      
+        $scope.thingState = {};
+        $scope.thingDetail.getState().then(function(state) {
+          angular.forEach(state.propertyValues, function (propertyValueValue, propertyValueKey) {
+            if(angular.isArray(propertyValueValue)) {
+              this[propertyValueKey] = propertyValueValue[1];
+            } else {
+              this[propertyValueKey] = propertyValueValue;
+            }
+          }, $scope.thingState);
+        });
       });
     });
   };
@@ -237,6 +239,7 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
         $scope.thingState[propertyName] = propertyChange.newValue;
       }
     } 
+    console.log("websocket: " + propertyName + ": " + $scope.thingState[propertyName]);
   });
   
   var pushIfNotExistsInArray = function(array, value) {
@@ -250,4 +253,20 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
   };
 
   init();
+});
+
+angular.module('riot').controller('PropertyCtrl', function($scope, Thing){
+  if($scope.property.writable) {
+    console.log($scope.property.name + " is writable: " + 'thingState["' + $scope.property.name + '"]');
+    $scope.$watch('thingState["' + $scope.property.name + '"]', function(newValue) {
+      console.log("normal watch: " + newValue);
+      Thing.one($scope.thingDetail.id).post('action', { 
+        type: 'de.uni_stuttgart.riot.thing.PropertySetAction$Instance', 
+        thingId: $scope.thingDetail.id, 
+        name: $scope.property.name + '_set', 
+        time: Date.now(), 
+        newValue: newValue 
+      });
+    });
+  }
 });

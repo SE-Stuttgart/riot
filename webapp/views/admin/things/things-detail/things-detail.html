@@ -71,7 +71,7 @@
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.properties' | i18n}}</div>
       <form class="form-horizontal">
-        <div ng-repeat="property in thingDescription.properties" disabled="!property.writable" value="thingState" valuename="property.name" description="property" ui-element></div>
+        <div ng-controller="PropertyCtrl" ng-repeat="property in thingDescription.properties" disabled="!property.writable" value="thingState" valuename="property.name" description="property" ui-element></div>
       </form>
     </div>
 
