@@ -170,7 +170,7 @@ public class ThingLogicTest extends BaseDatabaseTest {
     @Test
     public void shouldReportLastConnectionTime() throws DatasourceFindException {
         Date l1 = logic.getLastConnection(1);
-        assertThat(l1, is(nullValue())); // TODO change here to "notNullValue"
+        assertThat(l1, is(nullValue()));
 
         long timeBefore = System.currentTimeMillis();
         logic.getThingUpdates(1);
