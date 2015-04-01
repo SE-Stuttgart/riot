@@ -391,9 +391,9 @@ public abstract class Rule {
      *            The lambda expression which is a simple void method with a single parameter (the event instance) that may throw any of the
      *            supported exceptions.
      * @return An event listener. Please save this instance, you won't be able to unregister the listener if you call
-     *         {@link #onEvent(ExceptionHandledParameterizedRunnable)} a second time.
+     *         {@link #onEventInstance(ExceptionHandledParameterizedRunnable)} a second time.
      */
-    protected <E extends EventInstance> EventListener<E> onEvent(ExceptionHandledParameterizedRunnable<E> runnable) {
+    protected <E extends EventInstance> EventListener<E> onEventInstance(ExceptionHandledParameterizedRunnable<E> runnable) {
         return (event, instance) -> {
             try {
                 runnable.run(instance);
@@ -432,9 +432,9 @@ public abstract class Rule {
      *            The lambda expression which is a simple void method with a single parameter (the new value of the changed property) that
      *            may throw any of the supported exceptions.
      * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
-     *         {@link #onPropertyChange(ExceptionHandledRunnable)} a second time.
+     *         {@link #onPropertyChangeTo(ExceptionHandledParameterizedRunnable)} a second time.
      */
-    protected <V> PropertyListener<V> onPropertyChangeParameterized(ExceptionHandledParameterizedRunnable<V> runnable) {
+    protected <V> PropertyListener<V> onPropertyChangeTo(ExceptionHandledParameterizedRunnable<V> runnable) {
         return (event, instance) -> {
             try {
                 runnable.run(instance.getNewValue());
@@ -452,9 +452,9 @@ public abstract class Rule {
      * @param listener
      *            The lambda expression which is a simple void method with three parameters (the property, the old value and the new value).
      * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
-     *         {@link #onPropertyChange(ExceptionHandledPropertyListener)} a second time.
+     *         {@link #onPropertyChangeFromTo(ExceptionHandledPropertyListener)} a second time.
      */
-    protected <V> PropertyListener<V> onPropertyChangeProperty(ExceptionHandledPropertyListener<V> listener) {
+    protected <V> PropertyListener<V> onPropertyChangeFromTo(ExceptionHandledPropertyListener<V> listener) {
         return (event, instance) -> {
             try {
                 listener.onChange(instance.getOldValue(), instance.getNewValue());

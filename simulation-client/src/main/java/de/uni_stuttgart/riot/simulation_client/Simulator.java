@@ -7,13 +7,17 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javafx.application.Platform;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.PropertyListener;
 import de.uni_stuttgart.riot.thing.Thing;
 
 /**
@@ -166,6 +170,86 @@ public abstract class Simulator<T extends Thing> {
             }
         }, 0, stepTime));
         return future.get();
+    }
+
+    /**
+     * Convenience method for creating event listeners with lambda expressions.
+     * 
+     * @param <E>
+     *            The type of the event instance.
+     * @param runnable
+     *            The lambda expression which is a simple void method with no parameters.
+     * @return An event listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onEvent(Runnable)} a second time.
+     */
+    protected <E extends EventInstance> EventListener<E> onEvent(Runnable runnable) {
+        return (event, instance) -> {
+            runnable.run();
+        };
+    }
+
+    /**
+     * Convenience method for creating event listeners with lambda expressions.
+     * 
+     * @param <E>
+     *            The type of the event instance.
+     * @param runnable
+     *            The lambda expression which is a simple void method with a single parameter (the event instance).
+     * @return An event listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onEventInstance(Consumer)} a second time.
+     */
+    protected <E extends EventInstance> EventListener<E> onEventInstance(Consumer<E> runnable) {
+        return (event, instance) -> {
+            runnable.accept(instance);
+        };
+    }
+
+    /**
+     * Convenience method for creating property listeners with lambda expressions.
+     * 
+     * @param <V>
+     *            The value type of the property.
+     * @param runnable
+     *            The lambda expression which is a simple void method with no parameters.
+     * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onPropertyChange(Runnable)} a second time.
+     */
+    protected <V> PropertyListener<V> onPropertyChange(Runnable runnable) {
+        return (event, instance) -> {
+            runnable.run();
+        };
+    }
+
+    /**
+     * Convenience method for creating property listeners with lambda expressions.
+     * 
+     * @param <V>
+     *            The value type of the property.
+     * @param runnable
+     *            The lambda expression which is a simple void method with a single parameter (the new value of the changed property).
+     * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onPropertyChangeTo(Consumer)} a second time.
+     */
+    protected <V> PropertyListener<V> onPropertyChangeTo(Consumer<V> runnable) {
+        return (event, instance) -> {
+            runnable.accept(instance.getNewValue());
+        };
+    }
+
+    /**
+     * Convenience method for creating property listeners with lambda expressions.
+     * 
+     * @param <V>
+     *            The value type of the property.
+     * @param runnable
+     *            The lambda expression which is a simple void method with three parameters (the property, the old value and the new value).
+     * @return A property listener. Please save this instance, you won't be able to unregister the listener if you call
+     *         {@link #onPropertyChangeFromTo(BiConsumer)} a second time.
+     */
+    protected <V> PropertyListener<V> onPropertyChangeFromTo(BiConsumer<V, V> runnable) {
+        return (event, instance) -> {
+            runnable.accept(instance.getOldValue(), instance.getNewValue());
+        };
     }
 
     /**
