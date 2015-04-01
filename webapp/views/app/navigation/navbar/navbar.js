@@ -1,4 +1,4 @@
-angular.module('riot').controller('NavbarCtrl', function($scope, $rootScope, $state) {
+angular.module('riot').controller('NavbarCtrl', function($scope, $rootScope, $state, Socket) {
   $scope.logout = function() {
     $rootScope.logout().then(
       function() {
