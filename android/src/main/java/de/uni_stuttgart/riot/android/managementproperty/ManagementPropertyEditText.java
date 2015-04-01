@@ -2,8 +2,7 @@ package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -57,18 +56,13 @@ public class ManagementPropertyEditText extends ManagementProperty<EditText, Str
 
     @Override
     protected void setChangeListenerAndUpdateProperty() {
-        this.editText.addTextChangedListener(new TextWatcher() {
+        this.editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                updateProperty(s.toString());
+            public void onFocusChange(View view, boolean b) {
+                // Update property on leaving view
+                if (!b) {
+                    updateProperty(editText.getText().toString());
+                }
             }
         });
     }

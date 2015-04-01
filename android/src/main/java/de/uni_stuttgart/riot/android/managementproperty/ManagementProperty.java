@@ -21,6 +21,7 @@ public abstract class ManagementProperty<T, V> {
     protected Property<V> property;
     private ActivityPropertyListener<V> propertyListener;
     private V value;
+    private boolean silentValueUpdate;
 
     /**
      * Constructor.
@@ -71,10 +72,16 @@ public abstract class ManagementProperty<T, V> {
         }
 
         // Initialize the property listener for that element
+        this.silentValueUpdate = false;
         this.propertyListener = new ActivityPropertyListener<V>(activity) {
             @Override
             public void onChange(Property<? extends V> p, V oldValue, V newValue) {
-                setValue(newValue);
+                if (!oldValue.equals(newValue)) { // TODO WARUM KOMMT DA SO VIEL AN??
+                    silentValueUpdate = true;
+                    setValue(newValue);
+                    silentValueUpdate = false;
+                }
+
             }
         };
     }
@@ -119,15 +126,17 @@ public abstract class ManagementProperty<T, V> {
      * @param val is the new value
      */
     protected void updateProperty(final V val) {
-        new Thread() {
+        if (!silentValueUpdate) {
+            new Thread() {
 
-            @Override
-            public void run() {
-                if (property != null) {
-                    ((WritableProperty<V>) property).set(val);
+                @Override
+                public void run() {
+                    if (property != null) {
+                        ((WritableProperty<V>) property).set(val);
+                    }
                 }
-            }
-        }.start();
+            }.start();
+        }
     }
 
     /**

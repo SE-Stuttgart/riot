@@ -95,7 +95,7 @@ public class ManagementPropertyEnumDropDown extends ManagementProperty<Spinner, 
 
     @Override
     protected void enableView(boolean val) {
-        enableChildItems(this.spinner, val);
+        this.spinner.setEnabled(val);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 
 import de.uni_stuttgart.riot.android.R;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementProperty;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.things.ThingManager;
 import de.uni_stuttgart.riot.thing.Thing;
@@ -16,14 +16,40 @@ import de.uni_stuttgart.riot.thing.Thing;
  */
 public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
 
+    private Thing thing;
+    private boolean monitoring;
+
     @Override
     protected void onStop() {
         super.onStop();
-        unbindAllThingProperties();
+        stopMonitoring();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopMonitoring();
+        unbindAllManagementProperties();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startMonitoring();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.monitoring = false;
     }
 
     @Override
     protected void displayDetailData(final Thing data) {
+        // If the refresh button was pressed firstly stop monitoring current change events
+        stopMonitoring();
+        unbindAllManagementProperties();
+
         // Update the home icon and title
         new AsyncHelper<Drawable>() {
 
@@ -41,17 +67,15 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
         };
         setTitle(data.getName());
 
-        // Unbind all thing properties if they are bind
-        unbindAllThingProperties();
-
         // Prepare the items and save them in the right group
         prepareAndGroupItems(data.getProperties());
 
         // Add prepared and grouped items to the main layout
         addGroupedItemsToMainLayout();
 
-        // Bind all thing properties to constantly update the data
-        bindAllThingProperties(data);
+        // Bind all properties and start monitoring the change events
+        bindAllManagementProperties();
+        startMonitoring();
     }
 
     @Override
@@ -64,7 +88,8 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     protected Thing loadManagementData() {
         try {
             // Get the thing with the given id
-            return ThingManager.getInstance().getThing(this, super.itemId);
+            this.thing = ThingManager.getInstance().getThing(this, super.itemId);
+            return this.thing;
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
@@ -73,39 +98,30 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     }
 
     /**
-     * Bind all thing properties with their property listener.
+     * Start monitoring to receive change events.
      */
-    private void bindAllThingProperties(final Thing data) {
+    private void startMonitoring() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (managementProperties != null && managementProperties.size() > 0) {
-                    for (ManagementProperty managementProperty : managementProperties) {
-                        managementProperty.bind();
-                    }
-
-                    // Start monitoring to receive change events
-                    ThingManager.getInstance().startMonitoring(data, this);
+                if (thing != null && !monitoring) {
+                    ThingManager.getInstance().startMonitoring(thing, this);
+                    monitoring = true;
                 }
             }
         }).start();
     }
 
     /**
-     * Unbind all thing properties with their property listener.
+     * Stop monitoring receiving change events.
      */
-    private void unbindAllThingProperties() {
+    private void stopMonitoring() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (managementProperties != null && managementProperties.size() > 0) {
-                    // Stop monitoring for receiving change events
-                    ThingManager.getInstance().stopMonitoring(this);
-
-                    for (ManagementProperty managementProperty : managementProperties) {
-                        managementProperty.unbind();
-                    }
-                    managementProperties.clear();
+                if (thing != null && monitoring) {
+                    ThingManager.getInstance().stopMonitoring(thing, this);
+                    monitoring = false;
                 }
             }
         }).start();

@@ -88,6 +88,40 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     }
 
     /**
+     * Bind all thing properties with their property listener.
+     */
+    protected void bindAllManagementProperties() {
+        // Start monitoring only if it is not already running
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (managementProperties != null && managementProperties.size() > 0) {
+                    for (ManagementProperty managementProperty : managementProperties) {
+                        managementProperty.bind();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Unbind all thing properties with their property listener.
+     */
+    protected void unbindAllManagementProperties() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (managementProperties != null && managementProperties.size() > 0) {
+                    for (ManagementProperty managementProperty : managementProperties) {
+                        managementProperty.unbind();
+                    }
+                    managementProperties.clear();
+                }
+            }
+        }).start();
+    }
+
+    /**
      * Add the given item to the the wanted group.
      *
      * @param groupId the unique id of the group

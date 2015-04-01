@@ -2,11 +2,11 @@ package de.uni_stuttgart.riot.android.managementproperty;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import de.uni_stuttgart.riot.thing.Property;
 
@@ -74,18 +74,11 @@ public class ManagementPropertyEditNumber extends ManagementProperty<EditText, N
 
     @Override
     protected void setChangeListenerAndUpdateProperty() {
-        this.editText.addTextChangedListener(new TextWatcher() {
+        this.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                updateProperty(Double.parseDouble(s.toString()));
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                updateProperty(Double.parseDouble(editText.getText().toString()));
+                return false;
             }
         });
     }
