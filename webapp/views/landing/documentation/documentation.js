@@ -49,7 +49,17 @@ angular.module('riot').controller('DocumentationCtrl', function($scope) {
 		for(var i=0;i<links.length;i++) {
 			var href = links[i].getAttribute("href");
 			if (href.indexOf("://") === -1) {
-				links[i].href = "documentation/" + href.substr(href.lastIndexOf('/') + 1);
+				if (href.lastIndexOf(".md") === href.length-3) {
+					var doc = href.substr(href.lastIndexOf('/') + 1);
+					links[i].addEventListener("click", function() {
+						console.log("change Dokument to documentation/" + doc);
+						$scope.changeMarkdownDocument("documentation/" + doc);
+						$scope.$apply();
+					});
+					links[i].href="javascript:void(0)";
+				} else {
+					links[i].href = "documentation/" + href.substr(href.lastIndexOf('/') + 1);
+				}
 			}
 		}
 		links = document.getElementById("markdownDiv").getElementsByTagName("img");
