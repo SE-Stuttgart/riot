@@ -28,6 +28,7 @@ import de.uni_stuttgart.riot.server.commons.db.exception.DatasourceUpdateExcepti
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
+import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
@@ -374,6 +375,34 @@ public class ThingLogic {
         }
 
         observerBehavior.unregisterFromEvent(event);
+    }
+
+    /**
+     * Register to all events of all things a user has access to.
+     *
+     * @param userID
+     *            The user id. If null, it will be replaced with the id of the current user
+     * @param listener
+     *            The listener to register
+     */
+    public synchronized void registerToAllEvents(Long userID, EventListener<EventInstance> listener) {
+        getThingStream(userID == null ? umFacade.getCurrentUserId() : userID, ThingPermission.READ).forEach(thing -> {
+            thing.getEvents().forEach(event -> event.register(listener));
+        });
+    }
+
+    /**
+     * Unregister from all events of all things a user has access to.
+     *
+     * @param userID
+     *            The user id. If null, it will be replaced with the id of the current user
+     * @param listener
+     *            The listener to unregister
+     */
+    public synchronized void unregisterFromAllEvents(Long userID, EventListener<EventInstance> listener) {
+        getThingStream(userID == null ? umFacade.getCurrentUserId() : userID, ThingPermission.READ).forEach(thing -> {
+            thing.getEvents().forEach(event -> event.unregister(listener));
+        });
     }
 
     /**

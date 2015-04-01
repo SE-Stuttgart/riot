@@ -226,7 +226,18 @@ angular.module('riot').controller('ThingsDetailCtrl', function($scope, $rootScop
         $scope.getSharedUsers();
       });
     }
-  };
+  };  
+
+  $scope.$on('Socket:propertyChange:' + $stateParams.thingid, function(ev, propertyChange) {
+    var propertyName = propertyChange.name.substr(0, propertyChange.name.length - 7);
+    if($scope.thingState && $scope.thingState[propertyName] !== undefined) {
+      if(angular.isArray(propertyChange.newValue)) {
+        $scope.thingState[propertyName] = propertyChange.newValue[1];
+      } else {
+        $scope.thingState[propertyName] = propertyChange.newValue;
+      }
+    } 
+  });
   
   var pushIfNotExistsInArray = function(array, value) {
     if(array.indexOf(value) === -1) {

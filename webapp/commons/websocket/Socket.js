@@ -17,6 +17,8 @@ angular.module('riot').factory('Socket',function($rootScope, $websocket, $log, $
     var data = JSON.parse(message.data);
     if(data.type === 'NotificationMessage') {
       handleNotification(data.notification);
+    } else if (data.type === 'PropertyChangeMessage') {
+      handlePropertyChange(data.eventInstance);
     } else {
       $log.log('Received unkonwn message type: ' + data.type);
     }    
@@ -29,6 +31,10 @@ angular.module('riot').factory('Socket',function($rootScope, $websocket, $log, $
   dataStream.onClose(function(event) {
     $log.log(event);
   });
+  
+  function handlePropertyChange(change) {
+    $rootScope.$broadcast('Socket:propertyChange:' + change.thingId, change);
+  }
   
   function handleNotification(notification) {
     if(!notification.dismissed) {
