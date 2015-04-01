@@ -46,17 +46,20 @@ angular.module('riot').controller('DocumentationCtrl', function($scope) {
 	
 	$scope.contendLoaded = function() {
 		var links = document.getElementById("markdownDiv").getElementsByTagName("a");
+		var onclick = function() {
+			var doc = this.getAttribute("href");
+			console.log("change Dokument to documentation/" + doc);
+			$scope.changeMarkdownDocument("documentation/" + doc);
+			$scope.$apply();
+			return false;
+		};
 		for(var i=0;i<links.length;i++) {
 			var href = links[i].getAttribute("href");
 			if (href.indexOf("://") === -1) {
 				if (href.lastIndexOf(".md") === href.length-3) {
 					var doc = href.substr(href.lastIndexOf('/') + 1);
-					links[i].addEventListener("click", function() {
-						console.log("change Dokument to documentation/" + doc);
-						$scope.changeMarkdownDocument("documentation/" + doc);
-						$scope.$apply();
-					});
-					links[i].href="javascript:void(0)";
+					links[i].href=doc;
+					links[i].onclick=onclick;
 				} else {
 					links[i].href = "documentation/" + href.substr(href.lastIndexOf('/') + 1);
 				}
