@@ -77,8 +77,6 @@
     <string name="thing_id">Id</string>
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
-<<<<<<< HEAD
-<<<<<<< HEAD
     
     <!-- Rules -->
     <string name="rules_emptytext">Sie haben noch keine Regeln angelegt. Tippen Sie hier um eine neue Regel hinzuzufügen:</string>
@@ -86,14 +84,7 @@
     <string name="rules_chooseType">Regel-Typ wählen</string>
     <string name="rules_errorMissingName">Bitte den Namen angeben!</string>
     <string name="rules_errorMissingParameter">Bitte den Parameter angeben:</string>
-    
-=======
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:All changes of the last commits
-</resources>
-=======
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
+
     <string name="thing_temperature">Temperatur</string>
     <string name="thing_filling">Füllstand</string>
     <string name="percent">&#37;</string>
@@ -102,7 +93,6 @@
     <string name="degreeFahrenheit">\u2109</string>
     <string name="off">AUS</string>
     <string name="on">AN</string>
-    <string name="edit">Edit</string>
     <string name="abort">Abort</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
@@ -113,17 +103,11 @@
     <string name="default_user">This is a user</string>
     <string name="default_thing_description">This is the description of the thing</string>
     <string name="default_user_description">This is the description of the user</string>
-<<<<<<< HEAD
-</resources>
-=======
+
     <string name="user_name">Username</string>
     <string name="user_mail">E-Mail</string>
-<<<<<<< HEAD
-</resources>
->>>>>>> RIOT-87:Android:Add user list and user view
-=======
+
     <string name="management_list">Management List</string>
     <string name="default_thing_subject">The Thing</string>
     <string name="default_user_subject">The user</string>
 </resources>
->>>>>>> RIOT-87:Android:Changes on the structure of the management views

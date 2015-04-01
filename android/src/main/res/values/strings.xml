@@ -43,8 +43,6 @@
     <string name="acc_host">Host:</string>
     <string name="acc_port">Port:</string>
     <string name="acc_path">Path:</string>
-    <string name="lbl_user_role">User-Role:</string>
-    <string name="lbl_user_permission">User-Permissions:</string>
     <string name="user_edit">Edit User</string>
 
     <!-- Filter (all entries for language please insert here) -->
@@ -93,8 +91,6 @@
     <string name="device_id">Id</string>
     <string name="thing_detail">Thing Detail</string>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     <!-- Rules -->
     <string name="rules_emptytext">You don\'t have any rules yet. Tap here to add one:</string>
     <string name="rules_btnAddRule">Add new rule</string>
@@ -102,17 +98,6 @@
     <string name="rules_errorMissingName">Please specify the name!</string>
     <string name="rules_errorMissingParameter">Please specify the parameter </string>
 
-</resources>
-=======
-=======
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:All changes of the last commits
-</resources>
-=======
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
->>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
     <string name="thing_temperature">Temperatur</string>
     <string name="thing_filling">Füllstand</string>
     <string name="percent">&#37;</string>
@@ -121,59 +106,22 @@
     <string name="degreeFahrenheit">\u2109</string>
     <string name="off">AUS</string>
     <string name="on">AN</string>
-    <string name="edit">Edit</string>
     <string name="abort">Abort</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
-<<<<<<< HEAD
-</resources>
->>>>>>> RIOT-87:Android:All changes of the last commits
->>>>>>> RIOT-87:Android:All changes of the last commits
-=======
+
     <string name="default_item_title">Item without a title</string>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-</resources>>>>>>>> RIOT-87:Android:All changes of the last commits
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:Use UIHint for Things-Views
-=======
-=======
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-    <string name="loading">Loading</string>
-=======
->>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
+
     <string name="prepareData">Data are preparing</string>
     <string name="backslash">\\</string>
     <string name="thing_default">This is a Thing</string>
     <string name="default_user">This is a user</string>
     <string name="default_thing_description">This is the description of the thing</string>
     <string name="default_user_description">This is the description of the user</string>
-<<<<<<< HEAD
-<<<<<<< HEAD
-</resources>
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:Get things from the server
->>>>>>> RIOT-87:Android:Get things from the server
-=======
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
->>>>>>> RIOT-87:Android:Do exchange data with server (also update things) and
-=======
-</resources>
->>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
-=======
+
     <string name="user_name">Username</string>
     <string name="user_mail">E-Mail</string>
-<<<<<<< HEAD
-</resources>
->>>>>>> RIOT-87:Android:Add user list and user view
-=======
     <string name="management_list">Management List</string>
     <string name="default_thing_subject">The Thing</string>
     <string name="default_user_subject">The user</string>
 </resources>
->>>>>>> RIOT-87:Android:Changes on the structure of the management views

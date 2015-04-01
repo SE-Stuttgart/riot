@@ -112,6 +112,9 @@ public abstract class ManagementActivity<T> extends Activity {
                     return;
                 }
                 displayManagementData(data);
+
+                // End processing animation
+                stopProcessingAnimation();
             }
 
             @Override

@@ -20,17 +20,9 @@ import de.uni_stuttgart.riot.android.account.LoginActivity;
 import de.uni_stuttgart.riot.android.database.DatabaseAccess;
 import de.uni_stuttgart.riot.android.database.RIOTDatabase;
 import de.uni_stuttgart.riot.android.location.LocationScreen;
-<<<<<<< HEAD
-<<<<<<< HEAD
-import de.uni_stuttgart.riot.android.rules.RuleListActivity;
-=======
-import de.uni_stuttgart.riot.android.management.ManagementThingListFragment;
-import de.uni_stuttgart.riot.android.management.ManagementUserListFragment;
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
 import de.uni_stuttgart.riot.android.management.ThingListActivity;
 import de.uni_stuttgart.riot.android.management.UserListActivity;
->>>>>>> RIOT-87:Android:Add user list and user view
+import de.uni_stuttgart.riot.android.rules.RuleListActivity;
 import de.uni_stuttgart.riot.android.things.CoffeeMachine;
 
 //CHECKSTYLE:OFF FIXME Please fix the checkstyle errors in this file and remove this comment.
@@ -270,17 +262,10 @@ public class HomeScreenCanvas extends View {
                     Intent coffeeIntent = new Intent(homeScreen, CoffeeMachine.class);
                     coffeeIntent.putExtra("pressedButton", selectedButton.getButtonDescription());
                     homeScreen.startActivity(coffeeIntent);
-<<<<<<< HEAD
-<<<<<<< HEAD
-                } else if (selectedButton.getButtonDescription().equals("Rules")) { // Special intent for the rules management
+				} else if (selectedButton.getButtonDescription().equals("Rules")) { // Special intent for the rules management
                     Intent rulesIntent = new Intent(homeScreen, RuleListActivity.class);
                     homeScreen.startActivity(rulesIntent);
-=======
-<<<<<<< HEAD
->>>>>>> RIOT-87:Android:Exchange data with server and try to update data
-=======
->>>>>>> RIOT-87:Android:Use new ThingManager to exchange data between server and
-                } else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
+				} else if (selectedButton.getButtonDescription().equals("Logout")) { // Special intent for the logout
                     Intent logoutIntend = new Intent(homeScreen, LoginActivity.class);
                     //TODO should we send an logout request or just show the loginWindow?
                     //TODO if we delete the token no background syncronization is possible, therefor I just open the loginWindow and DO NOT logout the user
