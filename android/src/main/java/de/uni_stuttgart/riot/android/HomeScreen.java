@@ -28,7 +28,7 @@ public class HomeScreen extends Activity {
         super.onCreate(savedInstanceState);
 
         // Initialise the InstanceManager for the message/notifications
-        IM.INSTANCES.setActivity(this);
+        IM.INSTANCES.setApplicationContext(getApplicationContext());
 
         // Database stuff
         // this.deleteDatabase("Database");

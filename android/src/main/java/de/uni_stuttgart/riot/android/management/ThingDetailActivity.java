@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.android.management;
 
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import de.uni_stuttgart.riot.android.R;
@@ -16,7 +17,6 @@ import de.uni_stuttgart.riot.thing.Thing;
  */
 public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
 
-    private Thing thing;
     private boolean monitoring;
 
     @Override
@@ -45,30 +45,53 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     }
 
     @Override
-    protected void displayDetailData(final Thing data) {
+    protected void displayDetailData() {
         // If the refresh button was pressed firstly stop monitoring current change events
         stopMonitoring();
         unbindAllManagementProperties();
 
         // Update the home icon and title
-        new AsyncHelper<Drawable>() {
+        new AsyncTask<Void, Void, Drawable>() {
 
             @Override
-            protected Drawable loadData() {
-                return getDrawableLetter(data.getName(), String.valueOf(data.getId()));
+            protected Drawable doInBackground(Void... voids) {
+                try {
+                    return getDrawableLetter(item.getName(), String.valueOf(item.getId()));
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("An error occurred during loading the data: ", e);
+                    IM.INSTANCES.getMH().showQuickMessage("An error occurred during loading the data!");
+                }
+                return null;
             }
 
             @Override
-            protected void processData(Drawable data) {
-                if (data != null) {
-                    setHomeIcon(data);
+            protected void onPostExecute(Drawable drawable) {
+                super.onPostExecute(drawable);
+
+                if (drawable != null) {
+                    setHomeIcon(drawable);
                 }
             }
         };
-        setTitle(data.getName());
+// ToDo DELTE!
+//        new AsyncHelper<Drawable>() {
+//
+//            @Override
+//            protected Drawable loadData() {
+//                return getDrawableLetter(data.getName(), String.valueOf(data.getId()));
+//            }
+//
+//            @Override
+//            protected void processData(Drawable data) {
+//                if (data != null) {
+//                    setHomeIcon(data);
+//                }
+//            }
+//        };
+        setTitle(super.item.getName());
 
         // Prepare the items and save them in the right group
-        prepareAndGroupItems(data.getProperties());
+        prepareAndGroupItems(super.item.getProperties());
 
         // Add prepared and grouped items to the main layout
         addGroupedItemsToMainLayout();
@@ -85,16 +108,14 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
     }
 
     @Override
-    protected Thing loadManagementData() {
+    protected void loadManagementData() {
         try {
             // Get the thing with the given id
-            this.thing = ThingManager.getInstance().getThing(this, super.itemId);
-            return this.thing;
+            super.item = ThingManager.getInstance().getThing(this, super.itemId);
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
-        return null;
     }
 
     /**
@@ -104,8 +125,8 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (thing != null && !monitoring) {
-                    ThingManager.getInstance().startMonitoring(thing, this);
+                if (item != null && !monitoring) {
+                    ThingManager.getInstance().startMonitoring(item, this);
                     monitoring = true;
                 }
             }
@@ -119,8 +140,8 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (thing != null && monitoring) {
-                    ThingManager.getInstance().stopMonitoring(thing, this);
+                if (item != null && monitoring) {
+                    ThingManager.getInstance().stopMonitoring(item, this);
                     monitoring = false;
                 }
             }

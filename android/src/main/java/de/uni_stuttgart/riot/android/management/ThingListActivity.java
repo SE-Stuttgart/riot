@@ -3,7 +3,6 @@ package de.uni_stuttgart.riot.android.management;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
@@ -68,11 +67,10 @@ public class ThingListActivity extends ManagementListActivity<Thing, ThingDetail
     @Override
     protected OnlineState getOnlineState(Thing item) {
         try {
-            // FIXME thingClient.getOnlineState(thingId); --> NullPointerException if online state is "offline"!!
             return new ThingClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getOnlineState(item.getId());
         } catch (Exception e) {
-            IM.INSTANCES.getMH().writeWarnMessage("Problems by getting online state! "); //, e);
-//            IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
+            IM.INSTANCES.getMH().writeErrorMessage("Problems by getting online state! ", e);
+            IM.INSTANCES.getMH().showQuickMessage("Problems by getting online state!");
         }
         return null;
     }
@@ -84,15 +82,14 @@ public class ThingListActivity extends ManagementListActivity<Thing, ThingDetail
     }
 
     @Override
-    protected List<Thing> loadManagementData() {
+    protected void loadManagementData() {
         try {
             // Get all things and save them
-            return new ArrayList<Thing>(ThingManager.getInstance().getAllThings(this));
+            this.items = new ArrayList<Thing>(ThingManager.getInstance().getAllThings(this));
             // FIXME - I want to get an ArrayList instead of a Collection (for the list view)
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
-        return null;
     }
 }

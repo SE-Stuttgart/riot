@@ -640,6 +640,9 @@ public final class ServerConnector {
      */
     private <T> T readResponseContent(HttpResponse response, Class<T> expectedType) throws RequestException, IOException {
         try {
+            if (response.getEntity() == null) {
+                return null;
+            }
             return jsonMapper.readValue(response.getEntity().getContent(), expectedType);
         } catch (JsonProcessingException e) {
             throw new RequestException(e);
@@ -651,6 +654,9 @@ public final class ServerConnector {
      */
     private <T> T readResponseContent(HttpResponse response, TypeReference<T> expectedType) throws RequestException, IOException {
         try {
+            if (response.getEntity() == null) {
+                return null;
+            }
             return jsonMapper.readValue(response.getEntity().getContent(), expectedType);
         } catch (JsonProcessingException e) {
             throw new RequestException(e);
@@ -662,6 +668,9 @@ public final class ServerConnector {
      */
     private <T> T readResponseContent(HttpResponse response, JavaType expectedType) throws RequestException, IOException {
         try {
+            if (response.getEntity() == null) {
+                return null;
+            }
             return jsonMapper.readValue(response.getEntity().getContent(), expectedType);
         } catch (JsonProcessingException e) {
             throw new RequestException(e);

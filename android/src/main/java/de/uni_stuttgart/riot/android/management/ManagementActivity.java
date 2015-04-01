@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,8 @@ public abstract class ManagementActivity<T> extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        IM.INSTANCES.getMH().showQuickMessage("Dast ist eine Testnachricht...");
 
         // If no layout resource was defined throw an exception
         if (getLayoutResource() == 0) {
@@ -97,32 +100,57 @@ public abstract class ManagementActivity<T> extends Activity {
         // Start processing animation
         startProcessingAnimation();
 
-        new AsyncHelper<T>() {
+        new AsyncTask<Void, Void, Boolean>() {
 
             @Override
-            protected T loadData() {
-                return loadManagementData();
-            }
-
-            @Override
-            protected void processData(T data) {
-                if (data == null) {
-                    IM.INSTANCES.getMH().writeErrorMessage("There are no data available!");
-                    IM.INSTANCES.getMH().showQuickMessage("There are no data available!");
-                    return;
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    loadManagementData();
+                    return true;
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("An error occurred during loading the data: ", e);
+                    IM.INSTANCES.getMH().showQuickMessage("An error occurred during loading the data!");
                 }
-                displayManagementData(data);
-
-                // End processing animation
-                stopProcessingAnimation();
+                return false;
             }
 
             @Override
-            protected void doAfterErrorOccurred() {
+            protected void onPostExecute(Boolean aBoolean) {
+                super.onPostExecute(aBoolean);
+
+                if(aBoolean) {
+                    // Display the loaded data
+                    displayManagementData();
+                }
+
                 // End processing animation
                 stopProcessingAnimation();
             }
         };
+// TODO DELETE!
+//        new AsyncHelper<T>() {
+//
+//            @Override
+//            protected T loadData() {
+//                loadManagementData();
+//                return null;
+//            }
+//
+//            @Override
+//            protected void processData(T data) {
+//                // Display the loaded data
+//                displayManagementData();
+//
+//                // End processing animation
+//                stopProcessingAnimation();
+//            }
+//
+//            @Override
+//            protected void doAfterErrorOccurred() {
+//                // End processing animation
+//                stopProcessingAnimation();
+//            }
+//        };
     }
 
     /**
@@ -269,15 +297,11 @@ public abstract class ManagementActivity<T> extends Activity {
 
     /**
      * Load the data for displaying.
-     *
-     * @return the loaded data
      */
-    protected abstract T loadManagementData();
+    protected abstract void loadManagementData();
 
     /**
      * Display the loaded data.
-     *
-     * @param data the loaded data
      */
-    protected abstract void displayManagementData(T data);
+    protected abstract void displayManagementData();
 }

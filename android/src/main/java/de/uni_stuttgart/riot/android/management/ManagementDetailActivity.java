@@ -36,6 +36,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
 
     private static int nonGroupId = 0;
 
+    protected T item;
     protected long itemId;
     protected Collection<ManagementProperty> managementProperties;
     private LinearLayout mainLayout;
@@ -60,7 +61,14 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     }
 
     @Override
-    protected void displayManagementData(T data) {
+    protected void displayManagementData() {
+        // Check if there is an item to display
+        if (this.item == null) {
+            IM.INSTANCES.getMH().writeErrorMessage("There is no data for displaying!");
+            IM.INSTANCES.getMH().showQuickMessage("There is no data for displaying!");
+            return;
+        }
+
         // Check if the main layout is available
         if (this.mainLayout == null) {
             this.mainLayout = (LinearLayout) findViewById(R.id.management_linear_layout);
@@ -84,7 +92,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
             this.groupNames.clear();
         }
 
-        displayDetailData(data);
+        displayDetailData();
     }
 
     /**
@@ -507,8 +515,6 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
 
     /**
      * Display the loaded data.
-     *
-     * @param data that will be displayed.
      */
-    protected abstract void displayDetailData(T data);
+    protected abstract void displayDetailData();
 }

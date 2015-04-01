@@ -3,7 +3,6 @@ package de.uni_stuttgart.riot.android.management;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
@@ -85,15 +84,14 @@ public class UserListActivity extends ManagementListActivity<User, UserDetailAct
     }
 
     @Override
-    protected List<User> loadManagementData() {
+    protected void loadManagementData() {
         try {
             // Get all users and save them
-            return new ArrayList<User>(new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getUsers());
+            this.items = new ArrayList<User>(new UsermanagementClient(AndroidConnectionProvider.getConnector(getApplicationContext())).getUsers());
             // FIXME - I want to get an ArrayList instead of a Collection (for the list view)
         } catch (Exception e) {
             IM.INSTANCES.getMH().writeErrorMessage("Problems by getting data: ", e);
             IM.INSTANCES.getMH().showQuickMessage("Problems by getting data!");
         }
-        return null;
     }
 }

@@ -1,7 +1,8 @@
 package de.uni_stuttgart.riot.android.messages;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,7 +14,7 @@ import android.widget.Toast;
 public class MessageHandler {
 
     private Context context;
-    private Activity activity;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * Constructor.
@@ -31,20 +32,10 @@ public class MessageHandler {
     /**
      * Saves the application context.
      *
-     * @param context the context of the application
+     * @param applicationContext the context of the application
      */
-    private void setContext(Context context) {
-        this.context = context;
-    }
-
-    /**
-     * Saves the main activity.
-     *
-     * @param activity the main activity of the application
-     */
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-        setContext(this.activity.getApplicationContext());
+    public void setContext(Context applicationContext) {
+        this.context = applicationContext;
     }
 
     /**
@@ -132,11 +123,11 @@ public class MessageHandler {
      * @param duration the time the message will visible
      */
     private void showToast(final String text, final int duration) {
-        if (this.context == null && this.activity != null) {
+        if (this.context == null) {
             // ToDo information!!!
             return;
         }
-        activity.runOnUiThread(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(context, text, duration).show();
@@ -144,7 +135,6 @@ public class MessageHandler {
                 // ToDo: Show no notification if app is in foreground??
             }
         });
-
     }
 
     /**

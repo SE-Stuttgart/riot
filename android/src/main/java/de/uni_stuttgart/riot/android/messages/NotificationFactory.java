@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.android.messages;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -26,7 +25,6 @@ public class NotificationFactory {
     private static final int NUMBER_OF_RESERVED_NOTIFICATION_ID = 5;
 
     private Context context;
-    private Activity activity;
     private int notificationId;
     private HashMap<Integer, Vector<Notification.Builder>> notificationList;
     private Notification.Builder[] stackedNotificationList;
@@ -62,20 +60,10 @@ public class NotificationFactory {
     /**
      * Saves the application context.
      *
-     * @param context the context of the application
+     * @param applicationContext the context of the application
      */
-    private void setContext(Context context) {
-        this.context = context;
-    }
-
-    /**
-     * Saves the main activity.
-     *
-     * @param activity the main activity of the application
-     */
-    public void setActivity(Activity activity) {
-        this.activity = activity;
-        setContext(this.activity.getApplicationContext());
+    public void setContext(Context applicationContext) {
+        this.context = applicationContext;
     }
 
     /**

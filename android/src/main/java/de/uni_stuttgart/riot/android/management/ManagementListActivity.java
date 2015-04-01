@@ -2,6 +2,7 @@ package de.uni_stuttgart.riot.android.management;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import de.uni_stuttgart.riot.commons.model.OnlineState;
 public abstract class ManagementListActivity<T, D> extends ManagementActivity<List<T>> {
 
     private ListView listView;
+    protected List<T> items;
 
     @Override
     protected int getLayoutResource() {
@@ -36,7 +38,14 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
     }
 
     @Override
-    protected void displayManagementData(List<T> data) {
+    protected void displayManagementData() {
+        // Check if there is an item to display
+        if (this.items == null) {
+            IM.INSTANCES.getMH().writeErrorMessage("There is no data for displaying!");
+            IM.INSTANCES.getMH().showQuickMessage("There is no data for displaying!");
+            return;
+        }
+
         // Check if the list view is available
         if (this.listView == null) {
             this.listView = (ListView) findViewById(R.id.management_list_view);
@@ -48,7 +57,7 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
         }
 
         // Add data list to the list adapter
-        ManagementListAdapter<T> managementListAdapter = new ManagementListAdapter<T>(this, R.layout.managment_list_item, data);
+        ManagementListAdapter<T> managementListAdapter = new ManagementListAdapter<T>(this, R.layout.managment_list_item, this.items);
         this.listView.setAdapter(managementListAdapter);
         this.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -135,15 +144,23 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
      * @param view of the list item
      */
     private void setImage(final T item, final View view) {
-        new AsyncHelper<Drawable>() {
+        new AsyncTask<Void, Void, Drawable>() {
 
             @Override
-            protected Drawable loadData() {
-                return getImage(item);
+            protected Drawable doInBackground(Void... voids) {
+                try {
+                    return getImage(item);
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("An error occurred during loading the data: ", e);
+                    IM.INSTANCES.getMH().showQuickMessage("An error occurred during loading the data!");
+                }
+                return null;
             }
 
             @Override
-            protected void processData(Drawable drawable) {
+            protected void onPostExecute(Drawable drawable) {
+                super.onPostExecute(drawable);
+
                 Drawable newDrawable;
                 if (drawable == null) {
                     newDrawable = getDefaultImage();
@@ -153,6 +170,25 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
                 setImageViewImage(view, R.id.list_item_management_picture, newDrawable);
             }
         };
+// ToDo delete...
+//        new AsyncHelper<Drawable>() {
+//
+//            @Override
+//            protected Drawable loadData() {
+//                return getImage(item);
+//            }
+//
+//            @Override
+//            protected void processData(Drawable drawable) {
+//                Drawable newDrawable;
+//                if (drawable == null) {
+//                    newDrawable = getDefaultImage();
+//                } else {
+//                    newDrawable = drawable;
+//                }
+//                setImageViewImage(view, R.id.list_item_management_picture, newDrawable);
+//            }
+//        };
     }
 
     /**
@@ -162,15 +198,24 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
      * @param view of the list item
      */
     private void setOnlineState(final T item, final View view) {
-        new AsyncHelper<OnlineState>() {
+
+        new AsyncTask<Void, Void, OnlineState>() {
 
             @Override
-            protected OnlineState loadData() {
-                return getOnlineState(item);
+            protected OnlineState doInBackground(Void... voids) {
+                try {
+                    return getOnlineState(item);
+                } catch (Exception e) {
+                    IM.INSTANCES.getMH().writeErrorMessage("An error occurred during loading the data: ", e);
+                    IM.INSTANCES.getMH().showQuickMessage("An error occurred during loading the data!");
+                }
+                return null;
             }
 
             @Override
-            protected void processData(OnlineState onlineState) {
+            protected void onPostExecute(OnlineState onlineState) {
+                super.onPostExecute(onlineState);
+
                 OnlineState newOnlineState;
                 if (onlineState == null) {
                     newOnlineState = getDefaultOnlineState();
@@ -180,6 +225,25 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
                 setImageViewImage(view, R.id.list_item_management_online_state, getDrawableByResource(getOnlineStateResourceId(newOnlineState)));
             }
         };
+// TODO DELETE!
+//        new AsyncHelper<OnlineState>() {
+//
+//            @Override
+//            protected OnlineState loadData() {
+//                return getOnlineState(item);
+//            }
+//
+//            @Override
+//            protected void processData(OnlineState onlineState) {
+//                OnlineState newOnlineState;
+//                if (onlineState == null) {
+//                    newOnlineState = getDefaultOnlineState();
+//                } else {
+//                    newOnlineState = onlineState;
+//                }
+//                setImageViewImage(view, R.id.list_item_management_online_state, getDrawableByResource(getOnlineStateResourceId(newOnlineState)));
+//            }
+//        };
     }
 
     /**
