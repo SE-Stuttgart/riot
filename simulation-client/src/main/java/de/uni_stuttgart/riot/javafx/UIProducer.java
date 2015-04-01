@@ -10,6 +10,7 @@ import javafx.beans.binding.DoubleExpression;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Control;
@@ -17,6 +18,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.stage.Window;
 import de.uni_stuttgart.riot.simulation_client.SimulatedThingBehavior;
 import de.uni_stuttgart.riot.simulation_client.ThingPropertyInternalBinding;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
@@ -151,7 +154,6 @@ public abstract class UIProducer {
      */
     private static Slider produceIntegralSlider(Property<Number> property, long min, long max) {
         Slider slider = new Slider();
-        slider.setShowTickLabels(true);
         slider.setMinorTickCount(0);
         slider.setMajorTickUnit(1.0);
         slider.setSnapToTicks(true);
@@ -161,6 +163,7 @@ public abstract class UIProducer {
             slider.setValue(property.getValue().doubleValue());
         }
         slider.valueProperty().bindBidirectional(property);
+        addTooltip(slider);
         return slider;
     }
 
@@ -183,7 +186,24 @@ public abstract class UIProducer {
             slider.setValue(property.getValue().doubleValue());
         }
         slider.valueProperty().bindBidirectional(property);
+        addTooltip(slider);
         return slider;
+    }
+
+    private static void addTooltip(Slider slider) {
+        Tooltip tooltip = new Tooltip();
+        tooltip.textProperty().bind(slider.valueProperty().asString());
+        slider.setTooltip(tooltip);
+        slider.setOnMousePressed(event -> {
+            Scene scene = slider.getScene();
+            Window window = scene.getWindow();
+            tooltip.show(slider, event.getSceneX() + scene.getX() + window.getX(), event.getSceneY() + scene.getY() + window.getY());
+            tooltip.setAutoHide(false);
+        });
+        slider.setOnMouseReleased(event -> {
+            tooltip.hide();
+            tooltip.setAutoHide(true);
+        });
     }
 
     /**

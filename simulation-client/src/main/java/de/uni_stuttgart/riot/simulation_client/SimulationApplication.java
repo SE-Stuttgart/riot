@@ -249,6 +249,11 @@ public class SimulationApplication extends Application {
                 scheduler.shutdown();
                 behavior.shutdown();
             });
+        } else {
+            window.setOnHidden((event) -> {
+                scheduler.shutdown();
+                behavior.shutdown();
+            });
         }
 
         // Start regular polling for events.
