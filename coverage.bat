@@ -1,4 +1,4 @@
-call mvn clean install -Pcoverage -pl '-maven-plugin,-webapp,-simulation-client,-android'
+call mvn clean install -Pcoverage -pl '-maven-plugin,-webapp,-simulation-client,-android' -DskipITs=false
 if %ERRORLEVEL% NEQ 0 (
    echo Error while compiling the code: %errorlevel%
    exit /b %errorlevel%

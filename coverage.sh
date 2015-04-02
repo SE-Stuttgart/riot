@@ -1,4 +1,4 @@
-mvn clean install -Pcoverage -pl '-maven-plugin,-webapp,-simulation-client,-android'
+mvn clean install -Pcoverage -pl '-maven-plugin,-webapp,-simulation-client,-android' -DskipITs=false
 if [ $? != 0 ]
 	then 
 		echo Error while compiling the code: $?
