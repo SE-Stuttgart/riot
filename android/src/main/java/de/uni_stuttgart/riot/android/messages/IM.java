@@ -14,15 +14,16 @@ public enum IM {
      */
     INSTANCES(new NotificationFactory(), new MessageHandler());
 
-    private Activity activity;
     private NotificationFactory notificationFactory = null;
     private MessageHandler messageHandler = null;
 
     /**
      * Constructor.
      *
-     * @param notificationFactory the instance of the NotificationFactory
-     * @param messageHandler      the instance of the MessageHandler
+     * @param notificationFactory
+     *            the instance of the NotificationFactory
+     * @param messageHandler
+     *            the instance of the MessageHandler
      */
     IM(NotificationFactory notificationFactory, MessageHandler messageHandler) {
         this.notificationFactory = notificationFactory;
@@ -50,7 +51,8 @@ public enum IM {
     /**
      * It is important that the instances gets the application context.
      *
-     * @param applicationContext the context of the application
+     * @param applicationContext
+     *            the context of the application
      */
     public void setApplicationContext(Context applicationContext) {
         Context context;
@@ -63,12 +65,4 @@ public enum IM {
         messageHandler.setContext(context);
     }
 
-    /**
-     * Return the main activity of the application.
-     *
-     * @return the activity of the application
-     */
-    public Activity getActivity() {
-        return this.activity;
-    }
 }

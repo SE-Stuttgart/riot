@@ -383,7 +383,7 @@ public class ThingClient extends BaseClient {
     public OnlineState getOnlineState(long thingID) throws RequestException, IOException, NotFoundException {
         long now = System.currentTimeMillis();
         Date lastOnline = this.getLastOnline(thingID);
-        if (lastOnline.before(new Date(now - TEN_MIN))) {
+        if (lastOnline == null || lastOnline.before(new Date(now - TEN_MIN))) {
             return OnlineState.STATUS_OFFLINE;
         } else if (lastOnline.before(new Date(now - FIVE_MIN))) {
             return OnlineState.STATUS_AWAY;

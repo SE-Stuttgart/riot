@@ -32,7 +32,8 @@ public class MessageHandler {
     /**
      * Saves the application context.
      *
-     * @param applicationContext the context of the application
+     * @param applicationContext
+     *            the context of the application
      */
     public void setContext(Context applicationContext) {
         this.context = applicationContext;
@@ -41,7 +42,8 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.DEBUG priority.
      *
-     * @param text the message that will be saved
+     * @param text
+     *            the message that will be saved
      */
     public void writeDebugMessage(String text) {
         Log.d(getCallingClassAndMethodName(), text);
@@ -50,18 +52,20 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.ERROR priority.
      *
-     * @param text      the message that will be saved
-     * @param exception includes the error message and cause
+     * @param text
+     *            the message that will be saved
+     * @param exception
+     *            includes the error message and cause
      */
     public void writeErrorMessage(String text, Exception exception) {
         writeErrorMessage(text + exception.getCause() + ": " + exception.getMessage());
-        exception.printStackTrace();
     }
 
     /**
      * Writes a message with the Log.ERROR priority.
      *
-     * @param text the message that will be saved
+     * @param text
+     *            the message that will be saved
      */
     public void writeErrorMessage(String text) {
         Log.e(getCallingClassAndMethodName(), text); // Throwable tr); ToDo: use throwable in error log?
@@ -71,7 +75,8 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.INFO priority.
      *
-     * @param text the message that will be saved
+     * @param text
+     *            the message that will be saved
      */
     public void writeInfoMessage(String text) {
         Log.i(getCallingClassAndMethodName(), text);
@@ -80,7 +85,8 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.VERBOSE priority.
      *
-     * @param text the message that will be saved
+     * @param text
+     *            the message that will be saved
      */
     public void writeMessage(String text) {
         Log.v(getCallingClassAndMethodName(), text);
@@ -89,17 +95,18 @@ public class MessageHandler {
     /**
      * Writes a message with the Log.WARN priority.
      *
-     * @param text the message that will be saved
+     * @param text
+     *            the message that will be saved
      */
     public void writeWarnMessage(String text) {
         Log.w(getCallingClassAndMethodName(), text);
     }
 
-
     /**
      * Shows a toast with short duration.
      *
-     * @param text the message that will be shown
+     * @param text
+     *            the message that will be shown
      */
     public void showQuickMessage(String text) {
         int duration = Toast.LENGTH_SHORT;
@@ -110,7 +117,8 @@ public class MessageHandler {
     /**
      * Shows a toast with long duration.
      *
-     * @param text the message that will be shown
+     * @param text
+     *            the message that will be shown
      */
     public void showMessage(String text) {
         int duration = Toast.LENGTH_LONG;
@@ -120,8 +128,10 @@ public class MessageHandler {
     /**
      * Shows a toast with the given text and duration.
      *
-     * @param text     the message that will be shown
-     * @param duration the time the message will visible
+     * @param text
+     *            the message that will be shown
+     * @param duration
+     *            the time the message will visible
      */
     private void showToast(final String text, final int duration) {
         if (this.context == null) {
@@ -146,14 +156,14 @@ public class MessageHandler {
     private String getCallingClassAndMethodName() {
         final int stackTraceNumber = 4;
         StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[stackTraceNumber];
-        return "##" + getCallingClassName(stackTraceElement) + "##"
-                + getCallingMethodName(stackTraceElement);
+        return "##" + getCallingClassName(stackTraceElement) + "##" + getCallingMethodName(stackTraceElement);
     }
 
     /**
      * Returns the name of the calling class.
      *
-     * @param stackTraceElement the last element before this method
+     * @param stackTraceElement
+     *            the last element before this method
      * @return the name of the calling class
      */
     private String getCallingClassName(StackTraceElement stackTraceElement) {
@@ -163,7 +173,8 @@ public class MessageHandler {
     /**
      * Returns the name of the calling method.
      *
-     * @param stackTraceElement the last element before this method
+     * @param stackTraceElement
+     *            the last element before this method
      * @return the name of the calling method
      */
     private String getCallingMethodName(StackTraceElement stackTraceElement) {
