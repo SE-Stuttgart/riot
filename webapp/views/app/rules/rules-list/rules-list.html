@@ -1,8 +1,4 @@
 <div class="row">  
-  
-  <div class="col-md-12">
-    <button ui-sref="app.rules.detail({ruleId: 'new'})" class="btn btn-success" ><i class="fa fa-plus"></i> {{ 'common.add' | i18n }}</button>
-  </div>
 
   <!-- table -->
   <div class="col-md-12">
@@ -21,7 +17,7 @@
         </select>
       </div>
       <div class="col-sm-6 form-group">
-        <input id="listFilter" type="search" class="form-control pull-right" placeholder="Filter" ng-model="filter">
+        <button ui-sref="app.rules.detail({ruleId: 'new'})" class="btn btn-success pull-right" ><i class="fa fa-plus"></i> {{ 'common.add' | i18n }}</button>
       </div>
     </div>
 

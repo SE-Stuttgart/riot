@@ -35,7 +35,7 @@
           <tbody>
             <tr ui-sref="admin.things.detail({thingid: thing.id})" ng-repeat="thing in things">
               <td>{{thing.id}}</td>
-              <td>{{thing.name}}</td>
+              <td>{{thing.metainfo.name}}</td>
               <td>{{thing.type}}</td>
             </tr>
           </tbody>

@@ -22,8 +22,6 @@
         <div class="description">
           <span class="online"></span>
           <span class="name">{{thing.metainfo.name}}</span>
-          <span class="badge">14</span>
-          <div class="last-action">Here is the text for the last action</div>
           <div class="state">
             <span class="property" ng-repeat="(name, value) in thing.state.propertyValues">{{name}}: {{convertThingPropertyValue(value)}}</span>
           </div>
