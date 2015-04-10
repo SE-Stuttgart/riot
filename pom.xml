@@ -314,7 +314,7 @@
 		</profile>
 
 		<profile>
-			<id>coverage</id>
+			<id>coverageCollect</id>
 			<dependencies>
 				<dependency>
 					<groupId>net.sourceforge.cobertura</groupId>
@@ -353,7 +353,6 @@
 								<inherited>true</inherited>
 								<configuration>
 									<target>
-										<echo>${auxClasspath}</echo>
 										<property environment="env" />
 										<path id="cobertura.classpath">
 											<fileset dir="${env.COBERTURA_HOME}">
@@ -376,6 +375,49 @@
 						<configuration>
 							<skip>true</skip>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>coverageReport</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.8</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<property environment="env" />
+										<path id="cobertura.classpath">
+											<fileset dir="${env.COBERTURA_HOME}">
+												<include name="cobertura*.jar" />
+												<include name="lib/**/*.jar" />
+											</fileset>
+										</path>
+										<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+										<cobertura-merge datafile="./target/sum.ser">
+											<fileset dir=".">
+												<include name="**/cobertura.ser" />
+											</fileset>
+										</cobertura-merge>
+										<cobertura-report datafile="./target/sum.ser"
+											format="html" destdir="./target/coverage">
+											<dirset dir=".">
+												<include name="**/src/main/java" />
+											</dirset>
+										</cobertura-report>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<inherited>false</inherited>
 					</plugin>
 				</plugins>
 			</build>

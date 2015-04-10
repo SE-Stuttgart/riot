@@ -93,13 +93,12 @@ To add a new key-value-pair the following steps should be executed:
 3. Add the value and the key in `server-commons/src/main/resources/data/testdata_configuration.sql`
 
 ## Test Coverage
-1. Install ant
-	- Download from https://ant.apache.org/bindownload.cgi
-	- Unzip
-	- Set path to bin directory
-2. Install cobertura
+1. Install cobertura
 	- Download from http://cobertura.github.io/cobertura/
 	- Unzip
 	- Set environment variable COBERTURA_HOME
-3. Run either coverage.bat or coverage.sh
-4. View results in target/report/index.html
+2. Run either coverage.bat or coverage.sh
+	- You can ignore the following types of warnings during the report generation:
+	 * "[WARN] JavaNCSS got an error while parsing the java file ..." (this occurs due to Java 8 lambda expressions)
+	 * "[INFO] Data file does not contain instrumentation information for the file ..." (occurs for interfaces without executable code)
+3. View results in target/coverage/index.html
