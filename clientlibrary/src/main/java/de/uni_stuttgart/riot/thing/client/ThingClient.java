@@ -381,8 +381,18 @@ public class ThingClient extends BaseClient {
      *             When the online state could not be fetched.
      */
     public OnlineState getOnlineState(long thingID) throws RequestException, IOException, NotFoundException {
+        return mapLastOnlineToOnlineState(this.getLastOnline(thingID));
+    }
+
+    /**
+     * Maps a last-online value to an online-state.
+     * 
+     * @param lastOnline
+     *            The time the device was last seen.
+     * @return The online state.
+     */
+    public static OnlineState mapLastOnlineToOnlineState(Date lastOnline) {
         long now = System.currentTimeMillis();
-        Date lastOnline = this.getLastOnline(thingID);
         if (lastOnline == null || lastOnline.before(new Date(now - TEN_MIN))) {
             return OnlineState.STATUS_OFFLINE;
         } else if (lastOnline.before(new Date(now - FIVE_MIN))) {

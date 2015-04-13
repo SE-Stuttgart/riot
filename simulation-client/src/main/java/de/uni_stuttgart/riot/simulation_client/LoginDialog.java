@@ -72,6 +72,7 @@ public class LoginDialog extends Stage {
      * @return The specified values (username is the key, password is the value) or <tt>null</tt> if the dialog was canceled.
      */
     public static Pair<String, String> showDialog(Stage owner) {
+        // TODO Das hier muss auf den UI-THread!!
         LoginDialog dialog = new LoginDialog(owner);
         dialog.showAndWait();
 

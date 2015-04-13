@@ -39,7 +39,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     protected T item;
     protected long itemId;
     protected Collection<ManagementProperty> managementProperties;
-    private LinearLayout mainLayout;
+    protected LinearLayout mainLayout;
     private SparseArray<List<View>> groupedItems;
     private SparseArray<String> groupNames;
 
@@ -350,7 +350,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
      * @param itemName is the name that will be displayed above the item
      * @return a layout with the name of the item and space for the item itself
      */
-    private LinearLayout prepareItemName(String itemName) {
+    protected LinearLayout prepareItemName(String itemName) {
         // Create new layout element
         LinearLayout linearLayoutItem = new LinearLayout(getApplicationContext());
         LinearLayout.LayoutParams linearLayoutItemParams;
