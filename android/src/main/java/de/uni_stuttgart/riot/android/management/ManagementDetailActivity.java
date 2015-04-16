@@ -10,26 +10,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import de.uni_stuttgart.riot.android.R;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementProperty;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyEditNumber;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyEditText;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyEnumDropDown;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyFractionalSlider;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyIntegralSlider;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyPercentageSlider;
-import de.uni_stuttgart.riot.android.managementproperty.ManagementPropertyToggleButton;
 import de.uni_stuttgart.riot.android.messages.IM;
+import de.uni_stuttgart.riot.android.ui.PropertyView;
+import de.uni_stuttgart.riot.android.ui.UIProducer;
 import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
  * This is an abstract activity for displaying more information about a list item from the ManagementListFragment.
  *
- * @param <T> type of the handled object
+ * @param <T>
+ *            type of the handled object
  * @author Benny
  */
 public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> {
@@ -38,7 +32,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
 
     protected T item;
     protected long itemId;
-    protected Collection<ManagementProperty> managementProperties;
+    protected List<ManagementPropertyBinding<?>> boundProperties = new ArrayList<ManagementPropertyBinding<?>>();
     protected LinearLayout mainLayout;
     private SparseArray<List<View>> groupedItems;
     private SparseArray<String> groupNames;
@@ -46,7 +40,6 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     @Override
     protected void handleArguments(Bundle bundle) {
         this.itemId = 0;
-        this.managementProperties = new ArrayList<ManagementProperty>();
 
         if (bundle != null) {
             if (bundle.containsKey(BUNDLE_OBJECT_ID)) {
@@ -101,12 +94,9 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     protected void bindAllManagementProperties() {
         // Start monitoring only if it is not already running
         new Thread(new Runnable() {
-            @Override
             public void run() {
-                if (managementProperties != null && managementProperties.size() > 0) {
-                    for (ManagementProperty managementProperty : managementProperties) {
-                        managementProperty.bind();
-                    }
+                for (ManagementPropertyBinding<?> binding : boundProperties) {
+                    binding.bind();
                 }
             }
         }).start();
@@ -117,14 +107,11 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
      */
     protected void unbindAllManagementProperties() {
         new Thread(new Runnable() {
-            @Override
             public void run() {
-                if (managementProperties != null && managementProperties.size() > 0) {
-                    for (ManagementProperty managementProperty : managementProperties) {
-                        managementProperty.unbind();
-                    }
-                    managementProperties.clear();
+                for (ManagementPropertyBinding<?> binding : boundProperties) {
+                    binding.unbind();
                 }
+                boundProperties.clear();
             }
         }).start();
     }
@@ -132,8 +119,10 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Add the given item to the the wanted group.
      *
-     * @param groupId the unique id of the group
-     * @param view    the prepared item
+     * @param groupId
+     *            the unique id of the group
+     * @param view
+     *            the prepared item
      */
     protected void addPreparedItemToGroup(int groupId, View view) {
         // If the group list for that group id does not exists yet create it
@@ -150,7 +139,8 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Prepare and add all items in the right group list.
      *
-     * @param properties the items
+     * @param properties
+     *            the items
      */
     protected void prepareAndGroupItems(Collection<Property<?>> properties) {
         for (Property<?> property : properties) {
@@ -166,8 +156,10 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Save the name of the group.
      *
-     * @param groupId   the unique id of the group
-     * @param groupName the name of the group
+     * @param groupId
+     *            the unique id of the group
+     * @param groupName
+     *            the name of the group
      */
     protected void saveGroupName(int groupId, String groupName) {
         if (this.groupNames.get(groupId) == null) {
@@ -196,20 +188,26 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Prepare an item by name and ui hint.
      *
-     * @param itemName is the name that will be displayed above the item
-     * @param value    includes the value that will be displayed with this item
-     * @param uiHint   is needed for decide which ui element will be built
+     * @param <V>
+     *            The type of the value.
+     * @param itemName
+     *            is the name that will be displayed above the item
+     * @param value
+     *            includes the value that will be displayed with this item
+     * @param uiHint
+     *            is needed for decide which ui element will be built
      * @return the prepared view
      */
-    protected View prepareItemBy(String itemName, Object value, UIHint uiHint) {
+    protected <V> View prepareItemBy(String itemName, V value, UIHint uiHint) {
         // Prepare the item
         LinearLayout linearLayoutItem = prepareItemName(itemName);
-        ManagementProperty managementProperty = prepareItem(itemName, value, uiHint);
 
-        if (managementProperty != null) {
-            // Add prepared item
-            linearLayoutItem.addView(managementProperty.getView());
-        }
+        @SuppressWarnings("unchecked")
+        Class<V> valueType = (Class<V>) value.getClass();
+        PropertyView<V> view = UIProducer.producePropertyView(this, uiHint, valueType, itemName);
+        linearLayoutItem.addView(view.toView());
+        view.setValue(value);
+        view.setEnabled(false);
 
         // Return prepared item
         return linearLayoutItem;
@@ -218,19 +216,21 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Prepare an item for the appropriate property type.
      *
-     * @param property for that item the view will be prepared
+     * @param <V>
+     *            The type of the values in the view.
+     * @param property
+     *            for that item the view will be prepared
      * @return the prepared view
      */
-    protected View prepareItemBy(Property<?> property) {
+    protected <V> View prepareItemBy(Property<V> property) {
         // Prepare the property item
         LinearLayout linearLayoutItem = prepareItemName(property.getName());
-        ManagementProperty managementProperty = preparePropertyItem(property);
 
-        if (managementProperty != null) {
-            // Add prepared item
-            this.managementProperties.add(managementProperty);
-            linearLayoutItem.addView(managementProperty.getView());
-        }
+        PropertyView<V> view = UIProducer.producePropertyView(this, property.getUiHint(), property.getValueType(), property.getName());
+        ManagementPropertyBinding<V> binding = new ManagementPropertyBinding<V>(property, view, this);
+        this.boundProperties.add(binding);
+        linearLayoutItem.addView(view.toView());
+        view.setValue(property.get());
 
         // Return prepared item
         return linearLayoutItem;
@@ -239,8 +239,10 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Prepare the item group.
      *
-     * @param groupName the name of the group
-     * @param items     the items of the group
+     * @param groupName
+     *            the name of the group
+     * @param items
+     *            the items of the group
      * @return the prepared item group
      */
     protected View prepareGroup(String groupName, List<View> items) {
@@ -254,24 +256,22 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
         linearLayout.addView(relativeLayoutGroup);
 
         // Set an listener to the layout to order the items inside after they know their size
-        relativeLayoutGroup.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
+        relativeLayoutGroup.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
-                    @Override
-                    public void onGlobalLayout() {
-                        // Sort the items in the group
-                        orderGroupedItems(relativeLayoutGroup);
+            @Override
+            public void onGlobalLayout() {
+                // Sort the items in the group
+                orderGroupedItems(relativeLayoutGroup);
 
-                        // Unregister the listener
-                        relativeLayoutGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                });
+                // Unregister the listener
+                relativeLayoutGroup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
         // Set linearLayoutGroup attributes
         relativeLayoutGroup.setBackground(getResources().getDrawable(R.drawable.group_border));
         int padding = (int) getResources().getDimension(R.dimen.group_padding);
         relativeLayoutGroup.setPadding(padding, padding, padding, padding);
-
 
         // Add sub items to group
         if (items != null) {
@@ -290,7 +290,8 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Order the items inside the group layout.
      *
-     * @param relativeLayoutGroup the group
+     * @param relativeLayoutGroup
+     *            the group
      */
     private void orderGroupedItems(RelativeLayout relativeLayoutGroup) {
 
@@ -347,7 +348,8 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     /**
      * Prepare an item - add a surrounding view with the name of the item.
      *
-     * @param itemName is the name that will be displayed above the item
+     * @param itemName
+     *            is the name that will be displayed above the item
      * @return a layout with the name of the item and space for the item itself
      */
     protected LinearLayout prepareItemName(String itemName) {
@@ -362,7 +364,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
             if (preparedTextView != null) {
                 linearLayoutItem.addView(preparedTextView);
             }
-            //Get layout params
+            // Get layout params
             linearLayoutItemParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
             // Set linearLayoutItem attributes
@@ -371,7 +373,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
             // Set a padding on the top and the bottom
             linearLayoutItem.setPadding(0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) * 3, 0, (int) getResources().getDimension(R.dimen.fragment_margin_between_elements) / 2);
         } else {
-            //Get layout params - just wrapping the item
+            // Get layout params - just wrapping the item
             linearLayoutItemParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
             // Set a padding on the top and the bottom
@@ -386,110 +388,10 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     }
 
     /**
-     * Prepare the ui item.
-     *
-     * @param itemName is the name that will be displayed above the item
-     * @param value    includes the value that will be displayed with this item
-     * @param uiHint   is needed for decide which ui element will be built
-     */
-    private ManagementProperty prepareItem(String itemName, Object value, UIHint uiHint) {
-        /**
-         * Note for UIHint - value types:
-         *
-         * EditText = String
-         * EditNumber = Double
-         * ToggleButton = Boolean
-         * IntegralSlider = Integer
-         * PercentageSlider = Double
-         * FractionalSlider = Double
-         * DropDown = Enum<?>
-         **/
-        if (uiHint instanceof UIHint.EditText) {
-            // Prepare and add edit text property
-            return new ManagementPropertyEditText((String) value, this);
-        } else if (uiHint instanceof UIHint.EditNumber) {
-            // Prepare and add edit number property
-            return new ManagementPropertyEditNumber((Number) value, this);
-        } else if (uiHint instanceof UIHint.ToggleButton) {
-            // Prepare and add toggle button property
-            return new ManagementPropertyToggleButton((Boolean) value, this, itemName, itemName);
-        } else if (uiHint instanceof UIHint.FractionalSlider) {
-            // Prepare and add scale value property
-            UIHint.FractionalSlider uiHintFractionalSlider = (UIHint.FractionalSlider) uiHint;
-            return new ManagementPropertyFractionalSlider((Double) value, this, uiHintFractionalSlider.min, uiHintFractionalSlider.max);
-        } else if (uiHint instanceof UIHint.IntegralSlider) {
-            // Prepare and add scale value property
-            UIHint.IntegralSlider uiHintIntegralSlider = (UIHint.IntegralSlider) uiHint;
-            return new ManagementPropertyIntegralSlider((Integer) value, this, (int) uiHintIntegralSlider.min, (int) uiHintIntegralSlider.max);
-        } else if (uiHint instanceof UIHint.PercentageSlider) {
-            // Prepare and add scale percent property
-            return new ManagementPropertyPercentageSlider((Double) value, this);
-        } else if (uiHint instanceof UIHint.EnumDropDown) {
-            // Prepare and add scale percent property
-            UIHint.EnumDropDown uiHintEnumDropDown = (UIHint.EnumDropDown) uiHint;
-            ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
-            Collections.addAll(possibleValues, uiHintEnumDropDown.possibleValues);
-            return new ManagementPropertyEnumDropDown((Enum<?>) value, this, possibleValues);
-        }
-        IM.INSTANCES.getMH().writeErrorMessage("Unknown type in prepareItem()!");
-        IM.INSTANCES.getMH().showQuickMessage("Unknown type in prepareItem()!");
-        return null;
-    }
-
-    /**
-     * Prepare the ui item by property.
-     *
-     * @param property includes the value
-     */
-    @SuppressWarnings("unchecked")
-    private ManagementProperty preparePropertyItem(Property<?> property) {
-        /**
-         * Note for UIHint - value types:
-         *
-         * EditText = String
-         * EditNumber = Double
-         * ToggleButton = Boolean
-         * IntegralSlider = Integer
-         * PercentageSlider = Double
-         * FractionalSlider = Double
-         * DropDown = Enum<?>
-         **/
-        if (property.getUiHint() instanceof UIHint.EditText) {
-            // Prepare and add edit text property
-            return new ManagementPropertyEditText((Property<String>) property, this);
-        } else if (property.getUiHint() instanceof UIHint.EditNumber) {
-            // Prepare and add edit number property
-            return new ManagementPropertyEditNumber((Property<Number>) property, this);
-        } else if (property.getUiHint() instanceof UIHint.ToggleButton) {
-            // Prepare and add toggle button property
-            return new ManagementPropertyToggleButton((Property<Boolean>) property, this, property.getName(), property.getName());
-        } else if (property.getUiHint() instanceof UIHint.FractionalSlider) {
-            // Prepare and add scale value property
-            UIHint.FractionalSlider uiHint = (UIHint.FractionalSlider) property.getUiHint();
-            return new ManagementPropertyFractionalSlider((Property<Double>) property, this, uiHint.min, uiHint.max);
-        } else if (property.getUiHint() instanceof UIHint.IntegralSlider) {
-            // Prepare and add scale value property
-            UIHint.IntegralSlider uiHint = (UIHint.IntegralSlider) property.getUiHint();
-            return new ManagementPropertyIntegralSlider((Property<Integer>) property, this, (int) uiHint.min, (int) uiHint.max);
-        } else if (property.getUiHint() instanceof UIHint.PercentageSlider) {
-            // Prepare and add scale percent property
-            return new ManagementPropertyPercentageSlider((Property<Double>) property, this);
-        } else if (property.getUiHint() instanceof UIHint.EnumDropDown) {
-            // Prepare and add scale percent property
-            UIHint.EnumDropDown uiHint = (UIHint.EnumDropDown) property.getUiHint();
-            ArrayList<Enum<?>> possibleValues = new ArrayList<Enum<?>>();
-            Collections.addAll(possibleValues, uiHint.possibleValues);
-            return new ManagementPropertyEnumDropDown((Property<Enum<?>>) property, this, possibleValues);
-        }
-        IM.INSTANCES.getMH().writeErrorMessage("Unknown type in prepareItem(): " + property.getValueType().toString());
-        IM.INSTANCES.getMH().showQuickMessage("Unknown type in prepareItem()!");
-        return null;
-    }
-
-    /**
      * Prepare a text view for the item name.
      *
-     * @param text is the text that will be displayed
+     * @param text
+     *            is the text that will be displayed
      * @return the prepared view
      */
     private View prepareTextView(String text) {

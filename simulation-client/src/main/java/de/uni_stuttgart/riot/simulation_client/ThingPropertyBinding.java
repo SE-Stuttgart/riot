@@ -20,7 +20,7 @@ public class ThingPropertyBinding<T> extends SimpleObjectProperty<T> {
     /**
      * True when an update of either property is in progress (to avoid loops).
      */
-    private boolean updating;
+    private volatile boolean updating;
 
     /**
      * The thing property.

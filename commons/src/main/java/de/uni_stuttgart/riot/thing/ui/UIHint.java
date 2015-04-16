@@ -170,9 +170,26 @@ public abstract class UIHint implements Serializable {
      * @return The FractionalSlider.
      */
     public static FractionalSlider fractionalSlider(double min, double max) {
+        return fractionalSlider(min, max, 2);
+    }
+
+    /**
+     * Returns a FractionalSlider for the given values. See {@link FractionalSlider}.
+     * 
+     * @param min
+     *            The minimum value.
+     * @param max
+     *            The maximum value.
+     * @param decimalPlaces
+     *            The precision that the field should have. Will be used for decimal places only if the slider is combined with a text
+     *            field.
+     * @return The FractionalSlider.
+     */
+    public static FractionalSlider fractionalSlider(double min, double max, int decimalPlaces) {
         FractionalSlider result = new FractionalSlider();
         result.min = min;
         result.max = max;
+        result.decimalPlaces = decimalPlaces;
         return result;
     }
 
@@ -192,15 +209,34 @@ public abstract class UIHint implements Serializable {
          * The maximum value for the value and thus the upper bound of the slider range.
          */
         public double max;
+
+        /**
+         * The precision that the field should have. Will be used for decimal places only if the slider is combined with a text field.
+         */
+        public int decimalPlaces;
+    }
+
+    /**
+     * Returns a PercentageSlider with no fractional percentages allowed.
+     * 
+     * @return The PercentageSlider.
+     */
+    public static PercentageSlider percentageSlider() {
+        return percentageSlider(2);
     }
 
     /**
      * Returns a PercentageSlider.
      * 
+     * @param decimalPlaces
+     *            The precision that the field should have. Will be used for decimal places only if the slider is combined with a text
+     *            field. Note that the number of decimal places refers to the <tt>1.0</tt> representation and not the <tt>100.0%</tt>.
      * @return The PercentageSlider.
      */
-    public static PercentageSlider percentageSlider() {
-        return new PercentageSlider();
+    public static PercentageSlider percentageSlider(int decimalPlaces) {
+        PercentageSlider result = new PercentageSlider();
+        result.decimalPlaces = decimalPlaces;
+        return result;
     }
 
     /**
@@ -209,6 +245,11 @@ public abstract class UIHint implements Serializable {
      * slider or as a progress bar.
      */
     public static class PercentageSlider extends UIHint {
+        /**
+         * The precision that the field should have. Will be used for decimal places only if the slider is combined with a text field. Note
+         * that the number of decimal places refers to the <tt>1.0</tt> representation and not the <tt>100.0%</tt>.
+         */
+        public int decimalPlaces;
     }
 
     /**
@@ -250,7 +291,20 @@ public abstract class UIHint implements Serializable {
      * @return The EditNumber.
      */
     public static EditNumber editNumber() {
-        return new EditNumber();
+        return editNumber(2);
+    }
+
+    /**
+     * Returns a EditNumber.
+     * 
+     * @param decimalPlaces
+     *            The number of decimal places to be displayed. Will be ignored for integral fields.
+     * @return The EditNumber.
+     */
+    public static EditNumber editNumber(int decimalPlaces) {
+        EditNumber result = new EditNumber();
+        result.decimalPlaces = decimalPlaces;
+        return result;
     }
 
     /**
@@ -259,6 +313,11 @@ public abstract class UIHint implements Serializable {
      * a simple label.
      */
     public static class EditNumber extends UIHint {
+
+        /**
+         * The number of decimal places to be displayed. Will be ignored for integral fields.
+         */
+        public int decimalPlaces;
     }
 
     /**

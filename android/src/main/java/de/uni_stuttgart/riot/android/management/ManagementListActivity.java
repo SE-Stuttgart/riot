@@ -63,6 +63,7 @@ public abstract class ManagementListActivity<T, D> extends ManagementActivity<Li
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
+                    @SuppressWarnings("unchecked")
                     T item = (T) parent.getItemAtPosition(position);
                     doOnItemClick(item);
                 } catch (Exception e) {

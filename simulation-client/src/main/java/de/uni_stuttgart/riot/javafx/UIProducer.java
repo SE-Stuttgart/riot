@@ -1,5 +1,7 @@
 package de.uni_stuttgart.riot.javafx;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.stage.Window;
+import javafx.util.converter.NumberStringConverter;
 import de.uni_stuttgart.riot.simulation_client.SimulatedThingBehavior;
 import de.uni_stuttgart.riot.simulation_client.ThingPropertyInternalBinding;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
@@ -32,7 +35,7 @@ import de.uni_stuttgart.riot.thing.ui.UIHint.PercentageSlider;
 import de.uni_stuttgart.riot.thing.ui.UIHint.ToggleButton;
 
 /**
- * Helper class for producing UI elements for Thing properties.
+ * Helper class for producing JavaFX UI elements for Thing properties.
  * 
  * @author Philipp Keck
  */
@@ -121,8 +124,11 @@ public abstract class UIProducer {
         } else if (hint instanceof EditNumber) {
             if (!Number.class.isAssignableFrom(valueType)) {
                 throw new IllegalArgumentException("Cannot use EditNumber for type " + valueType);
+            } else if (valueType == Float.class || valueType == Double.class || valueType == BigDecimal.class) {
+                return produceNumberSpinner((ObservableValue<Number>) property, ((EditNumber) hint).decimalPlaces);
+            } else {
+                return produceNumberSpinner((ObservableValue<Number>) property, 0);
             }
-            return produceNumberSpinner((ObservableValue<Number>) property);
 
         } else if (hint instanceof EnumDropDown) {
             if (!Enum.class.isAssignableFrom(valueType)) {
@@ -271,10 +277,21 @@ public abstract class UIProducer {
      * 
      * @param property
      *            The thing property.
+     * @param decimalPlaces
+     *            The number of decimal places to be displayed.
      * @return The number spinner.
      */
-    private static NumberSpinner produceNumberSpinner(ObservableValue<Number> property) {
+    private static NumberSpinner produceNumberSpinner(ObservableValue<Number> property, int decimalPlaces) {
         NumberSpinner spinner = new NumberSpinner();
+        NumberFormat numberFormat;
+        if (decimalPlaces < 1) {
+            numberFormat = NumberFormat.getIntegerInstance();
+        } else {
+            numberFormat = NumberFormat.getNumberInstance();
+            numberFormat.setMaximumFractionDigits(decimalPlaces);
+        }
+        spinner.setNumberStringConverter(new NumberStringConverter(numberFormat));
+
         if (property.getValue() != null) {
             spinner.setValue(property.getValue());
         }

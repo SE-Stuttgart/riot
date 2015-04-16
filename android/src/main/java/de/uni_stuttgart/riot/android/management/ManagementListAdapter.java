@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ManagementListAdapter<T> extends ArrayAdapter<T> {
 
-    private ManagementListActivity managementListActivity;
+    private ManagementListActivity<T, ?> managementListActivity;
     private int resource;
     private List<T> itemList;
 
@@ -27,7 +27,7 @@ public class ManagementListAdapter<T> extends ArrayAdapter<T> {
      * @param resource               it the resource id of the layout for the list item
      * @param itemList               is a list of items that will be displayed in the list
      */
-    public ManagementListAdapter(ManagementListActivity managementListActivity, int resource, List<T> itemList) {
+    public ManagementListAdapter(ManagementListActivity<T, ?> managementListActivity, int resource, List<T> itemList) {
         super(managementListActivity.getApplicationContext(), resource, itemList);
         this.managementListActivity = managementListActivity;
         this.resource = resource;

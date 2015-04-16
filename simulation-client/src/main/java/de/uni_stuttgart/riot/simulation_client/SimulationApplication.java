@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import de.uni_stuttgart.riot.clientlibrary.ConnectionInformation;
 import de.uni_stuttgart.riot.clientlibrary.ConnectionInformationProvider;
+import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.thing.SingleUseThingBehaviorFactory;
@@ -195,7 +196,14 @@ public class SimulationApplication extends Application {
         try {
             if (settings.containsKey("thingId")) {
                 int thingId = Integer.parseInt(settings.getProperty("thingId"));
-                behavior = ExecutingThingBehavior.launchExistingThing(thingType, thingClient, thingId, simulatedBehaviorFactory);
+                try {
+                    behavior = ExecutingThingBehavior.launchExistingThing(thingType, thingClient, thingId, simulatedBehaviorFactory);
+                } catch (NotFoundException e) {
+                    logger.info("The Thing does not exist anymore, recreating");
+                    behavior = ExecutingThingBehavior.launchNewThing(thingType, thingClient, thingName, simulatedBehaviorFactory);
+                    settings.setProperty("thingId", behavior.getThing().getId().toString());
+                    settings.store(new FileOutputStream(configurationFile), null);
+                }
             } else {
                 behavior = ExecutingThingBehavior.launchNewThing(thingType, thingClient, thingName, simulatedBehaviorFactory);
                 settings.setProperty("thingId", behavior.getThing().getId().toString());
@@ -241,25 +249,26 @@ public class SimulationApplication extends Application {
         window.show();
 
         // Start the simulation, if present.
+        final SimulatedThingBehavior fbehavior = behavior;
         if (simulator != null) {
             final Simulator<?> fsimulator = simulator;
             fsimulator.startSimulation();
             window.setOnHidden((event) -> {
                 fsimulator.shutdown();
                 scheduler.shutdown();
-                behavior.shutdown();
+                fbehavior.shutdown();
             });
         } else {
             window.setOnHidden((event) -> {
                 scheduler.shutdown();
-                behavior.shutdown();
+                fbehavior.shutdown();
             });
         }
 
         // Start regular polling for events.
         scheduler.scheduleWithFixedDelay(() -> {
             try {
-                behavior.fetchUpdates();
+                fbehavior.fetchUpdates();
             } catch (Exception e) {
                 logger.error("Error during polling", e);
             }
