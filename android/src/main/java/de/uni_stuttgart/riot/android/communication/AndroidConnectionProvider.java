@@ -2,6 +2,8 @@ package de.uni_stuttgart.riot.android.communication;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.uni_stuttgart.riot.android.account.AuthConstants;
 import de.uni_stuttgart.riot.clientlibrary.ConnectionInformation;
 import de.uni_stuttgart.riot.clientlibrary.ConnectionInformationProvider;
@@ -67,6 +69,17 @@ public class AndroidConnectionProvider implements ConnectionInformationProvider 
      */
     public static ServerConnector getConnector(Context context) {
         return INSTANCE.internalGetConnector(context);
+    }
+
+    /**
+     * Gets the Jackson ObjectMapper used for the connection.
+     * 
+     * @param context
+     *            Some Android context to be used for loading preferences, etc.
+     * @return The JSON mapper.
+     */
+    public static ObjectMapper getJsonMapper(Context context) {
+        return getConnector(context).getJsonMapper();
     }
 
     /**

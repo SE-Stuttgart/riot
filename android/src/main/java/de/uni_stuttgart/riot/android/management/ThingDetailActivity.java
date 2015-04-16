@@ -10,13 +10,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import de.uni_stuttgart.riot.android.Callback;
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.AndroidConnectionProvider;
 import de.uni_stuttgart.riot.android.messages.IM;
 import de.uni_stuttgart.riot.android.things.ThingManager;
+import de.uni_stuttgart.riot.thing.Action;
+import de.uni_stuttgart.riot.thing.ActionInstance;
+import de.uni_stuttgart.riot.thing.PropertySetAction;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.rest.ThingInformation;
@@ -95,6 +101,31 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
         // Add prepared and grouped items to the main layout
         addGroupedItemsToMainLayout();
 
+        // Buttons for all actions
+        LinearLayout actions = prepareItemName("actions");
+        for (final Action<?> action : item.getActions()) {
+            if (action instanceof PropertySetAction) {
+                continue;
+            }
+
+            Button button = new Button(this);
+            button.setText(action.getName());
+            button.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    BaseInstanceDialog.enterNewInstance(ThingDetailActivity.this, action.getInstanceType(), //
+                            item.getId(), action.getName(), //
+                            AndroidConnectionProvider.getJsonMapper(ThingDetailActivity.this), //
+                            new Callback<ActionInstance>() {
+                                public void callback(ActionInstance instance) {
+                                    fireAction(action, instance);
+                                }
+                            });
+                }
+            });
+            actions.addView(button);
+        }
+        super.mainLayout.addView(actions);
+
         // Add a list of children
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout childrenView = prepareItemName("children");
@@ -121,6 +152,26 @@ public class ThingDetailActivity extends ManagementDetailActivity<Thing> {
         // Bind all properties and start monitoring the change events
         bindAllManagementProperties();
         startMonitoring();
+    }
+
+    /**
+     * Fires the given action (on a background thread).
+     * 
+     * @param action
+     *            The action to be fired.
+     * @param instance
+     *            The action instance
+     */
+    private <A extends ActionInstance> void fireAction(final Action<A> action, final ActionInstance instance) {
+        if (!action.getInstanceType().isInstance(instance)) {
+            throw new IllegalArgumentException(instance + " is not an instance of " + action.getInstanceType() + " for action " + action);
+        }
+
+        new Thread(new Runnable() {
+            public void run() {
+                action.fire(action.getInstanceType().cast(instance));
+            }
+        }).start();
     }
 
     @Override

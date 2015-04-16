@@ -1,14 +1,11 @@
 package de.uni_stuttgart.riot.simulation_client;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.lang3.ClassUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,8 +90,11 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
     private BaseInstanceWindow(BaseInstanceDescription description, I instance) {
         this.description = description;
         this.mayCreateNewWritableProperties = false;
+        if (!description.getInstanceType().isInstance(instance)) {
+            throw new IllegalArgumentException(instance + " is not an instance of " + description.getInstanceType());
+        }
         for (ParameterDescription parameter : description.getParameters()) {
-            parameterProperties.put(parameter.getName(), getConstantParameterValue(description.getInstanceType(), instance, parameter.getName(), parameter.getValueType()));
+            parameterProperties.put(parameter.getName(), getConstantParameterValue(instance, parameter.getName(), parameter.getValueType()));
         }
         setScene(new Scene(produceContent()));
         getScene().getStylesheets().add("styles.css");
@@ -105,8 +105,6 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
      * 
      * @param <T>
      *            The type of the value.
-     * @param instanceType
-     *            The type of the BaseInstance.
      * @param instance
      *            The BaseInstance to read from.
      * @param parameterName
@@ -115,30 +113,8 @@ public class BaseInstanceWindow<I extends BaseInstance> extends Stage {
      *            The type of the value.
      * @return A constant observable containing the value.
      */
-    private <T> ObservableValue<T> getConstantParameterValue(Class<? extends BaseInstance> instanceType, I instance, String parameterName, Class<T> valueType) {
-        if (!instanceType.isInstance(instance)) {
-            throw new IllegalArgumentException(instance + " is not an instance of " + instanceType);
-        }
-
-        Class<?> clazz = instanceType;
-        while (clazz != BaseInstance.class) {
-            try {
-                Field field = clazz.getDeclaredField(parameterName);
-                if (ClassUtils.primitiveToWrapper(field.getType()) != valueType) {
-                    throw new IllegalArgumentException("The paramter " + parameterName + " in " + instanceType + " is of type " + field.getType() + ", but expected type is " + valueType);
-                }
-                field.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                ConstantObservable<T> result = new ConstantObservable<T>((T) field.get(instance));
-                return result;
-            } catch (NoSuchFieldException e) {
-                // Try on the super class.
-                clazz = clazz.getSuperclass();
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        throw new IllegalArgumentException("The type " + instanceType + " does not have the parameter " + parameterName);
+    private <T> ObservableValue<T> getConstantParameterValue(I instance, String parameterName, Class<T> valueType) {
+        return new ConstantObservable<T>(BaseInstanceDescriptions.getParameterValue(instance, parameterName, valueType));
     }
 
     /**
