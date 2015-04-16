@@ -1,5 +1,9 @@
 package de.uni_stuttgart.riot.simulation_client;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -12,8 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
-;
 
 /**
  * Displays a login dialog.
@@ -72,7 +74,18 @@ public class LoginDialog extends Stage {
      * @return The specified values (username is the key, password is the value) or <tt>null</tt> if the dialog was canceled.
      */
     public static Pair<String, String> showDialog(Stage owner) {
-        // TODO Das hier muss auf den UI-THread!!
+        if (!Platform.isFxApplicationThread()) {
+            CompletableFuture<Pair<String, String>> result = new CompletableFuture<>();
+            Platform.runLater(() -> {
+                result.complete(showDialog(owner));
+            });
+            try {
+                return result.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         LoginDialog dialog = new LoginDialog(owner);
         dialog.showAndWait();
 
