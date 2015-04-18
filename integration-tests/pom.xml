@@ -88,6 +88,11 @@
 			<artifactId>riot.usermanagement</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uni-stuttgart.riot</groupId>
+			<artifactId>riot.simulation-client</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- Transitive dependencies of included projects with "optional" sub-dependencies -->
 		<dependency>

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -110,11 +111,11 @@ public class ThingService {
     @GET
     @Path("{id}")
     public ThingInformation getThingInformation(@PathParam("id") long id, @QueryParam("return") List<Field> fields) {
-        assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertPermitted(id, ThingPermission.READ);
             return mapThing(thing, fields, EnumSet.of(Field.METAINFO));
         }
     }
@@ -131,11 +132,11 @@ public class ThingService {
     @GET
     @Path("{id}/metainfo")
     public ThingMetainfo getThingMetainfo(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertPermitted(id, ThingPermission.READ);
             return ThingMetainfo.create(thing);
         }
     }
@@ -156,11 +157,14 @@ public class ThingService {
     @PUT
     @Path("{id}/metainfo")
     public ThingMetainfo setThingMetainfo(@PathParam("id") long id, ThingMetainfo metainfo) throws DatasourceFindException, DatasourceUpdateException {
-        assertOwner(id);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertOwner(id);
+            if (!Objects.equals(thing.getParentId(), metainfo.getParentId())) {
+                assertPermitted(metainfo.getParentId(), ThingPermission.READ);
+            }
             logic.setMetainfo(thing, metainfo);
             return ThingMetainfo.create(thing);
         }
@@ -178,11 +182,11 @@ public class ThingService {
     @GET
     @Path("{id}/state")
     public ThingState getThingState(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertPermitted(id, ThingPermission.READ);
             return ThingState.create(thing);
         }
     }
@@ -200,12 +204,12 @@ public class ThingService {
      */
     @PUT
     @Path("{id}/state")
-    public ThingState getThingState(@PathParam("id") long id, ThingState state) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.EXECUTE);
+    public ThingState setThingState(@PathParam("id") long id, ThingState state) throws DatasourceFindException {
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertPermitted(id, ThingPermission.EXECUTE);
             state.apply(thing);
             return ThingState.create(thing);
         }
@@ -223,11 +227,11 @@ public class ThingService {
     @GET
     @Path("{id}/description")
     public ThingDescription getThingDescription(@PathParam("id") long id) throws DatasourceFindException {
-        assertPermitted(id, ThingPermission.READ);
         Thing thing = logic.getThing(id);
         if (thing == null) {
             throw new NotFoundException();
         } else {
+            assertPermitted(id, ThingPermission.READ);
             return ThingDescription.create(thing);
         }
     }
@@ -621,7 +625,8 @@ public class ThingService {
     }
 
     /**
-     * Checks if the user has the permission for the given thing. Throws a {@link ForbiddenException} if the user is not permitted.
+     * Checks if the user has the permission for the given thing. Throws a {@link ForbiddenException} if the user is not permitted. Throws a
+     * {@link NotFoundException} if the thing does not exist.
      *
      * @param id
      *            The id of the thing.

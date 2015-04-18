@@ -119,8 +119,8 @@ public class Token extends Storable {
     public void setValid(boolean valid) {
         this.valid = valid;
     }
-    
-    //CHECKSTYLE:OFF
+
+    // CHECKSTYLE:OFF
     @Override
     public int hashCode() {
         final int prime = 31;

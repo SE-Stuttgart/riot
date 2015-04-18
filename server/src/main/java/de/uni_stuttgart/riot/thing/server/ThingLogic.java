@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -657,6 +656,7 @@ public class ThingLogic {
      *             When storing the information fails.
      */
     public void setMetainfo(Thing thing, ThingMetainfo metainfo) throws DatasourceUpdateException {
+        Objects.requireNonNull(thing, "thing must not be null");
         if (metainfo.getName() == null || metainfo.getName().isEmpty()) {
             throw new IllegalArgumentException("name must not be empty!");
         } else if (metainfo.getOwnerId() == null || metainfo.getOwnerId() < 1) {
@@ -665,7 +665,7 @@ public class ThingLogic {
 
         if (metainfo.getParentId() == null || metainfo.getParentId() < 1) {
             metainfo.setParentId(null);
-        } else {
+        } else if (!Objects.equals(thing.getParentId(), metainfo.getParentId())) {
             Thing newParent = ThingLogic.getThingLogic().getThing(metainfo.getParentId());
             if (newParent == null) {
                 throw new IllegalArgumentException("parentId " + metainfo.getParentId() + " does not exist");
@@ -677,7 +677,6 @@ public class ThingLogic {
             }
         }
 
-        Objects.requireNonNull(thing, "thing must not be null");
         metainfo.apply(thing);
         thingDAO.update(thing);
     }

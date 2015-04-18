@@ -46,7 +46,8 @@ public @interface Parameter {
     /**
      * Dummy class for the default value of {@link Parameter#ui()}.
      */
-    public static class NoHint extends UIHint {
+    public abstract static class NoHint extends UIHint {
+        private static final long serialVersionUID = 1L;
     }
 
 }

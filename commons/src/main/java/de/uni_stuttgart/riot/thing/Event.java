@@ -98,7 +98,6 @@ public class Event<E extends EventInstance> {
         }
     }
 
-    // CHECKSTYLE:OFF (Generated Code)
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -19,23 +19,29 @@ import de.uni_stuttgart.riot.clientlibrary.BaseClientTest;
 import de.uni_stuttgart.riot.clientlibrary.NotFoundException;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
+import de.uni_stuttgart.riot.clientlibrary.UnauthenticatedException;
+import de.uni_stuttgart.riot.commons.model.OnlineState;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.server.test.ResetHelper;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.client.ThingClient;
 import de.uni_stuttgart.riot.thing.house.coffeemachine.CoffeeMachine;
 import de.uni_stuttgart.riot.thing.rest.ThingInformation;
+import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.RegisterEventRequest;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
+import de.uni_stuttgart.riot.thing.rest.UserThingShare;
 import de.uni_stuttgart.riot.thing.test.TestActionInstance;
 import de.uni_stuttgart.riot.thing.test.TestEventInstance;
 import de.uni_stuttgart.riot.thing.test.TestThing;
 import de.uni_stuttgart.riot.thing.test.TestThingBehavior;
+import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 @TestData({ "/schema/schema_usermanagement.sql", "/data/testdata_usermanagement.sql", "/schema/schema_things.sql", "/testdata/testdata_things.sql", "/schema/schema_configuration.sql", "/data/testdata_configuration.sql" })
 public class ThingClientTest extends BaseClientTest {
@@ -49,6 +55,12 @@ public class ThingClientTest extends BaseClientTest {
 
     public ThingClient getLoggedInThingClient() {
         return new ThingClient(getLoggedInConnector());
+    }
+
+    public ThingClient getR2D2ThingClient() throws UnauthenticatedException, IOException, RequestException {
+        ServerConnector secondConnector = produceNewServerConnector();
+        secondConnector.login("R2D2", "R2D2PW");
+        return new ThingClient(secondConnector);
     }
 
     @Test
@@ -75,6 +87,7 @@ public class ThingClientTest extends BaseClientTest {
 
         // Check its online status.
         assertThat(thingClient.getLastOnline(thing.getId()).getTime(), greaterThanOrEqualTo(timeBefore));
+        assertThat(thingClient.getOnlineState(thing.getId()), is(OnlineState.STATUS_ONLINE));
 
         // Unregister it.
         thingClient.unregisterThing(thing.getId());
@@ -84,6 +97,118 @@ public class ThingClientTest extends BaseClientTest {
             thingClient.getLastOnline(thing.getId());
             fail();
         } catch (NotFoundException e) {
+            // Expected
+        }
+
+    }
+
+    @Test
+    public void changeThingMetainfo() throws IOException, RequestException, NotFoundException {
+
+        // Create a new test thing.
+        ThingClient thingClient = this.getLoggedInThingClient();
+        ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
+        TestThing thing = (TestThing) thingClient.registerNewThing("FirstName", TestThing.class.getName(), null, mockBehaviorFactory);
+        long id = thing.getId();
+
+        // Get the metainfo of the created thing.
+        ThingMetainfo metainfo = thingClient.getMetainfo(id);
+        assertThat(metainfo.getName(), is("FirstName"));
+        assertThat(metainfo.getOwnerId(), is(1L)); // Yoda is logged in.
+        assertThat(metainfo.getParentId(), is(nullValue()));
+
+        // Change the name through the metainfo.
+        metainfo.setName("NewName");
+        metainfo = thingClient.setMetainfo(id, metainfo);
+        assertThat(metainfo.getName(), is("NewName"));
+        metainfo = thingClient.getMetainfo(id);
+        assertThat(metainfo.getName(), is("NewName"));
+
+        // Change the parent Thing to test thing 1.
+        metainfo.setParentId(1L);
+        metainfo = thingClient.setMetainfo(id, metainfo);
+        assertThat(metainfo.getName(), is("NewName"));
+        assertThat(metainfo.getOwnerId(), is(1L));
+
+        // Changing a Thing owned by another user should fail.
+        try {
+            ThingClient thingClientR2 = getR2D2ThingClient();
+            thingClientR2.setMetainfo(id, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+        }
+
+        // Setting parent to thing without READ-privileges should fail.
+        try {
+            metainfo.setParentId(2L);
+            thingClient.setMetainfo(id, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+        }
+
+        // Unregister it.
+        thingClient.unregisterThing(id);
+    }
+
+    @Test
+    public void unallowedMetainfoChanges() throws IOException, RequestException, NotFoundException {
+
+        ThingClient thingClient = this.getLoggedInThingClient();
+        ThingMetainfo metainfo = thingClient.getMetainfo(1L);
+
+        // Setting name to null should fail.
+        try {
+            metainfo.setName(null);
+            thingClient.setMetainfo(1L, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+            metainfo.setName("NewName");
+        }
+
+        // Setting owner to null should fail.
+        try {
+            metainfo.setOwnerId(null);
+            thingClient.setMetainfo(1L, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+            metainfo.setOwnerId(1L);
+        }
+
+        // Updating a non-existent thing should fail.
+        try {
+            thingClient.setMetainfo(100L, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+        }
+
+        // Getting a non-existent thing should fail.
+        try {
+            thingClient.getMetainfo(100L);
+            fail();
+        } catch (NotFoundException e) {
+            // Expected
+        }
+
+        // Setting non-existent parent should fail.
+        try {
+            metainfo.setParentId(100L);
+            thingClient.setMetainfo(1L, metainfo);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+        }
+
+        // Setting parent to self should fail.
+        try {
+            metainfo.setParentId(1L);
+            thingClient.setMetainfo(1L, metainfo);
+            fail();
+        } catch (RequestException e) {
             // Expected
         }
 
@@ -131,6 +256,9 @@ public class ThingClientTest extends BaseClientTest {
         assertThat(reportedInstance.getParameter(), is(4242));
         assertThat(reportedInstance.getThingId(), is(otherThing.getId()));
 
+        // Unregister.
+        thingClient.unregisterFromEvent(thing.getId(), request);
+
         // Tidy up.
         thingClient.unregisterThing(thing.getId());
 
@@ -165,10 +293,7 @@ public class ThingClientTest extends BaseClientTest {
     @Test
     public void shareTest() throws Exception {
         ThingClient thingClientYoda = this.getLoggedInThingClient();
-
-        ServerConnector secondConnector = produceNewServerConnector();
-        secondConnector.login("R2D2", "R2D2PW");
-        ThingClient thingClientR2D2 = new ThingClient(secondConnector);
+        ThingClient thingClientR2D2 = getR2D2ThingClient();
 
         // try to read the thing with the id 1, should fail
         try {
@@ -193,6 +318,11 @@ public class ThingClientTest extends BaseClientTest {
         Map<Long, ThingShare> permissions = thingClientYoda.getThingShares(1).stream().collect(Collectors.toMap(ThingShare::getUserId, Function.identity()));
         assertThat(permissions.get(1L).getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
         assertThat(permissions.get(2L).getPermissions(), equalTo(EnumSet.of(ThingPermission.READ)));
+        Map<Long, UserThingShare> permissions2 = thingClientYoda.getUserThingShares(1).stream().collect(Collectors.toMap(e -> e.getUser().getId(), Function.identity()));
+        assertThat(permissions2.get(1L).getPermissions(), equalTo(EnumSet.allOf(ThingPermission.class)));
+        assertThat(permissions2.get(1L).getUser().getUsername(), is("Yoda"));
+        assertThat(permissions2.get(2L).getPermissions(), equalTo(EnumSet.of(ThingPermission.READ)));
+        assertThat(permissions2.get(2L).getUser().getUsername(), is("R2D2"));
 
         // Should now be able to find the thing 1, too
         foundThings = thingClientR2D2.findThings(TestThing.class.getName(), EnumSet.of(ThingPermission.READ));
@@ -244,6 +374,8 @@ public class ThingClientTest extends BaseClientTest {
     public void getThingInformationsTest() throws RequestException, IOException, NotFoundException {
 
         ThingClient thingClient = this.getLoggedInThingClient();
+
+        // Get single ThingInformation with metainfo only.
         ThingInformation info = thingClient.getThingInformation(1, EnumSet.of(ThingInformation.Field.METAINFO));
         assertThat(info.getId(), is(1L));
         assertThat(info.getType(), is(TestThing.class.getName()));
@@ -255,6 +387,7 @@ public class ThingClientTest extends BaseClientTest {
         assertThat(info.getMetainfo().getOwnerId(), is(0L));
         assertThat(info.getMetainfo().getParentId(), is(nullValue()));
 
+        // Get ThingInformation wiht all fields.
         info = thingClient.getThingInformation(1, EnumSet.allOf(ThingInformation.Field.class));
         assertThat(info.getId(), is(1L));
         assertThat(info.getType(), is(TestThing.class.getName()));
@@ -262,6 +395,74 @@ public class ThingClientTest extends BaseClientTest {
         assertThat(info.getState(), not(nullValue()));
         assertThat(info.getShares(), not(nullValue()));
         assertThat(info.getMetainfo(), not(nullValue()));
+
+        // Get all ThingInformations.
+        ThingInformation info2 = thingClient.getThingInformations(EnumSet.allOf(ThingInformation.Field.class)).iterator().next();
+        assertThat(info2.getId(), is(1L));
+        assertThat(info2.getType(), is(TestThing.class.getName()));
+        assertThat(info2.getDescription(), not(nullValue()));
+        assertThat(info2.getState(), not(nullValue()));
+        assertThat(info2.getShares(), not(nullValue()));
+        assertThat(info2.getMetainfo(), not(nullValue()));
+
+        // Getting a non-existent thing should fail.
+        try {
+            thingClient.getThingInformation(100, EnumSet.allOf(ThingInformation.Field.class));
+            fail();
+        } catch (NotFoundException e) {
+            // Expected
+        }
+
+        // Get ThingDescription.
+        ThingDescription description = thingClient.getDescription(1);
+        assertThat(description.getThingId(), is(1L));
+        assertThat(description.getPropertyByName("int").getUiHint(), instanceOf(UIHint.IntegralSlider.class));
+
+        // Getting a non-existent thing should fail.
+        try {
+            thingClient.getDescription(100);
+            fail();
+        } catch (NotFoundException e) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void thingStateTest() throws RequestException, IOException, NotFoundException {
+
+        // Create a new test thing.
+        ThingClient thingClient = this.getLoggedInThingClient();
+        ThingBehaviorFactory<TestThingBehavior> mockBehaviorFactory = TestThingBehavior.getMockFactory();
+        TestThing thing = (TestThing) thingClient.registerNewThing("FirstName", TestThing.class.getName(), null, mockBehaviorFactory);
+
+        // Change a property value through the ThingState.
+        ThingState state = thingClient.getThingState(thing.getId());
+        assertThat(state.get("int"), is(42));
+        state.set("int", 43);
+        state = thingClient.setThingState(thing.getId(), state);
+        assertThat(state.get("int"), is(43));
+        state = thingClient.getThingState(thing.getId());
+        assertThat(state.get("int"), is(43));
+
+        // Updating a non-existent thing state should fail.
+        try {
+            thingClient.setThingState(100L, state);
+            fail();
+        } catch (RequestException e) {
+            // Expected
+        }
+
+        // Getting a non-existent thing state should fail.
+        try {
+            thingClient.getThingState(100L);
+            fail();
+        } catch (NotFoundException e) {
+            // Expected
+        }
+
+        // Unregister it.
+        thingClient.unregisterThing(thing.getId());
+
     }
 
 }

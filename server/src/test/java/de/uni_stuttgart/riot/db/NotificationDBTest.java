@@ -85,6 +85,9 @@ public class NotificationDBTest extends BaseDatabaseTest {
         assertThat(restored.getArguments().get("test.param"), is("boring"));
         assertThat(restored.getSeverity(), is(NotificationSeverity.ERROR));
 
+        Collection<Notification> paginated = dao.findAll(1L, 0, 10);
+        assertThat(paginated, hasItem(restored));
+
         // Mark it as dismissed, it should disappear.
         restored.setDismissed(true);
         dao.updateDismissed(restored.getId(), restored.getUserID(), true);

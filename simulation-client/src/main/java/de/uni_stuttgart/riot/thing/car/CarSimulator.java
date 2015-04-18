@@ -16,7 +16,7 @@ public class CarSimulator extends Simulator<Car> {
     private static final int HEATING_STEP_TIME = 5000;
     private static final int CONSUMPTION_STEP_TIME = 10;
     private static final Double CRITICAL_TANK_LEVEL = 5.0;
-    private static final long TANK_CONRTOLL_PERIOD = 10000;
+    private static final long TANK_CONRTOL_PERIOD = 10000;
 
     /**
      * {@link ScheduledFuture} is stored to be able to interrupted the current heating process.
@@ -38,22 +38,20 @@ public class CarSimulator extends Simulator<Car> {
      */
     public CarSimulator(Car thing, ScheduledThreadPoolExecutor scheduler) {
         super(thing, scheduler);
-        this.initTankLevelControll();
+        scheduleAtFixedRate(this::checkTankLevel, 0, TANK_CONRTOL_PERIOD);
     }
 
     /**
-     * Starts the control Task for the tank fill level. It checks the current tank fill level against the
-     * {@link CarSimulator#CRITICAL_TANK_LEVEL} if the current level is less than the critical level a out of gasoline event is fired.
+     * Checks the current tank fill level against the {@link CarSimulator#CRITICAL_TANK_LEVEL} if the current level is less than the
+     * critical level a out of gasoline event is fired.
      */
-    private void initTankLevelControll() {
-        this.scheduleAtFixedRate(() -> {
-            if (CarSimulator.this.getThing().getTankFillLevel() < CarSimulator.CRITICAL_TANK_LEVEL) {
-                if (CarSimulator.this.getThing().getTankFillLevel() == 0.0) {
-                    changePropertyValue(CarSimulator.this.getThing().getEngineProperty(), false);
-                }
-                CarSimulator.this.fireOutOfGasoline(CarSimulator.this.getThing().getTankFillLevel());
+    private void checkTankLevel() {
+        if (CarSimulator.this.getThing().getTankFillLevel() < CarSimulator.CRITICAL_TANK_LEVEL) {
+            if (CarSimulator.this.getThing().getTankFillLevel() == 0.0) {
+                changePropertyValue(CarSimulator.this.getThing().getEngineProperty(), false);
             }
-        }, 0, TANK_CONRTOLL_PERIOD);
+            CarSimulator.this.fireOutOfGasoline(CarSimulator.this.getThing().getTankFillLevel());
+        }
     }
 
     @Override

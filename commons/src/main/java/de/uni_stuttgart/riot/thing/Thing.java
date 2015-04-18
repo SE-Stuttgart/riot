@@ -124,26 +124,6 @@ public class Thing extends Storable implements Referenceable<Thing> {
     }
 
     /**
-     * Creates a new {@link NotificationEvent} without parameters for the thing.
-     *
-     * @param eventName
-     *            The name of the event. Must be unique, i.e., this method can only be called once for each name.
-     * @param severity
-     *            The severity of the notifications fired by the created notification event.
-     * @param titleKey
-     *            The key of the message title in notification.properties.
-     * @param messageKey
-     *            The key of the message in notification.properties.
-     * @param permissions
-     *            The permissions that a user needs to have on the thing to receive the notifications fired by the NotificationEvent. If no
-     *            permissions are specified, the {@link ThingPermission#READ} permission will be required.
-     * @return The newly created notification.
-     */
-    protected NotificationEvent<EventInstance> newNotification(String eventName, NotificationSeverity severity, String titleKey, String messageKey, ThingPermission... permissions) {
-        return newNotification(eventName, EventInstance.class, severity, titleKey, messageKey, permissions);
-    }
-
-    /**
      * Creates a new {@link NotificationEvent} for the thing. The <tt>titleKey</tt> and <tt>messageKey</tt> are derived canonically from the
      * Thing's type and the event name. See <tt>notification_xx.properties</tt> for details.
      *
@@ -668,18 +648,20 @@ public class Thing extends Storable implements Referenceable<Thing> {
         return output.toString();
     }
 
-    // CHECKSTYLE:OFF (Generated Code)
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((actions == null) ? 0 : actions.hashCode());
         result = prime * result + ((events == null) ? 0 : events.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         return result;
     }
 
+    /**
+     * Two things are equal if they are of the same type, have the same ID, the same name and their properties set to the same values.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -692,20 +674,6 @@ public class Thing extends Storable implements Referenceable<Thing> {
             return false;
         }
         Thing other = (Thing) obj;
-        if (actions == null) {
-            if (other.actions != null) {
-                return false;
-            }
-        } else if (!actions.equals(other.actions)) {
-            return false;
-        }
-        if (events == null) {
-            if (other.events != null) {
-                return false;
-            }
-        } else if (!events.equals(other.events)) {
-            return false;
-        }
         if (name == null) {
             if (other.name != null) {
                 return false;
@@ -713,14 +681,7 @@ public class Thing extends Storable implements Referenceable<Thing> {
         } else if (!name.equals(other.name)) {
             return false;
         }
-        if (properties == null) {
-            if (other.properties != null) {
-                return false;
-            }
-        } else if (!properties.equals(other.properties)) {
-            return false;
-        }
-        return true;
+        return actions.equals(other.actions) && events.equals(other.events) && properties.equals(other.properties);
     }
 
 }

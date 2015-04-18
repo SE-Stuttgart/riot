@@ -98,9 +98,10 @@ public abstract class Simulator<T extends Thing> {
      *            The delay in milliseconds.
      * @param runnable
      *            The action to be run.
+     * @return A scheduler handle that can be used to cancel the task.
      */
-    protected final void delay(long milliseconds, Runnable runnable) {
-        scheduler.schedule(runnable, milliseconds, TimeUnit.MILLISECONDS);
+    protected ScheduledFuture<?> delay(long milliseconds, Runnable runnable) {
+        return scheduler.schedule(runnable, milliseconds, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -116,7 +117,7 @@ public abstract class Simulator<T extends Thing> {
      *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
      * @return ScheduledFuture<?> may be used to stop the execution
      */
-    protected final ScheduledFuture<?> linearChange(Property<Integer> property, float end, long stepTime, int stepCount) {
+    protected ScheduledFuture<?> linearChange(Property<Integer> property, float end, long stepTime, int stepCount) {
         AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
         AtomicInteger step = new AtomicInteger(0);
         float start = property.get();
@@ -125,6 +126,33 @@ public abstract class Simulator<T extends Thing> {
             Platform.runLater(() -> {
                 changePropertyValue(property, Math.round(start + (end - start) * (currentStep / stepCount)));
             });
+            if (currentStep == stepCount) {
+                future.get().cancel(false);
+            }
+        }, 0, stepTime));
+        return future.get();
+    }
+
+    /**
+     * Executes a linear change of a property over time.
+     * 
+     * @param property
+     *            The property to be changed.
+     * @param end
+     *            The end value (the start value is the current value of the property).
+     * @param stepTime
+     *            The duration of a single step.
+     * @param stepCount
+     *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
+     * @return ScheduledFuture<?> may be used to stop the execution
+     */
+    protected ScheduledFuture<?> linearChange(Property<Double> property, double end, long stepTime, int stepCount) {
+        AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
+        AtomicInteger step = new AtomicInteger(0);
+        double start = property.get();
+        future.set(this.scheduleAtFixedRate(() -> {
+            double currentStep = step.getAndIncrement();
+            changePropertyValue(property, start + (end - start) * (currentStep / stepCount));
             if (currentStep == stepCount) {
                 future.get().cancel(false);
             }
@@ -145,33 +173,6 @@ public abstract class Simulator<T extends Thing> {
      */
     protected ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period) {
         return scheduler.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Executes a linear change of a property over time.
-     * 
-     * @param property
-     *            The property to be changed.
-     * @param end
-     *            The end value (the start value is the current value of the property).
-     * @param stepTime
-     *            The duration of a single step.
-     * @param stepCount
-     *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
-     * @return ScheduledFuture<?> may be used to stop the execution
-     */
-    protected final ScheduledFuture<?> linearChange(Property<Double> property, double end, long stepTime, int stepCount) {
-        AtomicReference<ScheduledFuture<?>> future = new AtomicReference<ScheduledFuture<?>>();
-        AtomicInteger step = new AtomicInteger(0);
-        double start = property.get();
-        future.set(this.scheduleAtFixedRate(() -> {
-            double currentStep = step.getAndIncrement();
-            changePropertyValue(property, start + (end - start) * (currentStep / stepCount));
-            if (currentStep == stepCount) {
-                future.get().cancel(false);
-            }
-        }, 0, stepTime));
-        return future.get();
     }
 
     /**

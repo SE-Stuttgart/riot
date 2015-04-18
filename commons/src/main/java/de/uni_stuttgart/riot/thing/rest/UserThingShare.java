@@ -2,6 +2,9 @@ package de.uni_stuttgart.riot.thing.rest;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 
 /**
@@ -10,10 +13,10 @@ import de.uni_stuttgart.riot.commons.rest.usermanagement.data.User;
 public class UserThingShare {
 
     /** The user. */
-    private User user;
+    private final User user;
 
     /** The permissions. */
-    private Set<ThingPermission> permissions;
+    private final Set<ThingPermission> permissions;
 
     /**
      * Creates a new instance.
@@ -23,7 +26,8 @@ public class UserThingShare {
      * @param permissions
      *            The permissions.
      */
-    public UserThingShare(User user, Set<ThingPermission> permissions) {
+    @JsonCreator
+    public UserThingShare(@JsonProperty("user") User user, @JsonProperty("permissions") Set<ThingPermission> permissions) {
         this.permissions = permissions;
         this.user = user;
     }

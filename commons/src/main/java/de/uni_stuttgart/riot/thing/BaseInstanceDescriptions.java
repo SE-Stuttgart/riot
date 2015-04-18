@@ -144,8 +144,6 @@ public abstract class BaseInstanceDescriptions {
             } catch (NoSuchFieldException e) {
                 // Try on the super class.
                 clazz = clazz.getSuperclass();
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

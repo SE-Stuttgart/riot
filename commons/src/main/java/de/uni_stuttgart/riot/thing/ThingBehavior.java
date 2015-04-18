@@ -455,6 +455,14 @@ public abstract class ThingBehavior implements ReferenceResolver {
         }
     }
 
+    /**
+     * Helper method to check arguments for event creators.
+     * 
+     * @param eventName
+     *            The name of the event.
+     * @param instanceType
+     *            The type of the event's instances.
+     */
     private <E> void checkEventArguments(String eventName, Class<E> instanceType) {
         if (eventName == null || eventName.isEmpty()) {
             throw new IllegalArgumentException("eventName must not be empty!");

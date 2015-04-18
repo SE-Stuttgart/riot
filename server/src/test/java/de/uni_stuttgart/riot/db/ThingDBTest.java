@@ -9,6 +9,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
 import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.db.thing.ThingDAO;
@@ -79,6 +82,9 @@ public class ThingDBTest extends BaseDatabaseTest {
         TestThing thing = (TestThing) dao.findBy(1);
         assertThat(thing.getInt(), is(42));
         assertThat(thing.getReadonlyString(), is("String from Database"));
+
+        assertThat(dao.findAll(), hasSize(2));
+        assertThat(dao.findAll(0, 10), hasSize(2));
     }
 
     @Test
@@ -133,6 +139,15 @@ public class ThingDBTest extends BaseDatabaseTest {
         dao.insert(thing3);
 
         assertThat(dao.findByUniqueField(new SearchParameter(SearchFields.NAME, "TestThing3")), equalTo(thing3));
+
+        FilteredRequest request = new FilteredRequest();
+        request.setOffset(0);
+        request.setLimit(10);
+        request.setOrMode(false);
+        request.getFilterAttributes().add(new FilterAttribute("name", FilterOperator.EQ, "TestThing3"));
+        Collection<Thing> filterResults = dao.findAll(request);
+        assertThat(filterResults, hasSize(1));
+        assertThat(filterResults, hasItem(equalTo(thing3)));
 
         Collection<SearchParameter> searchParams = new ArrayList<SearchParameter>();
         searchParams.add(new SearchParameter(SearchFields.NAME, "TestThing1"));

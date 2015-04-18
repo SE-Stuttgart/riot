@@ -7,7 +7,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingInformation;
  * 
  * @author Philipp Keck
  */
-public final class ThingFactory {
+public abstract class ThingFactory {
 
     /**
      * Cannot instantiate this class.
@@ -67,15 +67,7 @@ public final class ThingFactory {
      */
     public static Thing create(String typeName, long thingID, ThingBehavior behavior) {
         Class<? extends Thing> thingClass = resolveType(typeName);
-        Thing thing;
-        try {
-            thing = thingClass.getConstructor(ThingBehavior.class).newInstance(behavior);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's behavior as the only parameter.");
-        } catch (Exception e) {
-            throw new RuntimeException("Could not call the constructor of " + typeName, e);
-        }
-
+        Thing thing = internalInstantiateThing(thingClass, behavior);
         thing.setId(thingID);
         return thing;
     }
@@ -127,18 +119,30 @@ public final class ThingFactory {
         }
 
         B behavior = behaviorFactory.newBehavior(thingClass);
-        Thing thing;
-        try {
-            thing = thingClass.getConstructor(ThingBehavior.class).newInstance(behavior);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The class " + typeName + " must have a constructor that accepts the thing's behavior as the only parameter.");
-        } catch (Exception e) {
-            throw new RuntimeException("Could not call the constructor of " + typeName, e);
-        }
-
+        Thing thing = internalInstantiateThing(thingClass, behavior);
         thing.setId(thingID);
         behaviorFactory.onThingCreated(thing, behavior);
         return behavior;
+    }
+
+    /**
+     * Instantiates the given Thing sub-class by calling the constructor that accepts the {@link ThingBehavior} as its only parameter. All
+     * Thing sub-classes should have such a constructor.
+     * 
+     * @param thingClass
+     *            The class to instantiate.
+     * @param behavior
+     *            The behavior to be used.
+     * @return The newly created Thing.
+     */
+    private static Thing internalInstantiateThing(Class<? extends Thing> thingClass, ThingBehavior behavior) {
+        try {
+            return thingClass.getConstructor(ThingBehavior.class).newInstance(behavior);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("The class " + thingClass + " must have a constructor that accepts the thing's behavior as the only parameter.");
+        } catch (Exception e) {
+            throw new RuntimeException("Could not call the constructor of " + thingClass, e);
+        }
     }
 
     /**

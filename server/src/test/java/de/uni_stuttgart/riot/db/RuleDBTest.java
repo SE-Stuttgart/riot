@@ -9,6 +9,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute;
+import de.uni_stuttgart.riot.commons.rest.data.FilteredRequest;
+import de.uni_stuttgart.riot.commons.rest.data.FilterAttribute.FilterOperator;
 import de.uni_stuttgart.riot.commons.test.BaseDatabaseTest;
 import de.uni_stuttgart.riot.commons.test.TestData;
 import de.uni_stuttgart.riot.rule.RuleConfiguration;
@@ -100,11 +103,11 @@ public class RuleDBTest extends BaseDatabaseTest {
     }
 
     @Test
-    public void shouldFindByStatus() throws DatasourceInsertException, DatasourceFindException, DatasourceDeleteException {
+    public void shouldFind() throws DatasourceInsertException, DatasourceFindException, DatasourceDeleteException {
 
-        RuleConfiguration config1 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.FAILED, "UnitTestRule", 11L, null);
-        RuleConfiguration config2 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.FAILED, "UnitTestRule", 11L, null);
-        RuleConfiguration config3 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.DEACTIVATED, "UnitTestRule", 11L, null);
+        RuleConfiguration config1 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.FAILED, "UnitTestRule1", 11L, null);
+        RuleConfiguration config2 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.FAILED, "UnitTestRule2", 11L, null);
+        RuleConfiguration config3 = new RuleConfiguration(null, "de.uni_stuttgart.riot.rule.test.TestAdditionRule", RuleStatus.DEACTIVATED, "UnitTestRule3", 11L, null);
         dao.insert(config1);
         dao.insert(config2);
         dao.insert(config3);
@@ -113,6 +116,14 @@ public class RuleDBTest extends BaseDatabaseTest {
         Collection<SearchParameter> searchParams = new ArrayList<>();
         searchParams.add(new SearchParameter(SearchFields.RULESTATUS, RuleStatus.FAILED));
         assertThat(dao.findBy(searchParams, false), containsInAnyOrder(config1, config2));
+
+        // Select all three with a FilteredRequest.
+        FilteredRequest request = new FilteredRequest();
+        request.setOffset(0);
+        request.setLimit(10);
+        request.setOrMode(false);
+        request.getFilterAttributes().add(new FilterAttribute("type", FilterOperator.EQ, "de.uni_stuttgart.riot.rule.test.TestAdditionRule"));
+        assertThat(dao.findAll(request), hasItems(config1, config2, config3));
 
         // Select the first one plus the one that pre-existed in the test data.
         RuleConfiguration config = dao.findBy(1);
@@ -123,6 +134,11 @@ public class RuleDBTest extends BaseDatabaseTest {
         // Delete the initial one, so that only our three remain.
         dao.delete(1);
         assertThat(dao.findAll(), containsInAnyOrder(config1, config2, config3));
+        assertThat(dao.findAll(0, 10), containsInAnyOrder(config1, config2, config3));
+
+        // Find the third rule by its name.
+        SearchParameter searchParam = new SearchParameter(SearchFields.NAME, "UnitTestRule3");
+        assertThat(dao.findByUniqueField(searchParam), is(config3));
     }
 
 }

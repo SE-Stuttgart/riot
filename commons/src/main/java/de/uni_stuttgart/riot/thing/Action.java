@@ -72,7 +72,6 @@ public class Action<A extends ActionInstance> {
         thing.getBehavior().userFiredAction(instance);
     }
 
-    // CHECKSTYLE:OFF (Generated Code)
     @Override
     public int hashCode() {
         final int prime = 31;

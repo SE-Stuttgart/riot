@@ -200,10 +200,18 @@ public class Property<V> {
         if (GROUP_COMPERATOR == null) {
             GROUP_COMPERATOR = new Comparator<Property<?>>() {
                 public int compare(Property<?> o1, Property<?> o2) {
-                    if (o1.getUiHint() != null && o2.getUiHint() != null) {
-                        return o1.getUiHint().getGroupAndOrderID() - o2.getUiHint().getGroupAndOrderID();
+                    if (o1.getUiHint() == null) {
+                        if (o2.getUiHint() == null) {
+                            return 0;
+                        } else {
+                            return -o2.getUiHint().getGroupAndOrderID();
+                        }
                     } else {
-                        return 0;
+                        if (o2.getUiHint() == null) {
+                            return o1.getUiHint().getGroupAndOrderID();
+                        } else {
+                            return o1.getUiHint().getGroupAndOrderID() - o2.getUiHint().getGroupAndOrderID();
+                        }
                     }
                 }
             };

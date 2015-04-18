@@ -7,8 +7,9 @@ import de.uni_stuttgart.riot.commons.rest.data.Storable;
 import de.uni_stuttgart.riot.commons.rest.data.TableName;
 
 /**
- * {@link Role}s can be assigned to {@link UMUser}s to grand certain rights. It can also be used
- * to group {@link Permission}s. By assigning a role to a user, the users receives all permissions associated to the role.
+ * {@link Role}s can be assigned to {@link UMUser}s to grand certain rights. It can also be used to group {@link Permission}s. By assigning
+ * a role to a user, the users receives all permissions associated to the role.
+ * 
  * @author Jonas Tangermann
  *
  */
@@ -16,19 +17,22 @@ import de.uni_stuttgart.riot.commons.rest.data.TableName;
 public class Role extends Storable {
 
     private String roleName;
-    
+
     private transient Collection<Permission> permissions;
 
     /**
      * // FIXME.
      */
     public Role() {
-    } 
+    }
 
     /**
      * Constructor.
-     * @param id .
-     * @param roleName .
+     * 
+     * @param id
+     *            .
+     * @param roleName
+     *            .
      */
     public Role(Long id, String roleName) {
         super(id);
@@ -38,7 +42,9 @@ public class Role extends Storable {
 
     /**
      * Constructor.
-     * @param roleName .
+     * 
+     * @param roleName
+     *            .
      */
     public Role(String roleName) {
         super(-1L);
@@ -46,7 +52,7 @@ public class Role extends Storable {
         this.permissions = new ArrayList<Permission>();
 
     }
-    
+
     public String getRoleName() {
         return roleName;
     }
@@ -97,6 +103,5 @@ public class Role extends Storable {
     public void setPermissions(Collection<Permission> permissions) {
         this.permissions = permissions;
     }
-
 
 }

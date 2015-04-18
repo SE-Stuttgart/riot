@@ -8,6 +8,7 @@ import de.uni_stuttgart.riot.thing.Event;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.NotificationEvent;
 import de.uni_stuttgart.riot.thing.Property;
+import de.uni_stuttgart.riot.thing.ReferenceProperty;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
@@ -22,10 +23,11 @@ import de.uni_stuttgart.riot.thing.ui.UIHint;
  */
 public class TestThing extends Thing {
 
-    private final WritableProperty<Integer> intProperty = newWritableProperty("int", Integer.class, 42, UIHint.integralSlider(0, 10000));
-    private final WritableProperty<Long> longProperty = newWritableProperty("long", Long.class, 4242L, UIHint.editNumber());
+    private final WritableProperty<Integer> intProperty = newWritableProperty("int", Integer.class, 42, UIHint.integralSlider(0, 10000).groupAndOrder(10));
+    private final WritableProperty<Long> longProperty = newWritableProperty("long", Long.class, 4242L, UIHint.editNumber().groupAndOrder(10));
     private final WritableProperty<Double> percentProperty = newWritableProperty("percent", Double.class, 0.5, UIHint.percentageSlider());
-    private final Property<String> readonlyStringProperty = newProperty("readonlyString", String.class, "InitialString", UIHint.editText());
+    private final Property<String> readonlyStringProperty = newProperty("readonlyString", String.class, "InitialString", UIHint.editText().groupAndOrder(9));
+    private final ReferenceProperty<TestReferenceable> readonlyRef = newReferenceProperty("readonlyRef", TestReferenceable.class);
     private final WritableReferenceProperty<TestReferenceable> ref = newWritableReferenceProperty("ref", TestReferenceable.class, UIHint.referenceDropDown(TestReferenceable.class));
 
     private final Event<EventInstance> simpleEvent = newEvent("simpleEvent");
@@ -107,6 +109,10 @@ public class TestThing extends Thing {
 
     public Action<TestActionInstance> getParameterizedAction() {
         return parameterizedAction;
+    }
+
+    public ReferenceProperty<TestReferenceable> getReadonlyRefProperty() {
+        return readonlyRef;
     }
 
     public WritableReferenceProperty<TestReferenceable> getRefProperty() {

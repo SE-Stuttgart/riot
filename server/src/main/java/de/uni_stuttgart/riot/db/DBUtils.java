@@ -40,6 +40,8 @@ public abstract class DBUtils {
             return null;
         } else if (valueType == String.class) {
             return valueType.cast(value);
+        } else if (value.isEmpty()) {
+            return null;
         }
         try {
             @SuppressWarnings("unchecked")

@@ -12,6 +12,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
@@ -30,10 +32,12 @@ import de.uni_stuttgart.riot.references.TestReferenceable;
 import de.uni_stuttgart.riot.references.TypedReferenceResolver;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.BaseInstanceDescription;
+import de.uni_stuttgart.riot.thing.BaseInstanceDescriptions;
 import de.uni_stuttgart.riot.thing.BasePropertyListener;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.EventListener;
 import de.uni_stuttgart.riot.thing.ParameterDescription;
+import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.PropertySetAction;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingDescription;
@@ -80,6 +84,71 @@ public class ThingFrameworkTest {
 
         assertThat(thing.getIntProperty().getChangeEvent() == thing.getEvent("int_change"), is(true));
         assertThat(thing.getIntProperty().getSetAction() == thing.getAction("int_set"), is(true));
+
+        assertThat(thing.getEvent("doesNotExist"), is(nullValue()));
+        assertThat(thing.getAction("doesNotExist"), is(nullValue()));
+        assertThat(thing.getProperty("doesNotExist"), is(nullValue()));
+
+        assertThat(thing.getEvents(), hasItem(thing.getSimpleEvent()));
+        assertThat(thing.getEvents(), hasItem(thing.getSimpleNotification()));
+        assertThat(thing.getEvents(), hasItem(thing.getParameterizedEvent()));
+        assertThat(thing.getActions(), hasItem(thing.getSimpleAction()));
+        assertThat(thing.getActions(), hasItem(thing.getParameterizedAction()));
+        assertThat(thing.getProperties(), hasItem(thing.getIntProperty()));
+        assertThat(thing.getProperties(), hasItem(thing.getReadonlyStringProperty()));
+
+        // These should just work, not fail, the exact return value is unimportant (only for debugging):
+        thing.toString();
+        thing.getSimpleAction().toString();
+        thing.getSimpleEvent().toString();
+        thing.getSimpleNotification().toString();
+        thing.getIntProperty().toString();
+        thing.getIntProperty().getChangeEvent().toString();
+        thing.getIntProperty().getSetAction().toString();
+        thing.getReadonlyStringProperty().toString();
+        thing.getReadonlyRefProperty().toString();
+        thing.getRefProperty().toString();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnEventMismatch() {
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
+        thing.getEvent("parameterizedEvent", EventInstance.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnActionMismatch() {
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
+        thing.getAction("parameterizedAction", ActionInstance.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnPropertyMismatch() {
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
+        thing.getProperty("int", Long.class);
+    }
+
+    @Test
+    public void shouldFailOnReadonlyProperty() {
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
+        assertThat(thing.getProperty("readonlyString"), sameInstance((Object) thing.getReadonlyStringProperty()));
+        assertThat(thing.getProperty("readonlyString", String.class), sameInstance(thing.getReadonlyStringProperty()));
+        try {
+            thing.getWritableProperty("readonlyString");
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        try {
+            thing.getWritableProperty("readonlyString", String.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
     }
 
     @Test
@@ -98,6 +167,7 @@ public class ThingFrameworkTest {
         thing1.setName("ThingX");
         assertThat(thing1.equals(thing2), is(false));
         assertThat(thing2.equals(thing1), is(false));
+        assertThat(thing1.hashCode(), is(not(thing2.hashCode())));
         thing2.setName("ThingX");
         assertThat(thing1.equals(thing2), is(true));
         assertThat(thing2.equals(thing1), is(true));
@@ -106,7 +176,17 @@ public class ThingFrameworkTest {
         behavior1.setThingProperty(thing1.getIntProperty(), thing1.getInt() + 1);
         assertThat(thing1.equals(thing2), is(false));
         assertThat(thing2.equals(thing1), is(false));
+        assertThat(thing1.hashCode(), is(not(thing2.hashCode())));
         behavior2.setThingProperty(thing2.getIntProperty(), thing1.getInt());
+        assertThat(thing1.equals(thing2), is(true));
+        assertThat(thing2.equals(thing1), is(true));
+
+        // Changing the ID should make them unequal
+        thing1.setId(101L);
+        assertThat(thing1.equals(thing2), is(false));
+        assertThat(thing2.equals(thing1), is(false));
+        assertThat(thing1.hashCode(), is(not(thing2.hashCode())));
+        thing1.setId(100L);
         assertThat(thing1.equals(thing2), is(true));
         assertThat(thing2.equals(thing1), is(true));
 
@@ -114,6 +194,7 @@ public class ThingFrameworkTest {
         behavior1.setThingProperty(thing1.getReadonlyStringProperty(), "SomeOtherString");
         assertThat(thing1.equals(thing2), is(false));
         assertThat(thing2.equals(thing1), is(false));
+        assertThat(thing1.hashCode(), is(not(thing2.hashCode())));
         behavior2.setThingProperty(thing2.getReadonlyStringProperty(), "SomeOtherString");
         assertThat(thing1.equals(thing2), is(true));
         assertThat(thing2.equals(thing1), is(true));
@@ -154,6 +235,15 @@ public class ThingFrameworkTest {
         thing.getSimpleAction().fire(actionInstance);
         verify(behavior, times(1)).userFiredAction(actionInstance);
 
+        // Try firing it for the wrong Thing.
+        try {
+            TestThing thing2 = ThingFactory.create(TestThing.class, 43, new TestThingBehavior());
+            thing.getSimpleAction().fire(new ActionInstance(thing2.getSimpleAction()));
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
         // Do the same for PropertySetActions fired indirectly.
         reset(behavior);
         thing.setInt(1001);
@@ -165,7 +255,7 @@ public class ThingFrameworkTest {
         PropertySetAction.Instance<Integer> setActionInstance = (Instance<Integer>) actionCaptor.getValue();
         assertThat(setActionInstance.getName(), is("int_set"));
         assertThat(setActionInstance.getThingId(), is(42L));
-        assertThat(setActionInstance.getNewValue(), is(1001));
+
     }
 
     @Test
@@ -201,9 +291,14 @@ public class ThingFrameworkTest {
         assertThat(thing.getRefProperty().get(), nullValue());
         assertThat(thing.getRefProperty().getTargetType(), isClass(TestReferenceable.class));
         assertThat(thing.getRefProperty().getValueType(), isClass(Long.class));
+        assertThat(thing.getReadonlyRefProperty().getTarget(), nullValue());
+        assertThat(thing.getReadonlyRefProperty().get(), nullValue());
+        assertThat(thing.getReadonlyRefProperty().getTargetType(), isClass(TestReferenceable.class));
+        assertThat(thing.getReadonlyRefProperty().getValueType(), isClass(Long.class));
 
         // Set a concrete value that has an ID.
         ThingState.silentSetThingProperty(thing.getRefProperty(), referenceable);
+        ThingState.silentSetThingProperty(thing.getReadonlyRefProperty(), referenceable);
         assertThat(thing.getRefProperty().get(), is(10L));
 
         // Try the Getter, which will call the resolver.
@@ -212,7 +307,8 @@ public class ThingFrameworkTest {
         when(testResolver.resolve(10L)).thenReturn(referenceable);
         behavior.getDelegatingResolver().addResolver(TestReferenceable.class, testResolver);
         assertThat(thing.getRefProperty().getTarget(), sameInstance(referenceable));
-        verify(testResolver, times(1)).resolve(10L);
+        assertThat(thing.getReadonlyRefProperty().getTarget(), sameInstance(referenceable));
+        verify(testResolver, times(2)).resolve(10L);
 
         // Fire an action with a referenced value inside.
         TestRefActionInstance actionInstance = new TestRefActionInstance(thing.getRefAction(), referenceable, null);
@@ -250,6 +346,7 @@ public class ThingFrameworkTest {
 
         // Check that ThingState reports this initial state correctly.
         ThingState state = ThingState.create(thing);
+        state.toString(); // Should not fail.
         assertThat(state.isEmpty(), is(false));
         assertThat((Integer) state.get("int"), is(42));
         assertThat((Long) state.get("long"), is(4242L));
@@ -279,7 +376,6 @@ public class ThingFrameworkTest {
 
     }
 
-    // CHECKSTYLE: NCSS OFF
     @Test
     public void testThingDescription() throws IOException {
 
@@ -289,6 +385,7 @@ public class ThingFrameworkTest {
 
         // Check the main Thing description.
         ThingDescription description = ThingDescription.create(thing);
+        description.toString(); // Should not fail.
         assertThat(description.getType(), isClass(TestThing.class));
 
         // Ensure that the description is serializable by Jackson without exceptions.
@@ -299,18 +396,71 @@ public class ThingFrameworkTest {
         assertThat(description.getEvents(), hasSize(4));
         assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getInstanceType() == EventInstance.class, is(true));
         assertThat(description.getEventByName("simpleEvent").getInstanceDescription().getParameters().isEmpty(), is(true));
-        BaseInstanceDescription parEventInstance = description.getEventByName("parameterizedEvent").getInstanceDescription();
-        assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
-        assertThat(parEventInstance.getParameters().size(), is(1));
-        assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
-        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.class));
+        assertThat(description.getEventByName("parameterizedEvent").getInstanceDescription().getInstanceType(), isClass(TestEventInstance.class));
+        assertThat(description.getEventByName(""), is(nullValue()));
+        assertThat(description.getEventByName("doesNotExist"), is(nullValue()));
 
         // Check the actions.
         assertThat(description.getActions(), hasSize(3));
         assertThat(description.getActionByName("simpleAction").getInstanceDescription().getInstanceType() == ActionInstance.class, is(true));
         assertThat(description.getActionByName("simpleAction").getInstanceDescription().getParameters().isEmpty(), is(true));
+        assertThat(description.getActionByName("parameterizedAction").getInstanceDescription().getInstanceType(), isClass(TestActionInstance.class));
+        assertThat(description.getActionByName("refAction").getInstanceDescription().getInstanceType(), isClass(TestRefActionInstance.class));
+        assertThat(description.getActionByName(""), is(nullValue()));
+        assertThat(description.getActionByName("doesNotExist"), is(nullValue()));
 
-        BaseInstanceDescription parActionInstance = description.getActionByName("parameterizedAction").getInstanceDescription();
+        // Check the properties.
+        assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
+        assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
+        assertThat(description.getPropertyByName("percent").getValueType(), isClass(Double.class));
+        assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
+        assertThat(description.getPropertyByName("readonlyString").isReference(), is(false));
+        assertThat(description.getPropertyByName("ref").isReference(), is(true));
+        assertThat(description.getPropertyByName("ref").getValueType(), isClass(TestReferenceable.class));
+        assertThat(description.getPropertyByName(""), is(nullValue()));
+        assertThat(description.getPropertyByName("doesNotExist"), is(nullValue()));
+
+        // Check the UI hints
+        UIHint.IntegralSlider intPropertyHint = (UIHint.IntegralSlider) description.getPropertyByName("int").getUiHint();
+        assertThat(intPropertyHint.min, is(0L));
+        assertThat(intPropertyHint.max, is(10000L));
+
+        assertThat(description.getPropertyByName("long").getUiHint(), instanceOf(UIHint.EditNumber.class));
+        assertThat(description.getPropertyByName("percent").getUiHint(), instanceOf(UIHint.PercentageSlider.class));
+
+        UIHint.ReferenceDropDown refHint = (UIHint.ReferenceDropDown) description.getPropertyByName("ref").getUiHint();
+        assertThat(refHint.targetType, isClass(TestReferenceable.class));
+
+        ArrayList<Property<?>> sortedProperties = new ArrayList<Property<?>>(thing.getProperties());
+        Collections.sort(sortedProperties, Property.groupComp());
+        assertThat(sortedProperties.indexOf(thing.getReadonlyStringProperty()), is(lessThan(sortedProperties.indexOf(thing.getIntProperty()))));
+        assertThat(Math.abs(sortedProperties.indexOf(thing.getIntProperty()) - sortedProperties.indexOf(thing.getLongProperty())), is(1));
+
+        try {
+            ThingDescription.create(null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    @Test
+    public void testBaseInstanceDescriptions() {
+        try {
+            BaseInstanceDescriptions.get(null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        // Check the returned descriptions.
+        BaseInstanceDescription parEventInstance = BaseInstanceDescriptions.get(TestEventInstance.class);
+        assertThat(parEventInstance.getInstanceType(), isClass(TestEventInstance.class));
+        assertThat(parEventInstance.getParameters().size(), is(1));
+        assertThat(parEventInstance.getParameters().get(0).getName(), is("parameter"));
+        assertThat(parEventInstance.getParameters().get(0).getValueType(), isClass(Integer.class));
+
+        BaseInstanceDescription parActionInstance = BaseInstanceDescriptions.get(TestActionInstance.class);
         assertThat(parActionInstance.getInstanceType(), isClass(TestActionInstance.class));
         assertThat(parActionInstance.getParameters().size(), is(1));
         ParameterDescription actionParam = parActionInstance.getParameters().get(0);
@@ -318,7 +468,7 @@ public class ThingFrameworkTest {
         assertThat(actionParam.getValueType(), isClass(Integer.class));
         assertThat(actionParam.isReference(), is(false));
 
-        BaseInstanceDescription refActionInstance = description.getActionByName("refAction").getInstanceDescription();
+        BaseInstanceDescription refActionInstance = BaseInstanceDescriptions.get(TestRefActionInstance.class);
         assertThat(refActionInstance.getInstanceType(), isClass(TestRefActionInstance.class));
         assertThat(refActionInstance.getParameters().size(), is(2));
         ParameterDescription refActionParam = refActionInstance.getParameters().get(0);
@@ -330,31 +480,12 @@ public class ThingFrameworkTest {
         assertThat(thingParam.getValueType(), isClass(TestThing.class));
         assertThat(thingParam.isReference(), is(true));
 
-        // Check the properties.
-        assertThat(description.getProperties(), hasSize(5));
-        assertThat(description.getPropertyByName("int").getValueType(), isClass(Integer.class));
-        assertThat(description.getPropertyByName("long").getValueType(), isClass(Long.class));
-        assertThat(description.getPropertyByName("percent").getValueType(), isClass(Double.class));
-        assertThat(description.getPropertyByName("readonlyString").getValueType(), isClass(String.class));
-        assertThat(description.getPropertyByName("readonlyString").isReference(), is(false));
-        assertThat(description.getPropertyByName("ref").isReference(), is(true));
-        assertThat(description.getPropertyByName("ref").getValueType(), isClass(TestReferenceable.class));
-
-        // Check the UI hints
+        // Check UI hints.
         assertThat(parEventInstance.getParameters().get(0).getUiHint(), instanceOf(UIHint.EditNumber.class));
         UIHint.IntegralSlider actionParamHint = (UIHint.IntegralSlider) parActionInstance.getParameters().get(0).getUiHint();
         assertThat(actionParamHint.min, is(0L));
         assertThat(actionParamHint.max, is(10000L));
 
-        UIHint.IntegralSlider intPropertyHint = (UIHint.IntegralSlider) description.getPropertyByName("int").getUiHint();
-        assertThat(intPropertyHint.min, is(0L));
-        assertThat(intPropertyHint.max, is(10000L));
-
-        assertThat(description.getPropertyByName("long").getUiHint(), instanceOf(UIHint.EditNumber.class));
-        assertThat(description.getPropertyByName("percent").getUiHint(), instanceOf(UIHint.PercentageSlider.class));
-
-        UIHint.ReferenceDropDown refHint = (UIHint.ReferenceDropDown) description.getPropertyByName("ref").getUiHint();
-        assertThat(refHint.targetType, isClass(TestReferenceable.class));
         UIHint.ReferenceDropDown refActionHint = (UIHint.ReferenceDropDown) refActionInstance.getParameters().get(0).getUiHint();
         assertThat(refActionHint.targetType, isClass(TestReferenceable.class));
 
@@ -362,6 +493,46 @@ public class ThingFrameworkTest {
         UIHint.ThingDropDown thingHint = (UIHint.ThingDropDown) thingParam.getUiHint();
         assertThat(thingHint.targetType, isClass(TestThing.class));
         assertThat(thingHint.requiredPermissions, arrayContaining(ThingPermission.SHARE, ThingPermission.READ));
+    }
+
+    @Test
+    public void testBaseInstanceParameters() {
+        try {
+            BaseInstanceDescriptions.getParameterValues(null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            BaseInstanceDescriptions.getParameterValue(null, "someParameter", Integer.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        TestThingBehavior behavior = new TestThingBehavior();
+        TestThing thing = ThingFactory.create(TestThing.class, 42, behavior);
+        TestActionInstance instance = new TestActionInstance(thing.getParameterizedAction(), 55);
+        assertThat(BaseInstanceDescriptions.getParameterValue(instance, "parameter", Integer.class), is(55));
+
+        ParameterDescription parameterDescription = BaseInstanceDescriptions.get(TestActionInstance.class).getParameters().get(0);
+        assertThat(BaseInstanceDescriptions.getParameterValue(instance, parameterDescription), is((Object) 55));
+
+        try {
+            BaseInstanceDescriptions.getParameterValue(instance, "doesNotExist", Integer.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            // The wrong type.
+            BaseInstanceDescriptions.getParameterValue(instance, "parameter", Double.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
     }
 
     @Test
@@ -395,6 +566,9 @@ public class ThingFrameworkTest {
         assertThat(grandpa.hasAncestor(son), is(false));
         assertThat(grandpa.hasAncestor(dad), is(false));
         assertThat(grandpa.hasAncestor(grandpa), is(false));
+        assertThat(son.getParentReference().getId(), is(53L));
+        assertThat(dad.getParentReference().getId(), is(52L));
+        assertThat(grandpa.getParentReference().getId(), is(nullValue()));
 
         // Try to introduce a loop.
         try {

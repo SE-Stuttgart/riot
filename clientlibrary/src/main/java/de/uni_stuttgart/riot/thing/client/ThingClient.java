@@ -19,6 +19,7 @@ import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.EventInstance;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehaviorFactory;
+import de.uni_stuttgart.riot.thing.ThingDescription;
 import de.uni_stuttgart.riot.thing.ThingFactory;
 import de.uni_stuttgart.riot.thing.ThingState;
 import de.uni_stuttgart.riot.thing.rest.MultipleEventsRequest;
@@ -29,6 +30,7 @@ import de.uni_stuttgart.riot.thing.rest.ThingMetainfo;
 import de.uni_stuttgart.riot.thing.rest.ThingShare;
 import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.rest.ThingUpdatesResponse;
+import de.uni_stuttgart.riot.thing.rest.UserThingShare;
 
 /**
  * Rest Client for handling {@link Thing} operations.
@@ -52,8 +54,12 @@ public class ThingClient extends BaseClient {
     private static final String POST_MULTIPLE_EVENTS_SUFFIX = "/multipleEvents";
 
     private static final String GET_LAST_ONLINE_SUFFIX = "/lastconnection";
+    private static final String METAINFO_SUFFIX = "/metainfo";
+    private static final String STATE_SUFFIX = "/state";
+    private static final String GET_DESCRIPTION_SUFFIX = "/description";
 
     private static final String SHARES_PATH = "/shares/";
+    private static final String SHARES_WITH_USERS_PATH = "/sharesWithUsers/";
 
     private static final long TEN_MIN = 1000 * 60 * 10;
     private static final long FIVE_MIN = 1000 * 60 * 5;
@@ -239,23 +245,6 @@ public class ThingClient extends BaseClient {
     }
 
     /**
-     * Reads the state of the thing.
-     * 
-     * @param id
-     *            The ID of the thing.
-     * @return The current state of the thing (according to the server, at least).
-     * @throws RequestException
-     *             When retrieving the state fails.
-     * @throws NotFoundException
-     *             When the thing does not exist.
-     * @throws IOException
-     *             When a network error occured.
-     */
-    public ThingState getThingState(long id) throws RequestException, IOException, NotFoundException {
-        return getThingInformation(id, EnumSet.of(Field.STATE)).getState();
-    }
-
-    /**
      * Submits an {@link ActionInstance} to the server. Hint: If you get 500 "Request failed" exceptions from this method, check if the
      * respective subclass of {@link ActionInstance} provides a Jackson-compatible constructor!
      * 
@@ -348,6 +337,91 @@ public class ThingClient extends BaseClient {
      */
     public ThingUpdatesResponse getUpdates(long thingID) throws RequestException, IOException, NotFoundException {
         return getConnector().doGET(THINGS_PREFIX + thingID + GET_UPDATES_SUFFIX, ThingUpdatesResponse.class);
+    }
+
+    /**
+     * Gets the description of the given thing's type.
+     * 
+     * @param thingID
+     *            The thing id.
+     * @return The description of the thing's type.
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     * @throws NotFoundException
+     *             When the thing does not exist.
+     */
+    public ThingDescription getDescription(long thingID) throws IOException, RequestException, NotFoundException {
+        return getConnector().doGET(THINGS_PREFIX + thingID + GET_DESCRIPTION_SUFFIX, ThingDescription.class);
+    }
+
+    /**
+     * Gets the meta-info of the given Thing.
+     * 
+     * @param thingID
+     *            The thing id.
+     * @return The metainfo of the thing.
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     * @throws NotFoundException
+     *             When the thing does not exist.
+     */
+    public ThingMetainfo getMetainfo(long thingID) throws IOException, RequestException, NotFoundException {
+        return getConnector().doGET(THINGS_PREFIX + thingID + METAINFO_SUFFIX, ThingMetainfo.class);
+    }
+
+    /**
+     * Sets the meta-info of the given Thing. This allows to change the owner, parent and name of a Thing.
+     * 
+     * @param thingID
+     *            The thing id.
+     * @param metainfo
+     *            The new metainfo for the Thing.
+     * @return The new metainfo (possibly changed by the server).
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     */
+    public ThingMetainfo setMetainfo(long thingID, ThingMetainfo metainfo) throws IOException, RequestException {
+        return getConnector().doPUT(THINGS_PREFIX + thingID + METAINFO_SUFFIX, metainfo, ThingMetainfo.class);
+    }
+
+    /**
+     * Gets the state of the given Thing.
+     * 
+     * @param thingID
+     *            The thing id.
+     * @return The current state of the thing (according to the server, at least).
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     * @throws NotFoundException
+     *             When the thing does not exist.
+     */
+    public ThingState getThingState(long thingID) throws IOException, RequestException, NotFoundException {
+        return getConnector().doGET(THINGS_PREFIX + thingID + STATE_SUFFIX, ThingState.class);
+    }
+
+    /**
+     * Sets the state of the given Thing. This allows to property values.
+     * 
+     * @param thingID
+     *            The thing id.
+     * @param state
+     *            The new state for the Thing.
+     * @return The new state (might have been updated by the server).
+     * @throws IOException
+     *             When a network error occured.
+     * @throws RequestException
+     *             When the request could not be executed.
+     */
+    public ThingState setThingState(long thingID, ThingState state) throws IOException, RequestException {
+        return getConnector().doPUT(THINGS_PREFIX + thingID + STATE_SUFFIX, state, ThingState.class);
     }
 
     /**
@@ -467,6 +541,23 @@ public class ThingClient extends BaseClient {
      */
     public Collection<ThingShare> getThingShares(long thingID) throws RequestException, IOException, NotFoundException {
         return getConnector().doGETCollection(THINGS_PREFIX + thingID + SHARES_PATH, ThingShare.class);
+    }
+
+    /**
+     * Gets all the users and their permissions for a given thing, including the full User objects.
+     * 
+     * @param thingID
+     *            The id of the thing.
+     * @return A collection of all shares of the thing.
+     * @throws RequestException
+     *             the request exception
+     * @throws NotFoundException
+     *             When the thing does not exist.
+     * @throws IOException
+     *             When a network error occured.
+     */
+    public Collection<UserThingShare> getUserThingShares(long thingID) throws RequestException, IOException, NotFoundException {
+        return getConnector().doGETCollection(THINGS_PREFIX + thingID + SHARES_WITH_USERS_PATH, UserThingShare.class);
     }
 
     /**

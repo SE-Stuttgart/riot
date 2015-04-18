@@ -293,6 +293,16 @@ public class Car extends Thing {
     }
 
     /**
+     * Setter for the configured Temperature of the heating.
+     * 
+     * @param configuredTemperature
+     *            temperature in degree celsius.
+     */
+    public void setConfiguredTemperature(double configuredTemperature) {
+        airConditionTemp.set(configuredTemperature);
+    }
+
+    /**
      * True if the car is locked, false otherwise.
      * 
      * @return state of the car lock.
