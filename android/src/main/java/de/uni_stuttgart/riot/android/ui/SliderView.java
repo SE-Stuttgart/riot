@@ -115,8 +115,13 @@ public abstract class SliderView<V extends Number> extends LinearLayout implemen
 
     @Override
     public void setValue(V value) {
-        editText.setText(formatter.format(value));
-        seekBar.setProgress(valueToSeekBar(value));
+        if (value == null) {
+            editText.setText("");
+            seekBar.setProgress(0);
+        } else {
+            editText.setText(formatter.format(value));
+            seekBar.setProgress(valueToSeekBar(value));
+        }
     }
 
     @Override

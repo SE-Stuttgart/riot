@@ -71,7 +71,7 @@ public class EditNumberView<V extends Number> extends EditText implements Proper
 
     @Override
     public void setValue(V value) {
-        super.setText(formatter.format(value));
+        super.setText(value == null ? "" : formatter.format(value));
     }
 
     @Override

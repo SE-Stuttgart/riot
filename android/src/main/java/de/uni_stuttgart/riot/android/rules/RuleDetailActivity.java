@@ -5,10 +5,12 @@ import java.util.Collection;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,15 +20,19 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import de.uni_stuttgart.riot.android.Callback;
 import de.uni_stuttgart.riot.android.R;
 import de.uni_stuttgart.riot.android.communication.ActivityServerConnection;
 import de.uni_stuttgart.riot.android.communication.ActivityServerTask;
+import de.uni_stuttgart.riot.android.management.LetterTileProvider;
 import de.uni_stuttgart.riot.android.messages.IM;
+import de.uni_stuttgart.riot.android.ui.PropertyView;
+import de.uni_stuttgart.riot.android.ui.UIProducer;
 import de.uni_stuttgart.riot.clientlibrary.RequestException;
 import de.uni_stuttgart.riot.clientlibrary.ServerConnector;
 import de.uni_stuttgart.riot.rule.RuleConfiguration;
@@ -194,7 +200,8 @@ public class RuleDetailActivity extends Activity {
         container.addView(label);
 
         // Create control.
-        View control = produceControl(parameter);
+        Object initialValue = isAddNew ? null : config.get(parameter.getName());
+        View control = produceControl(parameter.getUiHint(), parameter.getName(), parameter.getValueType(), initialValue);
         container.addView(control);
 
         return container;
@@ -202,122 +209,33 @@ public class RuleDetailActivity extends Activity {
     }
 
     /**
-     * Creates a control for the view parameter. See {@link #produceView(ParameterDescription)}.
+     * Creates a control for the rule parameter. See {@link #produceView(ParameterDescription)}.
      * 
-     * @param parameter
-     *            The rule parameter.
+     * @param <V>
+     *            The type of the parameter's values.
+     * @param hint
+     *            The UI hint (may be <tt>null</tt>).
+     * @param parameterName
+     *            The name of rule parameter.
+     * @param valueType
+     *            The type of the parameter's values.
+     * @param initialValue
+     *            The initial value to be displayed (may be <tt>null</tt>).
      * @return The control for the given parameter.
      */
-    protected View produceControl(ParameterDescription parameter) { // NOCS
-        Object value = isAddNew ? null : config.get(parameter.getName());
-        UIHint uiHint = parameter.getUiHint();
-        final String parameterName = parameter.getName();
-        final Class<?> valueType = parameter.getValueType();
-
-        if (uiHint == null) {
+    protected <V> View produceControl(UIHint hint, final String parameterName, Class<V> valueType, final Object initialValue) {
+        if (hint == null) {
             // Without a UIHint, we don't display any control, but only the static value.
             TextView staticValue = new TextView(this);
-            staticValue.setText(value == null ? "null" : value.toString());
+            staticValue.setText(initialValue == null ? "null" : initialValue.toString());
             return staticValue;
         }
 
-        // Prepare the item
-        if (uiHint instanceof UIHint.EditText) {
-            EditText editText = new EditText(this);
-            if (value != null) {
-                editText.setText(value.toString());
-            }
-            editText.addTextChangedListener(new TextWatcher() {
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                public void afterTextChanged(Editable s) {
-                    config.set(parameterName, s.toString());
-                }
-            });
-            return editText;
-
-        } else if (uiHint instanceof UIHint.EditNumber) {
-            if (value == null) {
-                value = 0;
-            }
-            EditText editNumber = new EditText(this);
-            editNumber.setText(value.toString());
-            editNumber.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED | InputType.TYPE_CLASS_NUMBER);
-            editNumber.addTextChangedListener(new TextWatcher() {
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                public void afterTextChanged(Editable s) {
-                    String str = s.toString();
-                    if (str == null || str.isEmpty()) {
-                        config.set(parameterName, null);
-                    } else {
-                        config.set(parameterName, stringToValue(str, valueType));
-                    }
-                }
-            });
-            return editNumber;
-
-        } else if (uiHint instanceof UIHint.ToggleButton) {
-            ToggleButton toggleButton = new ToggleButton(this);
-            toggleButton.setText(parameter.getName());
-            if (Boolean.TRUE.equals(value)) {
-                toggleButton.setChecked(true);
-            }
-            toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    config.set(parameterName, isChecked);
-                }
-            });
-            return toggleButton;
-
-        } else if (uiHint instanceof UIHint.IntegralSlider) {
-            // TODO Remove this temporary code
-            SeekBar slider = new SeekBar(this);
-            final UIHint.IntegralSlider finalHint = (UIHint.IntegralSlider) uiHint;
-            slider.setMax((int) (finalHint.max - finalHint.min));
-            if (value != null) {
-                slider.setProgress(((Number) value).intValue() - (int) finalHint.min);
-            }
-            slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    String strValue = Long.toString(progress + finalHint.min);
-                    config.set(parameterName, stringToValue(strValue, valueType));
-                }
-            });
-            return slider;
-
-        } else if (uiHint instanceof UIHint.FractionalSlider || uiHint instanceof UIHint.IntegralSlider || uiHint instanceof UIHint.PercentageSlider) {
-            // Benedikt has lots of code for these types in his branch.
-            // The code should be integrated with this one.
-            // Possible solution: Refactor the ThingProperties of Benedikt to ViewAdapters or something like that.
-            // A ViewAdapter takes an initialvalue and a valuetype and fires change events for the respective values to a listener.
-            // An additional Binding class could connect ThingProperties with the ViewAdapters and this class here could use the
-            // ViewAdapters directly.
-            throw new UnsupportedOperationException("This type is not yet supported");
-
-        } else if (uiHint instanceof UIHint.EnumDropDown) {
-            // See above.
-            throw new UnsupportedOperationException("This type is not yet supported");
-
-        } else if (uiHint instanceof UIHint.ThingDropDown) {
+        // Handle ThingDropDowns separately
+        if (hint instanceof UIHint.ThingDropDown) {
             final Spinner spinner = new Spinner(this);
             spinner.setEnabled(false);
-            final long initialValue = (value == null) ? 0 : (Long) value;
-            final UIHint.ThingDropDown finalHint = (UIHint.ThingDropDown) uiHint;
+            final UIHint.ThingDropDown finalHint = (UIHint.ThingDropDown) hint;
 
             new ActivityServerConnection<Collection<ThingInformation>>(this) {
                 protected Collection<ThingInformation> executeRequest(ServerConnector serverConnector) throws IOException, RequestException {
@@ -347,38 +265,18 @@ public class RuleDetailActivity extends Activity {
                 }
             }.execute();
             return spinner;
+        }
 
-        } else {
-            throw new UnsupportedOperationException("Unknown type in preparePropertyItems()!");
-        }
-    }
+        // Prepare the item
+        PropertyView<V> view = UIProducer.producePropertyView(this, hint, valueType, parameterName);
+        view.setValue(valueType.cast(initialValue));
+        view.setListener(new Callback<V>() {
+            public void callback(V value) {
+                config.set(parameterName, value);
+            }
+        });
+        return view.toView();
 
-    /**
-     * Calls the <tt>valueOf</tt> method of the given class <tt>valueType</tt> to convert the given <tt>value</tt>.
-     * 
-     * @param <T>
-     *            The value type.
-     * @param value
-     *            The value.
-     * @param valueType
-     *            The value type.
-     * @return The converted value.
-     */
-    private static <T> T stringToValue(String value, Class<T> valueType) {
-        if (value == null) {
-            return null;
-        } else if (valueType == String.class) {
-            return valueType.cast(value);
-        }
-        try {
-            @SuppressWarnings("unchecked")
-            T result = (T) valueType.getMethod("valueOf", String.class).invoke(null, value);
-            return result;
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The type " + valueType + " is not supported!");
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Exception when calling " + valueType + "#valueOf(" + value + ")");
-        }
     }
 
     /**
@@ -418,9 +316,16 @@ public class RuleDetailActivity extends Activity {
             ThingInformation thingInfo = thingInfos[position];
             ThingMetainfo metainfo = thingInfo.getMetainfo();
 
-            TextView text = new TextView(RuleDetailActivity.this);
-            text.setText(thingInfo.getId() + " " + metainfo.getName());
-            return text;
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.managment_list_item, parent, false);
+            }
+
+            ((TextView) view.findViewById(R.id.list_item_management_subject)).setText(thingInfo.getId() + " " + metainfo.getName());
+            ((TextView) view.findViewById(R.id.list_item_management_description)).setText(getString(R.string.default_thing_description) + " (" + thingInfo.getId() + ")");
+            ((ImageView) view.findViewById(R.id.list_item_management_picture)).setImageDrawable(new BitmapDrawable(getResources(), new LetterTileProvider(RuleDetailActivity.this).getLetterTile(metainfo.getName(), String.valueOf(thingInfo.getId()))));
+            return view;
         }
 
     }

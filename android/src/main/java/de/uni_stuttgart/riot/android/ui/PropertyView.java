@@ -41,7 +41,7 @@ public interface PropertyView<V> {
      * {@link #setListener(Callback)}.
      * 
      * @param value
-     *            The new value.
+     *            The new value (may be <tt>null</tt>).
      */
     void setValue(V value);
 

@@ -61,7 +61,9 @@ public class EnumDropDownView<E extends Enum<E>> extends Spinner implements Prop
 
     @Override
     public void setValue(E value) {
-        super.setSelection(itemNames.indexOf(value.name()));
+        if (value != null) {
+            super.setSelection(itemNames.indexOf(value.name()));
+        }
     }
 
     @Override

@@ -95,7 +95,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
         // Start monitoring only if it is not already running
         new Thread(new Runnable() {
             public void run() {
-                for (ManagementPropertyBinding<?> binding : boundProperties) {
+                for (ManagementPropertyBinding<?> binding : boundProperties.toArray(new ManagementPropertyBinding[0])) {
                     binding.bind();
                 }
             }
@@ -108,7 +108,7 @@ public abstract class ManagementDetailActivity<T> extends ManagementActivity<T> 
     protected void unbindAllManagementProperties() {
         new Thread(new Runnable() {
             public void run() {
-                for (ManagementPropertyBinding<?> binding : boundProperties) {
+                for (ManagementPropertyBinding<?> binding : boundProperties.toArray(new ManagementPropertyBinding[0])) {
                     binding.unbind();
                 }
                 boundProperties.clear();

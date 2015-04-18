@@ -40,7 +40,7 @@ public class EditTextView extends EditText implements PropertyView<String> {
 
     @Override
     public void setValue(String value) {
-        super.setText(value);
+        super.setText(value == null ? "" : value);
     }
 
     @Override
