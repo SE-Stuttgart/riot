@@ -73,10 +73,9 @@ public abstract class TypedExecutingThingBehavior<T extends Thing> extends Execu
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public T getThing() {
-        return (T) super.getThing();
+        return thingType.cast(super.getThing());
     }
 
 }

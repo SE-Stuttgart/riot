@@ -1,6 +1,5 @@
 package de.uni_stuttgart.riot.thing.house.light;
 
-import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
 import de.uni_stuttgart.riot.thing.ui.UIHint;

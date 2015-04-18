@@ -61,6 +61,7 @@ public class GoodMorningRule extends Rule {
 
     private void makeCoffee() throws ResolveReferenceException {
         CoffeeMachine cM = this.coffeeMachine.getTarget();
+        cM.setPowerSwitch(true);
         cM.pressStart();
     }
 
