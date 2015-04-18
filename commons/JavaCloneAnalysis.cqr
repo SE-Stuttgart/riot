@@ -1,0 +1,6 @@
+#!org.conqat.engine.code_clones.languages.java.JavaCloneAnalysis
+output.dir=C:\Users\Philipp\enpro\target\conqat
+input.project=RIOT
+input.dir=C:\Users\Philipp\enpro\
+clone.minlength=10
+exclude.pattern=**/target/**
