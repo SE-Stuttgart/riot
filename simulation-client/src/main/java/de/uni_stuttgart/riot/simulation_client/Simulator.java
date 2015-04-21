@@ -264,7 +264,7 @@ public abstract class Simulator<T extends Thing> {
      *            Maximum value (exclusive).
      * @return The random number.
      */
-    protected final double random(double min, double max) {
+    protected double random(double min, double max) {
         return random.nextDouble() * (max - min) + min;
     }
 
@@ -275,7 +275,7 @@ public abstract class Simulator<T extends Thing> {
      *            The probability of returning <tt>true</tt>.
      * @return <tt>true</tt> with the given probability.
      */
-    protected final boolean randomDecision(double probability) {
+    protected boolean randomDecision(double probability) {
         return random.nextDouble() < probability;
     }
 

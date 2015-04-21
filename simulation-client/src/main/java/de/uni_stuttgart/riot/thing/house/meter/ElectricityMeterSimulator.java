@@ -24,13 +24,13 @@ public class ElectricityMeterSimulator extends MeterSimulator {
     }
 
     @Override
-    protected double getAverageConsumption() {
+    public double getAverageConsumption() {
         // TODO if light and so on is finished this value could be dynamicly changed according to the light state (per event register)
         return AVERAGE_CONSUMPTION;
     }
 
     @Override
-    protected double getConsumptionVariation() {
+    public double getConsumptionVariation() {
         return VARIATION;
     }
 

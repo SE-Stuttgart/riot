@@ -66,11 +66,7 @@ public abstract class SimulatorHelper {
             }
         }).when(spy).linearChange((Property<Double>) any(), anyDouble(), anyLong(), anyInt());
 
-        doAnswer(new Answer<ScheduledFuture<?>>() {
-            public ScheduledFuture<?> answer(InvocationOnMock invocation) throws Throwable {
-                return mock(ScheduledFuture.class);
-            }
-        }).when(spy).scheduleAtFixedRate(any(), anyLong(), anyLong());
+        doReturn(mock(ScheduledFuture.class)).when(spy).scheduleAtFixedRate(any(), anyLong(), anyLong());
 
         return spy;
     }

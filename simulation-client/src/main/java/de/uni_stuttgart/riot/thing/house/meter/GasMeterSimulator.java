@@ -24,13 +24,13 @@ public class GasMeterSimulator extends MeterSimulator {
     }
 
     @Override
-    protected double getAverageConsumption() {
+    public double getAverageConsumption() {
         // TODO if heating is finished this value could be dynamicly changed according to the heating state (per event register)
         return AVERAGE_CONSUMPTION;
     }
 
     @Override
-    protected double getConsumptionVariation() {
+    public double getConsumptionVariation() {
         return VARIATION;
     }
 

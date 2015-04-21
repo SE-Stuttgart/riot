@@ -86,6 +86,16 @@ public class Radiator extends Thing {
     }
 
     /**
+     * Sets the configured temperature.
+     * 
+     * @param temp
+     *            The temperature.
+     */
+    public void setConfiguredTemp(double temp) {
+        configuredTemp.set(temp);
+    }
+
+    /**
      * Getter for the measured temperature value.
      * 
      * @return the measuredTemp in degree celsius
@@ -152,7 +162,8 @@ public class Radiator extends Thing {
      * Setter for the threshold value, this value is used as follows: if the the measured temperature is less than configured temperature -
      * threshold the readiator should turn on.
      * 
-     * @param thresholdValue the new value
+     * @param thresholdValue
+     *            the new value
      */
     public void setThreshold(double thresholdValue) {
         this.threshold.set(thresholdValue);

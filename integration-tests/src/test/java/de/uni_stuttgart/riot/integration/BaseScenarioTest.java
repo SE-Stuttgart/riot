@@ -72,7 +72,9 @@ public abstract class BaseScenarioTest extends BaseClientTest {
      *            The name of the thing.
      * @return The simulated thing.
      * @throws IOException
+     *             When a network error occured.
      * @throws RequestException
+     *             When registering the thing failed.
      */
     protected <T extends Thing> TestBehavior<T> simulateThing(Class<T> thingType, Class<? extends Simulator<? super T>> simulatorType, String name) throws RequestException, IOException {
         ThingClient thingClient = getLoggedInThingClient();

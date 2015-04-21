@@ -24,12 +24,12 @@ public class WaterMeterSimulator extends MeterSimulator {
     }
 
     @Override
-    protected double getAverageConsumption() {
+    public double getAverageConsumption() {
         return AVERAGE_CONSUMPTION;
     }
 
     @Override
-    protected double getConsumptionVariation() {
+    public double getConsumptionVariation() {
         return VARIATION;
     }
 
