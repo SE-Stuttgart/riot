@@ -1,5 +1,5 @@
 # How to build a new Internet of Things Scenario
-This short tutorial shows how to create a new "Internet of Things Scenario" in RIOT. This includes the creation of new things as well as the implementation of new rules. A thing is everything that should be monitored and or controlled. In example a hi-fi equipment. Rules are used to define automated behavior between two or more things. In example to turn on a defined wake up song list on the hi-fi equipment when the alarm clock thing sends the alarm event.
+This short tutorial shows how to create a new "Internet of Things Scenario" in RIOT. This includes the creation of new things as well as the implementation of new rules. A thing is everything that should be monitored and/or controlled, for example a hi-fi equipment. Rules are used to define automated behavior between two or more things. For example to turn on a defined wake up song list on the hi-fi equipment, when the alarm clock thing sends the alarm event.
 
 ## Implementing a new thing
 In order to create a new thing you have to create a new class per thing that extends the base class **de.uni_stuttgart.riot.thing.Thing**.
@@ -9,7 +9,7 @@ In order to create a new thing you have to create a new class per thing that ext
 	}
 
 ### Defining the attributes
-The next step is to define all of the attributes of the thing. There are to possible types of attributes, which are **de.uni_stuttgart.riot.thing.WritableProperty** and **de.uni_stuttgart.riot.thing.Property**. WritableProperties could be  changed directly through the generic UI (Web and Android). Properties could be changed only internally though the thing implementation, but may be changed indirectly through actions. 
+The next step is to define all of the attributes of the thing. There are two possible types of attributes, which are **de.uni_stuttgart.riot.thing.WritableProperty** and **de.uni_stuttgart.riot.thing.Property**. WritableProperties can be changed directly through the generic UI (Web and Android). Properties can be changed only internally through the thing implementation, but may be changed indirectly through actions. 
 
     private final WritableProperty<Double> volume = newWritableProperty("volume", Double.class, 0, UIHint.fractionalSlider(0.0, 100.0));
 
@@ -34,11 +34,11 @@ The UI definition is made through the class **UIHint**, which offers the followi
 * UIHint.ThingDropDown
 
 ### Adding actions and events
-Things communicate by sending/receiving actions and events. Events and actions without parameters could be defined as follows.
+Things communicate by sending/receiving actions and events. Events and actions without parameters can be defined as follows.
 
     private final Action<ActionInstance> turnOnAction = newAction("Turn on");
 
-    private final Event<EventInstance> turnedOnEvetn = newEvent("turned on");
+    private final Event<EventInstance> turnedOnEvent = newEvent("turned on");
 
 If parameters are necessary you have to implement either a class extending **de.uni_stuttgart.riot.thing.EventInstance** for Events or **de.uni_stuttgart.riot.thing.ActionInstance** for actions.
 
@@ -60,7 +60,7 @@ The corresponding event and action classes could look like this:
 	    }
 	
 	    @JsonCreator
-	    public OutOfGasoline(JsonNode node) {
+	    public OverHeating(JsonNode node) {
 	        super(node);
 	        this.temp = node.get("temp").asDouble();
 	    }
@@ -78,7 +78,7 @@ The corresponding event and action classes could look like this:
 	    }
 	
 	    @JsonCreator
-	    public Refuel(JsonNode node) {
+	    public PlayList(JsonNode node) {
 	        super(node);
 	        this.list = node.get("list").asDouble();
 	    }
@@ -86,11 +86,11 @@ The corresponding event and action classes could look like this:
 	}
 
 ### Implementing the simulation
-Now that the static part of new thing is fully defined you can continue by implementing the behavior. Either by connecting the thing definition to a real thing (not done yet) or by implementing a simulation. A simulation can be implemented by extending **de.uni_stuttgart.riot.simulation_client.Simulator**.
+Now that the static part of new thing is fully defined, you can continue by implementing the behavior. Either by connecting the thing definition to a real thing (not done yet) or by implementing a simulation. A simulation can be implemented by extending **de.uni_stuttgart.riot.simulation_client.Simulator**.
 
 	public class HiFiSimulator extends Simulator<HiFi> {
 
-	    public RadiatorSimulator(Radiator thing, ScheduledThreadPoolExecutor scheduler) {
+	    public HiFiSimulator(HiFi thing, ScheduledThreadPoolExecutor scheduler) {
 	        super(thing, scheduler);
 	    }
 	
@@ -103,10 +103,10 @@ Now that the static part of new thing is fully defined you can continue by imple
 		...
 	}
 	
-Note that there are some useful operations in the super classes regarding simulation (eg. *linearChange(...)*).
+Note that there are some useful operations in the super classes regarding simulation (e.g. *linearChange(...)*).
 
 ## Defining rules
-Now that you have implemented all things of your scenario you can go on by implementing the scenario rules. Rules can be created by extending **de.uni_stuttgart.riot.rule.Rule**. The following example shows how a rule could be implemented that starts playing music on the hifi if the alarm clock rings.
+Now that you have implemented all things of your scenario, you can go on by implementing the scenario rules. Rules can be created by extending **de.uni_stuttgart.riot.rule.Rule**. The following example shows how a rule could be implemented, that starts playing music on the hi-fi, if the alarm clock rings.
 
 	public class MorningMusicRule extends Rule {
 
@@ -142,5 +142,5 @@ Now that you have implemented all things of your scenario you can go on by imple
 Do not forget to unregister all registered listeners in the shutdown() operation.
 
 # Read code
-For more inspirations just look at the things and rules that are already implemented. Things could be found in the commons project, rules are contained in the server project.
+For more inspirations just look at the things and rules that are already implemented. Things can be found in the commons project, rules are contained in the server project.
 
