@@ -54,4 +54,24 @@ public class ReferenceProperty<R extends Referenceable<? super R>> extends Prope
         return targetType;
     }
 
+    /**
+     * Registers a reference property listener that will be notified of changes to the property.
+     * 
+     * @param listener
+     *            The property listener.
+     */
+    public void register(ReferencePropertyListener<? super R> listener) {
+        getChangeEvent().register(listener);
+    }
+
+    /**
+     * Unregisters a reference property listener.
+     * 
+     * @param listener
+     *            The property listener to unregister.
+     */
+    public void unregister(ReferencePropertyListener<? super R> listener) {
+        getChangeEvent().unregister(listener);
+    }
+
 }

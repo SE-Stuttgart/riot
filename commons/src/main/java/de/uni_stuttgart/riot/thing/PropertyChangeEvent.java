@@ -41,7 +41,7 @@ public class PropertyChangeEvent<V> extends Event<PropertyChangeEvent.Instance<V
 
     @Override
     protected void notifyListeners(Instance<V> eventInstance) {
-        // Before notifying the listeners, we need save the value in the property.
+        // Before notifying the listeners, we need to save the value in the property.
         this.property.setValueSilently(eventInstance.getNewValue());
         super.notifyListeners(eventInstance);
     }

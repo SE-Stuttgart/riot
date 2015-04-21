@@ -25,7 +25,7 @@ public class Machine extends Thing {
     /**
      * The size of the processed pieces tank (in number of pieces).
      */
-    static final int PROCESSED_PIECES_TANK_SIZE = 10;
+    public static final int PROCESSED_PIECES_TANK_SIZE = 10;
 
     /**
      * The on/off switch, where false is off.

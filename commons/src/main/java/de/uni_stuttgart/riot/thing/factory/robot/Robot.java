@@ -1,6 +1,7 @@
 package de.uni_stuttgart.riot.thing.factory.robot;
 
 import de.uni_stuttgart.riot.notification.NotificationSeverity;
+import de.uni_stuttgart.riot.references.ResolveReferenceException;
 import de.uni_stuttgart.riot.thing.Action;
 import de.uni_stuttgart.riot.thing.ActionInstance;
 import de.uni_stuttgart.riot.thing.Event;
@@ -10,7 +11,10 @@ import de.uni_stuttgart.riot.thing.Property;
 import de.uni_stuttgart.riot.thing.Thing;
 import de.uni_stuttgart.riot.thing.ThingBehavior;
 import de.uni_stuttgart.riot.thing.WritableProperty;
+import de.uni_stuttgart.riot.thing.WritableReferenceProperty;
 import de.uni_stuttgart.riot.thing.factory.ThingStatusEvent;
+import de.uni_stuttgart.riot.thing.factory.machine.Machine;
+import de.uni_stuttgart.riot.thing.rest.ThingPermission;
 import de.uni_stuttgart.riot.thing.ui.UIHint;
 
 /**
@@ -21,7 +25,17 @@ public class Robot extends Thing {
     static final long ACTION_DURATION = 10000;
 
     /**
-     * The on/off switch, where false is off.
+     * The machine that the robot is responsible for. All robot actions will have no effect if this machine is not set.
+     */
+    private final WritableReferenceProperty<Machine> machine = newWritableReferenceProperty("machine", Machine.class, UIHint.thingDropDown(Machine.class, ThingPermission.READ, ThingPermission.CONTROL));
+
+    /**
+     * The robot fires this notification if it feels lonely. It was asked to do something, but the machine to work for has not been set.
+     */
+    private final NotificationEvent<EventInstance> machineMissing = newNotification("machineMissing", NotificationSeverity.ERROR);
+
+    /**
+     * The on/off switch, where false is off. All robot actions will have no effect if this is set to off.
      */
     private final WritableProperty<Boolean> powerSwitch = newWritableProperty("powerSwitch", Boolean.class, false, UIHint.toggleButton());
 
@@ -68,6 +82,47 @@ public class Robot extends Thing {
      */
     public Robot(ThingBehavior behavior) {
         super(behavior);
+    }
+
+    /**
+     * Gets the machine that this robot is responsible for.
+     * 
+     * @return The machine.
+     * @throws ResolveReferenceException
+     *             If the machine could not be resolved.
+     */
+    public Machine getMachine() throws ResolveReferenceException {
+        return machine.getTarget();
+    }
+
+    /**
+     * Sets the machine that this robot is responsible for.
+     * 
+     * @param machine
+     *            The machine.
+     */
+    public void setMachine(Machine machine) {
+        if (this.getRobotStatus() != RobotStatus.IDLE) {
+            throw new IllegalStateException("Can only change machine when idle!");
+        }
+        this.machine.setTarget(machine);
+    }
+
+    /**
+     * Determines if the machine is set.
+     * 
+     * @return True if the robot has a machine to work for.
+     */
+    public boolean hasMachine() {
+        return this.machine.getId() != null;
+    }
+
+    public WritableReferenceProperty<Machine> getMachineProperty() {
+        return machine;
+    }
+
+    public NotificationEvent<EventInstance> getMachineMissingEvent() {
+        return machineMissing;
     }
 
     public boolean isPowerOn() {

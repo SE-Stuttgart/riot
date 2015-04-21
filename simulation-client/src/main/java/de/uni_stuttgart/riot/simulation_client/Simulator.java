@@ -112,7 +112,7 @@ public abstract class Simulator<T extends Thing> {
      * @param end
      *            The end value (the start value is the current value of the property). Note that this will be rounded to integers.
      * @param stepTime
-     *            The duration of a single step.
+     *            The duration of a single step in ms.
      * @param stepCount
      *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
      * @return ScheduledFuture<?> may be used to stop the execution
@@ -141,7 +141,7 @@ public abstract class Simulator<T extends Thing> {
      * @param end
      *            The end value (the start value is the current value of the property).
      * @param stepTime
-     *            The duration of a single step.
+     *            The duration of a single step in ms.
      * @param stepCount
      *            The number of steps. The total duration of the change is <tt>stepTime*stepCount</tt>.
      * @return ScheduledFuture<?> may be used to stop the execution
@@ -166,9 +166,9 @@ public abstract class Simulator<T extends Thing> {
      * @param task
      *            the task to be performed
      * @param initialDelay
-     *            the starting delay
+     *            the starting delay in ms
      * @param period
-     *            .
+     *            the interval in which the task is executed in ms.
      * @return the {@link ScheduledFuture}
      */
     protected ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period) {
@@ -352,29 +352,20 @@ public abstract class Simulator<T extends Thing> {
     /**
      * Gets another thing by its id.
      *
-     * @param <X>
-     *            the generic type
+     * @param <O>
+     *            The expected type of the other thing.
      * @param id
-     *            the id
+     *            The id of the thing.
      * @param expectedType
-     *            the expected type
-     * @return the other thing
+     *            The expected type of the thing.
+     * @return The thing, never <tt>null</tt>.
      * @throws NotFoundException
-     *             the not found exception
+     *             When the thing does not exist.
      * @throws IOException
-     *             Signals that an I/O exception has occurred.
+     *             When a network error occured when retrieving the thing from the server.
      */
-    protected <X extends Thing> X getOtherThing(int id, Class<X> expectedType) throws NotFoundException, IOException {
+    protected <O extends Thing> O getOtherThing(long id, Class<O> expectedType) throws NotFoundException, IOException {
         return getBehavior().getOtherThing(id, expectedType);
     }
 
-    /**
-     * Subscribe to events fired by the thing with the given id.
-     *
-     * @param thingId
-     *            the thing to subscribe id
-     */
-    protected void subscribeEvents(int thingId) {
-
-    }
 }

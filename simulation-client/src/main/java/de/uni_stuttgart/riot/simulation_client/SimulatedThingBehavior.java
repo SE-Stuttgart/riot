@@ -124,22 +124,9 @@ public class SimulatedThingBehavior extends ExecutingThingBehavior {
         return super.getClient();
     }
 
-    /**
-     * Gets another thing by its id.
-     *
-     * @param <T>
-     *            the generic type
-     * @param id
-     *            the id
-     * @param expectedType
-     *            the expected type
-     * @return the other thing
-     * @throws NotFoundException
-     *             the not found exception
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
-     */
-    protected <T extends Thing> T getOtherThing(int id, Class<T> expectedType) throws NotFoundException, IOException {
+    @Override
+    protected <T extends Thing> T getOtherThing(long id, Class<T> expectedType) throws NotFoundException, IOException {
         return super.getOtherThing(id, expectedType);
     }
+
 }
