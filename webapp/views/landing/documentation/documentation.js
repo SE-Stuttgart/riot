@@ -31,6 +31,9 @@ angular.module('riot').controller('DocumentationCtrl', function($scope) {
     }, {
         title: 'Managing-Rules',
         link: 'documentation/Managing-Rules.md'
+    }, {
+        title: 'Scenarios',
+        link: 'documentation/scenario.md'
     }];
 	
 	$scope.markdownDocument = window.sessionStorage.getItem("markdownDocument") || "documentation/rest_api_operations.md";

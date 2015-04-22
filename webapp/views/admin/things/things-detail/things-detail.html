@@ -75,19 +75,6 @@
       </form>
     </div>
 
-    <!-- Events -->
-    <div class="detail-group">
-      <div class="detail-group-header">{{'thing.events' | i18n}}</div>
-      <form class="form-horizontal list-group" ng-repeat="event in thingDescription.events">
-        <div class="list-group-item event">
-          <h4 class="list-group-item-heading">{{event.name}}</h4>
-          <div class="list-group-item-text">
-            <div ng-repeat="parameter in event.instanceDescription.parameters" value="foo" description="parameter" ui-element></div>
-          </div>
-        </div>
-      </form>
-    </div>
-
     <!-- Actions -->
     <div class="detail-group">
       <div class="detail-group-header">{{'thing.actions' | i18n}}</div>
