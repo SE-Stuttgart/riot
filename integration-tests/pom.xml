@@ -21,13 +21,6 @@
 		<skipITs>true</skipITs>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>sonatype-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<!-- Commons, Usermanagement and Server -->
 		<dependency>
@@ -147,7 +140,7 @@
 		<dependency>
 			<groupId>org.robolectric</groupId>
 			<artifactId>robolectric</artifactId>
-			<version>3.0-SNAPSHOT</version>
+			<version>3.0-rc2</version>
 		</dependency>
 
 		<!-- Logging -->
